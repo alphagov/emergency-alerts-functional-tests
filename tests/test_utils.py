@@ -177,7 +177,6 @@ def do_user_registration(driver):
 
 
 def do_user_can_invite_someone_to_notify(driver, basic_view):
-
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
 
