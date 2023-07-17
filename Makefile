@@ -15,6 +15,12 @@ clean: ## Remove temporary files
 	rm -rf screenshots/*
 	rm -rf logs/*
 
+.PHONY: lint
+lint:
+	isort --check-only tests
+	flake8 .
+	black --check .
+
 .PHONY: test
 test: clean ## Run functional tests against local environment
 	isort --check-only tests
