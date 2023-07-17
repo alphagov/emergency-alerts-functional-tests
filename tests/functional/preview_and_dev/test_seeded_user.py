@@ -272,7 +272,6 @@ def test_send_sms_with_placeholders_to_one_recipient(
 def test_view_precompiled_letter_message_log_delivered(
     driver, login_seeded_user, client_test_key
 ):
-
     reference = "functional_tests_precompiled_" + str(uuid.uuid1()) + "_delivered"
 
     send_precompiled_letter_via_api(
@@ -304,7 +303,6 @@ def test_view_precompiled_letter_message_log_delivered(
 def test_view_precompiled_letter_preview_delivered(
     driver, login_seeded_user, client_test_key
 ):
-
     reference = (
         "functional_tests_precompiled_letter_preview_"
         + str(uuid.uuid1())
@@ -357,7 +355,6 @@ def test_view_precompiled_letter_preview_delivered(
 def test_view_precompiled_letter_message_log_virus_scan_failed(
     driver, login_seeded_user, client_test_key
 ):
-
     reference = (
         "functional_tests_precompiled_" + str(uuid.uuid1()) + "_virus_scan_failed"
     )
