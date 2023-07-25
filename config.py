@@ -28,14 +28,14 @@ config = {
         "postcode": "N1 7RA",
     },
     # notify templates
-    "notify_templates": {
-        "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
-        "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
-        "org_invitation_template_id": "203566f0-d835-47c5-aa06-932439c86573",
-        "password_reset_template_id": "474e9242-823b-4f99-813d-ed392e7f1201",
-        "registration_template_id": "ece42649-22a8-4d06-b87f-d52d5d3f0a27",
-        "verify_code_template_id": "36fb0730-6259-4da1-8a80-c8de22ad4246",
-    },
+    # "notify_templates": {
+    #     "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
+    #     "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
+    #     "org_invitation_template_id": "203566f0-d835-47c5-aa06-932439c86573",
+    #     "password_reset_template_id": "474e9242-823b-4f99-813d-ed392e7f1201",
+    #     "registration_template_id": "ece42649-22a8-4d06-b87f-d52d5d3f0a27",
+    #     "verify_code_template_id": "36fb0730-6259-4da1-8a80-c8de22ad4246",
+    # },
 }
 
 
@@ -46,27 +46,27 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "preview": {
-        "api": "https://api.notify.works",
-        "admin": "https://www.notify.works",
-        "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
+        "api": "http://api.ecs.local:6011",
+        "admin": "http://admin.ecs.local:6012",
+        "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
     # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
     # urls for the ecs-preview environment, so for now we will use those of the preview env
-    "ecs-preview": {
-        "api": "https://api.notify.works",
-        "admin": "https://www-ecs.notify.works",
-        "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
-    },
-    "staging": {
-        "api": "https://api.staging-notify.works",
-        "admin": "https://www.staging-notify.works",
-        "govuk_alerts": "not used in this environment",
-    },
-    "live": {
-        "api": "https://api.notifications.service.gov.uk",
-        "admin": "https://www.notifications.service.gov.uk",
-        "govuk_alerts": "not used in this environment",
-    },
+    # "ecs-preview": {
+    #     "api": "https://api.notify.works",
+    #     "admin": "https://www-ecs.notify.works",
+    #     "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
+    # },
+    # "staging": {
+    #     "api": "https://api.staging-notify.works",
+    #     "admin": "https://www.staging-notify.works",
+    #     "govuk_alerts": "not used in this environment",
+    # },
+    # "live": {
+    #     "api": "https://api.notifications.service.gov.uk",
+    #     "admin": "https://www.notifications.service.gov.uk",
+    #     "govuk_alerts": "not used in this environment",
+    # },
 }
 
 
@@ -76,8 +76,10 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
-        pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+    # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
+    #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+    if env not in {"dev", "preview"}:
+        pytest.fail('env "{}" not dev or preview'.format(env))
 
     config.update(
         {
