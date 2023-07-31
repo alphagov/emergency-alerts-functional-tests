@@ -1,12 +1,15 @@
 from config import config
 from tests.pages import SignInPage
-from tests.test_utils import do_email_auth_verify, do_verify
+from tests.test_utils import do_email_auth_verify, do_verify, do_verify_by_id
 
 
 def sign_in(driver, account_type="normal"):
     _sign_in(driver, account_type)
-    mobile_number = get_mobile_number(account_type=account_type)
-    do_verify(driver, mobile_number)
+    identifier = get_identifier(account_type=account_type)
+    if account_type.startswith("broadcast"):
+        do_verify_by_id(driver, identifier)
+    else:
+        do_verify(driver, identifier)
 
 
 def sign_in_email_auth(driver):
@@ -50,7 +53,7 @@ def get_email_and_password(account_type):
     raise Exception("unknown account_type {}".format(account_type))
 
 
-def get_mobile_number(account_type):
+def get_identifier(account_type):
     if account_type == "normal":
         return config["user"]["mobile"]
     elif account_type == "seeded":
@@ -58,7 +61,7 @@ def get_mobile_number(account_type):
     elif account_type == "email_auth":
         return config["user"]["mobile"]
     elif account_type == "broadcast_create_user":
-        return config["broadcast_service"]["broadcast_user_1"]["mobile"]
+        return config["broadcast_service"]["broadcast_user_1"]["id"]
     elif account_type == "broadcast_approve_user":
-        return config["broadcast_service"]["broadcast_user_2"]["mobile"]
+        return config["broadcast_service"]["broadcast_user_2"]["id"]
     raise Exception("unknown account_type {}".format(account_type))

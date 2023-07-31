@@ -27,9 +27,11 @@ export JENKINS_BUILD_LETTER_TEMPLATE_ID=c3caccab-b066-4a43-8340-cae8b2887e86
 export MMG_INBOUND_SMS_USERNAME=username
 export MMG_INBOUND_SMS_AUTH=testkey
 
+export BROADCAST_USER_1_ID='0d2e9b87-9c54-448c-b549-f764231ee599'
 export BROADCAST_USER_1_EMAIL='notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk'
 export BROADCAST_USER_1_NUMBER=07700900002
 
+export BROADCAST_USER_2_ID='1048af40-45f6-4249-a670-df72ba3352d7'
 export BROADCAST_USER_2_EMAIL='notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk'
 export BROADCAST_USER_2_NUMBER=07700900003
 

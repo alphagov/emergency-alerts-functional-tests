@@ -115,6 +115,26 @@ def do_verify(driver, mobile_number):
         raise RetryException
 
 
+@retry(
+    RetryException,
+    tries=config["verify_code_retry_times"],
+    delay=config["verify_code_retry_interval"],
+)
+def do_verify_by_id(driver, user_id):
+    try:
+        verify_code = get_verify_code_from_api_by_id(user_id)
+        verify_page = VerifyPage(driver)
+        verify_page.verify(verify_code)
+        driver.find_element(By.CLASS_NAME, "error-message")
+    except (NoSuchElementException, TimeoutException):
+        #  In some cases a TimeoutException is raised even if we have managed to verify.
+        #  For now, check explicitly if we 'have verified' and if so move on.
+        return True
+    else:
+        #  There was an error message so let's retry
+        raise RetryException
+
+
 def do_email_auth_verify(driver):
     do_email_verification(
         driver,
@@ -312,6 +332,13 @@ def get_verify_code_from_api(mobile_number):
     return m.group(0)
 
 
+def get_verify_code_from_api_by_id(user_id):
+    verify_code = get_verification_code_by_id(
+        config["notify_service_api_key"], config["broadcast_service"][user_id]["id"]
+    )
+    return verify_code
+
+
 def send_notification_to_one_recipient(
     driver,
     template_name,
@@ -415,6 +442,11 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
         ):
             return notification["body"]
     return ""
+
+
+def get_verification_code_by_id(api_key, user_id):
+    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
+    return client.get(f"user/{user_id}/verify_code")
 
 
 def recordtime(func):
