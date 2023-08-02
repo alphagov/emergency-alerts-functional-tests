@@ -333,9 +333,7 @@ def get_verify_code_from_api(mobile_number):
 
 
 def get_verify_code_from_api_by_id(user_id):
-    verify_code = get_verification_code_by_id(
-        config["notify_service_api_key"], config["broadcast_service"][user_id]["id"]
-    )
+    verify_code = get_verification_code_by_id(config["notify_service_api_key"], user_id)
     return verify_code
 
 
