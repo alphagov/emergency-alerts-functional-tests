@@ -444,7 +444,7 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
 
 def get_verification_code_by_id(api_key, user_id):
     client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
-    return client.get(f"user/{user_id}/verify_code")
+    return client.get(f"user/{user_id}/verify-code")
 
 
 def recordtime(func):
