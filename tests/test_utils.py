@@ -7,6 +7,7 @@ import tempfile
 import uuid
 from datetime import datetime
 
+import requests
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -333,7 +334,7 @@ def get_verify_code_from_api(mobile_number):
 
 
 def get_verify_code_from_api_by_id(user_id):
-    verify_code = get_verification_code_by_id(config["notify_service_api_key"], user_id)
+    verify_code = get_verification_code_by_id(user_id)
     return verify_code
 
 
@@ -442,9 +443,11 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
     return ""
 
 
-def get_verification_code_by_id(api_key, user_id):
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
-    return client.get(f"user/{user_id}/verify-code")
+def get_verification_code_by_id(user_id):
+    url = f'{config["notify_api_url"]}/verify-code/{user_id}'
+    response = requests.get(url)
+    print(response)
+    return "12345"
 
 
 def recordtime(func):
