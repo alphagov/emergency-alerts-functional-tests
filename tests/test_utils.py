@@ -446,6 +446,7 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
 def get_verification_code_by_id(user_id):
     url = f'{config["notify_api_url"]}/verify-code/{user_id}'
     response = requests.get(url)
+    print("%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^")
     print(response)
     return "12345"
 
