@@ -78,7 +78,17 @@ def test_prepare_broadcast_with_new_content(driver):
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
-    dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
