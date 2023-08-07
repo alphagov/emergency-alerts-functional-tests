@@ -48,7 +48,7 @@ urls = {
     "preview": {
         "api": "http://api.ecs.local:6011",
         "admin": "http://admin.ecs.local:6012",
-        "govuk_alerts": "https://admin.preview.emergency-alerts.service.gov.uk",
+        "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
     # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
     # urls for the ecs-preview environment, so for now we will use those of the preview env
