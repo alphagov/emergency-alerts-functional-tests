@@ -30,8 +30,16 @@ from tests.test_utils import (
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
 
     # prepare alert
     current_alerts_page = BasePage(driver)
