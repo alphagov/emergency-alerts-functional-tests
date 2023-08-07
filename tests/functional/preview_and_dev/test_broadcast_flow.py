@@ -240,7 +240,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
     page.click_continue()
-    assert page.is_text_present_on_page("Live since ")
+    assert page.is_text_present_on_page("since today at")
     alert_page_url = page.current_url
 
     check_alert_is_published_on_govuk_alerts(
