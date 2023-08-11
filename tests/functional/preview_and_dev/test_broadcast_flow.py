@@ -30,8 +30,16 @@ from tests.test_utils import (
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
 
     # prepare alert
     current_alerts_page = BasePage(driver)
@@ -70,11 +78,21 @@ def test_prepare_broadcast_with_new_content(driver):
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
-    dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
-    assert current_alerts_page.is_text_present_on_page("Live since ")
+    assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
     check_alert_is_published_on_govuk_alerts(
@@ -222,7 +240,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
     page.click_continue()
-    assert page.is_text_present_on_page("Live since ")
+    assert page.is_text_present_on_page("since today at")
     alert_page_url = page.current_url
 
     check_alert_is_published_on_govuk_alerts(

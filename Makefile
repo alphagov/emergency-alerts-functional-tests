@@ -16,14 +16,11 @@ clean: ## Remove temporary files
 	rm -rf logs/*
 
 .PHONY: lint
-lint:
+lint: clean
 	isort --check-only tests
 	flake8 .
 	black --check .
 
 .PHONY: test
 test: clean ## Run functional tests against local environment
-	isort --check-only tests
-	flake8 .
-	black --check .
 	pytest -v tests/functional/preview_and_dev/test_broadcast_flow.py -n auto --dist loadgroup

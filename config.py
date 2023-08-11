@@ -46,27 +46,27 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "preview": {
-        "api": "https://api.notify.works",
-        "admin": "https://www.notify.works",
-        "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
+        "api": "http://api.ecs.local:6011",
+        "admin": "http://admin.ecs.local:6012",
+        "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
     # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
     # urls for the ecs-preview environment, so for now we will use those of the preview env
-    "ecs-preview": {
-        "api": "https://api.notify.works",
-        "admin": "https://www-ecs.notify.works",
-        "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
-    },
-    "staging": {
-        "api": "https://api.staging-notify.works",
-        "admin": "https://www.staging-notify.works",
-        "govuk_alerts": "not used in this environment",
-    },
-    "live": {
-        "api": "https://api.notifications.service.gov.uk",
-        "admin": "https://www.notifications.service.gov.uk",
-        "govuk_alerts": "not used in this environment",
-    },
+    # "ecs-preview": {
+    #     "api": "https://api.notify.works",
+    #     "admin": "https://www-ecs.notify.works",
+    #     "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
+    # },
+    # "staging": {
+    #     "api": "https://api.staging-notify.works",
+    #     "admin": "https://www.staging-notify.works",
+    #     "govuk_alerts": "not used in this environment",
+    # },
+    # "live": {
+    #     "api": "https://api.notifications.service.gov.uk",
+    #     "admin": "https://www.notifications.service.gov.uk",
+    #     "govuk_alerts": "not used in this environment",
+    # },
 }
 
 
@@ -76,8 +76,10 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
-        pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+    # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
+    #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
+    if env not in {"dev", "preview"}:
+        pytest.fail('env "{}" not dev or preview'.format(env))
 
     config.update(
         {
@@ -109,12 +111,14 @@ def setup_preview_dev_config():
             "broadcast_service": {
                 "id": os.environ["BROADCAST_SERVICE_ID"],
                 "broadcast_user_1": {
+                    "id": os.environ["BROADCAST_USER_1_ID"],
                     "email": os.environ["BROADCAST_USER_1_EMAIL"],
                     # we are re-using seeded user's password
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_1_NUMBER"],
                 },
                 "broadcast_user_2": {
+                    "id": os.environ["BROADCAST_USER_2_ID"],
                     "email": os.environ["BROADCAST_USER_2_EMAIL"],
                     # we are re-using seeded user's password
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],

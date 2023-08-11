@@ -7,6 +7,7 @@ import tempfile
 import uuid
 from datetime import datetime
 
+import requests
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -103,6 +104,26 @@ def get_link(template_id, email):
 def do_verify(driver, mobile_number):
     try:
         verify_code = get_verify_code_from_api(mobile_number)
+        verify_page = VerifyPage(driver)
+        verify_page.verify(verify_code)
+        driver.find_element(By.CLASS_NAME, "error-message")
+    except (NoSuchElementException, TimeoutException):
+        #  In some cases a TimeoutException is raised even if we have managed to verify.
+        #  For now, check explicitly if we 'have verified' and if so move on.
+        return True
+    else:
+        #  There was an error message so let's retry
+        raise RetryException
+
+
+@retry(
+    RetryException,
+    tries=config["verify_code_retry_times"],
+    delay=config["verify_code_retry_interval"],
+)
+def do_verify_by_id(driver, user_id):
+    try:
+        verify_code = get_verify_code_from_api_by_id(user_id)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element(By.CLASS_NAME, "error-message")
@@ -312,6 +333,11 @@ def get_verify_code_from_api(mobile_number):
     return m.group(0)
 
 
+def get_verify_code_from_api_by_id(user_id):
+    verify_code = get_verification_code_by_id(user_id)
+    return verify_code
+
+
 def send_notification_to_one_recipient(
     driver,
     template_name,
@@ -415,6 +441,12 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
         ):
             return notification["body"]
     return ""
+
+
+def get_verification_code_by_id(user_id):
+    url = f'{config["notify_api_url"]}/verify-code/{user_id}'
+    response = requests.get(url)
+    return response.text
 
 
 def recordtime(func):
