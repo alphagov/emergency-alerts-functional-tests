@@ -124,7 +124,7 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
                 },
-                "api_key_live": os.environ["BROADCAST_SERVICE_LIVE_API_KEY"],
+                "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
             },
             "service": {
                 "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],
