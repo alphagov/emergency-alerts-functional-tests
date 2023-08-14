@@ -2,8 +2,29 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      python: 3.9
     commands:
-      - echo "Installing packages"
+      - apt update
+      - apt install -y xvfb libxi6 libgconf-2-4 libnss3
+      - cd /tmp/
+      - wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
+      - unzip chromedriver_linux64.zip
+      - mv chromedriver /usr/bin/chromedriver
+      - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - dpkg -i google-chrome-stable_current_amd64.deb
+      - apt-get install -f -y
+  pre_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - VENV_TESTS='/venv/eas-tests'
+      - python3.9 -m venv $VENV_TESTS
+      - . $VENV_TESTS/bin/activate
   build:
     commands:
-      - aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r
+      - chmod +x environment.sh
+      - environment.sh
+      - export BROADCAST_SERVICE_API_KEY=$(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r)
+      - python3.9 -m pip install --upgrade pip wheel setuptools
+      - make bootstrap
+      - make test
