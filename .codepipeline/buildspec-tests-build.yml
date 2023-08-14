@@ -23,8 +23,9 @@ phases:
   build:
     commands:
       - chmod +x environment.sh
-      - environment.sh
+      - . ./environment.sh
       - export BROADCAST_SERVICE_API_KEY=$(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r)
+      - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
       - make test
