@@ -46,8 +46,8 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "preview": {
-        "api": "http://api.ecs.local:6011",
-        "admin": "http://admin.ecs.local:6012",
+        "api": "https://api.notifications.service.gov.uk/",
+        "admin": "https://admin.preview.emergency-alerts.service.gov.uk/",
         "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
     # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
