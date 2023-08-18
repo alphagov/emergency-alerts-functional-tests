@@ -11,8 +11,6 @@ phases:
       - wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
       - unzip chromedriver_linux64.zip
       - mv chromedriver /usr/bin/chromedriver
-      - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      - dpkg -i google-chrome-stable_current_amd64.deb
       - apt-get install -f -y
   pre_build:
     commands:
@@ -29,3 +27,7 @@ phases:
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
       - make test
+
+artifacts:
+  files:
+    - screenshots/*
