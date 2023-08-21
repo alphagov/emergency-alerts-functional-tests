@@ -68,7 +68,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
-    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Continue")
     prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
     prepare_alert_pages.click_element_by_link_text("Preview this alert")
 
