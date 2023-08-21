@@ -63,10 +63,12 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Preview this alert")
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
+    prepare_alert_pages.click_element_by_link_text("Preview this alert")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(
@@ -154,10 +156,12 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Preview this alert")
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
+    prepare_alert_pages.click_element_by_link_text("Preview this alert")
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(
