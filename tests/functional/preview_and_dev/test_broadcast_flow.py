@@ -94,7 +94,8 @@ def test_prepare_broadcast_with_new_content(driver):
 
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    current_alerts_page.click_continue()
+    # current_alerts_page.click_continue()
+    current_alerts_page.click_element_by_link_text("Start broadcasting now")
     assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
@@ -107,7 +108,8 @@ def test_prepare_broadcast_with_new_content(driver):
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
-    current_alerts_page.click_continue()  # stop broadcasting
+    # current_alerts_page.click_continue()  # stop broadcasting
+    current_alerts_page.click_element_by_link_text("Yes, stop broadcasting")
     assert current_alerts_page.is_text_present_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
