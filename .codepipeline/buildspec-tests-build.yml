@@ -27,6 +27,9 @@ phases:
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
       - make test
+  post_build:
+    commands:
+      - mkdir screenshots
 
 artifacts:
   files:
