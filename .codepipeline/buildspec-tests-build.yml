@@ -29,7 +29,7 @@ phases:
       - make test
   post_build:
     commands:
-      - mkdir screenshots
+      - echo "Testing passed" > screenshots/success.txt
 
 artifacts:
   files:
