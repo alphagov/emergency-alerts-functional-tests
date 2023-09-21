@@ -29,6 +29,7 @@ phases:
       - make test
   post_build:
     commands:
+      - rm screenshots
       - mkdir screenshots
 
 artifacts:
