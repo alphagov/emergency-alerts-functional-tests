@@ -131,11 +131,11 @@ class BasePage(object):
     def current_url(self):
         return self.driver.current_url
 
-    def wait_for_clickable_element(self, locator):
+    def wait_for_clickable_element(self, locator, time=10):
         return AntiStaleElement(
             self.driver,
             locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
+            lambda locator: WebDriverWait(self.driver, time, 1000).until(
                 EC.element_to_be_clickable(locator),
             ),
         )
@@ -186,7 +186,7 @@ class BasePage(object):
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
-            element = self.wait_for_clickable_element(locator)
+            element = self.wait_for_clickable_element(locator, time=30)
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
