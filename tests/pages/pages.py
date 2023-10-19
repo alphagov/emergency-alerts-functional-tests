@@ -555,6 +555,8 @@ class EditSmsTemplatePage(BasePage):
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    delete_button = EditTemplatePageLocators.DELETE_BUTTON
+    confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
     def click_save(self):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
@@ -567,6 +569,12 @@ class EditSmsTemplatePage(BasePage):
         else:
             self.template_content_input = "The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))"
         self.click_save()
+
+    def click_delete(self):
+        element = self.wait_for_element(EditSmsTemplatePage.delete_button)
+        element.click()
+        element = self.wait_for_element(EditSmsTemplatePage.confirm_delete_button)
+        element.click()
 
 
 class EditBroadcastTemplatePage(EditSmsTemplatePage):
