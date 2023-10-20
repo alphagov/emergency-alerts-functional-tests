@@ -193,8 +193,17 @@ class BasePage(object):
         time.sleep(5)
 
         if not element and id:
-            locator = (By.ID, str(id))
-            element = self.wait_for_element(locator)
+            try:
+                elem = self.driver.find_element("id", str(id))
+                elem.click()
+
+            except Exception:
+                # Refresh the page
+                self.driver.refresh()
+
+                # Try to locate the element again
+                elem = self.driver.find_element("id", str(id))
+                elem.click()
 
         elif not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
