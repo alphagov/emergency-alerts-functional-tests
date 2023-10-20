@@ -50,8 +50,8 @@ def test_prepare_broadcast_with_new_content(driver):
 
     new_alert_page = BasePage(driver)
 
-    assert new_alert_page.is_text_present_on_page("Write your own message")
-    new_alert_page.select_checkbox_or_radio(id="content-0")
+    new_alert_page.click_element_by_link_text("Write your own message")
+    # new_alert_page.select_checkbox_or_radio(id="content-0")
 
     new_alert_page.click_continue()
 
@@ -103,10 +103,11 @@ def test_prepare_broadcast_with_new_content(driver):
 
     current_alerts_page.click_element_by_link_text(broadcast_title)
 
-    assert current_alerts_page.is_text_present_on_page(
+    current_alerts_page.click_element_by_link_text(
         "I understand this will alert anyone who has switched on the operator channel"
     )
-    current_alerts_page.select_checkbox_or_radio(id="confirm")  # confirm approve alert
+
+    # current_alerts_page.select_checkbox_or_radio(id="confirm")  # confirm approve alert
     current_alerts_page.click_continue()
     assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
