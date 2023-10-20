@@ -540,3 +540,11 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+
+
+def take_screenshot(driver):
+    screenshot_uid = uuid.uuid4()
+    driver.save_screenshot(f"{screenshot_uid}.png")
+    print(
+        "============================= Screenshot captured: {screenshot_uid}.png =============================="
+    )

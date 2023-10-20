@@ -65,3 +65,4 @@ target/
 docker.env
 
 screenshots
+.vscode

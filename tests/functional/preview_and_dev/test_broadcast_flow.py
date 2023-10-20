@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime, timedelta
 
 import pytest
-import time
 
 from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
@@ -23,6 +22,7 @@ from tests.test_utils import (
     delete_template,
     go_to_templates_page,
     recordtime,
+    take_screenshot,
 )
 
 
@@ -61,11 +61,9 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    time.sleep(5)
+    take_screenshot(driver)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-2")
-    time.sleep(5)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-3")
-    time.sleep(5)
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text(
         "Preview this alert"
@@ -160,11 +158,9 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    time.sleep(5)
+    take_screenshot(driver)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-2")
-    time.sleep(5)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-3")
-    time.sleep(5)
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text(
         "Preview this alert"

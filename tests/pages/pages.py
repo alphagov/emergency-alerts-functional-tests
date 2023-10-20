@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -186,6 +187,8 @@ class BasePage(object):
         return check_contains_url
 
     def select_checkbox_or_radio(self, element=None, value=None, id=None):
+        time.sleep(5)
+
         if not element and id:
             locator = (By.ID, id)
             element = self.wait_for_clickable_element(locator)
