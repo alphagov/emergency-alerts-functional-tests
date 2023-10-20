@@ -191,7 +191,7 @@ class BasePage(object):
 
         if not element and id:
             locator = (By.ID, id)
-            element = self.find_element(locator)
+            element = self.driver.find_element(locator)
 
         elif not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")

@@ -22,7 +22,6 @@ from tests.test_utils import (
     delete_template,
     go_to_templates_page,
     recordtime,
-    take_screenshot,
 )
 
 
@@ -61,7 +60,6 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    take_screenshot(driver)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-2")
     prepare_alert_pages.select_checkbox_or_radio(id="areas-3")
     prepare_alert_pages.click_continue()
@@ -158,7 +156,6 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    take_screenshot(driver)
     prepare_alert_pages.select_checkbox_or_radio(id="areas-2")
     prepare_alert_pages.select_checkbox_or_radio(id="areas-3")
     prepare_alert_pages.click_continue()
