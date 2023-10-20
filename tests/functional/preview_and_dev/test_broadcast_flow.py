@@ -50,7 +50,7 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.click_element_by_link_text("New alert")
 
     new_alert_page = BasePage(driver)
-    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.select_checkbox_or_radio(id="content-0")
     new_alert_page.click_continue()
 
     broadcast_freeform_page = BroadcastFreeformPage(driver)
@@ -97,7 +97,7 @@ def test_prepare_broadcast_with_new_content(driver):
         dashboard_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page.click_element_by_link_text(broadcast_title)
-    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.select_checkbox_or_radio(id="confirm")  # confirm approve alert
     current_alerts_page.click_continue()
     assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
@@ -251,7 +251,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page = BasePage(driver)
     page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
-    page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    page.select_checkbox_or_radio(id="confirm")  # confirm approve alert
     page.click_continue()
 
     assert page.is_text_present_on_page("since today at")
