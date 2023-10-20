@@ -90,10 +90,13 @@ class AntiStaleElement(AntiStale):
             try:
                 self.element.click()
             except WebDriverException:
+                self.driver.navigate().refresh()
+
                 self.driver.execute_script(
                     "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
                     self.element,
                 )
+
                 self.element.click()
 
         return self.retry_on_stale(_click)
