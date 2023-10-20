@@ -61,7 +61,9 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
 
-    assert prepare_alert_pages.is_text_present_on_page("Choose an area of Adur")
+    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
+    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+
     prepare_alert_pages.select_checkbox_or_radio(id="areas-2")
     prepare_alert_pages.select_checkbox_or_radio(id="areas-3")
     prepare_alert_pages.click_continue()
