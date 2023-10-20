@@ -190,20 +190,9 @@ class BasePage(object):
         return check_contains_url
 
     def select_checkbox_or_radio(self, element=None, value=None, id=None):
-        time.sleep(5)
-
         if not element and id:
-            try:
-                elem = self.driver.find_element("id", str(id))
-                elem.click()
-
-            except Exception:
-                # Refresh the page
-                self.driver.refresh()
-
-                # Try to locate the element again
-                elem = self.driver.find_element("id", str(id))
-                elem.click()
+            locator = (By.ID, str(id))
+            element = self.wait_for_clickable_element(locator)
 
         elif not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
@@ -212,8 +201,6 @@ class BasePage(object):
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
-
-        time.sleep(5)
 
     def unselect_checkbox(self, element):
         if element.get_attribute("checked"):
