@@ -191,7 +191,7 @@ class BasePage(object):
 
         if not element and id:
             locator = (By.ID, id)
-            element = self.wait_for_clickable_element(locator)
+            element = self.find_element(locator)
 
         elif not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
@@ -200,6 +200,8 @@ class BasePage(object):
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
+
+        time.sleep(5)
 
     def unselect_checkbox(self, element):
         if element.get_attribute("checked"):

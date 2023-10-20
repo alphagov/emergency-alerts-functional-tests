@@ -147,7 +147,7 @@ def test_prepare_broadcast_with_template(driver):
     current_alerts_page.click_element_by_link_text("New alert")
 
     new_alert_page = BasePage(driver)
-    new_alert_page.select_checkbox_or_radio(value="template")
+    new_alert_page.select_checkbox_or_radio(id="content-1")
     new_alert_page.click_continue()
 
     templates_page = ShowTemplatesPage(driver)

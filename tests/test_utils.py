@@ -543,5 +543,5 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
 
 
 def take_screenshot(driver):
-    # screenshot_uid = uuid.uuid4()
-    driver.save_screenshot("123.png")
+    screenshot_uid = uuid.uuid4()
+    driver.screenshot(f"screenshots/{screenshot_uid}.png")
