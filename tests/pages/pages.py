@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -87,12 +88,14 @@ class AntiStaleElement(AntiStale):
                 self.element,
             )
             try:
+                time.sleep(5)
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
                     "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
                     self.element,
                 )
+                time.sleep(5)
                 self.element.click()
 
         return self.retry_on_stale(_click)
