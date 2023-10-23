@@ -313,7 +313,7 @@ def delete_template(driver, template_name, service="service"):
         dashboard_page.go_to_dashboard_for_service(config[service]["id"])
         dashboard_page.click_templates()
         show_templates_page.click_template_by_link_text(template_name)
-    template_page = EditEmailTemplatePage(driver)
+    template_page = EditSmsTemplatePage(driver)
     template_page.click_delete()
 
 
