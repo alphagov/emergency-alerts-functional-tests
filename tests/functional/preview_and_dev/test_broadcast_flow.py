@@ -1,13 +1,13 @@
 import uuid
+from datetime import datetime, timedelta
 
 import pytest
 
 from config import config
-
-# from tests.functional.preview_and_dev.sample_cap_xml import (
-#     ALERT_XML,
-#     CANCEL_XML,
-# )
+from tests.functional.preview_and_dev.sample_cap_xml import (
+    ALERT_XML,
+    CANCEL_XML,
+)
 from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
@@ -17,16 +17,12 @@ from tests.pages import (
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
     check_alert_is_published_on_govuk_alerts,
+    convert_naive_utc_datetime_to_cap_standard_string,
     create_broadcast_template,
     delete_template,
     go_to_templates_page,
     recordtime,
 )
-
-# convert_naive_utc_datetime_to_cap_standard_string,
-
-
-# from datetime import datetime, timedelta
 
 
 @recordtime
@@ -189,98 +185,98 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.sign_out()
 
 
-# @recordtime
-# @pytest.mark.xdist_group(name="broadcasts")
-# def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
-#     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-#         datetime.utcnow() - timedelta(hours=1)
-#     )
-#     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
-#     identifier = uuid.uuid4()
-#     event = f"test broadcast {identifier}"
-#     broadcast_content = f"Flood warning {identifier} has been issued"
+@recordtime
+@pytest.mark.xdist_group(name="broadcasts")
+def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
+        datetime.utcnow() - timedelta(hours=1)
+    )
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    identifier = uuid.uuid4()
+    event = f"test broadcast {identifier}"
+    broadcast_content = f"Flood warning {identifier} has been issued"
 
-#     new_alert_xml = ALERT_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         event=event,
-#         broadcast_content=broadcast_content,
-#     )
-#     broadcast_client.post_broadcast_data(new_alert_xml)
+    new_alert_xml = ALERT_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        event=event,
+        broadcast_content=broadcast_content,
+    )
+    broadcast_client.post_broadcast_data(new_alert_xml)
 
-#     sign_in(driver, account_type="broadcast_approve_user")
-#     page = BasePage(driver)
-#     page.click_element_by_link_text("Current alerts")
-#     page.click_element_by_link_text(event)
+    sign_in(driver, account_type="broadcast_approve_user")
+    page = BasePage(driver)
+    page.click_element_by_link_text("Current alerts")
+    page.click_element_by_link_text(event)
 
-#     assert page.is_text_present_on_page(f"An API call wants to broadcast {event}")
+    assert page.is_text_present_on_page(f"An API call wants to broadcast {event}")
 
-#     reject_broadcast_xml = CANCEL_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         cancel_sent=cancel_time,
-#         event=event,
-#     )
-#     broadcast_client.post_broadcast_data(reject_broadcast_xml)
+    reject_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+    )
+    broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
-#     page.click_element_by_link_text("Rejected alerts")
-#     assert page.is_text_present_on_page(event)
+    page.click_element_by_link_text("Rejected alerts")
+    assert page.is_text_present_on_page(event)
 
-#     page.sign_out()
+    page.sign_out()
 
 
-# @recordtime
-# @pytest.mark.xdist_group(name="broadcasts")
-# def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
-#     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-#         datetime.utcnow() - timedelta(hours=1)
-#     )
-#     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
-#     identifier = uuid.uuid4()
-#     event = f"test broadcast {identifier}"
-#     broadcast_content = f"Flood warning {identifier} has been issued"
+@recordtime
+@pytest.mark.xdist_group(name="broadcasts")
+def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
+        datetime.utcnow() - timedelta(hours=1)
+    )
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    identifier = uuid.uuid4()
+    event = f"test broadcast {identifier}"
+    broadcast_content = f"Flood warning {identifier} has been issued"
 
-#     new_alert_xml = ALERT_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         event=event,
-#         broadcast_content=broadcast_content,
-#     )
-#     broadcast_client.post_broadcast_data(new_alert_xml)
+    new_alert_xml = ALERT_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        event=event,
+        broadcast_content=broadcast_content,
+    )
+    broadcast_client.post_broadcast_data(new_alert_xml)
 
-#     sign_in(driver, account_type="broadcast_approve_user")
+    sign_in(driver, account_type="broadcast_approve_user")
 
-#     page = BasePage(driver)
-#     page.click_element_by_link_text("Current alerts")
-#     page.click_element_by_link_text(event)
-#     page.select_checkbox_or_radio(value="y")  # confirm approve alert
-#     page.click_continue()
+    page = BasePage(driver)
+    page.click_element_by_link_text("Current alerts")
+    page.click_element_by_link_text(event)
+    page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    page.click_continue()
 
-#     assert page.is_text_present_on_page("since today at")
+    assert page.is_text_present_on_page("since today at")
 
-#     alert_page_url = page.current_url
+    alert_page_url = page.current_url
 
-#     check_alert_is_published_on_govuk_alerts(
-#         driver, "Current alerts", broadcast_content
-#     )
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
 
-#     cancel_broadcast_xml = CANCEL_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         cancel_sent=cancel_time,
-#         event=event,
-#     )
-#     broadcast_client.post_broadcast_data(cancel_broadcast_xml)
+    cancel_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+    )
+    broadcast_client.post_broadcast_data(cancel_broadcast_xml)
 
-#     # go back to the page for the current alert
-#     page.get(alert_page_url)
+    # go back to the page for the current alert
+    page.get(alert_page_url)
 
-#     # assert that it's now cancelled
-#     assert page.is_text_present_on_page("Stopped by an API call")
-#     page.click_element_by_link_text("Past alerts")
-#     assert page.is_text_present_on_page(event)
+    # assert that it's now cancelled
+    assert page.is_text_present_on_page("Stopped by an API call")
+    page.click_element_by_link_text("Past alerts")
+    assert page.is_text_present_on_page(event)
 
-#     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-#     page.get()
-#     page.sign_out()
+    page.get()
+    page.sign_out()
