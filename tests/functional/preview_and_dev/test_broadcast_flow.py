@@ -1,4 +1,4 @@
-# import time
+import time
 import uuid
 
 import pytest
@@ -160,7 +160,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    # time.sleep(5)
+    time.sleep(5)
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
