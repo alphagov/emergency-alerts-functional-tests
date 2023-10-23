@@ -2,24 +2,28 @@ import uuid
 
 import pytest
 
+from config import config
+
 # from tests.functional.preview_and_dev.sample_cap_xml import (
 #     ALERT_XML,
 #     CANCEL_XML,
 # )
-from tests.pages import (  # ShowTemplatesPage,
+from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
     DashboardPage,
+    ShowTemplatesPage,
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
     check_alert_is_published_on_govuk_alerts,
+    create_broadcast_template,
+    delete_template,
+    go_to_templates_page,
     recordtime,
 )
 
-# convert_naive_utc_datetime_to_cap_standard_string, create_broadcast_template, delete_template, go_to_templates_page,
-
-# from config import config
+# convert_naive_utc_datetime_to_cap_standard_string,
 
 
 # from datetime import datetime, timedelta
@@ -63,6 +67,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
+
     prepare_alert_pages.click_element_by_link_text(
         "Preview this alert"
     )  # Remove once alert duration added back in
@@ -124,64 +129,64 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
-# @recordtime
-# @pytest.mark.xdist_group(name="broadcasts")
-# def test_prepare_broadcast_with_template(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
+@recordtime
+@pytest.mark.xdist_group(name="broadcasts")
+def test_prepare_broadcast_with_template(driver):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     go_to_templates_page(driver, service="broadcast_service")
-#     template_name = "test broadcast" + str(uuid.uuid4())
-#     content = "This is a test only."
-#     create_broadcast_template(driver, name=template_name, content=content)
+    go_to_templates_page(driver, service="broadcast_service")
+    template_name = "test broadcast" + str(uuid.uuid4())
+    content = "This is a test only."
+    create_broadcast_template(driver, name=template_name, content=content)
 
-#     dashboard_page = DashboardPage(driver)
-#     dashboard_page.go_to_dashboard_for_service(
-#         service_id=config["broadcast_service"]["id"]
-#     )
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(
+        service_id=config["broadcast_service"]["id"]
+    )
 
-#     dashboard_page.click_element_by_link_text("Current alerts")
+    dashboard_page.click_element_by_link_text("Current alerts")
 
-#     current_alerts_page = BasePage(driver)
-#     current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_link_text("New alert")
 
-#     new_alert_page = BasePage(driver)
-#     new_alert_page.select_checkbox_or_radio(value="template")
-#     new_alert_page.click_continue()
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="template")
+    new_alert_page.click_continue()
 
-#     templates_page = ShowTemplatesPage(driver)
-#     templates_page.click_template_by_link_text(template_name)
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
 
-#     templates_page.click_element_by_link_text("Get ready to send")
+    templates_page.click_element_by_link_text("Get ready to send")
 
-#     prepare_alert_pages = BasePage(driver)
-#     prepare_alert_pages.click_element_by_link_text("Local authorities")
-#     prepare_alert_pages.click_element_by_link_text("Adur")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
-#     prepare_alert_pages.click_continue()
-#     prepare_alert_pages.click_element_by_link_text(
-#         "Preview this alert"
-#     )  # Remove once alert duration added back in
-#     # here check if selected areas displayed
-#     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
-#     assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text(
+        "Preview this alert"
+    )  # Remove once alert duration added back in
+    # here check if selected areas displayed
+    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
+    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
-#     # prepare_alert_pages.click_element_by_link_text("Continue")
-#     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-#     # prepare_alert_pages.click_continue()  # click "Preview this alert"
-#     prepare_alert_pages.click_continue()  # click "Submit for approval"
-#     assert prepare_alert_pages.is_text_present_on_page(
-#         f"{template_name} is waiting for approval"
-#     )
+    # prepare_alert_pages.click_element_by_link_text("Continue")
+    # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
+    # prepare_alert_pages.click_continue()  # click "Preview this alert"
+    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    assert prepare_alert_pages.is_text_present_on_page(
+        f"{template_name} is waiting for approval"
+    )
 
-#     prepare_alert_pages.click_element_by_link_text("Discard this alert")
-#     prepare_alert_pages.click_element_by_link_text("Rejected alerts")
-#     rejected_alerts_page = BasePage(driver)
-#     assert rejected_alerts_page.is_text_present_on_page(template_name)
+    prepare_alert_pages.click_element_by_link_text("Discard this alert")
+    prepare_alert_pages.click_element_by_link_text("Rejected alerts")
+    rejected_alerts_page = BasePage(driver)
+    assert rejected_alerts_page.is_text_present_on_page(template_name)
 
-#     delete_template(driver, template_name, service="broadcast_service")
+    delete_template(driver, template_name, service="broadcast_service")
 
-#     prepare_alert_pages.sign_out()
+    prepare_alert_pages.sign_out()
 
 
 # @recordtime

@@ -176,7 +176,7 @@ class BasePage(object):
 
         return check_contains_url
 
-    def select_checkbox_or_radio(self, element=None, value=None):
+    def select_checkbox_or_radio(self, element=None, value=None, text=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
             element = self.wait_for_invisible_element(locator)
