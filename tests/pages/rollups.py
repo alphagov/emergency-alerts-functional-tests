@@ -4,12 +4,18 @@ from tests.test_utils import do_email_auth_verify, do_verify, do_verify_by_id
 
 
 def sign_in(driver, account_type="normal"):
+    clean_session(driver)
+
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
     if account_type.startswith("broadcast"):
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
+
+
+def clean_session(driver):
+    driver.delete_all_cookies()
 
 
 def sign_in_email_auth(driver):

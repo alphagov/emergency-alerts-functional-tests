@@ -63,6 +63,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
+
     prepare_alert_pages.click_element_by_link_text(
         "Preview this alert"
     )  # Remove once alert duration added back in
