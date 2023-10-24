@@ -95,7 +95,6 @@ class AntiStaleElement(AntiStale):
                     "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
                     self.element,
                 )
-                # time.sleep(5)
                 self.element.click()
 
         return self.retry_on_stale(_click)
@@ -179,7 +178,7 @@ class BasePage(object):
 
         return check_contains_url
 
-    def select_checkbox_or_radio(self, element=None, value=None, text=None):
+    def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
             element = self.wait_for_invisible_element(locator)
