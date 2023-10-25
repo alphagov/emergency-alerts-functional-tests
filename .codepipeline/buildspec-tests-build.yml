@@ -10,6 +10,10 @@ phases:
       - sudo unzip chromedriver_linux64.zip
       - sudo mv chromedriver /usr/bin/chromedriver
       - chromedriver --version
+
+      - sudo curl https://intoli.com/install-google-chrome.sh | bash
+      - sudo mv /usr/bin/google-chrome-stable /usr/bin/google-chrome
+      - google-chrome --version && which google-chrome
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR
