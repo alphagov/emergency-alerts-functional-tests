@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.11
     commands:
       - apt update
       - apt install -y xvfb libxi6 libgconf-2-4 libnss3
@@ -16,7 +16,7 @@ phases:
     commands:
       - cd $CODEBUILD_SRC_DIR
       - VENV_TESTS='/venv/eas-tests'
-      - python3.9 -m venv $VENV_TESTS
+      - python3.11 -m venv $VENV_TESTS
       - . $VENV_TESTS/bin/activate
   build:
     commands:
@@ -24,7 +24,7 @@ phases:
       - . ./environment.sh
       - export BROADCAST_SERVICE_API_KEY=$(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r)
       - export ENVIRONMENT=preview
-      - python3.9 -m pip install --upgrade pip wheel setuptools
+      - python3.11 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
       - make test
   post_build:
