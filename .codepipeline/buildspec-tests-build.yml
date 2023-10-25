@@ -6,14 +6,11 @@ phases:
       python: 3.11
     commands:
       - cd /tmp/
-      - sudo wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-      - sudo unzip chromedriver_linux64.zip
-      - sudo mv chromedriver /usr/bin/chromedriver
+      - wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
+      - unzip chromedriver_linux64.zip
+      - cp chromedriver /usr/bin/chromedriver
+      - cp chromedriver /usr/local/bin/chromedriver
       - chromedriver --version
-
-      - sudo curl https://intoli.com/install-google-chrome.sh | bash
-      - sudo mv /usr/bin/google-chrome-stable /usr/bin/google-chrome
-      - google-chrome --version && which google-chrome
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR
