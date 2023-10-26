@@ -1,5 +1,10 @@
 from config import config
-from tests.pages import SignInPage
+from tests.pages import (
+    BasePage,
+    BroadcastFreeformPage,
+    DashboardPage,
+    SignInPage,
+)
 from tests.test_utils import do_email_auth_verify, do_verify, do_verify_by_id
 
 
@@ -71,3 +76,91 @@ def get_identifier(account_type):
     elif account_type == "broadcast_approve_user":
         return config["broadcast_service"]["broadcast_user_2"]["id"]
     raise Exception("unknown account_type {}".format(account_type))
+
+
+def create_alert(driver, id):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    broadcast_title = "test broadcast" + id
+
+    current_alerts_page.click_element_by_link_text("New alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + id
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Countries")
+    prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
+    prepare_alert_pages.click_continue()
+
+    prepare_alert_pages.click_element_by_link_text("Preview this alert")
+    assert prepare_alert_pages.is_text_present_on_page("England")
+
+    prepare_alert_pages.click_continue()
+    assert prepare_alert_pages.is_text_present_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    prepare_alert_pages.sign_out()
+
+
+def approve_alert(driver, id):
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_continue()
+    assert current_alerts_page.is_text_present_on_page("since today at")
+
+
+def cancel_alert(driver, id):
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            "Functional Tests Broadcast Service"
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_continue()  # stop broadcasting
+
+    current_alerts_page.sign_out()
