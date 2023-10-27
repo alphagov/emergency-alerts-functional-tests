@@ -21,18 +21,20 @@ def test_cbc_config():
 @pytest.mark.xdist_group(name="cbc-integration")
 def test_prepare_broadcast_with_new_content(driver):
     id = str(uuid.uuid4())
-    create_alert(driver, id)
-    approve_alert(driver, id)
 
-    ddbc = boto3.client("dynamodb", region_name="eu-west-2")
-    response = ddbc.query(
-        TableName="test",
-        KeyConditionExpression="RequestId = :RequestId",
-        ExpressionAttributeValues={
-            ":RequestId": {"S": "0d240e70-922a-4170-b1d4-df64ea8442e6"},
-        },
-    )
+    try:
+        create_alert(driver, id)
+        approve_alert(driver, id)
 
-    assert len(response["Items"]) > 0
+        ddbc = boto3.client("dynamodb", region_name="eu-west-2")
+        response = ddbc.query(
+            TableName="LoopbackRequests",
+            KeyConditionExpression="RequestId = :RequestId",
+            ExpressionAttributeValues={
+                ":RequestId": {"S": "0d240e70-922a-4170-b1d4-df64ea8442e6"},
+            },
+        )
 
-    cancel_alert(driver, id)
+        assert len(response["Items"]) > 0
+    finally:
+        cancel_alert(driver, id)
