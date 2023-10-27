@@ -2,7 +2,8 @@ INSERT INTO users
     (id, name, email_address, created_at, updated_at, _password, mobile_number, password_changed_at, logged_in_at, failed_login_count, state, platform_admin, current_session_id, auth_type, email_access_validated_at)
 VALUES
     ('0d2e9b87-9c54-448c-b549-f764231ee599', 'Functional Tests - Broadcast User Create', 'notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900111', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
-    ('1048af40-45f6-4249-a670-df72ba3352d7', 'Functional Tests - Broadcast User Approve', 'notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW());
+    ('1048af40-45f6-4249-a670-df72ba3352d7', 'Functional Tests - Broadcast User Approve', 'notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
+    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin', 'notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900333', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true, NULL, 'sms_auth', NOW());
 
 
 INSERT INTO organisation
@@ -67,7 +68,8 @@ INSERT INTO user_to_service
     (user_id, service_id)
 VALUES
     ('0d2e9b87-9c54-448c-b549-f764231ee599', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
-    ('1048af40-45f6-4249-a670-df72ba3352d7', '8e1d56fa-12a8-4d00-bed2-db47180bed0a');
+    ('1048af40-45f6-4249-a670-df72ba3352d7', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
+    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', '8e1d56fa-12a8-4d00-bed2-db47180bed0a');
 
 
 INSERT INTO user_to_organisation
