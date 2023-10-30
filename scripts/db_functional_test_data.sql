@@ -3,7 +3,7 @@ INSERT INTO users
 VALUES
     ('0d2e9b87-9c54-448c-b549-f764231ee599', 'Functional Tests - Broadcast User Create', 'notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900111', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
     ('1048af40-45f6-4249-a670-df72ba3352d7', 'Functional Tests - Broadcast User Approve', 'notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
-    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin', 'notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900333', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true, NULL, 'sms_auth', NOW());
+    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin', 'notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true, NULL, 'sms_auth', NOW());
 
 
 INSERT INTO organisation
