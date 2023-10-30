@@ -144,6 +144,11 @@ def approve_alert(driver, id):
     assert current_alerts_page.is_text_present_on_page("since today at")
 
 
+def broadcast_alert(driver, id):
+    create_alert(driver, id)
+    approve_alert(driver, id)
+
+
 def cancel_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 

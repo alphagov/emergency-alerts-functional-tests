@@ -4,7 +4,7 @@ import boto3
 import pytest
 
 from config import config
-from tests.pages.rollups import approve_alert, cancel_alert, create_alert
+from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import recordtime
 
 # from boto3.dynamodb.conditions import Key, Attr
@@ -23,8 +23,7 @@ def test_prepare_broadcast_with_new_content(driver):
     id = str(uuid.uuid4())
 
     try:
-        create_alert(driver, id)
-        approve_alert(driver, id)
+        broadcast_alert(driver, id)
 
         ddbc = boto3.client("dynamodb", region_name="eu-west-2")
         response = ddbc.query(
