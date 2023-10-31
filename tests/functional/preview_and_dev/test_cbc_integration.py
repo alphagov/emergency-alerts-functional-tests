@@ -19,21 +19,47 @@ def test_cbc_config():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_prepare_broadcast_with_new_content(driver):
+def test_broadcast_with_new_content(driver):
     id = str(uuid.uuid4())
 
     try:
         broadcast_alert(driver, id)
+
+        broadcast_message_id = driver.current_url.split("current-alerts/")[1]
+        assert broadcast_message_id is not None
+
+        # use broadcast message id to get list of
+        # broadcast_provider_message ids
+
+        broadcast_provider_message_id = "0d240e70-922a-4170-b1d4-df64ea8442e6"
 
         ddbc = boto3.client("dynamodb", region_name="eu-west-2")
         response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={
-                ":RequestId": {"S": "0d240e70-922a-4170-b1d4-df64ea8442e6"},
+                ":RequestId": {"S": broadcast_provider_message_id},
             },
         )
 
         assert len(response["Items"]) > 0
     finally:
         cancel_alert(driver, id)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_new_content_with_primary_lambda_failure(driver):
+    pass
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_new_content_with_site_a_failure(driver):
+    pass
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_new_content_with_primary_lambda_and_site_a_failure(driver):
+    pass
