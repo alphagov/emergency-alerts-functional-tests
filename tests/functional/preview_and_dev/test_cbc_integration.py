@@ -33,7 +33,32 @@ def test_broadcast_with_new_content(driver):
 
         broadcast_provider_message_id = "0d240e70-922a-4170-b1d4-df64ea8442e6"
 
-        ddbc = boto3.client("dynamodb", region_name="eu-west-2")
+        try:
+            sts_client = boto3.client("sts")
+            sts_session = sts_client.assume_role(
+                RoleArn="arn:aws:iam::519419547532:role/mno-loopback-database-access",
+                RoleSessionName="access-loopback-for-functional-test",
+            )
+
+            KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+            ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+            TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        except Exception as e:
+            print(f"Unable to assume role due to exception: {e}")
+
+        try:
+            ddbc = boto3.client(
+                "dynamodb",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            print(f"Unable to create client due to exception: {e}")
+
         response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
