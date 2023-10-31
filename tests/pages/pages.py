@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -83,13 +84,16 @@ class AntiStaleElement(AntiStale):
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
             self.driver.execute_script(
-                "arguments[0].scrollIntoViewIfNeeded()", self.element
+                "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
+                self.element,
             )
             try:
+                time.sleep(2)
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
-                    "arguments[0].scrollIntoView()", self.element
+                    "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
+                    self.element,
                 )
                 self.element.click()
 
@@ -555,6 +559,8 @@ class EditSmsTemplatePage(BasePage):
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    delete_button = EditTemplatePageLocators.DELETE_BUTTON
+    confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
     def click_save(self):
         element = self.wait_for_element(EditSmsTemplatePage.save_button)
@@ -567,6 +573,12 @@ class EditSmsTemplatePage(BasePage):
         else:
             self.template_content_input = "The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))"
         self.click_save()
+
+    def click_delete(self):
+        element = self.wait_for_element(EditSmsTemplatePage.delete_button)
+        element.click()
+        element = self.wait_for_element(EditSmsTemplatePage.confirm_delete_button)
+        element.click()
 
 
 class EditBroadcastTemplatePage(EditSmsTemplatePage):
