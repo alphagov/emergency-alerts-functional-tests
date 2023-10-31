@@ -30,20 +30,20 @@ def create_ddb_client():
         ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
         TOKEN = sts_session["Credentials"]["SessionToken"]
 
+        try:
+            return boto3.client(
+                "dynamodb",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            print(f"Unable to create client due to exception: {e}")
+
     except Exception as e:
         print(f"Unable to assume role due to exception: {e}")
-
-    try:
-        return boto3.client(
-            "dynamodb",
-            region_name="eu-west-2",
-            aws_access_key_id=KEY_ID,
-            aws_secret_access_key=ACCESS_KEY,
-            aws_session_token=TOKEN,
-        )
-
-    except Exception as e:
-        print(f"Unable to create client due to exception: {e}")
 
 
 def test_get_loopback_response_with_bad_id_fails():
