@@ -46,6 +46,19 @@ def create_ddb_client():
         print(f"Unable to create client due to exception: {e}")
 
 
+def test_get_loopback_response_with_bad_id_fails():
+    ddbc = create_ddb_client()
+    response = ddbc.query(
+        TableName="LoopbackRequests",
+        KeyConditionExpression="RequestId = :RequestId",
+        ExpressionAttributeValues={
+            ":RequestId": {"S": "1234"},
+        },
+    )
+
+    assert len(response["Items"]) == 0
+
+
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
 def test_broadcast_with_new_content(driver):
