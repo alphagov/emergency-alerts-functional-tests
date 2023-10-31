@@ -41,9 +41,11 @@ def create_ddb_client():
 
         except Exception as e:
             print(f"Unable to create client due to exception: {e}")
+            raise e
 
     except Exception as e:
         print(f"Unable to assume role due to exception: {e}")
+        raise e
 
 
 def test_get_loopback_response_with_bad_id_fails():
