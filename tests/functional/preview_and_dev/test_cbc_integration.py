@@ -40,11 +40,9 @@ def create_ddb_client():
             )
 
         except Exception as e:
-            print(f"Unable to create client due to exception: {e}")
             raise Exception("Unable to create DB client") from e
 
     except Exception as e:
-        print(f"Unable to assume role due to exception: {e}")
         raise Exception("Unable to assume role") from e
 
 
