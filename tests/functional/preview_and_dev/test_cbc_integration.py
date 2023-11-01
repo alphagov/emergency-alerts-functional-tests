@@ -46,6 +46,8 @@ def create_ddb_client():
         raise Exception("Unable to assume role") from e
 
 
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
 def test_get_loopback_response_with_bad_id_fails():
     ddbc = create_ddb_client()
     response = ddbc.query(
@@ -73,7 +75,7 @@ def test_broadcast_with_new_content(driver):
         # use broadcast message id to get list of
         # broadcast_provider_message ids
 
-        broadcast_provider_message_id = "0d240e70-922a-4170-b1d4-df64ea8442e6"
+        broadcast_provider_message_id = "aeaa2a16-e2be-424f-90d0-632fb84df743"
 
         ddbc = create_ddb_client()
         response = ddbc.query(
