@@ -39,10 +39,15 @@ config = {
 
 
 urls = {
-    "development": {
+    "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
         "govuk_alerts": "http://localhost:6017/alerts",
+    },
+    "development": {
+        "api": "https://api.development.emergency-alerts.service.gov.uk/",
+        "admin": "https://admin.development.emergency-alerts.service.gov.uk/",
+        "govuk_alerts": "tbc",
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk/",
@@ -60,8 +65,8 @@ def setup_shared_config():
 
     # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
     #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
-    if env not in {"development", "preview"}:
-        pytest.fail('env "{}" not development or preview'.format(env))
+    if env not in {"local", "development", "preview"}:
+        pytest.fail('env "{}" not local, development or preview'.format(env))
 
     config.update(
         {
