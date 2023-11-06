@@ -5,7 +5,7 @@ import pytest
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import recordtime
+from tests.test_utils import get_broadcast_provider_messages, recordtime
 
 # from boto3.dynamodb.conditions import Key, Attr
 
@@ -72,17 +72,15 @@ def test_broadcast_with_new_content(driver):
         broadcast_message_id = driver.current_url.split("current-alerts/")[1]
         assert broadcast_message_id is not None
 
-        # use broadcast message id to get list of
-        # broadcast_provider_message ids
-
-        broadcast_provider_message_id = "aeaa2a16-e2be-424f-90d0-632fb84df743"
+        provider_messages = get_broadcast_provider_messages(broadcast_message_id)
+        assert provider_messages[0].id is not None
 
         ddbc = create_ddb_client()
         response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={
-                ":RequestId": {"S": broadcast_provider_message_id},
+                ":RequestId": {"S": provider_messages[0].id},
             },
         )
 
