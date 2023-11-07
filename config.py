@@ -27,7 +27,6 @@ config = {
         "address_line_2": "London",
         "postcode": "N1 7RA",
     },
-    # notify templates
     "notify_templates": {
         "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
         "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
@@ -40,33 +39,21 @@ config = {
 
 
 urls = {
-    "dev": {
+    "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
         "govuk_alerts": "http://localhost:6017/alerts",
+    },
+    "development": {
+        "api": "https://api.development.emergency-alerts.service.gov.uk/",
+        "admin": "https://admin.development.emergency-alerts.service.gov.uk/",
+        "govuk_alerts": "tbc",
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk/",
         "admin": "https://admin.preview.emergency-alerts.service.gov.uk/",
         "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
-    # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
-    # urls for the ecs-preview environment, so for now we will use those of the preview env
-    # "ecs-preview": {
-    #     "api": "https://api.notify.works",
-    #     "admin": "https://www-ecs.notify.works",
-    #     "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
-    # },
-    # "staging": {
-    #     "api": "https://api.staging-notify.works",
-    #     "admin": "https://www.staging-notify.works",
-    #     "govuk_alerts": "not used in this environment",
-    # },
-    # "live": {
-    #     "api": "https://api.notifications.service.gov.uk",
-    #     "admin": "https://www.notifications.service.gov.uk",
-    #     "govuk_alerts": "not used in this environment",
-    # },
 }
 
 
@@ -78,8 +65,8 @@ def setup_shared_config():
 
     # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
     #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
-    if env not in {"dev", "preview"}:
-        pytest.fail('env "{}" not dev or preview'.format(env))
+    if env not in {"local", "development", "preview"}:
+        pytest.fail(f'env "{env}" not local, development or preview')
 
     config.update(
         {
