@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 import boto3
@@ -71,12 +72,12 @@ def test_broadcast_with_new_content(driver):
 
         broadcast_message_id = driver.current_url.split("current-alerts/")[1]
         assert broadcast_message_id is not None
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        print(broadcast_message_id)
+        logging.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        logging.info(broadcast_message_id)
 
         provider_messages = get_broadcast_provider_messages(broadcast_message_id)
-        print("*******************************")
-        print(provider_messages)
+        logging.info("*******************************")
+        logging.info(provider_messages)
         assert provider_messages is not None
 
         # ddbc = create_ddb_client()
