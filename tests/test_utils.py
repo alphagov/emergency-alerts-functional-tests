@@ -444,6 +444,11 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
 
 
 def get_verification_code_by_id(user_id):
+    print(
+        "get_verification_code_by_id"
+        + " "
+        + f'{config["notify_api_url"]}/verify-code/{user_id}'
+    )
     url = f'{config["notify_api_url"]}/verify-code/{user_id}'
     response = requests.get(url)
     return response.text
@@ -543,6 +548,12 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
 
 
 def get_broadcast_provider_messages(service_id, broadcast_message_id):
+    print(
+        "get_broadcast_provider_messages"
+        + " "
+        + f'{config["notify_api_url"]}/'
+        + f"service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    )
     url = f'{config["notify_api_url"]}/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages'
     response = requests.get(url)
     return response.text
