@@ -45,8 +45,8 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "preview": {
-        "api": "https://api.preview.emergency-alerts.service.gov.uk/",
-        "admin": "https://admin.preview.emergency-alerts.service.gov.uk/",
+        "api": "https://api.preview.emergency-alerts.service.gov.uk",
+        "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
         "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
 }

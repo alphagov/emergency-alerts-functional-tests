@@ -542,7 +542,7 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
 
 
-def get_broadcast_provider_messages(broadcast_message_id):
-    url = f'{config["notify_api_url"]}/{broadcast_message_id}/provider-messages'
+def get_broadcast_provider_messages(service_id, broadcast_message_id):
+    url = f'{config["notify_api_url"]}/services/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages'
     response = requests.get(url)
     return response.text
