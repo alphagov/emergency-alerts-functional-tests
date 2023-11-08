@@ -73,9 +73,14 @@ def test_broadcast_with_new_content(driver):
         service_id = url.split("/current_alerts/")[0]
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        print(broadcast_message_id)
+        print("service_id: " + service_id)
+        print("broadcast_message_id: " + broadcast_message_id)
 
+        print(
+            "url: "
+            + f'{config["notify_api_url"]}/service/{service_id}/'
+            + f"broadcast-message/{broadcast_message_id}/provider-messages"
+        )
         provider_messages = get_broadcast_provider_messages(
             service_id, broadcast_message_id
         )
