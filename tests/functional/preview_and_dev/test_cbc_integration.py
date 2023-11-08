@@ -69,40 +69,32 @@ def test_broadcast_with_new_content(driver):
     try:
         broadcast_alert(driver, id)
 
-        # https://admin.preview.emergency-alerts.service.gov.uk/services/de53ec2b-4324-4a63-a8a2-ef582fd538d8/current-alerts/42cc9c35-7f9b-43d1-989c-dd995f31766c
-
         url = driver.current_url.split("services/")[1]
-        print("url: " + url)
-        print(url.split("/current-alerts/"))
+
         service_id = url.split("/current-alerts/")[0]
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
-        print("service_id: " + service_id)
-        print("broadcast_message_id: " + broadcast_message_id)
 
-        print(
-            "url: "
-            + f'{config["notify_api_url"]}/service/{service_id}/'
-            + f"broadcast-message/{broadcast_message_id}/provider-messages"
+        response = get_broadcast_provider_messages(service_id, broadcast_message_id)[
+            "messages"
+        ]
+        assert response is not None
+
+        provider_messages = [
+            {key: item[key] for key in ["id", "provider"]} for item in response
+        ]
+
+        ddbc = create_ddb_client()
+        response = ddbc.query(
+            TableName="LoopbackRequests",
+            KeyConditionExpression="RequestId = :RequestId",
+            ExpressionAttributeValues={
+                ":RequestId": {"S": provider_messages[0].id},
+            },
         )
-        provider_messages = get_broadcast_provider_messages(
-            service_id, broadcast_message_id
-        )
-        print("*******************************")
-        print(provider_messages)
-        # assert provider_messages is not None
-        assert provider_messages is None
 
-        # ddbc = create_ddb_client()
-        # response = ddbc.query(
-        #     TableName="LoopbackRequests",
-        #     KeyConditionExpression="RequestId = :RequestId",
-        #     ExpressionAttributeValues={
-        #         ":RequestId": {"S": provider_messages[0].id},
-        #     },
-        # )
+        assert len(response["Items"]) > 0
 
-        # assert len(response["Items"]) > 0
     finally:
         cancel_alert(driver, id)
 
