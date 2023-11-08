@@ -73,6 +73,7 @@ def test_broadcast_with_new_content(driver):
 
         url = driver.current_url.split("services/")[1]
         print("url: " + url)
+        print(url.split("/current_alerts/"))
         service_id = url.split("/current_alerts/")[0]
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
