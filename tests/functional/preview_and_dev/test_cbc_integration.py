@@ -69,7 +69,10 @@ def test_broadcast_with_new_content(driver):
     try:
         broadcast_alert(driver, id)
 
+        # https://admin.preview.emergency-alerts.service.gov.uk/services/de53ec2b-4324-4a63-a8a2-ef582fd538d8/current-alerts/42cc9c35-7f9b-43d1-989c-dd995f31766c
+
         url = driver.current_url.split("services/")[1]
+        print("url: " + url)
         service_id = url.split("/current_alerts/")[0]
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
