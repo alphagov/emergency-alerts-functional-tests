@@ -75,9 +75,9 @@ def test_broadcast_with_new_content(driver):
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
 
-        response = get_broadcast_provider_messages(service_id, broadcast_message_id)[
-            "messages"
-        ]
+        response = get_broadcast_provider_messages(service_id, broadcast_message_id)
+        print(response)
+        assert False
         assert response is not None
 
         provider_messages = [
