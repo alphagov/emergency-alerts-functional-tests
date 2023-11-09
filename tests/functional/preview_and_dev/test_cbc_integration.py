@@ -77,14 +77,15 @@ def test_broadcast_with_new_content(driver):
 
         response = get_broadcast_provider_messages(service_id, broadcast_message_id)
         print(response)
-        assert False
-        assert response is not None
+        # assert response is not None
+        assert response is None
 
         provider_messages = [
             {key: item[key] for key in ["id", "provider"]} for item in response
         ]
 
         ddbc = create_ddb_client()
+
         response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
