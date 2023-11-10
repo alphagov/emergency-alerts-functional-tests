@@ -543,7 +543,7 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
 
 
 def get_broadcast_provider_messages(service_id, broadcast_message_id):
-    api_key = config["ADMIN_CLIENT_SECRET"]
+    api_key = config["notify_service_api_key"]
     client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
     url = f'{config["notify_api_url"]}/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages'
     response = client.get(url)
