@@ -75,13 +75,15 @@ def test_broadcast_with_new_content(driver):
         broadcast_message_id = url.split("/current-alerts/")[1]
         assert broadcast_message_id is not None
 
-        response = get_broadcast_provider_messages(service_id, broadcast_message_id)
-        print(response)
+        msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
+        print(msgs)
+        print(msgs.json())
         # assert response is not None
-        assert response is None
+        assert msgs is None
 
         provider_messages = [
-            {key: item[key] for key in ["id", "provider"]} for item in response
+            {key: item[key] for key in ["id", "provider"]}
+            for item in msgs.json()["messages"]
         ]
 
         ddbc = create_ddb_client()
