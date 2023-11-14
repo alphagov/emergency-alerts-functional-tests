@@ -5,7 +5,11 @@ import pytest
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import get_broadcast_provider_messages, recordtime
+from tests.test_utils import (
+    get_broadcast_message,
+    get_broadcast_provider_messages,
+    recordtime,
+)
 
 # from boto3.dynamodb.conditions import Key, Attr
 
@@ -87,6 +91,12 @@ def test_broadcast_with_new_content(driver):
         import os
 
         print("env: " + os.environ["ENVIRONMENT"].lower())
+
+        # --------------------------------------------------------------
+        res = get_broadcast_message(service_id, broadcast_message_id)
+        print(res)
+        print(res.json())
+        # --------------------------------------------------------------
 
         msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
         print(msgs)

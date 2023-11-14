@@ -551,3 +551,14 @@ def get_broadcast_provider_messages(service_id, broadcast_message_id):
     response = client.get(url)
 
     return response
+
+
+def get_broadcast_message(service_id, broadcast_message_id):
+    client = NotificationsAPIClient(
+        base_url=config["notify_api_url"],
+        api_key=config["service"]["api_test_key"],
+    )
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
+    response = client.get(url)
+
+    return response
