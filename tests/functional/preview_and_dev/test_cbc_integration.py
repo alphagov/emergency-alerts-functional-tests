@@ -48,7 +48,7 @@ def create_ddb_client():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_get_loopback_response_with_bad_id_fails():
+def test_get_loopback_response_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
     response = ddbc.query(
         TableName="LoopbackRequests",
@@ -84,7 +84,6 @@ def test_broadcast_with_new_content(driver):
             + str(config["service"]["api_test_key"])[-3:]
         )
         print('config["service"]["api_test_key"]: ' + redacted_api_key)
-        print('config["ADMIN_CLIENT_ID"]: ' + config["ADMIN_CLIENT_ID"])
 
         msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
         print(msgs)
