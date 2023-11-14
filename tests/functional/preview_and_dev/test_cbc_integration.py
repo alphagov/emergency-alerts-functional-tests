@@ -84,6 +84,7 @@ def test_broadcast_with_new_content(driver):
             + str(config["service"]["api_test_key"])[-3:]
         )
         print('config["service"]["api_test_key"]: ' + redacted_api_key)
+        print('config["ADMIN_CLIENT_ID"]: ' + config["ADMIN_CLIENT_ID"])
 
         msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
         print(msgs)
