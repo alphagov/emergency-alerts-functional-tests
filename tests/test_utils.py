@@ -546,9 +546,8 @@ def get_broadcast_provider_messages(service_id, broadcast_message_id):
     client = NotificationsAPIClient(
         base_url=config["notify_api_url"],
         api_key=config["service"]["api_test_key"],
-        service_id="notify-admin",
     )
-    url = f'{config["notify_api_url"]}/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages'
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = client.get(url)
 
     # url = f'{config["notify_api_url"]}/service/{service_id}/
