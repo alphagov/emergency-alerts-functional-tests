@@ -5,11 +5,7 @@ import pytest
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import (
-    get_broadcast_message,
-    get_broadcast_provider_messages,
-    recordtime,
-)
+from tests.test_utils import recordtime
 
 # from boto3.dynamodb.conditions import Key, Attr
 
@@ -67,7 +63,7 @@ def test_get_loopback_response_with_bad_id_returns_no_items():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content(driver):
+def test_broadcast_with_new_content(driver, api_client):
     id = str(uuid.uuid4())
 
     try:
@@ -93,12 +89,16 @@ def test_broadcast_with_new_content(driver):
         print("env: " + os.environ["ENVIRONMENT"].lower())
 
         # --------------------------------------------------------------
-        res = get_broadcast_message(service_id, broadcast_message_id)
+        # res = get_broadcast_message(service_id, broadcast_message_id)
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
+        res = api_client.get(url=url)
         print(res)
         print(res.json())
         # --------------------------------------------------------------
 
-        msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
+        # msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        msgs = api_client.get(url=url)
         print(msgs)
         print(msgs.json())
         # assert response is not None

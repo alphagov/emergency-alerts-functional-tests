@@ -7,7 +7,8 @@ from notifications_python_client import NotificationsAPIClient
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 
-from broadcast_client.broadcast_client import BroadcastClient
+from clients.api_client import ApiClient
+from clients.broadcast_client import BroadcastClient
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
 from tests.pages.rollups import sign_in, sign_in_email_auth
@@ -116,6 +117,15 @@ def client_test_key():
 def broadcast_client():
     client = BroadcastClient(
         api_key=config["broadcast_service"]["api_key_live"],
+        base_url=config["notify_api_url"],
+    )
+    return client
+
+
+@pytest.fixture(scope="module")
+def api_client():
+    client = ApiClient(
+        api_key=config["service"]["api_test_key"],
         base_url=config["notify_api_url"],
     )
     return client
