@@ -79,9 +79,13 @@ def test_broadcast_with_new_content(driver, api_client):
         print("broadcast_message_id: " + broadcast_message_id)
         print("notify_api_url:" + config["notify_api_url"])
         redacted_api_key = (
-            str(config["service"]["api_test_key"])[:3]
+            str(config["service"]["api_test_key"])[-73:-68]
             + "***"
-            + str(config["service"]["api_test_key"])[-3:]
+            + str(config["service"]["api_test_key"])[-42:-37]
+            + "-"
+            + str(config["service"]["api_test_key"])[-36:-32]
+            + "***"
+            + str(config["service"]["api_test_key"])[-4:]
         )
         print('config["service"]["api_test_key"]: ' + redacted_api_key)
         import os
