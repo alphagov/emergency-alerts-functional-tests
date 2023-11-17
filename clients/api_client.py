@@ -9,7 +9,7 @@ class ApiClient(BaseAPIClient):
         super().__init__(api_key=api_key, base_url=base_url)
 
     def _create_request_objects(self, url, data, params):
-        api_token = create_jwt_token(self.api_key, "notify-admin")
+        api_token = create_jwt_token(self.api_key, "dev-notify-secret-key")
 
         kwargs = {"headers": self.generate_headers(api_token), "timeout": self.timeout}
 
