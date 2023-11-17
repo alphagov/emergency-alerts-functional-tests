@@ -69,11 +69,10 @@ def test_broadcast_with_new_content(driver, api_client):
     try:
         broadcast_alert(driver, id)
 
-        url = driver.current_url.split("services/")[1]
+        alerturl = driver.current_url.split("services/")[1]
 
-        service_id = url.split("/current-alerts/")[0]
-        broadcast_message_id = url.split("/current-alerts/")[1]
-        assert broadcast_message_id is not None
+        service_id = alerturl.split("/current-alerts/")[0]
+        broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
         print("service_id: " + service_id)
         print("broadcast_message_id: " + broadcast_message_id)
