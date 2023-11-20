@@ -22,6 +22,7 @@ phases:
     commands:
       - chmod +x environment.sh
       - . ./environment.sh
+      - echo $(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | cut -c1-5)
       - export BROADCAST_SERVICE_API_KEY=$(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r)
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
