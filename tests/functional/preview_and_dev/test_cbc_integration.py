@@ -74,29 +74,11 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        print("api_client.service_id: " + api_client.service_id)
-        print("broadcast_message_id: " + broadcast_message_id)
-        print("notify_api_url:" + config["notify_api_url"])
-        redacted_api_key = (
-            str(config["service"]["api_test_key"])[-73:-68]
-            + "***"
-            + str(config["service"]["api_test_key"])[-42:-37]
-            + "-"
-            + str(config["service"]["api_test_key"])[-36:-32]
-            + "***"
-            + str(config["service"]["api_test_key"])[-4:]
-        )
-        print('config["service"]["api_test_key"]: ' + redacted_api_key)
-        import os
-
-        print("env: " + os.environ["ENVIRONMENT"].lower())
-
         # --------------------------------------------------------------
         # res = get_broadcast_message(service_id, broadcast_message_id)
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
-        res = api_client.get(url=url)
-        print(res)
-        print(res.json())
+        # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
+        # res = api_client.get(url=url)
+        # print(res)
         # --------------------------------------------------------------
 
         # msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
