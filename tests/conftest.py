@@ -128,4 +128,5 @@ def api_client():
         api_key=config["service"]["api_test_key"],
         base_url=config["notify_api_url"],
     )
+    client.set_service_id(config["service"]["internal_api_client_id"])
     return client
