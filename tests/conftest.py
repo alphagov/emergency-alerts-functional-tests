@@ -124,12 +124,10 @@ def broadcast_client():
 
 @pytest.fixture(scope="module")
 def api_client():
-    # client = TestApiClient(
-    #     api_key=config["service"]["api_test_key"],
-    #     base_url=config["notify_api_url"],
-    # )
     client = TestApiClient()
     client.configure_for_internal_client(
-        "notify-admin", "dev-notify-secret-key", config["notify_api_url"]
+        client_id=config["internal_api_client_id"],
+        api_key=config["internal_api_client_secret"],
+        base_url=config["notify_api_url"],
     )
     return client

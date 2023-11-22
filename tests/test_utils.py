@@ -540,25 +540,3 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
-
-
-# def get_broadcast_provider_messages(service_id, broadcast_message_id):
-#     client = NotificationsAPIClient(
-#         base_url=config["notify_api_url"],
-#         api_key=config["service"]["api_test_key"],
-#     )
-#     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-#     response = client.get(url)
-
-#     return response
-
-
-# def get_broadcast_message(service_id, broadcast_message_id):
-#     client = NotificationsAPIClient(
-#         base_url=config["notify_api_url"],
-#         api_key=config["service"]["api_test_key"],
-#     )
-#     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
-#     response = client.get(url)
-
-#     return response
