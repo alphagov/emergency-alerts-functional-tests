@@ -74,7 +74,7 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        print("service_id: " + service_id)
+        print("api_client.service_id: " + api_client.service_id)
         print("broadcast_message_id: " + broadcast_message_id)
         print("notify_api_url:" + config["notify_api_url"])
         redacted_api_key = (

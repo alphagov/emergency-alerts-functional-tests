@@ -116,7 +116,7 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["FUNCTIONAL_TESTS_SERVICE_NUMBER"],
                 },
-                "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
+                # "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
                 "api_test_key": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "internal_api_client_id": "notify-admin",  # or "dev-notify-secret-key"
                 # email address of seeded email auth user
