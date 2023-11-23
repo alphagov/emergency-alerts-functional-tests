@@ -126,8 +126,8 @@ def broadcast_client():
 def api_client():
     client = TestApiClient()
     client.configure_for_internal_client(
-        client_id=config["internal_api_client_id"],
-        api_key=config["internal_api_client_secret"],
+        client_id=config["service"]["internal_api_client_id"],
+        api_key=config["service"]["internal_api_client_secret"],
         base_url=config["notify_api_url"],
     )
     return client
