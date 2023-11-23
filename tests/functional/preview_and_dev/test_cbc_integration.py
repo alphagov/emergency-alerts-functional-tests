@@ -74,18 +74,14 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        # --------------------------------------------------------------
-        # res = get_broadcast_message(service_id, broadcast_message_id)
-        # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}"
-        # res = api_client.get(url=url)
-        # print(res)
-        # --------------------------------------------------------------
-
         # msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         msgs = api_client.get(url=url)
+        print(type(msgs))
         print(msgs)
-        print(msgs.json())
+        print(type(msgs["messages"]))
+        print(msgs["messages"])
+        print("len(msgs['messages']): " + len(msgs["messages"]))
         # assert response is not None
         assert msgs is None
 
