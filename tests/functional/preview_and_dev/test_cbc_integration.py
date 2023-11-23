@@ -82,12 +82,13 @@ def test_broadcast_with_new_content(driver, api_client):
         print(type(msgs["messages"]))
         print(msgs["messages"])
         print("len(msgs['messages']): " + len(msgs["messages"]))
-        # assert response is not None
-        assert msgs is None
+        assert msgs is not None
+        assert msgs["messages"] is not None
+
+        assert len(msgs["messages"]) == 4
 
         provider_messages = [
-            {key: item[key] for key in ["id", "provider"]}
-            for item in msgs.json()["messages"]
+            {key: item[key] for key in ["id", "provider"]} for item in msgs["messages"]
         ]
 
         ddbc = create_ddb_client()
@@ -100,7 +101,11 @@ def test_broadcast_with_new_content(driver, api_client):
             },
         )
 
+        print(response)
+
         assert len(response["Items"]) > 0
+
+        assert msgs is None  # force exception to allow capture of stdout
 
     finally:
         cancel_alert(driver, id)
