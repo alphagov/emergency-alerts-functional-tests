@@ -3,7 +3,6 @@ import uuid
 
 import boto3
 import pytest
-from boto3.dynamodb.conditions import Key
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
@@ -92,13 +91,13 @@ def test_broadcast_with_new_content(driver, api_client):
 
         ddbc = create_ddb_client()
 
-        key_condition_expression = Key("MnoName").eq(messages[0]["provider"]) & Key(
-            "Timestamp"
-        ).gt(epoch)
-
         db_response = ddbc.query(
             TableName="LoopbackRequests",
-            KeyConditionExpression=key_condition_expression,
+            KeyConditionExpression="MnoName = :MnoName and Timestamp > :Timestamp",
+            ExpressionAttributeValues={
+                ":MnoName": {"S": messages[0]["provider"]},
+                "TimeStamp": {"N": epoch},
+            },
         )
 
         # db_response = ddbc.query(
