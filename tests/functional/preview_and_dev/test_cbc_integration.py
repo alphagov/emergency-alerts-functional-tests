@@ -99,8 +99,8 @@ def test_broadcast_with_new_content(driver, api_client):
             FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
             ExpressionAttributeNames={"#timestamp": "Timestamp"},
             ExpressionAttributeValues={
-                ":start_time": {"S": str(start)},
-                ":end_time": {"S": str(end)},
+                ":start_time": {"N": str(start)},
+                ":end_time": {"N": str(end)},
             },
         )
 
