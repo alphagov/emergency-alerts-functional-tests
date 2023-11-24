@@ -111,7 +111,7 @@ def test_broadcast_with_new_content(driver, api_client):
 
         mno_list = set()
         for item in response_items:
-            mno_list = item["MnoName"]["S"]
+            mno_list.add(item["MnoName"]["S"])
 
         expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
 
