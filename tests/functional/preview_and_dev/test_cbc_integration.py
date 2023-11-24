@@ -85,7 +85,6 @@ def test_broadcast_with_new_content(driver, api_client):
         messages = response["messages"]
         assert messages is not None
 
-        print("broadcast_message_id: " + broadcast_message_id)
         print(messages)
 
         assert len(messages) == 4
@@ -104,19 +103,22 @@ def test_broadcast_with_new_content(driver, api_client):
             },
         )
 
-        # db_response = ddbc.query(
-        #     TableName="LoopbackRequests",
-        #     KeyConditionExpression="#timestamp BETWEEN :start_time AND :end_time",
-        #     ExpressionAttributeNames={"#timestamp": "Timestamp"},
-        #     ExpressionAttributeValues={
-        #         ":start_time": {"S": str(start)},
-        #         ":end_time": {"S": str(end)},
-        #     },
-        # )
-
         print(db_response)
 
-        assert len(db_response["Items"]) > 0
+        assert db_response["Count"] == 4
+
+        responses = db_response["Items"]
+
+        mno_list = set()
+        for reponse in responses:
+            mno_list = response["MnoName"]["S"]
+
+        expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
+
+        print(mno_list)
+        print(expected_mnos)
+
+        assert mno_list == expected_mnos
 
         assert messages is None  # force exception to allow capture of stdout
 
