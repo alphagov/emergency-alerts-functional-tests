@@ -92,9 +92,9 @@ def test_broadcast_with_new_content(driver, api_client):
 
         ddbc = create_ddb_client()
 
-        db_response = ddbc.query(
+        db_response = ddbc.scan(
             TableName="LoopbackRequests",
-            KeyConditionExpression="#timestamp BETWEEN :start_time AND :end_time",
+            FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
             ExpressionAttributeNames={"#timestamp": "Timestamp"},
             ExpressionAttributeValues={
                 ":start_time": {"S": str(start)},
@@ -104,9 +104,11 @@ def test_broadcast_with_new_content(driver, api_client):
 
         # db_response = ddbc.query(
         #     TableName="LoopbackRequests",
-        #     KeyConditionExpression="MnoName = :MnoName",
+        #     KeyConditionExpression="#timestamp BETWEEN :start_time AND :end_time",
+        #     ExpressionAttributeNames={"#timestamp": "Timestamp"},
         #     ExpressionAttributeValues={
-        #         ":MnoName": {"S": messages[0]["provider"]},
+        #         ":start_time": {"S": str(start)},
+        #         ":end_time": {"S": str(end)},
         #     },
         # )
 
