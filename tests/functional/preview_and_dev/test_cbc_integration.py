@@ -1,3 +1,4 @@
+import time
 import uuid
 
 import boto3
@@ -74,6 +75,7 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
+        time.sleep(10)
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
         assert response is not None
@@ -81,17 +83,16 @@ def test_broadcast_with_new_content(driver, api_client):
         messages = response["messages"]
         assert messages is not None
 
-        print(type(messages))
         print(messages)
         print("len(messages): " + str(len(messages)))
 
         # assert len(messages) == 4
 
-        provider_messages = [
-            {key: item[key] for key in ["id", "provider"]} for item in messages
-        ]
+        # provider_messages = [
+        #     {key: item[key] for key in ["id", "provider"]} for item in messages
+        # ]
 
-        print(provider_messages)
+        # print(provider_messages)
 
         ddbc = create_ddb_client()
 
@@ -99,7 +100,7 @@ def test_broadcast_with_new_content(driver, api_client):
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={
-                ":RequestId": {"S": provider_messages[0].id},
+                ":RequestId": {"S": messages[0]["id"]},
             },
         )
 
