@@ -107,11 +107,11 @@ def test_broadcast_with_new_content(driver, api_client):
 
         assert db_response["Count"] == 4
 
-        responses = db_response["Items"]
+        response_items = db_response["Items"]
 
         mno_list = set()
-        for reponse in responses:
-            mno_list = response["MnoName"]["S"]
+        for item in response_items:
+            mno_list = item["MnoName"]["S"]
 
         expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
 
