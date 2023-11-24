@@ -92,6 +92,8 @@ def test_broadcast_with_new_content(driver, api_client):
 
         ddbc = create_ddb_client()
 
+        print("start_time: " + str(start) + ", end_time: " + str(end))
+
         db_response = ddbc.scan(
             TableName="LoopbackRequests",
             FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
