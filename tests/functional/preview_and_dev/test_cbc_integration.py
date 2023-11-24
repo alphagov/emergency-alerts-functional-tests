@@ -3,6 +3,7 @@ import uuid
 
 import boto3
 import pytest
+from boto3.dynamodb.conditions import Key
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
@@ -66,6 +67,7 @@ def test_get_loopback_response_with_bad_id_returns_no_items():
 @pytest.mark.xdist_group(name="cbc-integration")
 def test_broadcast_with_new_content(driver, api_client):
     id = str(uuid.uuid4())
+    epoch = int(time.time())
 
     try:
         broadcast_alert(driver, id)
@@ -85,25 +87,27 @@ def test_broadcast_with_new_content(driver, api_client):
 
         print("broadcast_message_id: " + broadcast_message_id)
         print(messages)
-        print("len(messages): " + str(len(messages)))
 
-        # assert len(messages) == 4
-
-        # provider_messages = [
-        #     {key: item[key] for key in ["id", "provider"]} for item in messages
-        # ]
-
-        # print(provider_messages)
+        assert len(messages) == 4
 
         ddbc = create_ddb_client()
 
+        key_condition_expression = Key("MnoName").eq(messages[0]["provider"]) & Key(
+            "Timestamp"
+        ).gt(epoch)
+
         db_response = ddbc.query(
             TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={
-                ":RequestId": {"S": messages[0]["id"]},
-            },
+            KeyConditionExpression=key_condition_expression,
         )
+
+        # db_response = ddbc.query(
+        #     TableName="LoopbackRequests",
+        #     KeyConditionExpression="MnoName = :MnoName",
+        #     ExpressionAttributeValues={
+        #         ":MnoName": {"S": messages[0]["provider"]},
+        #     },
+        # )
 
         print(db_response)
 
