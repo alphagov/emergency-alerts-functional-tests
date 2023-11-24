@@ -83,6 +83,7 @@ def test_broadcast_with_new_content(driver, api_client):
         messages = response["messages"]
         assert messages is not None
 
+        print("broadcast_message_id: " + broadcast_message_id)
         print(messages)
         print("len(messages): " + str(len(messages)))
 
