@@ -74,26 +74,28 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        # msgs = get_broadcast_provider_messages(service_id, broadcast_message_id)
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        msgs = api_client.get(url=url)
-        print(type(msgs))
-        print(msgs)
-        print(type(msgs["messages"]))
-        print(msgs["messages"])
-        print("len(msgs['messages']): " + len(msgs["messages"]))
-        assert msgs is not None
-        assert msgs["messages"] is not None
+        response = api_client.get(url=url)
+        assert response is not None
 
-        assert len(msgs["messages"]) == 4
+        messages = response["messages"]
+        assert messages is not None
+
+        print(type(messages))
+        print(messages)
+        print("len(messages): " + str(len(messages)))
+
+        # assert len(messages) == 4
 
         provider_messages = [
-            {key: item[key] for key in ["id", "provider"]} for item in msgs["messages"]
+            {key: item[key] for key in ["id", "provider"]} for item in messages
         ]
+
+        print(provider_messages)
 
         ddbc = create_ddb_client()
 
-        response = ddbc.query(
+        db_response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={
@@ -101,11 +103,11 @@ def test_broadcast_with_new_content(driver, api_client):
             },
         )
 
-        print(response)
+        print(db_response)
 
-        assert len(response["Items"]) > 0
+        assert len(db_response["Items"]) > 0
 
-        assert msgs is None  # force exception to allow capture of stdout
+        assert messages is None  # force exception to allow capture of stdout
 
     finally:
         cancel_alert(driver, id)
