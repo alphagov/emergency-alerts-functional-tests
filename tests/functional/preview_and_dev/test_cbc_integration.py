@@ -96,7 +96,7 @@ def test_broadcast_with_new_content(driver, api_client):
             KeyConditionExpression="MnoName = :MnoName and Timestamp > :Timestamp",
             ExpressionAttributeValues={
                 ":MnoName": {"S": messages[0]["provider"]},
-                "TimeStamp": {"N": str(epoch)},
+                "Timestamp": {"N": str(epoch)},
             },
         )
 
