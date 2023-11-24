@@ -66,9 +66,9 @@ def test_get_loopback_response_with_bad_id_returns_no_items():
 @pytest.mark.xdist_group(name="cbc-integration")
 def test_broadcast_with_new_content(driver, api_client):
     id = str(uuid.uuid4())
-    epoch = int(time.time())
 
     try:
+        start = int(time.time())
         broadcast_alert(driver, id)
 
         alerturl = driver.current_url.split("services/")[1]
@@ -77,6 +77,7 @@ def test_broadcast_with_new_content(driver, api_client):
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
         time.sleep(10)
+        end = int(time.time())
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
         assert response is not None
@@ -93,9 +94,11 @@ def test_broadcast_with_new_content(driver, api_client):
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
-            KeyConditionExpression="Timestamp > :time",
+            KeyConditionExpression="#timestamp BETWEEN :start_time AND :end_time",
+            ExpressionAttributeNames={"#timestamp": "Timestamp"},
             ExpressionAttributeValues={
-                ":time": {"S": str(epoch)},
+                ":start_time": {"S": str(start)},
+                ":end_time": {"S": str(end)},
             },
         )
 
