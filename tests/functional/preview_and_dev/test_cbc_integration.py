@@ -93,10 +93,10 @@ def test_broadcast_with_new_content(driver, api_client):
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
-            KeyConditionExpression="MnoName = :MnoName and Timestamp > :Timestamp",
+            KeyConditionExpression="MnoName = :MnoName and Timestamp > :time",
             ExpressionAttributeValues={
                 ":MnoName": {"S": messages[0]["provider"]},
-                ":Timestamp": {"N": str(epoch)},
+                ":time": {"N": str(epoch)},
             },
         )
 
