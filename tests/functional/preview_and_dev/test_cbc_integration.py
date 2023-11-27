@@ -141,7 +141,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
-                ":code": {"N": response_code},
+                ":code": {"N": str(response_code)},
             },
         )
 
