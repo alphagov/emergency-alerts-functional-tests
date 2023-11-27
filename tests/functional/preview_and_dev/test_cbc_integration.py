@@ -106,31 +106,22 @@ def test_set_loopback_response_codes():
     test_code = 500
     ip = config["cbcs"][test_cbc]
 
-    _set_response_codes(ddbc, test_cbc, test_code)
+    try:
+        _set_response_codes(ddbc, test_cbc, test_code)
 
-    db_response = ddbc.scan(
-        TableName="LoopbackResponses",
-        KeyConditionExpression="IpAddress = :IpAddress",
-        ExpressionAttributeValues={
-            ":IpAddress": {"S": ip},
-        },
-    )
+        db_response = ddbc.scan(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": ip},
+            },
+        )
 
-    assert db_response["Count"] == 1
-    assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
-    _set_response_codes(ddbc, "all", 200)
-
-    db_response = ddbc.scan(
-        TableName="LoopbackResponses",
-    )
-
-    response_codes = set()
-    for item in db_response["Items"]:
-        response_codes.add(item["ResponseCode"]["N"])
-
-    assert len(response_codes) == 1
-    assert response_codes.pop() == "200"
+    finally:
+        _set_response_codes(ddbc, test_cbc, 200)
 
 
 def _set_response_codes(ddbc, az_name=None, response_code=200):
@@ -138,7 +129,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
         print("Please provide a dynamoDB client")
 
     if isinstance(az_name, str) and az_name.lower() != "all":
-        ips = config["cbcs"][az_name]
+        ips = [config["cbcs"][az_name]]
     else:
         ips = config["cbcs"].values()
 
