@@ -13,10 +13,14 @@ from tests.test_utils import recordtime
 
 
 def test_cbc_config():
-    assert "ee" in config["cbcs"]
-    assert "vodafone" in config["cbcs"]
-    assert "o2" in config["cbcs"]
-    assert "three" in config["cbcs"]
+    assert "ee-az1" in config["cbcs"]
+    assert "ee-az2" in config["cbcs"]
+    assert "vodafone-az1" in config["cbcs"]
+    assert "vodafone-az2" in config["cbcs"]
+    assert "o2-az1" in config["cbcs"]
+    assert "o2-az2" in config["cbcs"]
+    assert "three-az1" in config["cbcs"]
+    assert "three-az2" in config["cbcs"]
 
 
 def create_ddb_client():
@@ -79,7 +83,7 @@ def test_get_loopback_requests_returns_codes_for_eight_endpoints():
     response_codes = set()
     for item in db_response["Items"]:
         response_mnos.add(item["Name"]["S"])
-        response_codes.add(item["ResponseCode"]["S"])
+        response_codes.add(item["ResponseCode"]["N"])
     expected_mnos = {
         "ee-az1",
         "ee-az2",

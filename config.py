@@ -143,7 +143,16 @@ def setup_preview_dev_config():
                 "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
                 "password": os.environ["MMG_INBOUND_SMS_AUTH"],
             },
-            "cbcs": ["ee", "vodafone", "o2", "three"],
+            "cbcs": {
+                "ee-az1": "192.168.1.7",
+                "ee-az2": "192.168.1.137",
+                "vodafone-az1": "192.168.1.57",
+                "vodafone-az2": "192.168.1.178",
+                "o2-az1": "192.168.1.79",
+                "o2-az2": "192.168.1.196",
+                "three-az1": "192.168.1.20",
+                "three-az2": "192.168.1.152",
+            },
         }
     )
 
