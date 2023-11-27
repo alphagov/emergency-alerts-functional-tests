@@ -109,7 +109,7 @@ def test_set_loopback_response_codes():
     try:
         _set_response_codes(ddbc, test_cbc, test_code)
 
-        db_response = ddbc.scan(
+        db_response = ddbc.query(
             TableName="LoopbackResponses",
             KeyConditionExpression="IpAddress = :IpAddress",
             ExpressionAttributeValues={
