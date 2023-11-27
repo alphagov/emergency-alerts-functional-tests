@@ -138,7 +138,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
         print("Please provide a dynamoDB client")
 
     if isinstance(az_name, str) and az_name.lower() != "all":
-        ips = [az_name]
+        ips = config["cbcs"][az_name]
     else:
         ips = config["cbcs"].values()
 
@@ -150,7 +150,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
-                ":code": {"N": response_code},
+                ":code": {"N": str(response_code)},
             },
         )
 
