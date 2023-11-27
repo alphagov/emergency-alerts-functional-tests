@@ -103,7 +103,7 @@ def test_set_loopback_response_codes():
     ddbc = create_ddb_client()
 
     test_cbc = "ee-az2"
-    test_code = 500
+    test_code = "500"
     ip = config["cbcs"][test_cbc]
 
     try:
@@ -121,10 +121,10 @@ def test_set_loopback_response_codes():
         assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
     finally:
-        _set_response_codes(ddbc, test_cbc, 200)
+        _set_response_codes(ddbc, test_cbc, "200")
 
 
-def _set_response_codes(ddbc, az_name=None, response_code=200):
+def _set_response_codes(ddbc, az_name="all", response_code="200"):
     if ddbc is None:
         print("Please provide a dynamoDB client")
 
@@ -141,7 +141,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
-                ":code": {"N": str(response_code)},
+                ":code": {"N": response_code},
             },
         )
 
