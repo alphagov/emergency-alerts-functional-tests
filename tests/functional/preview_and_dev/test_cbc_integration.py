@@ -69,7 +69,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_get_loopback_requests_returns_codes_for_eight_endpoints():
+def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
@@ -98,7 +98,61 @@ def test_get_loopback_requests_returns_codes_for_eight_endpoints():
     assert len(response_codes) == 1
     assert response_codes.pop() == "200"
 
-    # assert db_response is None  # Force failure to allow console to capture stdout (debugging)
+
+def test_set_loopback_response_codes():
+    ddbc = create_ddb_client()
+
+    test_cbc = "ee-az2"
+    test_code = "500"
+    ip = config["cbcs"][test_cbc]
+
+    _set_response_codes(ddbc, test_cbc, test_code)
+
+    db_response = ddbc.scan(
+        TableName="LoopbackResponses",
+        KeyConditionExpression="IpAddress = :IpAddress",
+        ExpressionAttributeValues={
+            ":IpAddress": {"S": ip},
+        },
+    )
+
+    assert db_response["Count"] == 1
+    assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+
+    _set_response_codes(ddbc, "all", 200)
+
+    db_response = ddbc.scan(
+        TableName="LoopbackResponses",
+    )
+
+    response_codes = set()
+    for item in db_response["Items"]:
+        response_codes.add(item["ResponseCode"]["N"])
+
+    assert len(response_codes) == 1
+    assert response_codes.pop() == "200"
+
+
+def _set_response_codes(ddbc, az_name=None, response_code="200"):
+    if ddbc is None:
+        print("Please provide a dynamoDB client")
+
+    if isinstance(az_name, str) and az_name.lower() != "all":
+        ips = [az_name]
+    else:
+        ips = config["cbcs"].values()
+
+    for ip in ips:
+        ddbc.udpate_item(
+            TableName="LoopbackResponses",
+            Key={
+                "IPAddress": {"S": ip},
+            },
+            UpdateExpression="SET ResponseCode = :code",
+            ExpressionAttributeValues={
+                ":code": {"N": str(response_code)},
+            },
+        )
 
 
 # @recordtime
