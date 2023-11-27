@@ -1,11 +1,12 @@
-import time
-import uuid
+# import time
+# import uuid
 
 import boto3
 import pytest
 
 from config import config
-from tests.pages.rollups import broadcast_alert, cancel_alert
+
+# from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import recordtime
 
 # from boto3.dynamodb.conditions import Key, Attr
@@ -49,7 +50,7 @@ def create_ddb_client():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_get_loopback_response_with_bad_id_returns_no_items():
+def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
     response = ddbc.query(
         TableName="LoopbackRequests",
@@ -64,81 +65,110 @@ def test_get_loopback_response_with_bad_id_returns_no_items():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content(driver, api_client):
-    id = str(uuid.uuid4())
+def test_get_loopback_requests_returns_codes_for_eight_endpoints():
+    ddbc = create_ddb_client()
+    db_response = ddbc.scan(
+        TableName="LoopbackResponses",
+    )
 
-    try:
-        start = int(time.time())
-        broadcast_alert(driver, id)
+    print(db_response)
 
-        alerturl = driver.current_url.split("services/")[1]
+    assert db_response["Count"] == 8
 
-        service_id = alerturl.split("/current-alerts/")[0]
-        broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    response_mnos = set()
+    for item in db_response["Items"]:
+        response_mnos.add(item["Name"]["S"])
+    expected_mnos = {
+        "ee-az1",
+        "ee-az2",
+        "o2-az1",
+        "o2-az2",
+        "vodafone-az1",
+        "vodafone-az2",
+        "three-az1",
+        "three-az2",
+    }
+    assert response_mnos == expected_mnos
 
-        time.sleep(10)
-        end = int(time.time())
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
-
-        messages = response["messages"]
-        assert messages is not None
-
-        print(messages)
-
-        assert len(messages) == 4
-
-        ddbc = create_ddb_client()
-
-        print("start_time: " + str(start) + ", end_time: " + str(end))
-
-        db_response = ddbc.scan(
-            TableName="LoopbackRequests",
-            FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
-            ExpressionAttributeNames={"#timestamp": "Timestamp"},
-            ExpressionAttributeValues={
-                ":start_time": {"N": str(start)},
-                ":end_time": {"N": str(end)},
-            },
-        )
-
-        print(db_response)
-
-        assert db_response["Count"] == 4
-
-        response_items = db_response["Items"]
-
-        mno_list = set()
-        for item in response_items:
-            mno_list.add(item["MnoName"]["S"])
-
-        expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
-
-        print(mno_list)
-        print(expected_mnos)
-
-        assert mno_list == expected_mnos
-
-        assert messages is None  # force exception to allow capture of stdout
-
-    finally:
-        cancel_alert(driver, id)
+    # assert db_response is None  # Force failure to allow console to capture stdout (debugging)
 
 
-@recordtime
-@pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_primary_lambda_failure(driver):
-    pass
+# @recordtime
+# @pytest.mark.xdist_group(name="cbc-integration")
+# def test_broadcast_with_new_content(driver, api_client):
+#     broadcast_id = str(uuid.uuid4())
+
+#     try:
+#         start = int(time.time())
+#         broadcast_alert(driver, broadcast_id)
+
+#         alerturl = driver.current_url.split("services/")[1]
+#         service_id = alerturl.split("/current-alerts/")[0]
+#         broadcast_message_id = alerturl.split("/current-alerts/")[1]
+
+#         time.sleep(10)
+#         end = int(time.time())
+#         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+#         response = api_client.get(url=url)
+#         assert response is not None
+
+#         messages = response["messages"]
+#         assert messages is not None
+#         assert len(messages) == 4
+
+#         ddbc = create_ddb_client()
+#         db_response = ddbc.scan(
+#             TableName="LoopbackRequests",
+#             FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
+#             ExpressionAttributeNames={"#timestamp": "Timestamp"},
+#             ExpressionAttributeValues={
+#                 ":start_time": {"N": str(start)},
+#                 ":end_time": {"N": str(end)},
+#             },
+#         )
+
+#         assert db_response["Count"] == 4
+
+#         response_items = db_response["Items"]
+
+#         response_mnos = set()
+#         for item in response_items:
+#             response_mnos.add(item["MnoName"]["S"])
+#         expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
+#         assert response_mnos == expected_mnos
+
+#     finally:
+#         cancel_alert(driver, broadcast_id)
 
 
-@recordtime
-@pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_site_a_failure(driver):
-    pass
+# @recordtime
+# @pytest.mark.xdist_group(name="cbc-integration")
+# def test_broadcast_with_new_content_with_site_a_failure(driver):
+#     broadcast_id = str(uuid.uuid4())
+#     test_mno = "o2"
+
+#     try:
+#         start = int(time.time())
+#         broadcast_alert(driver, broadcast_id)
+
+#         print("set loopback resposne to 500 for one mno")
+
+#         ddbc = create_ddb_client()
+
+#         print("create broadcast and check for responses")
+
+#     finally:
+#         cancel_alert(driver, broadcast_id)
+#         print("restore responses to 200s")
 
 
-@recordtime
-@pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_primary_lambda_and_site_a_failure(driver):
-    pass
+# @recordtime
+# @pytest.mark.xdist_group(name="cbc-integration")
+# def test_broadcast_with_new_content_with_primary_lambda_failure(driver):
+#     pass
+
+
+# @recordtime
+# @pytest.mark.xdist_group(name="cbc-integration")
+# def test_broadcast_with_new_content_with_primary_lambda_and_site_a_failure(driver):
+#     pass
