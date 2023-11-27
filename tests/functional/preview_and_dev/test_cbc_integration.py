@@ -143,7 +143,7 @@ def _set_response_codes(ddbc, az_name=None, response_code="200"):
         ips = config["cbcs"].values()
 
     for ip in ips:
-        ddbc.udpate_item(
+        ddbc.update_item(
             TableName="LoopbackResponses",
             Key={
                 "IPAddress": {"S": ip},
