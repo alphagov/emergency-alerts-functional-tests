@@ -137,7 +137,7 @@ def _set_response_codes(ddbc, az_name=None, response_code=200):
         ddbc.update_item(
             TableName="LoopbackResponses",
             Key={
-                "IPAddress": {"S": ip},
+                "IpAddress": {"S": ip},
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
