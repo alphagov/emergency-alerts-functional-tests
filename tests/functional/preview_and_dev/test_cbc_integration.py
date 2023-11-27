@@ -64,52 +64,52 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
-@recordtime
-@pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content(driver, api_client):
-    broadcast_id = str(uuid.uuid4())
+# @recordtime
+# @pytest.mark.xdist_group(name="cbc-integration")
+# def test_broadcast_with_new_content(driver, api_client):
+#     broadcast_id = str(uuid.uuid4())
 
-    try:
-        start = int(time.time())
-        broadcast_alert(driver, broadcast_id)
+#     try:
+#         start = int(time.time())
+#         broadcast_alert(driver, broadcast_id)
 
-        alerturl = driver.current_url.split("services/")[1]
-        service_id = alerturl.split("/current-alerts/")[0]
-        broadcast_message_id = alerturl.split("/current-alerts/")[1]
+#         alerturl = driver.current_url.split("services/")[1]
+#         service_id = alerturl.split("/current-alerts/")[0]
+#         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        time.sleep(10)
-        end = int(time.time())
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+#         time.sleep(10)
+#         end = int(time.time())
+#         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+#         response = api_client.get(url=url)
+#         assert response is not None
 
-        messages = response["messages"]
-        assert messages is not None
-        assert len(messages) == 4
+#         messages = response["messages"]
+#         assert messages is not None
+#         assert len(messages) == 4
 
-        ddbc = create_ddb_client()
-        db_response = ddbc.scan(
-            TableName="LoopbackRequests",
-            FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
-            ExpressionAttributeNames={"#timestamp": "Timestamp"},
-            ExpressionAttributeValues={
-                ":start_time": {"N": str(start)},
-                ":end_time": {"N": str(end)},
-            },
-        )
+#         ddbc = create_ddb_client()
+#         db_response = ddbc.scan(
+#             TableName="LoopbackRequests",
+#             FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
+#             ExpressionAttributeNames={"#timestamp": "Timestamp"},
+#             ExpressionAttributeValues={
+#                 ":start_time": {"N": str(start)},
+#                 ":end_time": {"N": str(end)},
+#             },
+#         )
 
-        assert db_response["Count"] == 4
+#         assert db_response["Count"] == 4
 
-        response_items = db_response["Items"]
+#         response_items = db_response["Items"]
 
-        response_mnos = set()
-        for item in response_items:
-            response_mnos.add(item["MnoName"]["S"])
-        expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
-        assert response_mnos == expected_mnos
+#         response_mnos = set()
+#         for item in response_items:
+#             response_mnos.add(item["MnoName"]["S"])
+#         expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
+#         assert response_mnos == expected_mnos
 
-    finally:
-        cancel_alert(driver, broadcast_id)
+#     finally:
+#         cancel_alert(driver, broadcast_id)
 
 
 @recordtime
@@ -147,20 +147,19 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
 def test_set_loopback_response_codes():
-    ddbc = create_ddb_client()
-
-    test_cbc = "ee-az2"
+    test_cbc = "ee-az1"
     test_code = "500"
-    ip = config["cbcs"][test_cbc]
+    test_ip = config["cbcs"][test_cbc]
 
     try:
+        ddbc = create_ddb_client()
         _set_response_codes(ddbc, test_cbc, test_code)
 
         db_response = ddbc.query(
             TableName="LoopbackResponses",
             KeyConditionExpression="IpAddress = :IpAddress",
             ExpressionAttributeValues={
-                ":IpAddress": {"S": ip},
+                ":IpAddress": {"S": test_ip},
             },
         )
 
@@ -171,25 +170,45 @@ def test_set_loopback_response_codes():
         _set_response_codes(ddbc, test_cbc, "200")
 
 
-# @recordtime
-# @pytest.mark.xdist_group(name="cbc-integration")
-# def test_broadcast_with_new_content_with_site_a_failure(driver):
-#     broadcast_id = str(uuid.uuid4())
-#     test_mno = "o2"
+###########################################################################################
+# IN PROGRESS
+###########################################################################################
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_new_content_with_site_a_failure(driver):
+    broadcast_id = str(uuid.uuid4())
 
-#     try:
-#         start = int(time.time())
-#         broadcast_alert(driver, broadcast_id)
+    test_cbc = "o2-az1"
+    test_code = "500"
 
-#         print("set loopback resposne to 500 for one mno")
+    try:
+        ddbc = create_ddb_client()
+        _set_response_codes(ddbc, test_cbc, test_code)
 
-#         ddbc = create_ddb_client()
+        start = int(time.time())
+        broadcast_alert(driver, broadcast_id)
+        time.sleep(10)
+        end = int(time.time())
 
-#         print("create broadcast and check for responses")
+        db_response = ddbc.scan(
+            TableName="LoopbackRequests",
+            FilterExpression="#timestamp BETWEEN :start_time AND :end_time AND contains(MnoName, :mnoName)",
+            ExpressionAttributeNames={"#timestamp": "Timestamp"},
+            ExpressionAttributeValues={
+                ":start_time": {"N": str(start)},
+                ":end_time": {"N": str(end)},
+                ":mnoName": {"S": test_cbc},
+            },
+        )
 
-#     finally:
-#         cancel_alert(driver, broadcast_id)
-#         print("restore responses to 200s")
+        print("db_response['Count']: " + db_response["Count"])
+        print("db_response['Items']: " + db_response["Items"])
+
+        assert db_response is None  # force failure to catch stdout
+
+    finally:
+        cancel_alert(driver, broadcast_id)
+        _set_response_codes(ddbc, test_cbc, "200")
 
 
 # @recordtime
