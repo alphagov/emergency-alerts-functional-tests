@@ -76,8 +76,10 @@ def test_get_loopback_requests_returns_codes_for_eight_endpoints():
     assert db_response["Count"] == 8
 
     response_mnos = set()
+    response_codes = set()
     for item in db_response["Items"]:
         response_mnos.add(item["Name"]["S"])
+        response_codes.add(item["ResponseCode"]["S"])
     expected_mnos = {
         "ee-az1",
         "ee-az2",
@@ -89,6 +91,8 @@ def test_get_loopback_requests_returns_codes_for_eight_endpoints():
         "three-az2",
     }
     assert response_mnos == expected_mnos
+    assert len(response_codes) == 1
+    assert response_codes.pop() == "200"
 
     # assert db_response is None  # Force failure to allow console to capture stdout (debugging)
 
