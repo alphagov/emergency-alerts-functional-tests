@@ -201,7 +201,7 @@ def test_broadcast_with_new_content_with_site_a_failure(driver):
             },
         )
 
-        print("db_response['Count']: " + db_response["Count"])
+        print("db_response['Count']: " + str(db_response["Count"]))
         print("db_response['Items']: " + db_response["Items"])
 
         assert db_response is None  # force failure to catch stdout
