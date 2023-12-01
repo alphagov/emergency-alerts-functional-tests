@@ -172,7 +172,7 @@ def test_set_loopback_response_codes():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_AZ1_failure(driver):
+def test_broadcast_with_az1_failure_tries_az2(driver):
     broadcast_id = str(uuid.uuid4())
 
     primary_cbc = "o2-az1"
@@ -214,7 +214,7 @@ def test_broadcast_with_new_content_with_AZ1_failure(driver):
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_both_AZs_failing(driver):
+def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(driver):
     broadcast_id = str(uuid.uuid4())
 
     primary_cbc = "vodafone-az1"
