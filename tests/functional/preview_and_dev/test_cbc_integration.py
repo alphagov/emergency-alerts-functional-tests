@@ -180,29 +180,42 @@ def test_broadcast_with_new_content_with_site_a_failure(driver):
 
     test_cbc = "o2-az1"
     test_code = "500"
+    test_ip = config["cbcs"][test_cbc]
 
     try:
         ddbc = create_ddb_client()
         _set_response_codes(ddbc, test_cbc, test_code)
 
-        start = int(time.time())
+        # start = int(time.time())
         broadcast_alert(driver, broadcast_id)
         time.sleep(10)
-        end = int(time.time())
+        # end = int(time.time())
 
-        db_response = ddbc.scan(
-            TableName="LoopbackRequests",
-            FilterExpression="#timestamp BETWEEN :start_time AND :end_time AND contains(MnoName, :mnoName)",
-            ExpressionAttributeNames={"#timestamp": "Timestamp"},
+        # db_response = ddbc.scan(
+        #     TableName="LoopbackRequests",
+        #     FilterExpression="#timestamp BETWEEN :start_time AND :end_time AND contains(MnoName, :mnoName)",
+        #     ExpressionAttributeNames={"#timestamp": "Timestamp"},
+        #     ExpressionAttributeValues={
+        #         ":start_time": {"N": str(start)},
+        #         ":end_time": {"N": str(end)},
+        #         ":mnoName": {"S": test_cbc},
+        #     },
+        # )
+
+        # print("db_response['Count']: " + str(db_response["Count"]))
+        # print(db_response)
+
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
             ExpressionAttributeValues={
-                ":start_time": {"N": str(start)},
-                ":end_time": {"N": str(end)},
-                ":mnoName": {"S": test_cbc},
+                ":IpAddress": {"S": test_ip},
             },
         )
 
-        print("db_response['Count']: " + str(db_response["Count"]))
-        print(db_response)
+        assert db_response["Count"] == 2
+        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+        assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
 
         assert db_response is None  # force failure to catch stdout
 
