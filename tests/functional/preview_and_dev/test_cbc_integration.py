@@ -202,9 +202,6 @@ def test_broadcast_with_new_content_with_site_a_failure(driver):
         #     },
         # )
 
-        # print("db_response['Count']: " + str(db_response["Count"]))
-        # print(db_response)
-
         db_response = ddbc.query(
             TableName="LoopbackResponses",
             KeyConditionExpression="IpAddress = :IpAddress",
@@ -213,15 +210,27 @@ def test_broadcast_with_new_content_with_site_a_failure(driver):
             },
         )
 
+        print(db_response)
+
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": config["cbcs"]["o2-az2"]},
+            },
+        )
+
+        print(db_response)
+
         assert db_response["Count"] == 2
         assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
-        assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
+        assert db_response["Items"][1]["ResponseCode"]["N"] == "200"
 
         assert db_response is None  # force failure to catch stdout
 
     finally:
-        cancel_alert(driver, broadcast_id)
         _set_response_codes(ddbc, test_cbc, "200")
+        cancel_alert(driver, broadcast_id)
 
 
 # @recordtime
