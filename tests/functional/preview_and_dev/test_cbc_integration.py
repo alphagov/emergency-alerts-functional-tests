@@ -217,8 +217,8 @@ def test_broadcast_with_new_content_with_AZ1_failure(driver):
 def test_broadcast_with_new_content_with_both_AZs_failing(driver):
     broadcast_id = str(uuid.uuid4())
 
-    primary_cbc = "o2-az1"
-    secondary_cbc = "o2-az2"
+    primary_cbc = "vodafone-az1"
+    secondary_cbc = "vodafone-az2"
     failure_code = "500"
     success_code = "200"
 
