@@ -170,66 +170,87 @@ def test_set_loopback_response_codes():
         _set_response_codes(ddbc, test_cbc, "200")
 
 
-###########################################################################################
-# IN PROGRESS
-###########################################################################################
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_new_content_with_site_a_failure(driver):
+def test_broadcast_with_new_content_with_AZ1_failure(driver):
     broadcast_id = str(uuid.uuid4())
 
-    test_cbc = "o2-az1"
-    test_code = "500"
-    test_ip = config["cbcs"][test_cbc]
+    primary_cbc = "o2-az1"
+    secondary_cbc = "o2-az2"
+    failure_code = "500"
+    success_code = "200"
 
     try:
         ddbc = create_ddb_client()
-        _set_response_codes(ddbc, test_cbc, test_code)
+        _set_response_codes(ddbc, primary_cbc, failure_code)
 
-        # start = int(time.time())
         broadcast_alert(driver, broadcast_id)
         time.sleep(10)
-        # end = int(time.time())
-
-        # db_response = ddbc.scan(
-        #     TableName="LoopbackRequests",
-        #     FilterExpression="#timestamp BETWEEN :start_time AND :end_time AND contains(MnoName, :mnoName)",
-        #     ExpressionAttributeNames={"#timestamp": "Timestamp"},
-        #     ExpressionAttributeValues={
-        #         ":start_time": {"N": str(start)},
-        #         ":end_time": {"N": str(end)},
-        #         ":mnoName": {"S": test_cbc},
-        #     },
-        # )
 
         db_response = ddbc.query(
             TableName="LoopbackResponses",
             KeyConditionExpression="IpAddress = :IpAddress",
             ExpressionAttributeValues={
-                ":IpAddress": {"S": test_ip},
+                ":IpAddress": {"S": config["cbcs"][primary_cbc]},
             },
         )
-
-        print(db_response)
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
 
         db_response = ddbc.query(
             TableName="LoopbackResponses",
             KeyConditionExpression="IpAddress = :IpAddress",
             ExpressionAttributeValues={
-                ":IpAddress": {"S": config["cbcs"]["o2-az2"]},
+                ":IpAddress": {"S": config["cbcs"][secondary_cbc]},
             },
         )
-
-        print(db_response)
-
-        assert db_response["Count"] == 2
-        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
-        assert db_response["Items"][1]["ResponseCode"]["N"] == "200"
-
-        assert db_response is None  # force failure to catch stdout
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == success_code
 
     finally:
-        _set_response_codes(ddbc, test_cbc, "200")
+        _set_response_codes(ddbc, primary_cbc, success_code)
+        cancel_alert(driver, broadcast_id)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_new_content_with_both_AZs_failing(driver):
+    broadcast_id = str(uuid.uuid4())
+
+    primary_cbc = "o2-az1"
+    secondary_cbc = "o2-az2"
+    failure_code = "500"
+    success_code = "200"
+
+    try:
+        ddbc = create_ddb_client()
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+
+        broadcast_alert(driver, broadcast_id)
+        time.sleep(10)
+
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": config["cbcs"][primary_cbc]},
+            },
+        )
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
+
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": config["cbcs"][secondary_cbc]},
+            },
+        )
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
+
+    finally:
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
         cancel_alert(driver, broadcast_id)
 
 
