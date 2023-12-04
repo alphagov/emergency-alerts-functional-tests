@@ -224,6 +224,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": broadcast_id}},
         )
 
+        print(messages)
         print(db_response)
 
         assert db_response is None
