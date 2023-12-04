@@ -185,9 +185,12 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         _set_response_codes(ddbc, primary_cbc, failure_code)
 
         broadcast_alert(driver, broadcast_id)
-        alerturl = driver.current_url.split("services/")[1]
-        service_id = alerturl.split("/current-alerts/")[0]
-        broadcast_message_id = alerturl.split("/current-alerts/")[1]
+        # alerturl = driver.current_url.split("services/")[1]
+        # service_id = alerturl.split("/current-alerts/")[0]
+        # broadcast_message_id = alerturl.split("/current-alerts/")[1]
+        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+            driver.current_url
+        )
         time.sleep(10)
 
         # db_response = ddbc.query(
@@ -214,11 +217,11 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         response = api_client.get(url=url)
         assert response is not None
 
-        provider_message_ids = response["messages"]
-        assert provider_message_ids is not None
-        assert len(provider_message_ids) == 4
+        provider_messages = response["messages"]
+        assert provider_messages is not None
+        assert len(provider_messages) == 4
 
-        o2_request_id = _find_id_by_provider("o2")
+        o2_request_id = _find_id_by_provider(provider_messages, "o2")
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
@@ -226,7 +229,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": o2_request_id}},
         )
 
-        print(provider_message_ids)
+        print(provider_messages)
         print(db_response)
 
         assert db_response is None
@@ -276,6 +279,13 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 #     finally:
 #         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
 #         cancel_alert(driver, broadcast_id)
+
+
+def _get_service_and_broadcast_ids(url):
+    alerturl = url.split("services/")[1]
+    service_id = alerturl.split("/current-alerts/")[0]
+    broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    return (service_id, broadcast_message_id)
 
 
 def _set_response_codes(ddbc, az_name="all", response_code="200"):
