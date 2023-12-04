@@ -176,7 +176,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
     primary_cbc = "o2-az1"
-    # secondary_cbc = "o2-az2"
+    secondary_cbc = "o2-az2"
     failure_code = "500"
     success_code = "200"
 
@@ -221,7 +221,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         assert provider_messages is not None
         assert len(provider_messages) == 4
 
-        o2_request_id = _find_id_by_provider(provider_messages, "o2")
+        o2_request_id = _retrieve_item_for_key_value(
+            provider_messages, "provider", "o2", "id"
+        )
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
@@ -231,6 +233,18 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
         print(provider_messages)
         print(db_response)
+
+        responses = db_response["Items"]
+
+        o2_az1_response_code = _retrieve_item_for_key_value(
+            responses, "MnoName", primary_cbc, "ResponseCode"
+        )
+        assert o2_az1_response_code == failure_code
+
+        o2_az2_response_code = _retrieve_item_for_key_value(
+            responses, "MnoName", secondary_cbc, "ResponseCode"
+        )
+        assert o2_az2_response_code == success_code
 
         assert db_response is None
 
@@ -310,8 +324,15 @@ def _set_response_codes(ddbc, az_name="all", response_code="200"):
         )
 
 
-def _find_id_by_provider(data, provider):
-    for item in data:
-        if item["provider"] == provider:
-            return item["id"]
+# def _find_id_by_provider(data, provider):
+#     for item in data:
+#         if item["provider"] == provider:
+#             return item["id"]
+#     return None
+
+
+def _retrieve_item_for_key_value(data, key, value, item):
+    for d in data:
+        if d[key] == value:
+            return d[item]
     return None
