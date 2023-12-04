@@ -214,17 +214,19 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         response = api_client.get(url=url)
         assert response is not None
 
-        messages = response["messages"]
-        assert messages is not None
-        assert len(messages) == 4
+        provider_message_ids = response["messages"]
+        assert provider_message_ids is not None
+        assert len(provider_message_ids) == 4
+
+        o2_request_id = _find_id_by_provider("o2")
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": broadcast_id}},
+            ExpressionAttributeValues={":RequestId": {"S": o2_request_id}},
         )
 
-        print(messages)
+        print(provider_message_ids)
         print(db_response)
 
         assert db_response is None
@@ -296,3 +298,10 @@ def _set_response_codes(ddbc, az_name="all", response_code="200"):
                 ":code": {"N": response_code},
             },
         )
+
+
+def _find_id_by_provider(data, provider):
+    for item in data:
+        if item["provider"] == provider:
+            return item["id"]
+    return None
