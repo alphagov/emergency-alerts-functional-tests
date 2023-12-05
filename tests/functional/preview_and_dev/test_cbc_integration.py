@@ -228,9 +228,7 @@ def create_ddb_client():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_both_azs_failing_gets_failure_response_with_retries(
-    driver, api_client
-):
+def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
     primary_cbc = "vodafone-az1"
@@ -292,48 +290,6 @@ def test_broadcast_with_both_azs_failing_gets_failure_response_with_retries(
     finally:
         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
         cancel_alert(driver, broadcast_id)
-
-
-# @recordtime
-# @pytest.mark.xdist_group(name="cbc-integration")
-# def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(driver):
-#     broadcast_id = str(uuid.uuid4())
-
-#     primary_cbc = "vodafone-az1"
-#     secondary_cbc = "vodafone-az2"
-#     failure_code = "500"
-#     success_code = "200"
-
-#     try:
-#         ddbc = create_ddb_client()
-#         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
-
-#         broadcast_alert(driver, broadcast_id)
-#         time.sleep(120)
-
-#         db_response = ddbc.query(
-#             TableName="LoopbackResponses",
-#             KeyConditionExpression="IpAddress = :IpAddress",
-#             ExpressionAttributeValues={
-#                 ":IpAddress": {"S": config["cbcs"][primary_cbc]},
-#             },
-#         )
-#         assert db_response["Count"] == 1
-#         assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
-
-#         db_response = ddbc.query(
-#             TableName="LoopbackResponses",
-#             KeyConditionExpression="IpAddress = :IpAddress",
-#             ExpressionAttributeValues={
-#                 ":IpAddress": {"S": config["cbcs"][secondary_cbc]},
-#             },
-#         )
-#         assert db_response["Count"] == 1
-#         assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
-
-#     finally:
-#         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-#         cancel_alert(driver, broadcast_id)
 
 
 def _get_service_and_broadcast_ids(url):
