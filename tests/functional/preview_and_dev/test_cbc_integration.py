@@ -385,7 +385,7 @@ def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
         )
         # wait for retries (with exponential backoff plus jitter),
         # sqs visibility timeout and a second set of retries to begin
-        time.sleep(80 + 310 + 20)
+        time.sleep(80 + 310 + 600)
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
