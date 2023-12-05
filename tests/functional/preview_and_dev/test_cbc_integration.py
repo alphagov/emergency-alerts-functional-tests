@@ -328,9 +328,7 @@ def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
         assert provider_messages is not None
         assert len(provider_messages) == 4
 
-        request_id = _dict_item_for_key_value(
-            provider_messages, "provider", "vodafone", "id"
-        )
+        request_id = _dict_item_for_key_value(provider_messages, "provider", "ee", "id")
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
