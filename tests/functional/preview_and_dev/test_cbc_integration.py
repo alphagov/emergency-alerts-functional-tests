@@ -9,17 +9,6 @@ from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import recordtime
 
 
-def test_cbc_config():
-    assert "ee-az1" in config["cbcs"]
-    assert "ee-az2" in config["cbcs"]
-    assert "vodafone-az1" in config["cbcs"]
-    assert "vodafone-az2" in config["cbcs"]
-    assert "o2-az1" in config["cbcs"]
-    assert "o2-az2" in config["cbcs"]
-    assert "three-az1" in config["cbcs"]
-    assert "three-az2" in config["cbcs"]
-
-
 def create_ddb_client():
     try:
         sts_client = boto3.client("sts")
@@ -47,6 +36,17 @@ def create_ddb_client():
 
     except Exception as e:
         raise Exception("Unable to assume role") from e
+
+
+def test_cbc_config():
+    assert "ee-az1" in config["cbcs"]
+    assert "ee-az2" in config["cbcs"]
+    assert "vodafone-az1" in config["cbcs"]
+    assert "vodafone-az2" in config["cbcs"]
+    assert "o2-az1" in config["cbcs"]
+    assert "o2-az2" in config["cbcs"]
+    assert "three-az1" in config["cbcs"]
+    assert "three-az2" in config["cbcs"]
 
 
 # @recordtime
@@ -296,82 +296,15 @@ def create_ddb_client():
 #         cancel_alert(driver, broadcast_id)
 
 
-@recordtime
-@pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
-    driver, api_client
-):
-    broadcast_id = str(uuid.uuid4())
-
-    primary_cbc = "three-az1"
-    secondary_cbc = "three-az2"
-    failure_code = "500"
-    success_code = "200"
-
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
-
-        broadcast_alert(driver, broadcast_id)
-        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
-            driver.current_url
-        )
-        time.sleep(30)  # wait for some retries
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        time.sleep(90)  # wait for more retries
-
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
-
-        provider_messages = response["messages"]
-        assert provider_messages is not None
-        assert len(provider_messages) == 4
-
-        request_id = _dict_item_for_key_value(
-            provider_messages, "provider", "three", "id"
-        )
-
-        db_response = ddbc.query(
-            TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        )
-
-        print(provider_messages)
-        print(db_response)
-
-        responses = db_response["Items"]
-
-        az1_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", primary_cbc, "ResponseCode"
-        )
-        print(az1_response_codes)
-
-        az2_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", secondary_cbc, "ResponseCode"
-        )
-        print(az2_response_codes)
-
-        response_codes = set(az1_response_codes + az2_response_codes)
-        assert len(response_codes) == 2  # we should have a 200 along with the 500s
-        assert failure_code in response_codes
-        assert success_code in response_codes
-
-    finally:
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        cancel_alert(driver, broadcast_id)
-
-
 # @recordtime
 # @pytest.mark.xdist_group(name="cbc-integration")
-# def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
+# def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
 #     driver, api_client
 # ):
 #     broadcast_id = str(uuid.uuid4())
 
-#     primary_cbc = "ee-az1"
-#     secondary_cbc = "ee-az2"
+#     primary_cbc = "three-az1"
+#     secondary_cbc = "three-az2"
 #     failure_code = "500"
 #     success_code = "200"
 
@@ -383,9 +316,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 #         (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
 #             driver.current_url
 #         )
-#         # wait for retries (with exponential backoff plus jitter),
-#         # sqs visibility timeout and a second set of retries to begin
-#         time.sleep(120 + 310 + 20)
+#         time.sleep(30)  # wait for some retries
+#         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
+#         time.sleep(90)  # wait for more retries
 
 #         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
 #         response = api_client.get(url=url)
@@ -395,7 +328,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 #         assert provider_messages is not None
 #         assert len(provider_messages) == 4
 
-#         request_id = _dict_item_for_key_value(provider_messages, "provider", "ee", "id")
+#         request_id = _dict_item_for_key_value(
+#             provider_messages, "provider", "three", "id"
+#         )
 
 #         db_response = ddbc.query(
 #             TableName="LoopbackRequests",
@@ -412,21 +347,86 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 #             responses, "MnoName", primary_cbc, "ResponseCode"
 #         )
 #         print(az1_response_codes)
-#         assert (
-#             len(az1_response_codes) > 12
-#         )  # If the sqs message is re-queued, should see more than the original retry count
 
 #         az2_response_codes = _dynamo_items_for_key_value(
 #             responses, "MnoName", secondary_cbc, "ResponseCode"
 #         )
 #         print(az2_response_codes)
-#         assert (
-#             len(az2_response_codes) > 12
-#         )  # If the sqs message is re-queued, should see more than the original retry count
+
+#         response_codes = set(az1_response_codes + az2_response_codes)
+#         assert len(response_codes) == 2  # we should have a 200 along with the 500s
+#         assert failure_code in response_codes
+#         assert success_code in response_codes
 
 #     finally:
 #         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
 #         cancel_alert(driver, broadcast_id)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
+    driver, api_client
+):
+    broadcast_id = str(uuid.uuid4())
+
+    primary_cbc = "ee-az1"
+    secondary_cbc = "ee-az2"
+    failure_code = "500"
+    success_code = "200"
+
+    try:
+        ddbc = create_ddb_client()
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+
+        broadcast_alert(driver, broadcast_id)
+        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+            driver.current_url
+        )
+        # wait for retries (with exponential backoff plus jitter),
+        # sqs visibility timeout and a second set of retries to begin
+        time.sleep(80 + 310 + 20)
+
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        response = api_client.get(url=url)
+        assert response is not None
+
+        provider_messages = response["messages"]
+        assert provider_messages is not None
+        assert len(provider_messages) == 4
+
+        request_id = _dict_item_for_key_value(provider_messages, "provider", "ee", "id")
+
+        db_response = ddbc.query(
+            TableName="LoopbackRequests",
+            KeyConditionExpression="RequestId = :RequestId",
+            ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        )
+
+        print(provider_messages)
+        print(db_response)
+
+        responses = db_response["Items"]
+
+        az1_response_codes = _dynamo_items_for_key_value(
+            responses, "MnoName", primary_cbc, "ResponseCode"
+        )
+        print(az1_response_codes)
+        assert (
+            len(az1_response_codes) > 12
+        )  # If the sqs message is re-queued, should see more than the original retry count
+
+        az2_response_codes = _dynamo_items_for_key_value(
+            responses, "MnoName", secondary_cbc, "ResponseCode"
+        )
+        print(az2_response_codes)
+        assert (
+            len(az2_response_codes) > 12
+        )  # If the sqs message is re-queued, should see more than the original retry count
+
+    finally:
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
+        cancel_alert(driver, broadcast_id)
 
 
 def _get_service_and_broadcast_ids(url):
