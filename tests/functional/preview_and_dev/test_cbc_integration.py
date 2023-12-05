@@ -185,33 +185,10 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         _set_response_codes(ddbc, primary_cbc, failure_code)
 
         broadcast_alert(driver, broadcast_id)
-        # alerturl = driver.current_url.split("services/")[1]
-        # service_id = alerturl.split("/current-alerts/")[0]
-        # broadcast_message_id = alerturl.split("/current-alerts/")[1]
         (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
             driver.current_url
         )
         time.sleep(10)
-
-        # db_response = ddbc.query(
-        #     TableName="LoopbackResponses",
-        #     KeyConditionExpression="IpAddress = :IpAddress",
-        #     ExpressionAttributeValues={
-        #         ":IpAddress": {"S": config["cbcs"][primary_cbc]},
-        #     },
-        # )
-        # assert db_response["Count"] == 1
-        # assert db_response["Items"][0]["ResponseCode"]["N"] == failure_code
-
-        # db_response = ddbc.query(
-        #     TableName="LoopbackResponses",
-        #     KeyConditionExpression="IpAddress = :IpAddress",
-        #     ExpressionAttributeValues={
-        #         ":IpAddress": {"S": config["cbcs"][secondary_cbc]},
-        #     },
-        # )
-        # assert db_response["Count"] == 1
-        # assert db_response["Items"][0]["ResponseCode"]["N"] == success_code
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
@@ -221,7 +198,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         assert provider_messages is not None
         assert len(provider_messages) == 4
 
-        o2_request_id = _retrieve_item_for_key_value(
+        o2_request_id = _dict_item_for_key_value(
             provider_messages, "provider", "o2", "id"
         )
 
@@ -236,17 +213,15 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
         responses = db_response["Items"]
 
-        o2_az1_response_code = _retrieve_item_for_key_value(
+        o2_az1_response_code = _dynamo_item_for_key_value(
             responses, "MnoName", primary_cbc, "ResponseCode"
         )
         assert o2_az1_response_code == failure_code
 
-        o2_az2_response_code = _retrieve_item_for_key_value(
+        o2_az2_response_code = _dynamo_item_for_key_value(
             responses, "MnoName", secondary_cbc, "ResponseCode"
         )
         assert o2_az2_response_code == success_code
-
-        assert db_response is None
 
     finally:
         _set_response_codes(ddbc, primary_cbc, success_code)
@@ -324,15 +299,15 @@ def _set_response_codes(ddbc, az_name="all", response_code="200"):
         )
 
 
-# def _find_id_by_provider(data, provider):
-#     for item in data:
-#         if item["provider"] == provider:
-#             return item["id"]
-#     return None
-
-
-def _retrieve_item_for_key_value(data, key, value, item):
+def _dict_item_for_key_value(data, key, value, item):
     for d in data:
         if d[key] == value:
             return d[item]
+    return None
+
+
+def _dynamo_item_for_key_value(data, key, value, item):
+    for d in data:
+        if list(d[key].values())[0] == value:
+            return list(d[item].values())[0]
     return None
