@@ -198,14 +198,12 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         assert provider_messages is not None
         assert len(provider_messages) == 4
 
-        o2_request_id = _dict_item_for_key_value(
-            provider_messages, "provider", "o2", "id"
-        )
+        request_id = _dict_item_for_key_value(provider_messages, "provider", "o2", "id")
 
         db_response = ddbc.query(
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": o2_request_id}},
+            ExpressionAttributeValues={":RequestId": {"S": request_id}},
         )
 
         print(provider_messages)
@@ -225,6 +223,66 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
     finally:
         _set_response_codes(ddbc, primary_cbc, success_code)
+        cancel_alert(driver, broadcast_id)
+
+
+@recordtime
+@pytest.mark.xdist_group(name="cbc-integration")
+def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(
+    driver, api_client
+):
+    broadcast_id = str(uuid.uuid4())
+
+    primary_cbc = "vodafone-az1"
+    secondary_cbc = "vodafone-az2"
+    failure_code = "500"
+    success_code = "200"
+
+    try:
+        ddbc = create_ddb_client()
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+
+        broadcast_alert(driver, broadcast_id)
+        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+            driver.current_url
+        )
+        time.sleep(60)  # wait for exponential backoff of 5 retries
+
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        response = api_client.get(url=url)
+        assert response is not None
+
+        provider_messages = response["messages"]
+        assert provider_messages is not None
+        assert len(provider_messages) == 4
+
+        request_id = _dict_item_for_key_value(
+            provider_messages, "provider", "vodafone", "id"
+        )
+
+        db_response = ddbc.query(
+            TableName="LoopbackRequests",
+            KeyConditionExpression="RequestId = :RequestId",
+            ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        )
+
+        print(provider_messages)
+        print(db_response)
+
+        responses = db_response["Items"]
+
+        az1_response_code = _dynamo_item_for_key_value(
+            responses, "MnoName", primary_cbc, "ResponseCode"
+        )
+        assert az1_response_code == failure_code
+
+        az2_response_code = _dynamo_item_for_key_value(
+            responses, "MnoName", secondary_cbc, "ResponseCode"
+        )
+        assert az2_response_code == failure_code
+
+    finally:
+        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
         cancel_alert(driver, broadcast_id)
 
 
