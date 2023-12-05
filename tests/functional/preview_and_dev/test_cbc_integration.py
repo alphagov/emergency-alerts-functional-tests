@@ -281,6 +281,8 @@ def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(
         )
         assert az2_response_code == failure_code
 
+        assert responses is None
+
     finally:
         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
         cancel_alert(driver, broadcast_id)
