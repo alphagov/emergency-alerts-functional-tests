@@ -228,7 +228,7 @@ def create_ddb_client():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc-integration")
-def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(
+def test_broadcast_with_both_azs_failing_gets_failure_response_with_retries(
     driver, api_client
 ):
     broadcast_id = str(uuid.uuid4())
@@ -246,7 +246,7 @@ def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(
         (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
             driver.current_url
         )
-        time.sleep(120)  # wait for exponential backoff of 5 retries
+        time.sleep(40)  # wait for exponential backoff of 5 retries
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
@@ -275,15 +275,19 @@ def test_broadcast_with_both_azs_failing_gets_failure_response_from_both(
             responses, "MnoName", primary_cbc, "ResponseCode"
         )
         print(az1_response_codes)
-        # assert az1_response_code == failure_code
+        assert len(az1_response_codes) == 6  # initial invocation + 5 retries == 6
+        az1_codes_set = set(az1_response_codes)
+        assert len(az1_codes_set) == 1  # assert that all codes are the same
+        assert az1_codes_set.pop() == failure_code
 
         az2_response_codes = _dynamo_items_for_key_value(
             responses, "MnoName", secondary_cbc, "ResponseCode"
         )
         print(az2_response_codes)
-        # assert az2_response_code == failure_code
-
-        assert responses is None
+        assert len(az2_response_codes) == 6  # initial invocation + 5 retries == 6
+        az2_codes_set = set(az2_response_codes)
+        assert len(az2_codes_set) == 1  # assert that all codes are the same
+        assert az2_codes_set.pop() == failure_code
 
     finally:
         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
