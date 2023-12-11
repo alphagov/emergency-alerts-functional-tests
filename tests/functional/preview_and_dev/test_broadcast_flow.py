@@ -1,3 +1,4 @@
+import time
 import uuid
 from datetime import datetime, timedelta
 
@@ -111,6 +112,7 @@ def test_prepare_broadcast_with_new_content(driver):
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_continue()  # stop broadcasting
+    time.sleep(10)
     assert current_alerts_page.is_text_present_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
