@@ -23,5 +23,6 @@ lint: clean
 
 .PHONY: test
 test: clean ## Run functional tests against local environment
-	# pytest -v tests/functional/preview_and_dev/test_broadcast_flow.py -n auto --dist loadgroup
-	pytest -v tests/functional/preview_and_dev/test_cbc_integration.py -n auto --dist loadgroup
+	pytest -v -n auto --dist loadgroup /
+		tests/functional/preview_and_dev/test_broadcast_flow.py /
+		tests/functional/preview_and_dev/test_cbc_integration.py
