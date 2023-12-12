@@ -38,6 +38,7 @@ def create_ddb_client():
         raise Exception("Unable to assume role") from e
 
 
+@pytest.mark.xdist_group(name="cbc-integration")
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
     assert "ee-az2" in config["cbcs"]
