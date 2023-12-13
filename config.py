@@ -123,7 +123,7 @@ def setup_preview_dev_config():
                 },
                 "api_test_key": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "internal_api_client_id": "notify-admin",
-                "internal_api_client_secret": "dev-notify-secret-key",
+                "internal_api_client_secret": os.environ["ADMIN_CLIENT_SECRET"],
                 # email address of seeded email auth user
                 "email_auth_account": os.environ[
                     "FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"

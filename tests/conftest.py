@@ -18,13 +18,6 @@ def pytest_addoption(parser):
     parser.addoption("--no-headless", action="store_true", default=False)
 
 
-@pytest.fixture(scope="session")
-def clear_old_functional_test_alerts():
-    print("^^^^^^^^^^^^^ SET-UP METHOD ^^^^^^^^^^^^^^^^^^^^")
-    yield
-    print("$$$$$$$$$$$$$ TEAR-DOWN METHOD $$$$$$$$$$$$$$$$$$")
-
-
 @pytest.fixture(scope="session", autouse=True)
 def shared_config():
     """
