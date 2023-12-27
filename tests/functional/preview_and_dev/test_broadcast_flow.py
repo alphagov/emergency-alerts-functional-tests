@@ -283,5 +283,4 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     time.sleep(180)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-    page.get()
     page.sign_out()
