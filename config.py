@@ -111,6 +111,13 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
                 },
+                "platform_admin": {
+                    "id": os.environ["PLATFORM_ADMIN_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
+                    # we are re-using seeded user's password
+                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
             },
             "service": {
