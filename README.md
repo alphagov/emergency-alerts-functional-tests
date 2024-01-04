@@ -108,6 +108,7 @@ We use the following annotations on test methods to define the groups:
 @pytest.mark.xdist_group(name="seeded-email")
 @pytest.mark.xdist_group(name="broadcasts")
 @pytest.mark.xdist_group(name="api-letters")
+@pytest.mark.xdist_group(name="platform-admin")
 ```
 
 More groups generally equals better parallelisation (limited by test runner count). However, in the case of functional tests, increased parallelisation increases the risk of side effects and race conditions in the shared environment unless grouped carefully.

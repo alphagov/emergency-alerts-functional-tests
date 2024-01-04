@@ -151,6 +151,7 @@ class SmsSenderLocators(object):
 
 class ServiceSettingsLocators(object):
     SERVICE_NAME = (By.CSS_SELECTOR, ".navigation-service-name")
+    DELETE_CONFIRM_BUTTON = (By.NAME, "delete")
 
 
 class ChangeNameLocators(object):
