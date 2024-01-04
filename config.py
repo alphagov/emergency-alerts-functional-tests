@@ -50,8 +50,8 @@ urls = {
         "govuk_alerts": "tbc",
     },
     "preview": {
-        "api": "https://api.preview.emergency-alerts.service.gov.uk/",
-        "admin": "https://admin.preview.emergency-alerts.service.gov.uk/",
+        "api": "https://api.preview.emergency-alerts.service.gov.uk",
+        "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
         "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
 }
@@ -111,6 +111,13 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
                 },
+                "platform_admin": {
+                    "id": os.environ["PLATFORM_ADMIN_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
+                    # we are re-using seeded user's password
+                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
             },
             "service": {
@@ -121,8 +128,9 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["FUNCTIONAL_TESTS_SERVICE_NUMBER"],
                 },
-                "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
-                "api_test_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY"],
+                "api_test_key": os.environ["BROADCAST_SERVICE_API_KEY"],
+                "internal_api_client_id": "notify-admin",
+                "internal_api_client_secret": os.environ["ADMIN_CLIENT_SECRET"],
                 # email address of seeded email auth user
                 "email_auth_account": os.environ[
                     "FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"
@@ -146,6 +154,16 @@ def setup_preview_dev_config():
             "mmg_inbound_sms": {
                 "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
                 "password": os.environ["MMG_INBOUND_SMS_AUTH"],
+            },
+            "cbcs": {
+                "ee-az1": "192.168.1.7",
+                "ee-az2": "192.168.1.137",
+                "vodafone-az1": "192.168.1.57",
+                "vodafone-az2": "192.168.1.178",
+                "o2-az1": "192.168.1.79",
+                "o2-az2": "192.168.1.196",
+                "three-az1": "192.168.1.20",
+                "three-az2": "192.168.1.152",
             },
         }
     )

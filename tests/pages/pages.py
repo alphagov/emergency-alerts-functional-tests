@@ -88,7 +88,7 @@ class AntiStaleElement(AntiStale):
                 self.element,
             )
             try:
-                time.sleep(2)
+                time.sleep(1)
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
