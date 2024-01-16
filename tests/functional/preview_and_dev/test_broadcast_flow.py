@@ -36,7 +36,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -90,7 +90,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)

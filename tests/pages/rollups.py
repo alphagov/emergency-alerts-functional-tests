@@ -93,7 +93,7 @@ def create_alert(driver, id):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -138,7 +138,7 @@ def approve_alert(driver, id):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -164,7 +164,7 @@ def cancel_alert(driver, id):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
