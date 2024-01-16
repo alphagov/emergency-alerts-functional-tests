@@ -11,8 +11,7 @@ def preview_dev_config():
     """
     setup_preview_dev_config()
 
-    print("*****************************FIXTURE SETUP CALLED*************************")
-    # _purge_functional_test_alerts()
+    _purge_functional_test_alerts()
 
 
 def _purge_functional_test_alerts():
