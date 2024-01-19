@@ -21,10 +21,17 @@ lint: clean
 	flake8 .
 	black --check .
 
-.PHONY: test
+.PHONY: test-broadcast-flow
 test: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
-	tests/functional/preview_and_dev/test_broadcast_flow.py \
+	tests/functional/preview_and_dev/test_broadcast_flow.py
 
-## tests/functional/preview_and_dev/test_platform_admin_flow.py \
-## tests/functional/preview_and_dev/test_cbc_integration.py
+.PHONY: test-platform-admin-flow
+test: clean ## Run functional tests against local environment
+	pytest -v -n auto --dist loadgroup \
+	tests/functional/preview_and_dev/test_platform_admin_flow.py
+
+.PHONY: test-cbc-integration
+test: clean ## Run functional tests against local environment
+	pytest -v -n auto --dist loadgroup \
+	tests/functional/preview_and_dev/test_cbc_integration.py

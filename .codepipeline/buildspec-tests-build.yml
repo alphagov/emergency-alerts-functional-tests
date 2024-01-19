@@ -25,7 +25,9 @@ phases:
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
-      - make test
+      - make test-broadcast-flow
+      - make test-platform-admin-flow
+      - make test-cbc-integration
   post_build:
     commands:
       - echo "Testing passed" > screenshots/success.txt
