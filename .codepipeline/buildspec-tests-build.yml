@@ -29,16 +29,13 @@ phases:
   post_build:
     commands:
       - echo "Testing passed" > screenshots/success.txt
-      - echo "Testing passed" > functional-test-reports/success.txt
 
-reports:
-  pytest_reports:
-    files:
-      - broadcast-flow
-      - admin-flow
-      - cbc_integration
-    base-directory: functional-test-reports
-    file-format: JUNITXML
+# reports:
+#   pytest_reports:
+#     files:
+#       - broadcast-flow
+#     base-directory: functional-test-reports
+#     file-format: JUNITXML
 
 artifacts:
   files:
