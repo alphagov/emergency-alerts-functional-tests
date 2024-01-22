@@ -120,6 +120,7 @@ def setup_preview_dev_config():
                 },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "service_name": os.environ["BROADCAST_SERVICE_NAME"],
+                "service_id": os.environ["BROADCAST_SERVICE_ID"],
                 "purge_retention_limit": os.environ[
                     "FUNCTIONAL_TEST_ALERT_RETENTION_LIMIT"
                 ],
