@@ -23,19 +23,19 @@ lint: clean
 	black --check .
 
 .PHONY: test-broadcast-flow
-test: clean ## Run functional tests against local environment
+test-broadcast-flow: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_broadcast_flow.py \
-	--junitxml=/eas/emergency-alerts-functional-tests/functional-test-reports/broadcast-flow
+	--junitxml=functional-test-reports/broadcast-flow
 
 .PHONY: test-platform-admin-flow
-test: clean ## Run functional tests against local environment
+test-platform-admin-flow: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
 	--junitxml=functional-test-reports/admin-flow
 
 .PHONY: test-cbc-integration
-test: clean ## Run functional tests against local environment
+test-cbc-integration: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_cbc_integration.py \
 	--junitxml=functional-test-reports/cbc_integration
