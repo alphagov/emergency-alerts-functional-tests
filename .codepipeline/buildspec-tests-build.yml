@@ -29,6 +29,7 @@ phases:
   post_build:
     commands:
       - echo "Testing passed" > screenshots/success.txt
+      - echo "Testing passed" > functional-test-reports/success.txt
 
 reports:
   pytest_reports:
@@ -42,3 +43,4 @@ reports:
 artifacts:
   files:
     - screenshots/*
+    - functional-test-reports/*

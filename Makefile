@@ -7,13 +7,14 @@ help:
 
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
-	mkdir -p logs screenshots
+	mkdir -p logs screenshots functional-test-reports
 	pip install -r requirements.txt
 
 .PHONY: clean
 clean: ## Remove temporary files
 	rm -rf screenshots/*
 	rm -rf logs/*
+	rm -rf functional-test-reports/*
 
 .PHONY: lint
 lint: clean
