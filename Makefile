@@ -26,16 +26,16 @@ lint: clean
 test-broadcast-flow: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_broadcast_flow.py \
-	--junitxml=functional-test-reports/broadcast-flow
+	--junitxml=functional-test-reports/broadcast-flow.xml
 
 .PHONY: test-platform-admin-flow
 test-platform-admin-flow: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
-	--junitxml=functional-test-reports/admin-flow
+	--junitxml=functional-test-reports/platform-admin-flow.xml
 
 .PHONY: test-cbc-integration
 test-cbc-integration: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_cbc_integration.py \
-	--junitxml=functional-test-reports/cbc_integration
+	--junitxml=functional-test-reports/cbc-integration.xml
