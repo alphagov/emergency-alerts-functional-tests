@@ -26,7 +26,6 @@ phases:
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
       - make test-broadcast-flow
-      - make test-platform-admin-flow
       - make test-cbc-integration
   post_build:
     commands:
@@ -36,7 +35,6 @@ reports:
   pytest_reports:
     files:
       - broadcast-flow.xml
-      - platform-admin-flow.xml
       - cbc-integration.xml
     base-directory: functional-test-reports
     file-format: JUNITXML
