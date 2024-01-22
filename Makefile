@@ -26,7 +26,7 @@ lint: clean
 test: clean ## Run functional tests against local environment
 	pytest -v -n auto --dist loadgroup \
 	tests/functional/preview_and_dev/test_broadcast_flow.py \
-	--junitxml=functional-test-reports/broadcast-flow
+	--junitxml=/eas/emergency-alerts-functional-tests/functional-test-reports/broadcast-flow
 
 .PHONY: test-platform-admin-flow
 test: clean ## Run functional tests against local environment
