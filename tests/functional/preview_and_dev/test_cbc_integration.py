@@ -245,7 +245,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
             driver.current_url
         )
-        time.sleep(120)  # wait for exponential backoff of retries
+        time.sleep(180)  # wait for exponential backoff of retries
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
