@@ -34,8 +34,8 @@ phases:
 reports:
   pytest_reports:
     files:
-      - broadcast-flow.xml
-      - cbc-integration.xml
+      - broadcast-flow
+      - cbc-integration
     base-directory: functional-test-reports
     file-format: JUNITXML
 
