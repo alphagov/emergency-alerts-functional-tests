@@ -38,7 +38,7 @@ def create_ddb_client():
         raise Exception("Unable to assume role") from e
 
 
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
     assert "ee-az2" in config["cbcs"]
@@ -51,7 +51,7 @@ def test_cbc_config():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
     response = ddbc.query(
@@ -66,7 +66,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_new_content(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -78,7 +78,7 @@ def test_broadcast_with_new_content(driver, api_client):
         service_id = alerturl.split("/current-alerts/")[0]
         broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        time.sleep(10)
+        time.sleep(20)
         end = int(time.time())
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
@@ -114,7 +114,7 @@ def test_broadcast_with_new_content(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
     db_response = ddbc.scan(
@@ -146,7 +146,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_set_loopback_response_codes():
     test_cbc = "ee-az1"
     test_code = "500"
@@ -172,7 +172,7 @@ def test_set_loopback_response_codes():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -189,7 +189,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
             driver.current_url
         )
-        time.sleep(10)
+        time.sleep(20)
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
@@ -228,7 +228,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -299,7 +299,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
 ):
@@ -320,7 +320,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         )
         time.sleep(30)  # wait for some retries
         _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        time.sleep(90)  # wait for more retries
+        time.sleep(180)  # wait for more retries
 
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
@@ -370,7 +370,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     "Celery + SQS interaction on retry needs to be checked before "
     "this test can be trusted to demonstrate anything useful."
 )
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
     driver, api_client
 ):
