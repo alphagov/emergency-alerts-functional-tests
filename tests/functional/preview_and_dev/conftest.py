@@ -22,7 +22,7 @@ def _purge_functional_test_alerts():
         base_url=config["notify_api_url"],
     )
     service = config["broadcast_service"]["service_id"]
-    older_than = config["broadcast_service"]["purge_retention_limit"]
+    older_than = config["broadcast_service"]["purge_older_than"]
     url = f"/service/{service}/broadcast-message/purge/{older_than}"
 
     client.get(url)
