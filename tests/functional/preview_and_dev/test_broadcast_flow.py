@@ -36,7 +36,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -90,7 +90,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -102,7 +102,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -120,7 +120,7 @@ def test_prepare_broadcast_with_new_content(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.is_text_present_on_page(broadcast_title)
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     # sign out
@@ -259,7 +259,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     alert_page_url = page.current_url
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -280,7 +280,8 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text("Past alerts")
     assert page.is_text_present_on_page(event)
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
+    page.get()
     page.sign_out()

@@ -39,4 +39,6 @@ export PLATFORM_ADMIN_ID='c3d33860-a967-40cf-8eb4-ec1ee38a4df9'
 export PLATFORM_ADMIN_EMAIL='notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk'
 export PLATFORM_ADMIN_NUMBER=07700900222
 
+export BROADCAST_SERVICE_NAME='Functional Tests Broadcast Service'
 export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'
+export FUNCTIONAL_TEST_PURGE_OLDER_THAN=3
