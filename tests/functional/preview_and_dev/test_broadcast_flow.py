@@ -220,31 +220,31 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     )
     broadcast_client.post_broadcast_data(new_alert_xml)
 
-    try:
-        sign_in(driver, account_type="broadcast_approve_user")
-        page = BasePage(driver)
-        page.click_element_by_link_text("Current alerts")
-        page.click_element_by_link_text(event)
+    # try:
+    sign_in(driver, account_type="broadcast_approve_user")
+    page = BasePage(driver)
+    page.click_element_by_link_text("Current alerts")
+    page.click_element_by_link_text(event)
 
-        assert page.is_text_present_on_page(f"An API call wants to broadcast {event}")
+    assert page.is_text_present_on_page(f"An API call wants to broadcast {event}")
 
-        reject_broadcast_xml = CANCEL_XML.format(
-            identifier=identifier,
-            alert_sent=sent_time,
-            cancel_sent=cancel_time,
-            event=event,
-        )
-        broadcast_client.post_broadcast_data(reject_broadcast_xml)
+    reject_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+    )
+    broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
-        time.sleep(10)
-        page.click_element_by_link_text("Rejected alerts")
-        assert page.is_text_present_on_page(event)
+    time.sleep(10)
+    page.click_element_by_link_text("Rejected alerts")
+    assert page.is_text_present_on_page(event)
 
-    finally:
-        # sign out
-        base_page = BasePage(driver)
-        if base_page.is_text_present_on_page("Sign out"):
-            base_page.sign_out()
+    # finally:
+    # sign out
+    base_page = BasePage(driver)
+    if base_page.is_text_present_on_page("Sign out"):
+        base_page.sign_out()
 
 
 @recordtime
