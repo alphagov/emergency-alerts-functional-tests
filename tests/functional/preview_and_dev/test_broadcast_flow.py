@@ -226,7 +226,6 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
 
-    # sign out
     page.get()
     page.sign_out()
 
@@ -287,6 +286,5 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-    # sign out
     page.get()
     page.sign_out()
