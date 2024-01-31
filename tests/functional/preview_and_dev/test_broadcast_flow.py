@@ -27,7 +27,6 @@ from tests.test_utils import (
 
 
 @recordtime
-@pytest.mark.skip("skip for testing")
 @pytest.mark.xdist_group(name="broadcasts")
 def test_prepare_broadcast_with_new_content(driver):
     try:
