@@ -128,73 +128,67 @@ def test_prepare_broadcast_with_new_content(driver):
 
 
 @recordtime
-@pytest.mark.skip("skip for testing")
 @pytest.mark.xdist_group(name="broadcasts")
 def test_prepare_broadcast_with_template(driver):
-    try:
-        sign_in(driver, account_type="broadcast_create_user")
+    sign_in(driver, account_type="broadcast_create_user")
 
-        go_to_templates_page(driver, service="broadcast_service")
-        template_name = "test broadcast" + str(uuid.uuid4())
-        content = "This is a test only."
-        create_broadcast_template(driver, name=template_name, content=content)
+    go_to_templates_page(driver, service="broadcast_service")
+    template_name = "test broadcast" + str(uuid.uuid4())
+    content = "This is a test only."
+    create_broadcast_template(driver, name=template_name, content=content)
 
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.go_to_dashboard_for_service(
-            service_id=config["broadcast_service"]["id"]
-        )
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(
+        service_id=config["broadcast_service"]["id"]
+    )
 
-        dashboard_page.click_element_by_link_text("Current alerts")
+    dashboard_page.click_element_by_link_text("Current alerts")
 
-        current_alerts_page = BasePage(driver)
-        current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_link_text("New alert")
 
-        new_alert_page = BasePage(driver)
-        new_alert_page.select_checkbox_or_radio(value="template")
-        new_alert_page.click_continue()
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="template")
+    new_alert_page.click_continue()
 
-        templates_page = ShowTemplatesPage(driver)
-        templates_page.click_template_by_link_text(template_name)
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
 
-        templates_page.click_element_by_link_text("Get ready to send")
+    templates_page.click_element_by_link_text("Get ready to send")
 
-        prepare_alert_pages = BasePage(driver)
-        prepare_alert_pages.click_element_by_link_text("Local authorities")
-        prepare_alert_pages.click_element_by_link_text("Adur")
-        prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
-        prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
-        prepare_alert_pages.click_continue()
-        prepare_alert_pages.click_element_by_link_text(
-            "Preview this alert"
-        )  # Remove once alert duration added back in
-        # here check if selected areas displayed
-        assert prepare_alert_pages.is_text_present_on_page("Cokeham")
-        assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text(
+        "Preview this alert"
+    )  # Remove once alert duration added back in
+    # here check if selected areas displayed
+    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
+    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
 
-        # prepare_alert_pages.click_element_by_link_text("Continue")
-        # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-        # prepare_alert_pages.click_continue()  # click "Preview this alert"
-        prepare_alert_pages.click_continue()  # click "Submit for approval"
-        assert prepare_alert_pages.is_text_present_on_page(
-            f"{template_name} is waiting for approval"
-        )
+    # prepare_alert_pages.click_element_by_link_text("Continue")
+    # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
+    # prepare_alert_pages.click_continue()  # click "Preview this alert"
+    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    assert prepare_alert_pages.is_text_present_on_page(
+        f"{template_name} is waiting for approval"
+    )
 
-        prepare_alert_pages.click_element_by_link_text("Discard this alert")
-        prepare_alert_pages.click_element_by_link_text("Rejected alerts")
-        rejected_alerts_page = BasePage(driver)
-        assert rejected_alerts_page.is_text_present_on_page(template_name)
+    prepare_alert_pages.click_element_by_link_text("Discard this alert")
+    prepare_alert_pages.click_element_by_link_text("Rejected alerts")
+    rejected_alerts_page = BasePage(driver)
+    assert rejected_alerts_page.is_text_present_on_page(template_name)
 
-        delete_template(driver, template_name, service="broadcast_service")
+    delete_template(driver, template_name, service="broadcast_service")
 
-    finally:
-        # sign out
-        base_page = BasePage(driver)
-        if base_page.is_text_present_on_page("Sign out"):
-            base_page.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
 @recordtime
-@pytest.mark.skip("skip for testing")
 @pytest.mark.xdist_group(name="broadcasts")
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
@@ -213,7 +207,6 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     )
     broadcast_client.post_broadcast_data(new_alert_xml)
 
-    # try:
     sign_in(driver, account_type="broadcast_approve_user")
     page = BasePage(driver)
     page.click_element_by_link_text("Current alerts")
@@ -233,11 +226,9 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
 
-    # finally:
     # sign out
-    base_page = BasePage(driver)
-    if base_page.is_text_present_on_page("Sign out"):
-        base_page.sign_out()
+    page.get()
+    page.sign_out()
 
 
 @recordtime
@@ -259,48 +250,43 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     )
     broadcast_client.post_broadcast_data(new_alert_xml)
 
-    try:
-        sign_in(driver, account_type="broadcast_approve_user")
+    sign_in(driver, account_type="broadcast_approve_user")
 
-        page = BasePage(driver)
-        page.click_element_by_link_text("Current alerts")
-        page.click_element_by_link_text(event)
-        page.select_checkbox_or_radio(value="y")  # confirm approve alert
-        page.click_continue()
+    page = BasePage(driver)
+    page.click_element_by_link_text("Current alerts")
+    page.click_element_by_link_text(event)
+    page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    page.click_continue()
 
-        assert page.is_text_present_on_page("since today at")
+    assert page.is_text_present_on_page("since today at")
 
-        alert_page_url = page.current_url
+    alert_page_url = page.current_url
 
-        time.sleep(10)
-        check_alert_is_published_on_govuk_alerts(
-            driver, "Current alerts", broadcast_content
-        )
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
 
-        cancel_broadcast_xml = CANCEL_XML.format(
-            identifier=identifier,
-            alert_sent=sent_time,
-            cancel_sent=cancel_time,
-            event=event,
-        )
-        broadcast_client.post_broadcast_data(cancel_broadcast_xml)
+    cancel_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+    )
+    broadcast_client.post_broadcast_data(cancel_broadcast_xml)
 
-        # go back to the page for the current alert
-        time.sleep(10)
-        page.get(alert_page_url)
+    # go back to the page for the current alert
+    time.sleep(10)
+    page.get(alert_page_url)
 
-        # assert that it's now cancelled
-        assert page.is_text_present_on_page("Stopped by an API call")
-        page.click_element_by_link_text("Past alerts")
-        assert page.is_text_present_on_page(event)
+    # assert that it's now cancelled
+    assert page.is_text_present_on_page("Stopped by an API call")
+    page.click_element_by_link_text("Past alerts")
+    assert page.is_text_present_on_page(event)
 
-        time.sleep(10)
-        check_alert_is_published_on_govuk_alerts(
-            driver, "Past alerts", broadcast_content
-        )
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-    finally:
-        # sign out
-        base_page = BasePage(driver)
-        if base_page.is_text_present_on_page("Sign out"):
-            base_page.sign_out()
+    # sign out
+    page.get()
+    page.sign_out()
