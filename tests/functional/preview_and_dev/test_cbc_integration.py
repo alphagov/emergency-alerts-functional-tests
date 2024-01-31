@@ -70,47 +70,45 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 def test_broadcast_with_new_content(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
-    try:
-        start = int(time.time())
-        broadcast_alert(driver, broadcast_id)
+    start = int(time.time())
+    broadcast_alert(driver, broadcast_id)
 
-        alerturl = driver.current_url.split("services/")[1]
-        service_id = alerturl.split("/current-alerts/")[0]
-        broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    alerturl = driver.current_url.split("services/")[1]
+    service_id = alerturl.split("/current-alerts/")[0]
+    broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-        time.sleep(20)
-        end = int(time.time())
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+    time.sleep(20)
+    end = int(time.time())
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    response = api_client.get(url=url)
+    assert response is not None
 
-        messages = response["messages"]
-        assert messages is not None
-        assert len(messages) == 4
+    messages = response["messages"]
+    assert messages is not None
+    assert len(messages) == 4
 
-        ddbc = create_ddb_client()
-        db_response = ddbc.scan(
-            TableName="LoopbackRequests",
-            FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
-            ExpressionAttributeNames={"#timestamp": "Timestamp"},
-            ExpressionAttributeValues={
-                ":start_time": {"N": str(start)},
-                ":end_time": {"N": str(end)},
-            },
-        )
+    ddbc = create_ddb_client()
+    db_response = ddbc.scan(
+        TableName="LoopbackRequests",
+        FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
+        ExpressionAttributeNames={"#timestamp": "Timestamp"},
+        ExpressionAttributeValues={
+            ":start_time": {"N": str(start)},
+            ":end_time": {"N": str(end)},
+        },
+    )
 
-        assert db_response["Count"] == 4
+    assert db_response["Count"] == 4
 
-        response_items = db_response["Items"]
+    response_items = db_response["Items"]
 
-        response_mnos = set()
-        for item in response_items:
-            response_mnos.add(item["MnoName"]["S"])
-        expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
-        assert response_mnos == expected_mnos
+    response_mnos = set()
+    for item in response_items:
+        response_mnos.add(item["MnoName"]["S"])
+    expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
+    assert response_mnos == expected_mnos
 
-    finally:
-        cancel_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
 
 
 @recordtime
@@ -152,23 +150,20 @@ def test_set_loopback_response_codes():
     test_code = "500"
     test_ip = config["cbcs"][test_cbc]
 
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, test_cbc, test_code)
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
+    _set_response_codes(ddbc, test_cbc, test_code)
 
-        db_response = ddbc.query(
-            TableName="LoopbackResponses",
-            KeyConditionExpression="IpAddress = :IpAddress",
-            ExpressionAttributeValues={
-                ":IpAddress": {"S": test_ip},
-            },
-        )
+    db_response = ddbc.query(
+        TableName="LoopbackResponses",
+        KeyConditionExpression="IpAddress = :IpAddress",
+        ExpressionAttributeValues={
+            ":IpAddress": {"S": test_ip},
+        },
+    )
 
-        assert db_response["Count"] == 1
-        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
-
-    finally:
-        _set_response_codes(ddbc, test_cbc, "200")
+    assert db_response["Count"] == 1
+    assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
 
 @recordtime
@@ -181,50 +176,48 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     failure_code = "500"
     success_code = "200"
 
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, primary_cbc, failure_code)
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
+    _set_response_codes(ddbc, primary_cbc, failure_code)
 
-        broadcast_alert(driver, broadcast_id)
-        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
-            driver.current_url
-        )
-        time.sleep(20)
+    broadcast_alert(driver, broadcast_id)
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+        driver.current_url
+    )
+    time.sleep(20)
 
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    response = api_client.get(url=url)
+    assert response is not None
 
-        provider_messages = response["messages"]
-        assert provider_messages is not None
-        assert len(provider_messages) == 4
+    provider_messages = response["messages"]
+    assert provider_messages is not None
+    assert len(provider_messages) == 4
 
-        request_id = _dict_item_for_key_value(provider_messages, "provider", "o2", "id")
+    request_id = _dict_item_for_key_value(provider_messages, "provider", "o2", "id")
 
-        db_response = ddbc.query(
-            TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        )
+    db_response = ddbc.query(
+        TableName="LoopbackRequests",
+        KeyConditionExpression="RequestId = :RequestId",
+        ExpressionAttributeValues={":RequestId": {"S": request_id}},
+    )
 
-        print(provider_messages)
-        print(db_response)
+    print(provider_messages)
+    print(db_response)
 
-        responses = db_response["Items"]
+    responses = db_response["Items"]
 
-        o2_az1_response_code = _dynamo_item_for_key_value(
-            responses, "MnoName", primary_cbc, "ResponseCode"
-        )
-        assert o2_az1_response_code == failure_code
+    o2_az1_response_code = _dynamo_item_for_key_value(
+        responses, "MnoName", primary_cbc, "ResponseCode"
+    )
+    assert o2_az1_response_code == failure_code
 
-        o2_az2_response_code = _dynamo_item_for_key_value(
-            responses, "MnoName", secondary_cbc, "ResponseCode"
-        )
-        assert o2_az2_response_code == success_code
+    o2_az2_response_code = _dynamo_item_for_key_value(
+        responses, "MnoName", secondary_cbc, "ResponseCode"
+    )
+    assert o2_az2_response_code == success_code
 
-    finally:
-        _set_response_codes(ddbc, primary_cbc, success_code)
-        cancel_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
 
 
 @recordtime
@@ -235,67 +228,64 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     primary_cbc = "vodafone-az1"
     secondary_cbc = "vodafone-az2"
     failure_code = "500"
-    success_code = "200"
 
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
+    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
-        broadcast_alert(driver, broadcast_id)
-        time.sleep(180)  # wait for exponential backoff of retries
+    broadcast_alert(driver, broadcast_id)
+    time.sleep(180)  # wait for exponential backoff of retries
 
-        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
-            driver.current_url
-        )
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+        driver.current_url
+    )
 
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    response = api_client.get(url=url)
+    assert response is not None
 
-        provider_messages = response["messages"]
-        assert provider_messages is not None
-        assert len(provider_messages) == 4
+    provider_messages = response["messages"]
+    assert provider_messages is not None
+    assert len(provider_messages) == 4
 
-        request_id = _dict_item_for_key_value(
-            provider_messages, "provider", "vodafone", "id"
-        )
+    request_id = _dict_item_for_key_value(
+        provider_messages, "provider", "vodafone", "id"
+    )
 
-        db_response = ddbc.query(
-            TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        )
+    db_response = ddbc.query(
+        TableName="LoopbackRequests",
+        KeyConditionExpression="RequestId = :RequestId",
+        ExpressionAttributeValues={":RequestId": {"S": request_id}},
+    )
 
-        print(provider_messages)
-        print(db_response)
+    print(provider_messages)
+    print(db_response)
 
-        responses = db_response["Items"]
+    responses = db_response["Items"]
 
-        az1_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", primary_cbc, "ResponseCode"
-        )
-        print(az1_response_codes)
-        assert (
-            len(az1_response_codes) == 12
-        )  # (initial invocation + 5 retries) * (primary + secondary attempt)
-        az1_codes_set = set(az1_response_codes)
-        assert len(az1_codes_set) == 1  # assert that all codes are the same
-        assert az1_codes_set.pop() == failure_code
+    az1_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", primary_cbc, "ResponseCode"
+    )
+    print(az1_response_codes)
+    assert (
+        len(az1_response_codes) == 12
+    )  # (initial invocation + 5 retries) * (primary + secondary attempt)
+    az1_codes_set = set(az1_response_codes)
+    assert len(az1_codes_set) == 1  # assert that all codes are the same
+    assert az1_codes_set.pop() == failure_code
 
-        az2_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", secondary_cbc, "ResponseCode"
-        )
-        print(az2_response_codes)
-        assert (
-            len(az2_response_codes) == 12
-        )  # (initial invocation + 5 retries) * (primary + secondary attempt)
-        az2_codes_set = set(az2_response_codes)
-        assert len(az2_codes_set) == 1  # assert that all codes are the same
-        assert az2_codes_set.pop() == failure_code
+    az2_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", secondary_cbc, "ResponseCode"
+    )
+    print(az2_response_codes)
+    assert (
+        len(az2_response_codes) == 12
+    )  # (initial invocation + 5 retries) * (primary + secondary attempt)
+    az2_codes_set = set(az2_response_codes)
+    assert len(az2_codes_set) == 1  # assert that all codes are the same
+    assert az2_codes_set.pop() == failure_code
 
-    finally:
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        cancel_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
 
 
 @recordtime
@@ -310,59 +300,55 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     failure_code = "500"
     success_code = "200"
 
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
+    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
-        broadcast_alert(driver, broadcast_id)
-        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
-            driver.current_url
-        )
-        time.sleep(30)  # wait for some retries
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        time.sleep(180)  # wait for more retries
+    broadcast_alert(driver, broadcast_id)
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+        driver.current_url
+    )
+    time.sleep(20)  # wait for some retries
+    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
+    time.sleep(40)  # wait for more retries
 
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    response = api_client.get(url=url)
+    assert response is not None
 
-        provider_messages = response["messages"]
-        assert provider_messages is not None
-        assert len(provider_messages) == 4
+    provider_messages = response["messages"]
+    assert provider_messages is not None
+    assert len(provider_messages) == 4
 
-        request_id = _dict_item_for_key_value(
-            provider_messages, "provider", "three", "id"
-        )
+    request_id = _dict_item_for_key_value(provider_messages, "provider", "three", "id")
 
-        db_response = ddbc.query(
-            TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        )
+    db_response = ddbc.query(
+        TableName="LoopbackRequests",
+        KeyConditionExpression="RequestId = :RequestId",
+        ExpressionAttributeValues={":RequestId": {"S": request_id}},
+    )
 
-        print(provider_messages)
-        print(db_response)
+    print(provider_messages)
+    print(db_response)
 
-        responses = db_response["Items"]
+    responses = db_response["Items"]
 
-        az1_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", primary_cbc, "ResponseCode"
-        )
-        print(az1_response_codes)
+    az1_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", primary_cbc, "ResponseCode"
+    )
+    print(az1_response_codes)
 
-        az2_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", secondary_cbc, "ResponseCode"
-        )
-        print(az2_response_codes)
+    az2_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", secondary_cbc, "ResponseCode"
+    )
+    print(az2_response_codes)
 
-        response_codes = set(az1_response_codes + az2_response_codes)
-        assert len(response_codes) == 2  # we should have a 200 along with the 500s
-        assert failure_code in response_codes
-        assert success_code in response_codes
+    response_codes = set(az1_response_codes + az2_response_codes)
+    assert len(response_codes) == 2  # we should have a 200 along with the 500s
+    assert failure_code in response_codes
+    assert success_code in response_codes
 
-    finally:
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        cancel_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
 
 
 # @recordtime
@@ -379,60 +365,57 @@ def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
     primary_cbc = "ee-az1"
     secondary_cbc = "ee-az2"
     failure_code = "500"
-    success_code = "200"
 
-    try:
-        ddbc = create_ddb_client()
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
+    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
-        broadcast_alert(driver, broadcast_id)
-        (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
-            driver.current_url
-        )
-        # wait for retries (with exponential backoff plus jitter),
-        # sqs visibility timeout and a second set of retries to begin
-        time.sleep(80 + 310 + 600)
+    broadcast_alert(driver, broadcast_id)
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+        driver.current_url
+    )
+    # wait for retries (with exponential backoff plus jitter),
+    # sqs visibility timeout and a second set of retries to begin
+    time.sleep(80 + 310 + 600)
 
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-        response = api_client.get(url=url)
-        assert response is not None
+    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    response = api_client.get(url=url)
+    assert response is not None
 
-        provider_messages = response["messages"]
-        assert provider_messages is not None
-        assert len(provider_messages) == 4
+    provider_messages = response["messages"]
+    assert provider_messages is not None
+    assert len(provider_messages) == 4
 
-        request_id = _dict_item_for_key_value(provider_messages, "provider", "ee", "id")
+    request_id = _dict_item_for_key_value(provider_messages, "provider", "ee", "id")
 
-        db_response = ddbc.query(
-            TableName="LoopbackRequests",
-            KeyConditionExpression="RequestId = :RequestId",
-            ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        )
+    db_response = ddbc.query(
+        TableName="LoopbackRequests",
+        KeyConditionExpression="RequestId = :RequestId",
+        ExpressionAttributeValues={":RequestId": {"S": request_id}},
+    )
 
-        print(provider_messages)
-        print(db_response)
+    print(provider_messages)
+    print(db_response)
 
-        responses = db_response["Items"]
+    responses = db_response["Items"]
 
-        az1_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", primary_cbc, "ResponseCode"
-        )
-        print(az1_response_codes)
-        assert (
-            len(az1_response_codes) > 12
-        )  # If the sqs message is re-queued, should see more than the original retry count
+    az1_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", primary_cbc, "ResponseCode"
+    )
+    print(az1_response_codes)
+    assert (
+        len(az1_response_codes) > 12
+    )  # If the sqs message is re-queued, should see more than the original retry count
 
-        az2_response_codes = _dynamo_items_for_key_value(
-            responses, "MnoName", secondary_cbc, "ResponseCode"
-        )
-        print(az2_response_codes)
-        assert (
-            len(az2_response_codes) > 12
-        )  # If the sqs message is re-queued, should see more than the original retry count
+    az2_response_codes = _dynamo_items_for_key_value(
+        responses, "MnoName", secondary_cbc, "ResponseCode"
+    )
+    print(az2_response_codes)
+    assert (
+        len(az2_response_codes) > 12
+    )  # If the sqs message is re-queued, should see more than the original retry count
 
-    finally:
-        _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-        cancel_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
 
 
 def _get_service_and_broadcast_ids(url):
