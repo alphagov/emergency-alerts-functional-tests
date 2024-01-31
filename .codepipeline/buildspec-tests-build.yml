@@ -26,8 +26,8 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
-      - make broadcast-flow
-      - make cbc-integration
+      - make test-broadcast-flow
+      - make test-cbc-integration
       - make test-platform-admin-flow
   post_build:
     commands:
