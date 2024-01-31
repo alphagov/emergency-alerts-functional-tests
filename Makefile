@@ -10,6 +10,12 @@ bootstrap: ## Install build dependencies
 	mkdir -p logs screenshots functional-test-reports
 	pip install -r requirements.txt
 
+.PHONY: lint
+lint:
+	isort --check-only tests
+	flake8 .
+	black --check .
+
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
 	pytest -v -n auto --dist=loadgroup \
