@@ -12,7 +12,7 @@ bootstrap: ## Install build dependencies
 
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
-	pytest -v -n auto --dist loadgroup \
+	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_broadcast_flow.py \
 	--junitxml=functional-test-reports/broadcast-flow
 
