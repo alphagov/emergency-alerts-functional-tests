@@ -26,6 +26,7 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
+      = make test-broadcast-flow
       - make test-cbc-integration
   post_build:
     commands:
@@ -34,6 +35,7 @@ phases:
 reports:
   pytest_reports:
     files:
+      - broadcast-flow
       - cbc-integration
     base-directory: functional-test-reports
     file-format: JUNITXML
