@@ -130,9 +130,9 @@ def test_prepare_broadcast_with_new_content(driver):
 
     finally:
         # sign out
-        base_page = BasePage(driver)
-        if base_page.is_text_present_on_page("Sign out"):
-            base_page.sign_out()
+        dashboard_page = DashboardPage(driver)
+        if dashboard_page.is_text_present_on_page("Sign out"):
+            dashboard_page.sign_out()
 
 
 @recordtime
