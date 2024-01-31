@@ -10,7 +10,7 @@ from tests.test_utils import recordtime
 
 
 @recordtime
-@pytest.mark.xdist_group(name="platform-admin")
+@pytest.mark.xdist_group(name="platform_admin")
 def test_add_new_service_platform_admin(driver):
     temp_service_uuid = str(uuid.uuid4())
     service_name = f"Functional Test_{temp_service_uuid}"

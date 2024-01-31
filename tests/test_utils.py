@@ -42,6 +42,12 @@ jenkins_build_id = os.getenv("BUILD_ID", "No build id")
 
 default = " (default)"
 
+ACCOUNTS_REQUIRING_SMS_2FA = [
+    "broadcast_create_user",
+    "broadcast_approve_user",
+    "platform_admin",
+]
+
 
 class NotificationStatuses:
     VIRUS_SCAN_FAILED = "virus-scan-failed"

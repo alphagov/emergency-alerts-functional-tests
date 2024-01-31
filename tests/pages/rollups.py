@@ -5,7 +5,12 @@ from tests.pages import (
     DashboardPage,
     SignInPage,
 )
-from tests.test_utils import do_email_auth_verify, do_verify, do_verify_by_id
+from tests.test_utils import (
+    ACCOUNTS_REQUIRING_SMS_2FA,
+    do_email_auth_verify,
+    do_verify,
+    do_verify_by_id,
+)
 
 
 def sign_in(driver, account_type="normal"):
@@ -13,7 +18,7 @@ def sign_in(driver, account_type="normal"):
 
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
-    if account_type.startswith("broadcast"):
+    if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
