@@ -48,6 +48,8 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
     "platform_admin",
 ]
 
+PROVIDERS = ["ee", "o2", "vodafone", "three"]
+
 
 class NotificationStatuses:
     VIRUS_SCAN_FAILED = "virus-scan-failed"
