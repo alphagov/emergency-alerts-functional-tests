@@ -101,7 +101,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         if len(db_response["Items"]):
             distinct_request_ids += 1
 
-    assert len(distinct_request_ids) == 4
+    assert distinct_request_ids == 4
 
     cancel_alert(driver, broadcast_id)
 
