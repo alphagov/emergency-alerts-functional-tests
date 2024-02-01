@@ -31,13 +31,6 @@ phases:
     commands:
       - echo "Test run completed"
 
-reports:
-  pytest_reports:
-    files:
-      - cbc-integration
-    base-directory: functional-test-reports
-    file-format: JUNITXML
-
 artifacts:
   files:
     - screenshots/*
