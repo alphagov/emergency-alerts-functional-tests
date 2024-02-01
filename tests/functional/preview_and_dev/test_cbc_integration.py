@@ -355,11 +355,11 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     cancel_alert(driver, broadcast_id)
 
 
-# @recordtime
-# @pytest.mark.skip(
-#     "Celery + SQS interaction on retry needs to be checked before "
-#     "this test can be trusted to demonstrate anything useful."
-# )
+@recordtime
+@pytest.mark.skip(
+    "Celery + SQS interaction on retry needs to be checked before "
+    "this test can be trusted to demonstrate anything useful."
+)
 @pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_has_sqs_retry_after_visiblity_timeout(
     driver, api_client
