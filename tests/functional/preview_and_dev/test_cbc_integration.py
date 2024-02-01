@@ -115,6 +115,7 @@ def test_broadcast_with_new_content(driver, api_client):
 @pytest.mark.xdist_group(name="cbc_integration")
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
     )
