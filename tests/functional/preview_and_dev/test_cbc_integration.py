@@ -70,7 +70,6 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 def test_broadcast_with_new_content(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
-    # start = int(time.time())
     broadcast_alert(driver, broadcast_id)
 
     alerturl = driver.current_url.split("services/")[1]
@@ -78,7 +77,6 @@ def test_broadcast_with_new_content(driver, api_client):
     broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
     time.sleep(20)
-    # end = int(time.time())
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = api_client.get(url=url)
     assert response is not None
@@ -90,7 +88,6 @@ def test_broadcast_with_new_content(driver, api_client):
     ddbc = create_ddb_client()
 
     response_items = []
-    count = 0
 
     for provider_id in PROVIDERS:
         request_id = _dict_item_for_key_value(
@@ -101,30 +98,11 @@ def test_broadcast_with_new_content(driver, api_client):
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
         )
-        response_items.append = db_response["Items"]
-        count += db_response["Count"]
+        response_items.append(db_response["Items"])
 
-    # db_response = ddbc.scan(
-    #     TableName="LoopbackRequests",
-    #     FilterExpression="#timestamp BETWEEN :start_time AND :end_time",
-    #     ExpressionAttributeNames={"#timestamp": "Timestamp"},
-    #     ExpressionAttributeValues={
-    #         ":start_time": {"N": str(start)},
-    #         ":end_time": {"N": str(end)},
-    #     },
-    # )
+    print(response_items)
 
-    # db_response = ddbc.query(
-    #     TableName="LoopbackRequests",
-    #     KeyConditionExpression="RequestId = :RequestId",
-    #     ExpressionAttributeValues={":RequestId": {"S": request_id}},
-    # )
-
-    # assert db_response["Count"] == 4
-
-    # response_items = db_response["Items"]
-
-    assert count == 4
+    assert len(response_items) == 4
 
     response_mnos = set()
     for item in response_items:
