@@ -277,10 +277,10 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     assert len(az2_codes_set) == 1  # assert that all codes are the same
     assert az2_codes_set.pop() == failure_code
 
-    # Assert that at least one of the AZs get the expected number of retries;
+    # Assert that at least one of the AZs gets the expected number of retries;
     # in practice, it has been observed that celery does not always deliver
-    # the expected number, hence we assume all is working as expected if at
-    # least one of the AZs has the retry count we expect:
+    # the expected number, hence we assume that all is working as expected if
+    # at least one of the AZs has the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
     assert len(az1_response_codes) == 12 or len(az2_response_codes) == 12
 
