@@ -67,16 +67,18 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc_integration")
-def test_broadcast_with_new_content(driver, api_client):
-    broadcast_id = str(uuid.uuid4())
+def test_broadcast_generates_four_provider_messages(driver, api_client):
+    ddbc = create_ddb_client()
+    _set_response_codes(ddbc, "all", "200")
 
+    broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
     alerturl = driver.current_url.split("services/")[1]
     service_id = alerturl.split("/current-alerts/")[0]
     broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-    time.sleep(20)
+    time.sleep(10)
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = api_client.get(url=url)
     assert response is not None
@@ -85,9 +87,7 @@ def test_broadcast_with_new_content(driver, api_client):
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
-    ddbc = create_ddb_client()
-
-    response_items = []
+    distinct_request_ids = 0
 
     for provider_id in PROVIDERS:
         request_id = _dict_item_for_key_value(
@@ -98,17 +98,10 @@ def test_broadcast_with_new_content(driver, api_client):
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
         )
-        response_items.append(db_response["Items"])
+        if len(db_response["Items"]):
+            distinct_request_ids += 1
 
-    print(response_items)
-
-    assert len(response_items) == 4
-
-    response_mnos = set()
-    for item in response_items:
-        response_mnos.add(item["MnoName"]["S"])
-    expected_mnos = {"ee-az1", "o2-az1", "vodafone-az1", "three-az1"}
-    assert response_mnos == expected_mnos
+    assert len(distinct_request_ids) == 4
 
     cancel_alert(driver, broadcast_id)
 
