@@ -307,9 +307,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
         driver.current_url
     )
-    time.sleep(20)  # wait for some retries
+    time.sleep(10)  # wait for some retries
     _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
-    time.sleep(50)  # wait for more retries
+    time.sleep(60)  # wait for more retries
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = api_client.get(url=url)
