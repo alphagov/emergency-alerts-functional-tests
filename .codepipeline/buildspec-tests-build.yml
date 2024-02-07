@@ -26,9 +26,7 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
-      - make test-broadcast-flow && exit 0
-      - make test-cbc-integration && exit 0
-      - make test-platform-admin-flow && exit 0
+      - make all-tests
   post_build:
     commands:
       - echo "Test run completed"
