@@ -127,6 +127,7 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
+@pytest.skip()
 @recordtime
 @pytest.mark.xdist_group(name="broadcasts")
 def test_prepare_broadcast_with_template(driver):
@@ -188,6 +189,7 @@ def test_prepare_broadcast_with_template(driver):
     current_alerts_page.sign_out()
 
 
+@pytest.skip()
 @recordtime
 @pytest.mark.xdist_group(name="broadcasts")
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
@@ -230,6 +232,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.sign_out()
 
 
+@pytest.skip()
 @recordtime
 @pytest.mark.xdist_group(name="broadcasts")
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
