@@ -123,7 +123,6 @@ def test_prepare_broadcast_with_new_content(driver):
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-    # sign out
     current_alerts_page.get()
     current_alerts_page.sign_out()
 
@@ -185,7 +184,8 @@ def test_prepare_broadcast_with_template(driver):
 
     delete_template(driver, template_name, service="broadcast_service")
 
-    prepare_alert_pages.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
 @recordtime
@@ -222,9 +222,11 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     )
     broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
+    time.sleep(10)
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
 
+    page.get()
     page.sign_out()
 
 
@@ -273,6 +275,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     broadcast_client.post_broadcast_data(cancel_broadcast_xml)
 
     # go back to the page for the current alert
+    time.sleep(10)
     page.get(alert_page_url)
 
     # assert that it's now cancelled

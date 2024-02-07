@@ -18,18 +18,20 @@ phases:
       - VENV_TESTS='/venv/eas-tests'
       - python3.9 -m venv $VENV_TESTS
       - . $VENV_TESTS/bin/activate
-  build:
-    commands:
       - chmod +x environment.sh
       - . ./environment.sh
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
-      - make test
+  build:
+    on-failure: CONTINUE
+    commands:
+      - make test-cbc-integration
   post_build:
     commands:
-      - echo "Testing passed" > screenshots/success.txt
+      - echo "Test run completed"
 
 artifacts:
   files:
     - screenshots/*
+    - functional-test-reports/*
