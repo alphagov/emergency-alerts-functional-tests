@@ -26,9 +26,9 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
-      - make test-broadcast-flow
-      - make test-cbc-integration
-      - make test-platform-admin-flow
+      - make test-broadcast-flow 2> /dev/null
+      - make test-cbc-integration 2> /dev/null
+      - make test-platform-admin-flow 2> /dev/null
   post_build:
     commands:
       - echo "Test run completed"
