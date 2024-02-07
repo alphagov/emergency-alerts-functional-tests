@@ -28,7 +28,7 @@ phases:
     commands:
       - make test-broadcast-flow
       - make test-cbc-integration
-      - test-platform-admin-flow
+      - make test-platform-admin-flow
   post_build:
     commands:
       - echo "Test run completed"
