@@ -32,6 +32,10 @@ phases:
   post_build:
     commands:
       - echo "Test run completed"
+      - chmod -x scripts/check-test-output.sh
+      - . ./check-test-output.sh functional-test-reports/broadcast-flow
+      - . ./check-test-output.sh functional-test-reports/cbc-integration
+      - . ./check-test-output.sh functional-test-reports/platform-admin-flow
 
 artifacts:
   files:
