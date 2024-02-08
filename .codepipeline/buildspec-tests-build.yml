@@ -33,9 +33,9 @@ phases:
     commands:
       - echo "Test run completed"
       - chmod -x scripts/check-test-output.sh
-      - . scripts/check-test-output.sh "functional-test-reports/broadcast-flow"
-      - . scripts/check-test-output.sh "functional-test-reports/cbc-integration"
-      - . scripts/check-test-output.sh "functional-test-reports/platform-admin-flow"
+      - . ./scripts/check-test-output.sh "./functional-test-reports/broadcast-flow"
+      - . ./scripts/check-test-output.sh "./functional-test-reports/cbc-integration"
+      - . ./scripts/check-test-output.sh "./functional-test-reports/platform-admin-flow"
 
 artifacts:
   files:
