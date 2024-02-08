@@ -23,6 +23,8 @@
 
 text=$(cat)
 
+echo "$text"
+
 # Look for non-zero errors or failures
 pattern='\b(?:errors|failures)="([1-9][0-9]*)"\b'
 

@@ -32,9 +32,7 @@ phases:
   post_build:
     commands:
       - echo "Test run completed"
-      - ls -alF ./scripts/check-test-output.sh
       - chmod +x ./scripts/check-test-output.sh
-      - ls -alF ./scripts/check-test-output.sh
       - cat ./functional-test-reports/broadcast-flow
       - cat ./functional-test-reports/broadcast-flow | ./scripts/check-test-output.sh
       - cat ./functional-test-reports/cbc-integration | ./scripts/check-test-output.sh
