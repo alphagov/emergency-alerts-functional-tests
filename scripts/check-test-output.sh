@@ -23,10 +23,8 @@
 
 text=$(cat)
 
-echo "$text"
-
 # Look for non-zero errors or failures
-pattern='\b(?:errors|failures)="([1-9][0-9]*)"\b'
+pattern='errors="([1-9][0-9]*)"|failures="([1-9][0-9]*)"'
 
 # Check if the string matches the pattern
 if [[ $text =~ $pattern ]]; then
