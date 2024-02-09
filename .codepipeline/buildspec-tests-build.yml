@@ -31,7 +31,7 @@ phases:
       - make test-platform-admin-flow; exit 0
       - echo "Test run completed."
       - echo "Report test failures..."
-      -
+      - python3.9 ./scripts/report-test-failures.py ./functional-test-reports/cbc-integration
   post_build:
     commands:
       - echo "Signal overall build success or failure..."
