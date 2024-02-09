@@ -29,14 +29,17 @@ phases:
       - make test-broadcast-flow; exit 0
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
+      - echo "Test run completed."
+      - echo "Report test failures..."
+      -
   post_build:
     commands:
-      - echo "Test run completed"
-      - chmod +x ./scripts/check-test-output.sh
+      - echo "Signal overall build success or failure..."
+      - chmod +x ./scripts/pass-or-fail-build.sh
       - cat ./functional-test-reports/broadcast-flow
-      - cat ./functional-test-reports/broadcast-flow | ./scripts/check-test-output.sh
-      - cat ./functional-test-reports/cbc-integration | ./scripts/check-test-output.sh
-      - cat ./functional-test-reports/platform-admin-flow | ./scripts/check-test-output.sh
+      - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
+      - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
+      - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
 
 artifacts:
   files:

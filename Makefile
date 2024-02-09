@@ -33,11 +33,3 @@ test-platform-admin-flow:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
 	--junitxml=functional-test-reports/platform-admin-flow
-
-.PHONY: all-tests
-all-tests:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_broadcast_flow.py \
-	tests/functional/preview_and_dev/test_cbc_integration.py \
-	tests/functional/preview_and_dev/test_platform_admin_flow.py \
-	--junitxml=functional-test-reports/test-output
