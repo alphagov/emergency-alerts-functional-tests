@@ -1,3 +1,4 @@
+import os
 import sys
 
 import requests
@@ -8,10 +9,17 @@ def main():
         print("Usage: python report-test-failures.py filename zendesk_url zendesk_key")
         sys.exit(0)
 
-    # get body from file
-    body = ""
+    input = sys.argv[1]
 
-    dispatch_zendesk_notification({"comment": body})
+    if not os.path.exists(input):
+        print("Please provide both an input and output file")
+        sys.exit(0)
+
+    with open(input) as input_file:
+        failures = input_file.readlines()
+
+    if not failures:
+        dispatch_zendesk_notification({"comment": failures})
 
 
 def dispatch_zendesk_notification(body):

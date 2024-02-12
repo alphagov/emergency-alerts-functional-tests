@@ -4,6 +4,7 @@ phases:
   install:
     runtime-versions:
       python: 3.9
+
     commands:
       - apt update
       - apt install -y xvfb libxi6 libgconf-2-4 libnss3
@@ -12,6 +13,7 @@ phases:
       - unzip chromedriver_linux64.zip
       - mv chromedriver /usr/bin/chromedriver
       - apt-get install -f -y
+
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR
@@ -23,6 +25,7 @@ phases:
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
+
   build:
     on-failure: CONTINUE
     commands:
@@ -30,12 +33,16 @@ phases:
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - echo "Test run completed."
+
       - echo "Collecting failure data..."
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/broadcast-flow
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/cbc-integration
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/platform-admin-flow
+      - touch ./test-failures
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/broadcast-flow ./test-failures
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/cbc-integration ./test-failures
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/platform-admin-flow ./test-failures
+
       - echo "Reporting test failures..."
       - python3.9 ./scripts/report-test-failures.py $ZENDESK_URL $ZENDESK_API_KEY
+
   post_build:
     commands:
       - echo "Signal overall build success or failure..."

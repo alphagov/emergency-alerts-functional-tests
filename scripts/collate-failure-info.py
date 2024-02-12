@@ -9,20 +9,18 @@ def main():
         print("Usage: python report-test-failures.py input output")
         sys.exit(0)
 
-    if os.path.exists(sys.argv[1]):
-        input = sys.argv[1]
-    else:
-        sys.exit(0)
+    input = sys.argv[1]
+    output = sys.argv[2]
 
-    # create file
+    if not os.path.exists(input) or not os.path.exists(output):
+        print("Please provide both an input and output file")
+        sys.exit(0)
 
     test_failures = extract_failures_summary(parse(input))
 
-    body = ""
-    for t in test_failures:
-        body += f"Test Name: {t[0]}\nLocation: {t[1]}\nError: {t[2]}\n\n"
-
-    # write failure info to file
+    with open(output, "w") as output_file:
+        for t in test_failures:
+            output_file.write(f"Test Name: {t[0]}\nLocation: {t[1]}\nError: {t[2]}\n\n")
 
 
 def extract_failures_summary(document):
