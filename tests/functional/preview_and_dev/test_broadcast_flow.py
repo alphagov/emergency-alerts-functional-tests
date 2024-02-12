@@ -225,6 +225,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     time.sleep(10)
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
+    assert page.is_text_present_on_page("force failure")
 
     page.get()
     page.sign_out()

@@ -161,6 +161,8 @@ def test_set_loopback_response_codes():
     assert db_response["Count"] == 1
     assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
+    assert db_response["Count"] == 100  # force test failure
+
 
 @recordtime
 @pytest.mark.xdist_group(name="cbc_integration")
@@ -281,6 +283,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
     assert len(az1_response_codes) == 12
     assert len(az2_response_codes) == 12
+
+    assert len(az1_response_codes) == 100  # force failure
 
     cancel_alert(driver, broadcast_id)
 
