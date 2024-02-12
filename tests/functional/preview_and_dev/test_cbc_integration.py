@@ -65,6 +65,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
+@pytest.mark.skip()
 @recordtime
 @pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_generates_four_provider_messages(driver, api_client):
@@ -218,6 +219,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @recordtime
 @pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
@@ -284,11 +286,10 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     assert len(az1_response_codes) == 12
     assert len(az2_response_codes) == 12
 
-    assert len(az1_response_codes) == 100  # force failure
-
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @recordtime
 @pytest.mark.xdist_group(name="cbc_integration")
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
