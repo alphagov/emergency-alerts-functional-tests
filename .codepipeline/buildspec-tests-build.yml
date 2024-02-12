@@ -30,13 +30,16 @@ phases:
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - echo "Test run completed."
-      - echo "Report test failures..."
-      - python3.9 ./scripts/report-test-failures.py ./functional-test-reports/cbc-integration
+      - echo "Collecting failure data..."
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/broadcast-flow
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/cbc-integration
+      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/platform-admin-flow
+      - echo "Reporting test failures..."
+      - python3.9 ./scripts/report-test-failures.py $ZENDESK_URL $ZENDESK_API_KEY
   post_build:
     commands:
       - echo "Signal overall build success or failure..."
       - chmod +x ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/broadcast-flow
       - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
       - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
       - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
