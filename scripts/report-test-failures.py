@@ -5,8 +5,8 @@ import requests
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python report-test-failures.py filename zendesk_url zendesk_key")
+    if len(sys.argv) < 1:
+        print("Usage: python report-test-failures.py filename")
         sys.exit(0)
 
     input = sys.argv[1]
@@ -16,13 +16,14 @@ def main():
         sys.exit(0)
 
     with open(input, "r") as input_file:
-        failures = input_file.read()
+        failures = input_file.readlines()
 
-    if not failures:
-        dispatch_zendesk_notification({"comment": failures})
+    for failure in failures:
+        print("Functional Test Failure: " + failure + "\n")
 
 
 def dispatch_zendesk_notification(body):
+    # usage: dispatch_zendesk_notification({"comment": "\n".join(failures)})
     zendesk_url = sys.argv[2]
     zendesk_key = sys.argv[3]
 
