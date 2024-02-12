@@ -15,8 +15,8 @@ def main():
         print("Please provide both an input and output file")
         sys.exit(0)
 
-    with open(input) as input_file:
-        failures = input_file.readlines()
+    with open(input, "r") as input_file:
+        failures = input_file.read()
 
     if not failures:
         dispatch_zendesk_notification({"comment": failures})
