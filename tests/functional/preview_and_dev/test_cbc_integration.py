@@ -232,7 +232,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(300)  # wait for exponential backoff of retries
+    time.sleep(360)  # wait for exponential backoff of retries
 
     (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
         driver.current_url

@@ -41,7 +41,7 @@ phases:
       - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/platform-admin-flow ./test-failures
 
       - echo "Reporting test failures..."
-      - python3.9 ./scripts/report-test-failures.py ./test-failures
+      - python3.9 ./scripts/report-test-failures.py ./test-failures; exit 1
 
   post_build:
     commands:
