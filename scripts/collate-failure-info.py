@@ -33,7 +33,7 @@ def extract_failures_summary(document):
     failures = []
     for test_failure in test_failures:
         if test_failure.hasAttribute("message"):
-            message = test_failure.getAttribute("message")
+            message = test_failure.getAttribute("message").replace("\n", " ")
 
         if test_failure.hasChildNodes:
             node = test_failure.firstChild
