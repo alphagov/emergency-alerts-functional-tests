@@ -18,8 +18,11 @@ def main():
     with open(input, "r") as input_file:
         failures = input_file.readlines()
 
+    print("------------------------------------")
+    print(failures)
+
     for failure in failures:
-        print("PRV-FT-", failure.replace("\n", " "), sep=None, end=None)
+        print("PRV-FT-", failure.replace("\n", " "), sep="", end="")
 
 
 def dispatch_zendesk_notification(body):
