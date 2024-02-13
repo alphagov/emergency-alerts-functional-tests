@@ -22,8 +22,7 @@ def main():
     print(failures)
 
     for failure in failures:
-        print("PRV-FT-", failure, sep="")
-        # print("PRV-FT-", failure.replace("\n", " "), sep="")
+        print("PRV-FT-", failure.replace("\n", " "), sep="")
 
 
 def dispatch_zendesk_notification(body):
