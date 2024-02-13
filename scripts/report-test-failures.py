@@ -1,8 +1,6 @@
 import os
 import sys
 
-import requests
-
 
 def main():
     if len(sys.argv) < 1:
@@ -20,31 +18,6 @@ def main():
 
     for failure in failures:
         print("PRV-FT-", failure.replace("\n", " "), sep="")
-
-
-def dispatch_zendesk_notification(body):
-    # usage: dispatch_zendesk_notification({"comment": "\n".join(failures)})
-    zendesk_url = sys.argv[2]
-    zendesk_key = sys.argv[3]
-
-    data = {
-        "ticket": {
-            "subject": "Functional Test Failures",
-            "description": "The following functional tests have reported failures",
-            "comment": {"body": f"{body}"},
-            "priority": "normal",
-        }
-    }
-
-    response = requests.post(
-        zendesk_url,
-        data=data,
-        headers={
-            "Authorization": f"Token {zendesk_key}",
-            "Content-Type": "application/json",
-        },
-    )
-    response.raise_for_status()
 
 
 if __name__ == "__main__":
