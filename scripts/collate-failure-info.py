@@ -32,7 +32,7 @@ def extract_failure_descriptions(document):
         (test_name, test_group) = test_identifier.split("@")
 
         if test_failure.hasAttribute("message"):
-            message = test_failure.getAttribute("message")
+            message = test_failure.getAttribute("message").replace("\n", " ")
 
         if test_failure.hasChildNodes:
             node = test_failure.firstChild
