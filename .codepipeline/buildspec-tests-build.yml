@@ -35,14 +35,13 @@ phases:
       - echo "Test run completed."
 
       - echo "Collecting failure data..."
-      - touch ./test-failures
-      - pwd
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/broadcast-flow ./test-failures
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/cbc-integration ./test-failures
-      - python3.9 ./scripts/collate-failure-info.py ./functional-test-reports/platform-admin-flow ./test-failures
+      - touch "$(pwd)/test-failures"
+      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
+      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
+      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
 
       - echo "Reporting test failures..."
-      - python3.9 ./scripts/report-test-failures.py ./test-failures
+      - python3.9 ./scripts/report-test-failures.py "$(pwd)/test-failures"
 
   post_build:
     commands:
