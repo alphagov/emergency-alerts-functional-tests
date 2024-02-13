@@ -17,8 +17,6 @@ def main():
         sys.exit(0)
 
     test_failures = extract_failures_summary(parse(input))
-    print(test_failures)
-    print(output)
 
     with open(output, "a") as output_file:
         for t in test_failures:
