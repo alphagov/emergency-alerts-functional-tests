@@ -23,7 +23,7 @@ def main():
     with open(output, "a") as output_file:
         for t in test_failures:
             output_file.write(
-                f"test-name: {t[0]}, test-location: {t[1]}, error-message: {t[2]}\n"
+                f"test-name: {t[0]}, test-location: {t[1]}, error-message: {t[2]}"
             )
 
 
