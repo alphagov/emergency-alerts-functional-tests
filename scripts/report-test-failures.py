@@ -19,7 +19,7 @@ def main():
         failures = input_file.readlines()
 
     for failure in failures:
-        print("Functional Test Failure => ", failure.replace("\n", " "), end=None)
+        print("PRV-FT-", failure.replace("\n", " "), sep=None, end=None)
 
 
 def dispatch_zendesk_notification(body):

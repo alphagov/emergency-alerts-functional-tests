@@ -25,9 +25,11 @@ from tests.test_utils import (
     recordtime,
 )
 
+TESTSUITE_CODE = "BROADCASTS"
+
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -127,9 +129,8 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
-@pytest.mark.skip()
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -190,7 +191,7 @@ def test_prepare_broadcast_with_template(driver):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)
@@ -226,15 +227,13 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     time.sleep(10)
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
-    assert page.is_text_present_on_page("force failure")
 
     page.get()
     page.sign_out()
 
 
-@pytest.mark.skip()
 @recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)

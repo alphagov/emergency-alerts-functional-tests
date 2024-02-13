@@ -8,9 +8,11 @@ from tests.pages.pages import BasePage
 from tests.pages.rollups import sign_in
 from tests.test_utils import recordtime
 
+TESTSUITE_CODE = "PLATFORM-ADMIN"
+
 
 @recordtime
-@pytest.mark.xdist_group(name="platform_admin")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_add_new_service_platform_admin(driver):
     temp_service_uuid = str(uuid.uuid4())
     service_name = f"Functional Test_{temp_service_uuid}"
