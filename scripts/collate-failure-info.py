@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 from xml.dom.minidom import Node, parse
 
@@ -30,15 +29,17 @@ def extract_failures_summary(document):
 
     failures = []
     for test_failure in test_failures:
+        parent = test_failure.parentNode
+        test_identifier = parent.getAttribute("name")
+        (test_name, test_group) = test_identifier.split("@")
+
         if test_failure.hasAttribute("message"):
-            message = test_failure.getAttribute("message").replace("\n", " ")
+            message = test_failure.getAttribute("message")
 
         if test_failure.hasChildNodes:
             node = test_failure.firstChild
             if node.nodeType == Node.TEXT_NODE:
                 text = node.nodeValue
-                test_group = extract_test_group_name(text)
-                test_name = extract_test_method_name(text)
                 location = extract_last_line(text)
 
         if message is not None or location is not None:
@@ -47,28 +48,12 @@ def extract_failures_summary(document):
     return failures
 
 
-def extract_test_method_name(s):
-    match = re.search(r"def\s(.*?)\(", s)
-    if match:
-        return match.group(1)
-    else:
-        return None
-
-
 def extract_last_line(s):
     if not s:
         return None
 
     lines = s.split("\n")
     return lines[-1].strip()
-
-
-def extract_test_group_name(s):
-    match = re.search(r".*xdist_group\(name=\"(.*?)\"", s)
-    if match:
-        return match.group(1)
-    else:
-        return None
 
 
 if __name__ == "__main__":
