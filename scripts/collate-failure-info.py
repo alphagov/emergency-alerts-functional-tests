@@ -15,14 +15,14 @@ def main():
         print("Please provide both an input and output file")
         sys.exit(0)
 
-    test_failures = extract_failures_summary(parse(input))
+    test_failures = extract_failure_descriptions(parse(input))
 
     with open(output, "a") as output_file:
         for t in test_failures:
             output_file.write(f"{t[0]} | NAME: {t[1]} | FILE: {t[2]} | ERROR: {t[3]}\n")
 
 
-def extract_failures_summary(document):
+def extract_failure_descriptions(document):
     test_failures = document.getElementsByTagName("failure")
 
     failures = []
@@ -38,10 +38,11 @@ def extract_failures_summary(document):
             node = test_failure.firstChild
             if node.nodeType == Node.TEXT_NODE:
                 text = node.nodeValue
-                location = extract_last_line(text)
+                last_line = extract_last_line(text)
+                summary = extract_failure_summary(last_line)
 
-        if message is not None or location is not None:
-            failures.append((test_group, test_name, location, message))
+        if message is not None or summary is not None:
+            failures.append((test_group, test_name, summary, message))
 
     return failures
 
@@ -52,6 +53,14 @@ def extract_last_line(s):
 
     lines = s.split("\n")
     return lines[-1].strip()
+
+
+def extract_failure_summary(s):
+    if not s:
+        return None
+
+    parts = s.split(":")
+    return f"{parts[0]}, line {parts[1]}"
 
 
 if __name__ == "__main__":
