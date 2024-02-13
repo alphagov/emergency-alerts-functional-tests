@@ -104,7 +104,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             distinct_request_ids += 1
 
     assert distinct_request_ids == 4
-    assert distinct_request_ids == 4444
 
     cancel_alert(driver, broadcast_id)
 
@@ -117,8 +116,6 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
     )
-
-    print(db_response)
 
     assert db_response["Count"] == 8
 
@@ -201,9 +198,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     o2_az1_response_code = _dynamo_item_for_key_value(
@@ -257,15 +251,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    print(az1_response_codes)
 
     az1_codes_set = set(az1_response_codes)
     assert len(az1_codes_set) == 1  # assert that all codes are the same
@@ -274,7 +264,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     az2_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    print(az2_response_codes)
 
     az2_codes_set = set(az2_response_codes)
     assert len(az2_codes_set) == 1  # assert that all codes are the same
@@ -328,20 +317,15 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    print(az1_response_codes)
 
     az2_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    print(az2_response_codes)
 
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
