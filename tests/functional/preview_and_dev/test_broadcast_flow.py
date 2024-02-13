@@ -25,7 +25,7 @@ from tests.test_utils import (
     recordtime,
 )
 
-TESTSUITE_CODE = "BROADCASTS"
+TESTSUITE_CODE = "BROADCAST-FLOW"
 
 
 @recordtime

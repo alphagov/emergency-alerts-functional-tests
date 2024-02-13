@@ -19,9 +19,7 @@ def main():
 
     with open(output, "a") as output_file:
         for t in test_failures:
-            output_file.write(
-                f"{t[0]} | test-name: {t[1]} | test-location: {t[2]} | error-message: {t[3]}\n"
-            )
+            output_file.write(f"{t[0]} | NAME: {t[1]} | FILE: {t[2]} | ERROR: {t[3]}\n")
 
 
 def extract_failures_summary(document):
