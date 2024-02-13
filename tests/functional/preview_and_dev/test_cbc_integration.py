@@ -104,6 +104,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             distinct_request_ids += 1
 
     assert distinct_request_ids == 4
+    assert distinct_request_ids == 4444
 
     cancel_alert(driver, broadcast_id)
 
