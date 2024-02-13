@@ -36,6 +36,7 @@ phases:
 
       - echo "Collecting failure data..."
       - touch "$(pwd)/test-failures"
+      - chmod +rw "$(pwd)/test-failures"
       - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
       - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
       - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
