@@ -8,6 +8,8 @@ from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import PROVIDERS, recordtime
 
+TESTSUITE_CODE = "CBC-INTEGRATION"
+
 
 def create_ddb_client():
     try:
@@ -38,7 +40,7 @@ def create_ddb_client():
         raise Exception("Unable to assume role") from e
 
 
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
     assert "ee-az2" in config["cbcs"]
@@ -51,7 +53,7 @@ def test_cbc_config():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
     response = ddbc.query(
@@ -66,7 +68,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
     _set_response_codes(ddbc, "all", "200")
@@ -107,15 +109,13 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
     _set_response_codes(ddbc, "all", "200")
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
     )
-
-    print(db_response)
 
     assert db_response["Count"] == 8
 
@@ -140,7 +140,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_set_loopback_response_codes():
     test_cbc = "ee-az1"
     test_code = "500"
@@ -163,7 +163,7 @@ def test_set_loopback_response_codes():
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -198,9 +198,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     o2_az1_response_code = _dynamo_item_for_key_value(
@@ -217,7 +214,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -230,7 +227,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(300)  # wait for exponential backoff of retries
+    time.sleep(360)  # wait for exponential backoff of retries
 
     (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
         driver.current_url
@@ -254,15 +251,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    print(az1_response_codes)
 
     az1_codes_set = set(az1_response_codes)
     assert len(az1_codes_set) == 1  # assert that all codes are the same
@@ -271,7 +264,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     az2_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    print(az2_response_codes)
 
     az2_codes_set = set(az2_response_codes)
     assert len(az2_codes_set) == 1  # assert that all codes are the same
@@ -286,7 +278,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 
 @recordtime
-@pytest.mark.xdist_group(name="cbc_integration")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
 ):
@@ -325,20 +317,15 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
     )
 
-    print(provider_messages)
-    print(db_response)
-
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    print(az1_response_codes)
 
     az2_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    print(az2_response_codes)
 
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
