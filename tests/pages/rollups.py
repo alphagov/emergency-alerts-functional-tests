@@ -2,6 +2,7 @@ from config import config
 from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
+    CommonPageLocators,
     DashboardPage,
     SignInPage,
 )
@@ -153,6 +154,7 @@ def approve_alert(driver, id):
     current_alerts_page.click_element_by_link_text("test broadcast" + id)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
+    current_alerts_page.wait_for_element(CommonPageLocators.LIVE_BROADCAST)
     assert current_alerts_page.is_text_present_on_page("since today at")
 
 
