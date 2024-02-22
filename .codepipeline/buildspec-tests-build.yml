@@ -2,7 +2,11 @@ version: 0.2
 
 env:
   variables:
-    TESTSUITES: "broadcast-flow cbc-integration platform-admin-flow authentication-flow"
+    testsuites: >-
+      broadcast-flow
+      cbc-integration
+      platform-admin-flow
+      authentication-flow
 
 phases:
   install:
@@ -33,6 +37,7 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
+      - echo $testsuites
       - make test-broadcast-flow; exit 0
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
@@ -41,7 +46,7 @@ phases:
 
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
-      - python3.9 ./scripts/collect-failure-data.py "$(pwd)" "${TESTSUITES[@]}"
+      - python3.9 ./scripts/collect-failure-data.py $(pwd) $testsuites
       # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
       # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
       # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
@@ -51,7 +56,7 @@ phases:
 
   post_build:
     commands:
-      - python3.9 ./signal-build-pass-or-fail.py "$(pwd)" "${TESTSUITES[@]}"
+      - python3.9 ./signal-build-pass-or-fail.py $(pwd) $testsuites
       - chmod +x ./scripts/pass-or-fail-build.sh
       # - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
       # - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
