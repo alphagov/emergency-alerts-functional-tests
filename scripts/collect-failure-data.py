@@ -22,7 +22,6 @@ def main():
 
     for test_file in test_files:
         test_failures = extract_failure_descriptions(parse(test_file))
-
         with open(failure_file, "a") as output_file:
             for t in test_failures:
                 output_file.write(
