@@ -25,6 +25,10 @@ phases:
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
+      - export TESTSUITES=("broadcast-flow" \
+                           "cbc-integration" \
+                           "platform-admin-flow" \
+                           "authentication-flow")
 
   build:
     on-failure: CONTINUE
@@ -37,20 +41,22 @@ phases:
 
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/authentication-flow" "$(pwd)/test-failures"
+      - python3.9 ./scripts/collect-failure-data.py "$(pwd)" "${TESTSUITES[@]}"
+      # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
+      # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
+      # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
+      # - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/authentication-flow" "$(pwd)/test-failures"
 
       - python3.9 ./scripts/report-test-failures.py "$(pwd)/test-failures"
 
   post_build:
     commands:
+      - python3.9 ./signal-build-pass-or-fail.py "$(pwd)" "${TESTSUITES[@]}"
       - chmod +x ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/authentication-flow | ./scripts/pass-or-fail-build.sh
+      # - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
+      # - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
+      # - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
+      # - cat ./functional-test-reports/authentication-flow | ./scripts/pass-or-fail-build.sh
 
 artifacts:
   files:
