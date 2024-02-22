@@ -25,10 +25,11 @@ phases:
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
-      - export TESTSUITES=("broadcast-flow" \
-                           "cbc-integration" \
-                           "platform-admin-flow" \
-                           "authentication-flow")
+      - >-
+        export TESTSUITES=("broadcast-flow"
+        "cbc-integration"
+        "platform-admin-flow"
+        "authentication-flow")
 
   build:
     on-failure: CONTINUE
