@@ -22,13 +22,11 @@ from tests.test_utils import (
     create_broadcast_template,
     delete_template,
     go_to_templates_page,
-    recordtime,
 )
 
 TESTSUITE_CODE = "BROADCAST-FLOW"
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -129,7 +127,6 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -190,7 +187,6 @@ def test_prepare_broadcast_with_template(driver):
     current_alerts_page.sign_out()
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
@@ -232,7 +228,6 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.sign_out()
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(

@@ -33,3 +33,9 @@ test-platform-admin-flow:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
 	--junitxml=functional-test-reports/platform-admin-flow
+
+.PHONY: test-authentication-flow
+test-authentication-flow:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_authentication_flow.py \
+	--junitxml=functional-test-reports/authentication-flow

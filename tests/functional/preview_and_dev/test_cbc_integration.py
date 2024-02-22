@@ -6,7 +6,7 @@ import pytest
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import PROVIDERS, recordtime
+from tests.test_utils import PROVIDERS
 
 TESTSUITE_CODE = "CBC-INTEGRATION"
 
@@ -52,7 +52,6 @@ def test_cbc_config():
     assert "three-az2" in config["cbcs"]
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
@@ -62,12 +61,12 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
         ExpressionAttributeValues={
             ":RequestId": {"S": "1234"},
         },
+        ConsistentRead=True,
     )
 
     assert len(response["Items"]) == 0
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
@@ -80,7 +79,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     service_id = alerturl.split("/current-alerts/")[0]
     broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-    time.sleep(10)
+    time.sleep(60)
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = api_client.get(url=url)
     assert response is not None
@@ -99,6 +98,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             TableName="LoopbackRequests",
             KeyConditionExpression="RequestId = :RequestId",
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
+            ConsistentRead=True,
         )
         if len(db_response["Items"]):
             distinct_request_ids += 1
@@ -108,7 +108,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
@@ -139,7 +138,6 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     assert response_codes.pop() == "200"
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_set_loopback_response_codes():
     test_cbc = "ee-az1"
@@ -156,13 +154,13 @@ def test_set_loopback_response_codes():
         ExpressionAttributeValues={
             ":IpAddress": {"S": test_ip},
         },
+        ConsistentRead=True,
     )
 
     assert db_response["Count"] == 1
     assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -177,10 +175,10 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     _set_response_codes(ddbc, primary_cbc, failure_code)
 
     broadcast_alert(driver, broadcast_id)
-    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_id(
         driver.current_url
     )
-    time.sleep(20)
+    time.sleep(60)
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
     response = api_client.get(url=url)
@@ -196,6 +194,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        ConsistentRead=True,
     )
 
     responses = db_response["Items"]
@@ -213,7 +212,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -227,9 +225,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(360)  # wait for exponential backoff of retries
+    time.sleep(300)  # wait for exponential backoff of retries
 
-    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_id(
         driver.current_url
     )
 
@@ -249,6 +247,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        ConsistentRead=True,
     )
 
     responses = db_response["Items"]
@@ -277,7 +276,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@recordtime
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
@@ -294,7 +292,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
 
     broadcast_alert(driver, broadcast_id)
-    (service_id, broadcast_message_id) = _get_service_and_broadcast_ids(
+    (service_id, broadcast_message_id) = _get_service_and_broadcast_id(
         driver.current_url
     )
     time.sleep(10)  # wait for some retries
@@ -315,6 +313,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        ConsistentRead=True,
     )
 
     responses = db_response["Items"]
@@ -335,7 +334,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     cancel_alert(driver, broadcast_id)
 
 
-def _get_service_and_broadcast_ids(url):
+def _get_service_and_broadcast_id(url):
     alerturl = url.split("services/")[1]
     service_id = alerturl.split("/current-alerts/")[0]
     broadcast_message_id = alerturl.split("/current-alerts/")[1]

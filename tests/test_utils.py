@@ -1,13 +1,16 @@
 import csv
 import functools
+import json
 import logging
 import os
 import re
 import tempfile
 import uuid
 from datetime import datetime
+from urllib.parse import urlencode
 
 import requests
+from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -548,3 +551,22 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.click_element_by_link_text(page_title)
 
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+
+
+def create_reset_password_url(email, next_redirect):
+    data = json.dumps({"email": email, "created_at": str(datetime.utcnow())})
+    static_url_part = "/new-password/"
+    full_url = _url_with_token(data, static_url_part, config)
+    if next_redirect:
+        full_url += "?{}".format(urlencode({"next": next_redirect}))
+    return full_url
+
+
+def _url_with_token(data, url, config):
+    token = _generate_token(data, config["SECRET_KEY"], config["DANGEROUS_SALT"])
+    base_url = config["ADMIN_EXTERNAL_URL"] + url
+    return base_url + token
+
+
+def _generate_token(payload, secret, salt):
+    return URLSafeTimedSerializer(secret).dumps(payload, salt).replace(".", "%2E")
