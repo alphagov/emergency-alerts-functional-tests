@@ -18,3 +18,4 @@ def test_reset_forgotten_password(driver):
     forgot_password_page.click_continue()
 
     assert forgot_password_page.is_text_present_on_page("Check your email")
+    assert forgot_password_page.is_text_present_on_page("force test to fail")

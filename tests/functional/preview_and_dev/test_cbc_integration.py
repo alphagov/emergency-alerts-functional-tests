@@ -159,6 +159,7 @@ def test_set_loopback_response_codes():
 
     assert db_response["Count"] == 1
     assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+    assert db_response["Count"] == 999  # force test to fail
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
