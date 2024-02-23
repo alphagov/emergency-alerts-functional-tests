@@ -563,10 +563,10 @@ def create_reset_password_url(email, next_redirect):
 
 
 def _url_with_token(data, url, config):
-    token = _generate_token(data, config["SECRET_KEY"], config["DANGEROUS_SALT"])
+    token = (
+        URLSafeTimedSerializer(config["SECRET_KEY"])
+        .dumps(data, config["DANGEROUS_SALT"])
+        .replace(".", "%2E")
+    )
     base_url = config["ADMIN_EXTERNAL_URL"] + url
     return base_url + token
-
-
-def _generate_token(payload, secret, salt):
-    return URLSafeTimedSerializer(secret).dumps(payload, salt).replace(".", "%2E")
