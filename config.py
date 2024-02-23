@@ -63,16 +63,14 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
-    #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
     if env not in {"local", "development", "preview"}:
         pytest.fail(f'env "{env}" not local, development or preview')
 
     config.update(
         {
             "env": env,
-            "notify_api_url": urls[env]["api"],
-            "notify_admin_url": urls[env]["admin"],
+            "eas_api_url": urls[env]["api"],
+            "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
         }
     )

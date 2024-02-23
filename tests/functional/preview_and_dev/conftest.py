@@ -19,7 +19,7 @@ def _purge_functional_test_alerts():
     client.configure_for_internal_client(
         client_id=config["service"]["internal_api_client_id"],
         api_key=config["service"]["internal_api_client_secret"],
-        base_url=config["notify_api_url"],
+        base_url=config["eas_api_url"],
     )
     service = config["broadcast_service"]["service_id"]
     older_than = config["broadcast_service"]["purge_older_than"]

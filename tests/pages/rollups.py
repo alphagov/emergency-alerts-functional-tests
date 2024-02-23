@@ -31,7 +31,7 @@ def clean_session(driver):
 
 def sign_in_email_auth(driver):
     _sign_in(driver, "email_auth")
-    assert driver.current_url == config["notify_admin_url"] + "/two-factor-email-sent"
+    assert driver.current_url == config["eas_admin_url"] + "/two-factor-email-sent"
     do_email_auth_verify(driver)
 
 

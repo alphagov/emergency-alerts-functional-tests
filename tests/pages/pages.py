@@ -122,7 +122,7 @@ class BasePage(object):
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
 
     def __init__(self, driver):
-        self.base_url = config["notify_admin_url"]
+        self.base_url = config["eas_admin_url"]
         self.driver = driver
 
     def get(self, url=None):

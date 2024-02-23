@@ -187,7 +187,7 @@ def do_user_registration(driver):
 
     registration_page.register()
 
-    assert driver.current_url == config["notify_admin_url"] + "/registration-continue"
+    assert driver.current_url == config["eas_admin_url"] + "/registration-continue"
 
     registration_link = get_link(
         config["notify_templates"]["registration_template_id"], config["user"]["email"]
@@ -230,7 +230,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     invite_user_page.send_invitation()
     invite_user_page.sign_out()
-    invite_user_page.wait_until_url_is(config["notify_admin_url"])
+    invite_user_page.wait_until_url_is(config["eas_admin_url"])
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
@@ -253,7 +253,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     if basic_view:
         is_basic_view(dashboard_page)
         dashboard_page.sign_out()
-        dashboard_page.wait_until_url_is(config["notify_admin_url"])
+        dashboard_page.wait_until_url_is(config["eas_admin_url"])
     else:
         is_view_for_all_permissions(dashboard_page)
 
@@ -440,7 +440,7 @@ def _assert_one_off_email_filled_in_properly(
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
+    client = NotificationsAPIClient(base_url=config["eas_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
     for notification in resp["notifications"]:
         t_id = notification["template"]["id"]
@@ -455,7 +455,7 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
 
 
 def get_verification_code_by_id(user_id):
-    url = f'{config["notify_api_url"]}/verify-code/{user_id}'
+    url = f'{config["eas_api_url"]}/verify-code/{user_id}'
     response = requests.get(url)
     return response.text
 
@@ -568,5 +568,5 @@ def _url_with_token(data, url, config):
         .dumps(data, config["DANGEROUS_SALT"])
         .replace(".", "%2E")
     )
-    base_url = config["ADMIN_EXTERNAL_URL"] + url
+    base_url = config["eas_admin_url"] + url
     return base_url + token

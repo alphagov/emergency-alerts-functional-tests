@@ -64,7 +64,7 @@ def _driver(request, download_directory):
     driver.delete_all_cookies()
 
     # go to root page and accept analytics cookies to hide banner in all pages
-    driver.get(config["notify_admin_url"])
+    driver.get(config["eas_admin_url"])
     HomePage(driver).accept_cookie_warning()
     yield driver
     driver.delete_all_cookies()
@@ -100,7 +100,7 @@ def login_seeded_user(_driver):
 @pytest.fixture(scope="module")
 def client_live_key():
     client = NotificationsAPIClient(
-        base_url=config["notify_api_url"], api_key=config["service"]["api_live_key"]
+        base_url=config["eas_api_url"], api_key=config["service"]["api_live_key"]
     )
     return client
 
@@ -108,7 +108,7 @@ def client_live_key():
 @pytest.fixture(scope="module")
 def client_test_key():
     client = NotificationsAPIClient(
-        base_url=config["notify_api_url"], api_key=config["service"]["api_test_key"]
+        base_url=config["eas_api_url"], api_key=config["service"]["api_test_key"]
     )
     return client
 
@@ -117,7 +117,7 @@ def client_test_key():
 def broadcast_client():
     client = BroadcastClient(
         api_key=config["broadcast_service"]["api_key_live"],
-        base_url=config["notify_api_url"],
+        base_url=config["eas_api_url"],
     )
     return client
 
@@ -128,6 +128,6 @@ def api_client():
     client.configure_for_internal_client(
         client_id=config["service"]["internal_api_client_id"],
         api_key=config["service"]["internal_api_client_secret"],
-        base_url=config["notify_api_url"],
+        base_url=config["eas_api_url"],
     )
     return client
