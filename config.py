@@ -120,6 +120,8 @@ def setup_preview_dev_config():
                 "service_name": os.environ["BROADCAST_SERVICE_NAME"],
                 "service_id": os.environ["BROADCAST_SERVICE_ID"],
                 "purge_older_than": os.environ["FUNCTIONAL_TEST_PURGE_OLDER_THAN"],
+                "secret_key": os.environ["SECRET_KEY"],
+                "dangerous_salt": os.environ["DANGEROUS_SALT"],
             },
             "service": {
                 "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],

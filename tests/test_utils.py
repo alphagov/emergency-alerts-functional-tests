@@ -564,8 +564,8 @@ def create_reset_password_url(email, next_redirect):
 
 def _url_with_token(data, url, config):
     token = (
-        URLSafeTimedSerializer(config["SECRET_KEY"])
-        .dumps(data, config["DANGEROUS_SALT"])
+        URLSafeTimedSerializer(config["broadcast_service"]["secret_key"])
+        .dumps(data, config["broadcast_service"]["dangerous_salt"])
         .replace(".", "%2E")
     )
     base_url = config["eas_admin_url"] + url
