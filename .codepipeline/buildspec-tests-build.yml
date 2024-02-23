@@ -56,8 +56,8 @@ phases:
 
   post_build:
     commands:
-      - python3.9 ./signal-build-pass-or-fail.py $(pwd) $testsuites
-      - chmod +x ./scripts/pass-or-fail-build.sh
+      - python3.9 ./scripts/signal-build-pass-or-fail.py $(pwd) $testsuites
+      # - chmod +x ./scripts/pass-or-fail-build.sh
       # - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
       # - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
       # - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
