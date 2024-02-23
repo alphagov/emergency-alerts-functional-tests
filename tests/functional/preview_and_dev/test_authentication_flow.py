@@ -8,6 +8,16 @@ from tests.test_utils import create_reset_password_url
 TESTSUITE_CODE = "AUTH-FLOW"
 
 
+def test_email_authentication(driver):
+    clean_session(driver)
+
+    # create account that has email auth
+
+    # duplicate email 2FA url
+
+    # log in with 2FA url
+
+
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_reset_forgotten_password(driver):
     clean_session(driver)
