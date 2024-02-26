@@ -35,3 +35,5 @@ def test_reset_forgotten_password(driver):
 
     password_reset_url = create_reset_password_url(login_email, "")
     print(password_reset_url)
+
+    assert forgot_password_page.is_text_present_on_page("force test failure")
