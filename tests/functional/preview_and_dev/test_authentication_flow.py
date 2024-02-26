@@ -1,7 +1,7 @@
 import pytest
 
 from config import config
-from tests.pages import ForgotPasswordPage, SignInPage
+from tests.pages import ForgotPasswordPage, NewPasswordPage, SignInPage
 from tests.pages.rollups import clean_session
 from tests.test_utils import create_reset_password_url
 
@@ -35,5 +35,8 @@ def test_reset_forgotten_password(driver):
 
     password_reset_url = create_reset_password_url(login_email, "")
     print(password_reset_url)
+
+    new_password_page = NewPasswordPage(driver, password_reset_url)
+    assert new_password_page.is_text_present_on_page("create a new password")
 
     assert forgot_password_page.is_text_present_on_page("force test failure")

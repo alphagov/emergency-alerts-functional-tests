@@ -331,6 +331,10 @@ class ForgotPasswordPage(BasePage):
 class NewPasswordPage(BasePage):
     new_password_input = NewPasswordInputElement()
 
+    def __init__(self, driver, url):
+        self.driver = driver
+        self.driver.get(url)
+
     def input_new_password(self, password):
         self.new_password_input = password
 
