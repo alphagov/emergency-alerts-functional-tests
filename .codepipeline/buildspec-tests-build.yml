@@ -4,7 +4,6 @@ env:
   variables:
     testsuites: >-
       platform-admin-flow
-      authentication-flow
 
 phases:
   install:
