@@ -86,6 +86,8 @@ def get_identifier(account_type):
         return config["broadcast_service"]["broadcast_user_1"]["id"]
     elif account_type == "broadcast_approve_user":
         return config["broadcast_service"]["broadcast_user_2"]["id"]
+    elif account_type == "broadcast_auth_test_user":
+        return config["broadcast_service"]["broadcast_user_3"]["id"]
     elif account_type == "platform_admin":
         return config["broadcast_service"]["platform_admin"]["id"]
     raise Exception("unknown account_type {}".format(account_type))

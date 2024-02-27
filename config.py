@@ -98,22 +98,25 @@ def setup_preview_dev_config():
                 "broadcast_user_1": {
                     "id": os.environ["BROADCAST_USER_1_ID"],
                     "email": os.environ["BROADCAST_USER_1_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_1_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_1_NUMBER"],
                 },
                 "broadcast_user_2": {
                     "id": os.environ["BROADCAST_USER_2_ID"],
                     "email": os.environ["BROADCAST_USER_2_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_2_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
+                },
+                "broadcast_user_3": {
+                    "id": os.environ["BROADCAST_USER_3_ID"],
+                    "email": os.environ["BROADCAST_USER_3_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_3_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_3_NUMBER"],
                 },
                 "platform_admin": {
                     "id": os.environ["PLATFORM_ADMIN_ID"],
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
                 },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
