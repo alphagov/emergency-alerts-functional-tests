@@ -10,7 +10,7 @@ from tests.pages import (
 )
 from tests.pages.rollups import clean_session
 from tests.test_utils import (
-    create_reset_password_url,
+    create_url_with_token,
     get_verify_code_from_api_by_id,
 )
 
@@ -20,11 +20,20 @@ TESTSUITE_CODE = "AUTH-FLOW"
 def test_email_authentication(driver):
     clean_session(driver)
 
-    # create account that has email auth
+    login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
 
-    # duplicate email 2FA url
+    sign_in_page = SignInPage(driver)
+    sign_in_page.email_input(login_email)
+    sign_in_page.click_continue()
 
-    # log in with 2FA url
+    assert sign_in_page.is_text_present_on_page("a link to sign in")
+
+    sign_in_url = create_url_with_token(login_email, "email_auth")
+
+    landing_page = BasePage(driver)
+    landing_page.get(sign_in_url)
+
+    landing_page.url_contains("current-alerts")
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -39,12 +48,9 @@ def test_reset_forgotten_password(driver):
     forgot_password_page = ForgotPasswordPage(driver)
     forgot_password_page.input_email_address(login_email)
     forgot_password_page.click_continue()
-
     assert forgot_password_page.is_text_present_on_page("Check your email")
 
-    password_reset_url = create_reset_password_url(login_email, "")
-    print(password_reset_url)
-
+    password_reset_url = create_url_with_token(login_email, "new-password")
     new_password_page = NewPasswordPage(driver, password_reset_url)
     assert new_password_page.is_text_present_on_page("create a new password")
 

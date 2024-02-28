@@ -4,6 +4,7 @@ VALUES
     ('0d2e9b87-9c54-448c-b549-f764231ee599', 'Functional Tests - Broadcast User Create', 'notify-tests-preview+local-broadcast1@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900111', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
     ('1048af40-45f6-4249-a670-df72ba3352d7', 'Functional Tests - Broadcast User Approve', 'notify-tests-preview+local-broadcast2@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
     ('f972899a-3aff-4474-a800-2d9d9e9b0b23', 'Functional Tests - Broadcast User Auth Test', 'notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth', NOW()),
+    ('69634ab0-28ab-4ea1-856e-36423058de45', 'Functional Tests - Broadcast User Email Auth', 'notify-tests-preview+local-broadcast4@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'email_auth', NOW()),
     ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin', 'notify-tests-preview+local-broadcast3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true, NULL, 'sms_auth', NOW());
 
 
@@ -44,10 +45,8 @@ VALUES
     ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'view_activity', '2021-07-14 14:53:00.409881'),
     ('4be6e744-efea-4b8b-8af9-0d6c66de628b', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'reject_broadcasts', '2021-07-14 14:53:00.409891'),
     ('307aaac1-66b0-48b1-aff1-7029be941a03', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'approve_broadcasts', '2021-07-14 14:53:00.409891'),
-    ('4866284f-9414-4f5a-954e-131b189d235f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'cancel_broadcasts', '2021-07-14 14:53:00.409852'),
     ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'view_activity', '2021-07-14 14:53:00.409881'),
-    ('4be6e744-efea-4b8b-8af9-0d6c66de628b', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'reject_broadcasts', '2021-07-14 14:53:00.409891'),
-    ('307aaac1-66b0-48b1-aff1-7029be941a03', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'approve_broadcasts', '2021-07-14 14:53:00.409891'),
+    ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '69634ab0-28ab-4ea1-856e-36423058de45', 'view_activity', '2021-07-14 14:53:00.409881'),
     ('c12e1f1a-7635-4a1f-80f9-d25cd2cef26f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_api_keys', '2021-07-14 14:53:00.40982'),
     ('308280b1-10b3-417b-934c-ea090cd79c6a', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_settings', '2021-07-14 14:53:00.409842'),
     ('9b7b5770-7299-4e25-9d85-85bb65814f33', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_templates', '2021-07-14 14:53:00.409852'),
@@ -80,6 +79,7 @@ VALUES
     ('0d2e9b87-9c54-448c-b549-f764231ee599', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
     ('1048af40-45f6-4249-a670-df72ba3352d7', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
     ('f972899a-3aff-4474-a800-2d9d9e9b0b23', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
+    ('69634ab0-28ab-4ea1-856e-36423058de45', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
     ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', '8e1d56fa-12a8-4d00-bed2-db47180bed0a');
 
 

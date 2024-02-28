@@ -547,16 +547,13 @@ def do_user_can_update_reply_to_email_to_service(driver):
 def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
     gov_uk_alerts_page = GovUkAlertsPage(driver)
     gov_uk_alerts_page.get()
-
     gov_uk_alerts_page.click_element_by_link_text(page_title)
-
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
 
 
-def create_reset_password_url(email, next_redirect):
+def create_url_with_token(email, url, next_redirect):
     data = json.dumps({"email": email, "created_at": str(datetime.utcnow())})
-    static_url_part = "/new-password/"
-    full_url = _url_with_token(data, static_url_part, config)
+    full_url = _url_with_token(data, f"/{url}/", config)
     if next_redirect:
         full_url += "?{}".format(urlencode({"next": next_redirect}))
     return full_url
