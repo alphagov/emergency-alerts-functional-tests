@@ -36,17 +36,26 @@ VALUES
 INSERT INTO permissions
     (id, service_id, user_id, permission, created_at)
 VALUES
+    -- Functional Tests - Broadcast User Create
     ('57e897b2-a5e2-4e09-bd1b-fd655ea0d2a9', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '0d2e9b87-9c54-448c-b549-f764231ee599', 'create_broadcasts', '2021-07-14 14:53:00.40982'),
     ('85b443b3-2d07-476f-9740-220187f12305', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '0d2e9b87-9c54-448c-b549-f764231ee599', 'manage_templates', '2021-07-14 14:53:00.409842'),
     ('f2060ce7-7966-45a1-b5e1-17aedc93af18', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '0d2e9b87-9c54-448c-b549-f764231ee599', 'cancel_broadcasts', '2021-07-14 14:53:00.409852'),
     ('d9488323-0ad7-4489-a69f-cf1afc4c24c2', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '0d2e9b87-9c54-448c-b549-f764231ee599', 'view_activity', '2021-07-14 14:53:00.409881'),
     ('ea0ec5d2-ce6c-4499-98d7-60a94fd72800', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '0d2e9b87-9c54-448c-b549-f764231ee599', 'reject_broadcasts', '2021-07-14 14:53:00.409891'),
+
+    -- Functional Tests - Broadcast User Approve
     ('4866284f-9414-4f5a-954e-131b189d235f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'cancel_broadcasts', '2021-07-14 14:53:00.409852'),
     ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'view_activity', '2021-07-14 14:53:00.409881'),
     ('4be6e744-efea-4b8b-8af9-0d6c66de628b', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'reject_broadcasts', '2021-07-14 14:53:00.409891'),
     ('307aaac1-66b0-48b1-aff1-7029be941a03', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '1048af40-45f6-4249-a670-df72ba3352d7', 'approve_broadcasts', '2021-07-14 14:53:00.409891'),
-    ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'view_activity', '2021-07-14 14:53:00.409881'),
-    ('1b15bb85-52fc-43da-8365-4364103ffc7f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '69634ab0-28ab-4ea1-856e-36423058de45', 'view_activity', '2021-07-14 14:53:00.409881'),
+
+    -- Functional Tests - Broadcast User Auth Test
+    ('42a6d8a0-ba01-40c1-8ab3-c1f10d0a20a3', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'f972899a-3aff-4474-a800-2d9d9e9b0b23', 'view_activity', '2021-07-14 14:53:00.409881'),
+
+    -- Functional Tests - Broadcast User Email Auth
+    ('47077214-ca6e-4ee2-85b1-c04e72b85407', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '69634ab0-28ab-4ea1-856e-36423058de45', 'view_activity', '2021-07-14 14:53:00.409881'),
+
+    -- Functional Tests - Platform Admin
     ('c12e1f1a-7635-4a1f-80f9-d25cd2cef26f', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_api_keys', '2021-07-14 14:53:00.40982'),
     ('308280b1-10b3-417b-934c-ea090cd79c6a', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_settings', '2021-07-14 14:53:00.409842'),
     ('9b7b5770-7299-4e25-9d85-85bb65814f33', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_templates', '2021-07-14 14:53:00.409852'),
