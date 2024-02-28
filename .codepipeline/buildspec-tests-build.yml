@@ -37,8 +37,8 @@ phases:
     commands:
       # - make test-broadcast-flow; exit 0
       # - make test-cbc-integration; exit 0
-      - make test-platform-admin-flow; exit 0
-      - make test-authentication-flow; exit 0
+      - make test-platform-admin-flow
+      - make test-authentication-flow
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
