@@ -5,6 +5,7 @@ env:
     testsuites: >-
       platform-admin-flow
       authentication-flow
+      top-rail-services
 
 phases:
   install:
@@ -39,6 +40,7 @@ phases:
       # - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - make test-authentication-flow; exit 0
+      - make test-top-rail-services; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
