@@ -551,7 +551,7 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
 
 
-def create_url_with_token(email, url, next_redirect=""):
+def create_url_with_token(email, url, next_redirect=None):
     data = json.dumps({"email": email, "created_at": str(datetime.utcnow())})
     full_url = _url_with_token(data, f"/{url}/", config)
     if next_redirect:
