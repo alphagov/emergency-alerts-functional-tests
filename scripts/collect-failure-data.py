@@ -21,6 +21,7 @@ def main():
         sys.exit(0)
 
     for test_file in test_files:
+        print(parse(test_file))
         test_failures = extract_failure_descriptions(parse(test_file))
         with open(failure_file, "a") as output_file:
             for t in test_failures:
