@@ -48,8 +48,6 @@ def test_reset_forgotten_password(driver):
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 
-    assert forgot_password_page.is_text_present_on_page("force test failure")
-
 
 def test_sign_in_with_email_mfa(driver):
     clean_session(driver)
