@@ -39,3 +39,9 @@ test-authentication-flow:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_authentication_flow.py \
 	--junitxml=functional-test-reports/authentication-flow
+
+.PHONY: test-top-rail-services
+test-top-rail-services:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_top_rail_services.py \
+	--junitxml=functional-test-reports/top-rail-services
