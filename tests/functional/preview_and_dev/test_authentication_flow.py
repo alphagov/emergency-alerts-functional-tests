@@ -17,25 +17,6 @@ from tests.test_utils import (
 TESTSUITE_CODE = "AUTH-FLOW"
 
 
-def test_sign_in_with_email_mfa(driver):
-    clean_session(driver)
-
-    login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
-
-    sign_in_page = SignInPage(driver)
-    sign_in_page.email_input(login_email)
-    sign_in_page.click_continue()
-
-    assert sign_in_page.is_text_present_on_page("a link to sign in")
-
-    sign_in_url = create_url_with_token(login_email, "email_auth")
-
-    landing_page = BasePage(driver)
-    landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
-
-
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_reset_forgotten_password(driver):
     clean_session(driver)
@@ -68,3 +49,22 @@ def test_reset_forgotten_password(driver):
     assert landing_page.url_contains("current-alerts")
 
     assert forgot_password_page.is_text_present_on_page("force test failure")
+
+
+def test_sign_in_with_email_mfa(driver):
+    clean_session(driver)
+
+    login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
+
+    sign_in_page = SignInPage(driver)
+    sign_in_page.email_input(login_email)
+    sign_in_page.click_continue()
+
+    assert sign_in_page.is_text_present_on_page("a link to sign in")
+
+    sign_in_url = create_url_with_token(login_email, "email-auth")
+
+    landing_page = BasePage(driver)
+    landing_page.get(sign_in_url)
+
+    landing_page.url_contains("current-alerts")
