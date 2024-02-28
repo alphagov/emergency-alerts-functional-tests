@@ -55,10 +55,10 @@ def test_sign_in_with_email_mfa(driver):
     clean_session(driver)
 
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
+    login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
     sign_in_page = SignInPage(driver)
-    sign_in_page.email_input(login_email)
-    sign_in_page.click_continue()
+    sign_in_page.login(login_email, login_pw)
 
     assert sign_in_page.is_text_present_on_page("a link to sign in")
 
