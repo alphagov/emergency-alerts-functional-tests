@@ -17,6 +17,7 @@ from config import config
 from tests.pages.element import (
     BasePageElement,
     EmailInputElement,
+    FeedbackTextAreaElement,
     FileInputElement,
     MobileInputElement,
     NameInputElement,
@@ -1154,3 +1155,10 @@ class GovUkAlertsPage(BasePage):
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
             )
+
+
+class ReportProblemPage(BasePage):
+    text_input = FeedbackTextAreaElement()
+
+    def fill_textarea(self, text):
+        self.text_input = text
