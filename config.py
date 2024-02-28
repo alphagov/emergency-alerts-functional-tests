@@ -113,6 +113,12 @@ def setup_preview_dev_config():
                     "password": os.environ["BROADCAST_USER_3_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_3_NUMBER"],
                 },
+                "broadcast_user_4": {
+                    "id": os.environ["BROADCAST_USER_4_ID"],
+                    "email": os.environ["BROADCAST_USER_4_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_4_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_4_NUMBER"],
+                },
                 "platform_admin": {
                     "id": os.environ["PLATFORM_ADMIN_ID"],
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],

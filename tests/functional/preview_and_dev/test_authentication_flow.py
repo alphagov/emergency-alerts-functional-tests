@@ -17,7 +17,7 @@ from tests.test_utils import (
 TESTSUITE_CODE = "AUTH-FLOW"
 
 
-def test_email_authentication(driver):
+def test_sign_in_with_email_mfa(driver):
     clean_session(driver)
 
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
