@@ -57,6 +57,8 @@ def test_sign_in_with_email_mfa(driver):
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
     sign_in_page = SignInPage(driver)
+    sign_in_page.get()
+    assert sign_in_page.is_current()
     sign_in_page.login(login_email, login_pw)
 
     assert sign_in_page.is_text_present_on_page("a link to sign in")
