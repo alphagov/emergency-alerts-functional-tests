@@ -5,7 +5,7 @@ env:
     testsuites: >-
       broadcast-flow
       cbc-integration
-      platform-admin
+      platform-admin-flow
       authentication-flow
 
 phases:
