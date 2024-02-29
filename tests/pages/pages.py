@@ -1157,7 +1157,7 @@ class GovUkAlertsPage(BasePage):
             )
 
 
-class ReportProblemPage(BasePage):
+class SupportFeedbackPage(BasePage):
     text_input = FeedbackTextAreaElement()
 
     def fill_textarea(self, text):
