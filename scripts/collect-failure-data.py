@@ -36,8 +36,6 @@ def extract_failure_descriptions(document):
     for test_failure in test_failures:
         parent = test_failure.parentNode
         test_identifier = parent.getAttribute("name")
-        print("-----------------------------------")
-        print(test_identifier)
         (test_name, test_group) = test_identifier.split("@")
 
         if test_failure.hasAttribute("message"):
