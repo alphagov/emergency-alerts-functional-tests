@@ -4,6 +4,7 @@ from tests.pages import (
     BroadcastFreeformPage,
     CommonPageLocators,
     DashboardPage,
+    HomePage,
     SignInPage,
 )
 from tests.test_utils import (
@@ -17,12 +18,23 @@ from tests.test_utils import (
 def sign_in(driver, account_type="normal"):
     clean_session(driver)
 
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
+
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        landing_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
 
 
 def clean_session(driver):
@@ -144,13 +156,11 @@ def approve_alert(driver, id):
     landing_page = BasePage(driver)
     if not landing_page.is_text_present_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
-        choose_service_page = BasePage(driver)
-        choose_service_page.click_element_by_link_text(
+        landing_page.click_element_by_link_text(
             config["broadcast_service"]["service_name"]
         )
     else:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.click_element_by_link_text("Current alerts")
+        landing_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_link_text("test broadcast" + id)
