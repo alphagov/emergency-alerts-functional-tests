@@ -55,8 +55,7 @@ def test_question_or_feedback(driver):
 
     feedback_page.click_continue()
 
-    landing_page.get()
-    assert landing_page.url_contains("thanks")
-    assert landing_page.is_page_title("Thanks for contacting us")
+    assert feedback_page.url_contains("thanks")
+    assert feedback_page.is_page_title("Thanks for contacting us")
 
-    landing_page.sign_out()
+    feedback_page.sign_out()
