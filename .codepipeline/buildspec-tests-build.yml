@@ -4,6 +4,9 @@ env:
   variables:
     testsuites: >-
       broadcast-flow
+      cbc-integration
+      platform-admin
+      authentication-flow
 
 phases:
   install:
@@ -35,9 +38,9 @@ phases:
     on-failure: CONTINUE
     commands:
       - make test-broadcast-flow; exit 0
-      # - make test-cbc-integration; exit 0
-      # - make test-platform-admin-flow; exit 0
-      # - make test-authentication-flow; exit 0
+      - make test-cbc-integration; exit 0
+      - make test-platform-admin-flow; exit 0
+      - make test-authentication-flow; exit 0
       # - make test-top-rail-services; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"

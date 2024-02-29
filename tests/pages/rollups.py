@@ -3,7 +3,6 @@ from tests.pages import (
     BasePage,
     BroadcastFreeformPage,
     CommonPageLocators,
-    DashboardPage,
     HomePage,
     SignInPage,
 )
@@ -108,16 +107,16 @@ def get_identifier(account_type):
 def create_alert(driver, id):
     sign_in(driver, account_type="broadcast_create_user")
 
-    landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
-        landing_page.click_element_by_link_text("Switch service")
-        choose_service_page = BasePage(driver)
-        choose_service_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
-    else:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.click_element_by_link_text("Current alerts")
+    # landing_page = BasePage(driver)
+    # if not landing_page.is_text_present_on_page("Current alerts"):
+    #     landing_page.click_element_by_link_text("Switch service")
+    #     choose_service_page = BasePage(driver)
+    #     choose_service_page.click_element_by_link_text(
+    #         config["broadcast_service"]["service_name"]
+    #     )
+    # else:
+    #     dashboard_page = DashboardPage(driver)
+    #     dashboard_page.click_element_by_link_text("Current alerts")
 
     # prepare alert
     current_alerts_page = BasePage(driver)
@@ -153,14 +152,14 @@ def create_alert(driver, id):
 def approve_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
-    landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
-        landing_page.click_element_by_link_text("Switch service")
-        landing_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
-    else:
-        landing_page.click_element_by_link_text("Current alerts")
+    # landing_page = BasePage(driver)
+    # if not landing_page.is_text_present_on_page("Current alerts"):
+    #     landing_page.click_element_by_link_text("Switch service")
+    #     landing_page.click_element_by_link_text(
+    #         config["broadcast_service"]["service_name"]
+    #     )
+    # else:
+    #     landing_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_link_text("test broadcast" + id)
@@ -178,16 +177,16 @@ def broadcast_alert(driver, id):
 def cancel_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
-    landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
-        landing_page.click_element_by_link_text("Switch service")
-        choose_service_page = BasePage(driver)
-        choose_service_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
-    else:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.click_element_by_link_text("Current alerts")
+    # landing_page = BasePage(driver)
+    # if not landing_page.is_text_present_on_page("Current alerts"):
+    #     landing_page.click_element_by_link_text("Switch service")
+    #     choose_service_page = BasePage(driver)
+    #     choose_service_page.click_element_by_link_text(
+    #         config["broadcast_service"]["service_name"]
+    #     )
+    # else:
+    #     dashboard_page = DashboardPage(driver)
+    #     dashboard_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_link_text("test broadcast" + id)
