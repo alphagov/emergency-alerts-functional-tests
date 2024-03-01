@@ -45,3 +45,39 @@ def test_footer_links(driver):
     landing_page.click_element_by_link_text("Accessibility statement")
     assert landing_page.url_contains("accessibility-statement")
     assert landing_page.is_page_title("Accessibility statement")
+
+    landing_page.get(relative_url=back_link)
+    landing_page.click_element_by_link_text("Terms of use")
+    assert landing_page.url_contains("terms")
+    assert landing_page.is_page_title("Terms of use")
+
+    landing_page.get(relative_url=back_link)
+    landing_page.click_element_by_link_text("Cookies")
+    assert landing_page.url_contains("cookies")
+    assert landing_page.is_page_title("Cookies")
+
+    landing_page.get(relative_url=back_link)
+    landing_page.click_element_by_link_text("Security")
+    assert landing_page.url_contains("security")
+    assert landing_page.is_page_title("security")
+
+
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+def test_reject_analytics_cookies(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    landing_page = BasePage(driver)
+    landing_page.click_element_by_link_text("Cookies")
+    assert landing_page.is_page_title("Cookies")
+
+    landing_page.click_element_by_id("cookies-analytics-no")
+    landing_page.click_continue()
+    assert landing_page.is_text_present_on_page("cookie settings were saved")
+
+    landing_page.sign_out()
+
+    sign_in(driver, account_type="broadcast_create_user")
+    assert driver.get_cookie("notify_admin_session")
+    assert driver.get_cookie("cookie_policy")
+    assert not driver.get_cookie("_ga")
+    assert not driver.get_cookie("_gid")

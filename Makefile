@@ -45,3 +45,9 @@ test-top-rail-services:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_top_rail_services.py \
 	--junitxml=functional-test-reports/top-rail-services
+
+.PHONY: test-navigation
+test-navigation:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_navigation.py \
+	--junitxml=functional-test-reports/navigation

@@ -229,6 +229,10 @@ class BasePage(object):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
 
+    def click_element_by_id(self, id):
+        element = self.wait_for_element((By.ID, id))
+        element.click()
+
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
         errors = self.wait_for_element(error_message)
