@@ -70,20 +70,22 @@ def test_reject_analytics_cookies(driver):
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.is_page_title("Cookies")
 
-    landing_page.select_checkbox_or_radio(value="off")
+    landing_page.click_element_by_id(id="cookies-analytics-no")
     landing_page.click_continue()
     assert landing_page.is_text_present_on_page("cookie settings were saved")
 
     landing_page.sign_out()
 
     sign_in(driver, account_type="broadcast_create_user")
+
+    # ------- debug only
     landing_page.click_element_by_link_text("Cookies")  # not necessary, debug only
-    element = driver.find_element_by_id(
-        "cookies-analytics-no"
+    element = driver.find_element(
+        "id", "cookies-analytics-no"
     )  # not necessary, debug only
-    driver.execute_script(
-        "arguments[0].scrollIntoView();", element
-    )  # not necessary, debug only
+    driver.execute_script("arguments[0].scrollIntoView();", element)
+    # ------- debug only
+
     print(driver.get_cookie("notify_admin_session"))
     assert driver.get_cookie("notify_admin_session")
     print(driver.get_cookie("cookies_policy"))

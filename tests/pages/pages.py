@@ -230,7 +230,7 @@ class BasePage(object):
         element.click()
 
     def click_element_by_id(self, id):
-        element = self.wait_for_element((By.ID, id))
+        element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
     def get_errors(self):
