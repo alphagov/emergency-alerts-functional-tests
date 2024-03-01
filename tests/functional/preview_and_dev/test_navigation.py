@@ -26,9 +26,9 @@ def test_user_left_rail_nav(driver):
     assert landing_page.url_contains("rejected-alerts")
     assert landing_page.is_page_title("Templates")
 
-    landing_page.click_element_by_link_text("Team membmers")
+    landing_page.click_element_by_link_text("Team members")
     assert landing_page.url_contains("users")
-    assert landing_page.is_page_title("Team membmers")
+    assert landing_page.is_page_title("Team members")
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -59,7 +59,7 @@ def test_footer_links(driver):
     landing_page.get(relative_url=back_link)
     landing_page.click_element_by_link_text("Security")
     assert landing_page.url_contains("security")
-    assert landing_page.is_page_title("security")
+    assert landing_page.is_page_title("Security")
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
