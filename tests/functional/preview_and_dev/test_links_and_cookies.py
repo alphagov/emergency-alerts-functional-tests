@@ -70,7 +70,8 @@ def test_reject_analytics_cookies(driver):
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.is_page_title("Cookies")
 
-    landing_page.select_checkbox_or_radio(value="off")
+    analytics_off_radio = driver.find_element("id", "cookies-analytics-no")
+    landing_page.select_checkbox_or_radio(element=analytics_off_radio)
 
     # ------- debug only
     landing_page.click_element_by_link_text("Cookies")
@@ -78,7 +79,9 @@ def test_reject_analytics_cookies(driver):
     driver.execute_script("arguments[0].scrollIntoView();", element)
     # ------- debug only
 
-    driver.get_screenshot_as_file("my_screenshot.png")  # debug
+    driver.get_screenshot_as_file(
+        "../../../functional-test-reports/my_screenshot.png"
+    )  # debug
 
     landing_page.click_continue()
     assert landing_page.is_text_present_on_page("cookie settings were saved")
