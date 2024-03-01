@@ -126,9 +126,11 @@ class BasePage(object):
         self.base_url = config["eas_admin_url"]
         self.driver = driver
 
-    def get(self, url=None):
+    def get(self, url=None, relative_url=None):
         if url:
             self.driver.get(url)
+        elif relative_url:
+            self.driver.get(f"{self.base_url}/{relative_url}")
         else:
             self.driver.get(self.base_url)
 
