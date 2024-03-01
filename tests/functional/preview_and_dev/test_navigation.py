@@ -79,6 +79,6 @@ def test_reject_analytics_cookies(driver):
 
     sign_in(driver, account_type="broadcast_create_user")
     assert driver.get_cookie("notify_admin_session")
-    assert driver.get_cookie("cookie_policy")
+    assert driver.get_cookie("cookies_policy")
     assert not driver.get_cookie("_ga")
     assert not driver.get_cookie("_gid")
