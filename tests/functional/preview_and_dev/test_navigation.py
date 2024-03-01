@@ -70,7 +70,8 @@ def test_reject_analytics_cookies(driver):
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.is_page_title("Cookies")
 
-    landing_page.click_element_by_id("cookies-analytics-no")
+    # landing_page.click_element_by_id(id="cookies-analytics-no")
+    landing_page.select_checkbox_or_radio(value="off")
     landing_page.click_continue()
     assert landing_page.is_text_present_on_page("cookie settings were saved")
 
