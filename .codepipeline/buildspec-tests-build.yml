@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
-      navigation
+      links-and-cookies
 
 phases:
   install:
@@ -39,7 +39,7 @@ phases:
       # - make test-platform-admin-flow; exit 0
       # - make test-authentication-flow; exit 0
       # # - make test-top-rail-services; exit 0
-      - make test-navigation; exit 0
+      - make test-links-and-cookies; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"

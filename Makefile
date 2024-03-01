@@ -46,8 +46,8 @@ test-top-rail-services:
 	tests/functional/preview_and_dev/test_top_rail_services.py \
 	--junitxml=functional-test-reports/top-rail-services
 
-.PHONY: test-navigation
-test-navigation:
+.PHONY: test-links-and-cookies
+test-links-and-cookies:
 	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_navigation.py \
-	--junitxml=functional-test-reports/navigation
+	tests/functional/preview_and_dev/test_links_and_cookies.py \
+	--junitxml=functional-test-reports/links-and-cookies

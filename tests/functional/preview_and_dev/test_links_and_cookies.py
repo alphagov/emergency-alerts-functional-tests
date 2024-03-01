@@ -3,7 +3,7 @@ import pytest
 from tests.pages import BasePage
 from tests.pages.rollups import sign_in
 
-TESTSUITE_CODE = "BASIC-NAV"
+TESTSUITE_CODE = "LINKS-COOKIES"
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -70,7 +70,6 @@ def test_reject_analytics_cookies(driver):
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.is_page_title("Cookies")
 
-    # landing_page.click_element_by_id(id="cookies-analytics-no")
     landing_page.select_checkbox_or_radio(value="off")
     landing_page.click_continue()
     assert landing_page.is_text_present_on_page("cookie settings were saved")
@@ -78,7 +77,11 @@ def test_reject_analytics_cookies(driver):
     landing_page.sign_out()
 
     sign_in(driver, account_type="broadcast_create_user")
+    print(driver.get_cookie("notify_admin_session"))
     assert driver.get_cookie("notify_admin_session")
+    print(driver.get_cookie("cookies_policy"))
     assert driver.get_cookie("cookies_policy")
+    print(driver.get_cookie("_ga"))
     assert not driver.get_cookie("_ga")
+    print(driver.get_cookie("_gid"))
     assert not driver.get_cookie("_gid")
