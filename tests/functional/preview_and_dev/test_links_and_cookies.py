@@ -78,7 +78,7 @@ def test_reject_analytics_cookies(driver):
     driver.execute_script("arguments[0].scrollIntoView();", element)
     # ------- debug only
 
-    driver.get_screenshot_as_png()  # debug
+    driver.get_screenshot_as_file("my_screenshot.png")  # debug
 
     landing_page.click_continue()
     assert landing_page.is_text_present_on_page("cookie settings were saved")
