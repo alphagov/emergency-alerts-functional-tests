@@ -76,7 +76,7 @@ def test_reject_analytics_cookies(driver):
     assert landing_page.is_text_present_on_page("cookie settings were saved")
 
     print(driver.get_cookie("cookies_policy"))
-    assert not driver.get_cookie("cookies_policy")["value"]["analytics"]
+    assert not driver.get_cookie("cookies_policy")["value"][0]["analytics"]
 
     # ------- debug only
     # landing_page.click_element_by_link_text("Cookies")
