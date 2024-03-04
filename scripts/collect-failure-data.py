@@ -4,22 +4,29 @@ from xml.dom.minidom import Node, parse
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python report-test-failures.py input output")
+    if len(sys.argv) < 3:
+        print("Usage: python report-test-failures.py working-dir testsuite-list")
         sys.exit(0)
 
-    input = sys.argv[1]
-    output = sys.argv[2]
+    working_dir = sys.argv[1]
+    failure_file = working_dir + "/test-failures"
+    test_file_names = sys.argv[2:]
+    test_files = [
+        working_dir + "/functional-test-reports/" + filename
+        for filename in test_file_names
+    ]
 
-    if not os.path.exists(input) or not os.path.exists(output):
-        print("Please provide both an input and output file")
+    if not os.path.exists(failure_file) or not len(test_files):
+        print("Please provide both an output file and a list of test files")
         sys.exit(0)
 
-    test_failures = extract_failure_descriptions(parse(input))
-
-    with open(output, "a") as output_file:
-        for t in test_failures:
-            output_file.write(f"{t[0]} | NAME: {t[1]} | FILE: {t[2]} | ERROR: {t[3]}\n")
+    for test_file in test_files:
+        test_failures = extract_failure_descriptions(parse(test_file))
+        with open(failure_file, "a") as output_file:
+            for t in test_failures:
+                output_file.write(
+                    f"{t[0]} | NAME: {t[1]} | FILE: {t[2]} | ERROR: {t[3]}\n"
+                )
 
 
 def extract_failure_descriptions(document):

@@ -17,7 +17,7 @@ def test_email_auth(driver):
     # login email auth user
     sign_in_email_auth(driver)
     # assert url is FUNCTIONAL_TESTS_SERVICE's dashboard
-    assert driver.current_url == config["notify_admin_url"] + "/services/{}".format(
+    assert driver.current_url == config["eas_admin_url"] + "/services/{}".format(
         config["service"]["id"]
     )
     base_page = BasePage(driver)

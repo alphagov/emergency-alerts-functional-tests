@@ -1,5 +1,13 @@
 version: 0.2
 
+env:
+  variables:
+    testsuites: >-
+      broadcast-flow
+      cbc-integration
+      platform-admin-flow
+      authentication-flow
+
 phases:
   install:
     runtime-versions:
@@ -33,24 +41,16 @@ phases:
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - make test-authentication-flow; exit 0
+      # - make test-top-rail-services; exit 0
       - echo "Test run completed."
-
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/broadcast-flow" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/cbc-integration" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/platform-admin-flow" "$(pwd)/test-failures"
-      - python3.9 ./scripts/collate-failure-info.py "$(pwd)/functional-test-reports/authentication-flow" "$(pwd)/test-failures"
-
+      - python3.9 ./scripts/collect-failure-data.py $(pwd) $testsuites
       - python3.9 ./scripts/report-test-failures.py "$(pwd)/test-failures"
 
   post_build:
     commands:
-      - chmod +x ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/broadcast-flow | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/cbc-integration | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/platform-admin-flow | ./scripts/pass-or-fail-build.sh
-      - cat ./functional-test-reports/authentication-flow | ./scripts/pass-or-fail-build.sh
+      - python3.9 ./scripts/signal-build-pass-or-fail.py $(pwd) $testsuites
 
 artifacts:
   files:

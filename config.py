@@ -63,16 +63,14 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
-    #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
     if env not in {"local", "development", "preview"}:
         pytest.fail(f'env "{env}" not local, development or preview')
 
     config.update(
         {
             "env": env,
-            "notify_api_url": urls[env]["api"],
-            "notify_admin_url": urls[env]["admin"],
+            "eas_api_url": urls[env]["api"],
+            "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
         }
     )
@@ -100,28 +98,39 @@ def setup_preview_dev_config():
                 "broadcast_user_1": {
                     "id": os.environ["BROADCAST_USER_1_ID"],
                     "email": os.environ["BROADCAST_USER_1_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_1_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_1_NUMBER"],
                 },
                 "broadcast_user_2": {
                     "id": os.environ["BROADCAST_USER_2_ID"],
                     "email": os.environ["BROADCAST_USER_2_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_2_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
+                },
+                "broadcast_user_3": {
+                    "id": os.environ["BROADCAST_USER_3_ID"],
+                    "email": os.environ["BROADCAST_USER_3_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_3_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_3_NUMBER"],
+                },
+                "broadcast_user_4": {
+                    "id": os.environ["BROADCAST_USER_4_ID"],
+                    "email": os.environ["BROADCAST_USER_4_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_4_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_4_NUMBER"],
                 },
                 "platform_admin": {
                     "id": os.environ["PLATFORM_ADMIN_ID"],
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
                 },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "service_name": os.environ["BROADCAST_SERVICE_NAME"],
                 "service_id": os.environ["BROADCAST_SERVICE_ID"],
                 "purge_older_than": os.environ["FUNCTIONAL_TEST_PURGE_OLDER_THAN"],
+                "secret_key": os.environ["SECRET_KEY"],
+                "dangerous_salt": os.environ["DANGEROUS_SALT"],
             },
             "service": {
                 "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],

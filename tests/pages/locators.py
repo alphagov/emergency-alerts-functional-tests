@@ -162,3 +162,7 @@ class ChangeNameLocators(object):
 
 class ViewTemplatePageLocators(object):
     SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+
+
+class SupportPageLocators(object):
+    FEEDBACK_TEXTAREA = (By.ID, "feedback")
