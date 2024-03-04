@@ -126,9 +126,11 @@ class BasePage(object):
         self.base_url = config["eas_admin_url"]
         self.driver = driver
 
-    def get(self, url=None):
+    def get(self, url=None, relative_url=None):
         if url:
             self.driver.get(url)
+        elif relative_url:
+            self.driver.get(f"{self.base_url}/{relative_url}")
         else:
             self.driver.get(self.base_url)
 
@@ -225,6 +227,10 @@ class BasePage(object):
 
     def click_element_by_link_text(self, link_text):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
+        element.click()
+
+    def click_element_by_id(self, id):
+        element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
     def get_errors(self):
