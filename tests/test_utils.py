@@ -1,13 +1,16 @@
 import csv
 import functools
+import json
 import logging
 import os
 import re
 import tempfile
 import uuid
 from datetime import datetime
+from urllib.parse import urlencode
 
 import requests
+from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -41,6 +44,14 @@ logging.basicConfig(
 jenkins_build_id = os.getenv("BUILD_ID", "No build id")
 
 default = " (default)"
+
+ACCOUNTS_REQUIRING_SMS_2FA = [
+    "broadcast_create_user",
+    "broadcast_approve_user",
+    "platform_admin",
+]
+
+PROVIDERS = ["ee", "o2", "vodafone", "three"]
 
 
 class NotificationStatuses:
@@ -176,7 +187,7 @@ def do_user_registration(driver):
 
     registration_page.register()
 
-    assert driver.current_url == config["notify_admin_url"] + "/registration-continue"
+    assert driver.current_url == config["eas_admin_url"] + "/registration-continue"
 
     registration_link = get_link(
         config["notify_templates"]["registration_template_id"], config["user"]["email"]
@@ -219,7 +230,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
 
     invite_user_page.send_invitation()
     invite_user_page.sign_out()
-    invite_user_page.wait_until_url_is(config["notify_admin_url"])
+    invite_user_page.wait_until_url_is(config["eas_admin_url"])
 
     # next part of interaction is from point of view of invitee
     # i.e. after visting invite_link we'll be registering using invite_email
@@ -242,7 +253,7 @@ def do_user_can_invite_someone_to_notify(driver, basic_view):
     if basic_view:
         is_basic_view(dashboard_page)
         dashboard_page.sign_out()
-        dashboard_page.wait_until_url_is(config["notify_admin_url"])
+        dashboard_page.wait_until_url_is(config["eas_admin_url"])
     else:
         is_view_for_all_permissions(dashboard_page)
 
@@ -429,7 +440,7 @@ def _assert_one_off_email_filled_in_properly(
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
-    client = NotificationsAPIClient(base_url=config["notify_api_url"], api_key=api_key)
+    client = NotificationsAPIClient(base_url=config["eas_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
     for notification in resp["notifications"]:
         t_id = notification["template"]["id"]
@@ -444,7 +455,7 @@ def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
 
 
 def get_verification_code_by_id(user_id):
-    url = f'{config["notify_api_url"]}/verify-code/{user_id}'
+    url = f'{config["eas_api_url"]}/verify-code/{user_id}'
     response = requests.get(url)
     return response.text
 
@@ -536,7 +547,23 @@ def do_user_can_update_reply_to_email_to_service(driver):
 def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
     gov_uk_alerts_page = GovUkAlertsPage(driver)
     gov_uk_alerts_page.get()
-
     gov_uk_alerts_page.click_element_by_link_text(page_title)
-
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+
+
+def create_url_with_token(email, url, next_redirect=None):
+    data = json.dumps({"email": email, "created_at": str(datetime.utcnow())})
+    full_url = _url_with_token(data, f"/{url}/", config)
+    if next_redirect:
+        full_url += "?{}".format(urlencode({"next": next_redirect}))
+    return full_url
+
+
+def _url_with_token(data, url, config):
+    token = (
+        URLSafeTimedSerializer(config["broadcast_service"]["secret_key"])
+        .dumps(data, config["broadcast_service"]["dangerous_salt"])
+        .replace(".", "%2E")
+    )
+    base_url = config["eas_admin_url"] + url
+    return base_url + token
