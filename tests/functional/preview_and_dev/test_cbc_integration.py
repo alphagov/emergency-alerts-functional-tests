@@ -189,6 +189,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     assert len(provider_messages) == 4
 
     request_id = _dict_item_for_key_value(provider_messages, "provider", "o2", "id")
+    print(request_id)
 
     db_response = ddbc.query(
         TableName="LoopbackRequests",
@@ -198,6 +199,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     )
 
     responses = db_response["Items"]
+    print(responses)
 
     o2_az1_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
