@@ -34,7 +34,7 @@ def inbound_sms():
     }
 
     response = requests.post(
-        config["notify_api_url"] + "/notifications/sms/receive/mmg",
+        config["eas_api_url"] + "/notifications/sms/receive/mmg",
         json=mmg_inbound_body,
         auth=(
             config["mmg_inbound_sms"]["username"],

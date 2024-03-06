@@ -22,12 +22,12 @@ from tests.test_utils import (
     create_broadcast_template,
     delete_template,
     go_to_templates_page,
-    recordtime,
 )
 
+TESTSUITE_CODE = "BROADCAST-FLOW"
 
-@recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -36,7 +36,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -90,7 +90,7 @@ def test_prepare_broadcast_with_new_content(driver):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
-            "Functional Tests Broadcast Service"
+            config["broadcast_service"]["service_name"]
         )
     else:
         dashboard_page = DashboardPage(driver)
@@ -102,7 +102,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert current_alerts_page.is_text_present_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -120,16 +120,14 @@ def test_prepare_broadcast_with_new_content(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.is_text_present_on_page(broadcast_title)
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-    # sign out
     current_alerts_page.get()
     current_alerts_page.sign_out()
 
 
-@recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -185,11 +183,11 @@ def test_prepare_broadcast_with_template(driver):
 
     delete_template(driver, template_name, service="broadcast_service")
 
-    prepare_alert_pages.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
-@recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)
@@ -222,14 +220,15 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     )
     broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
+    time.sleep(10)
     page.click_element_by_link_text("Rejected alerts")
     assert page.is_text_present_on_page(event)
 
+    page.get()
     page.sign_out()
 
 
-@recordtime
-@pytest.mark.xdist_group(name="broadcasts")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)
@@ -259,7 +258,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     alert_page_url = page.current_url
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -273,6 +272,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     broadcast_client.post_broadcast_data(cancel_broadcast_xml)
 
     # go back to the page for the current alert
+    time.sleep(10)
     page.get(alert_page_url)
 
     # assert that it's now cancelled
@@ -280,7 +280,8 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text("Past alerts")
     assert page.is_text_present_on_page(event)
 
-    time.sleep(180)
+    time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
+    page.get()
     page.sign_out()
