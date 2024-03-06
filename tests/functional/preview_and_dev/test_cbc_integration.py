@@ -165,8 +165,8 @@ def test_set_loopback_response_codes():
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
-    primary_cbc = "o2-az1"
-    secondary_cbc = "o2-az2"
+    primary_cbc = "ee-az1"
+    secondary_cbc = "ee-az2"
     failure_code = "500"
     success_code = "200"
 
@@ -185,6 +185,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     assert response is not None
 
     provider_messages = response["messages"]
+    print(provider_messages)
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
