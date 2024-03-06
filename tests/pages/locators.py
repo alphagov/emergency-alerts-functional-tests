@@ -7,6 +7,7 @@ class CommonPageLocators(object):
     PASSWORD_INPUT = (By.NAME, "password")
     CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
+    LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
     H1 = (By.TAG_NAME, "H1")
 
 
@@ -161,3 +162,7 @@ class ChangeNameLocators(object):
 
 class ViewTemplatePageLocators(object):
     SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+
+
+class SupportPageLocators(object):
+    FEEDBACK_TEXTAREA = (By.ID, "feedback")

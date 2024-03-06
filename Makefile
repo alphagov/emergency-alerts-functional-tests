@@ -7,23 +7,47 @@ help:
 
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
-	mkdir -p logs screenshots
+	mkdir -p logs screenshots functional-test-reports
 	pip install -r requirements.txt
 
-.PHONY: clean
-clean: ## Remove temporary files
-	rm -rf screenshots/*
-	rm -rf logs/*
-
 .PHONY: lint
-lint: clean
+lint:
 	isort --check-only tests
 	flake8 .
 	black --check .
 
-.PHONY: test
-test: clean ## Run functional tests against local environment
-	pytest -v -n auto --dist loadgroup \
+.PHONY: test-broadcast-flow
+test-broadcast-flow:
+	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_broadcast_flow.py \
+	--junitxml=functional-test-reports/broadcast-flow
+
+.PHONY: test-cbc-integration
+test-cbc-integration:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_cbc_integration.py \
+	--junitxml=functional-test-reports/cbc-integration
+
+.PHONY: test-platform-admin-flow
+test-platform-admin-flow:
+	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
-	tests/functional/preview_and_dev/test_cbc_integration.py
+	--junitxml=functional-test-reports/platform-admin-flow
+
+.PHONY: test-authentication-flow
+test-authentication-flow:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_authentication_flow.py \
+	--junitxml=functional-test-reports/authentication-flow
+
+.PHONY: test-top-rail-services
+test-top-rail-services:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_top_rail_services.py \
+	--junitxml=functional-test-reports/top-rail-services
+
+.PHONY: test-links-and-cookies
+test-links-and-cookies:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_links_and_cookies.py \
+	--junitxml=functional-test-reports/links-and-cookies
