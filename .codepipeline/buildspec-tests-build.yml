@@ -1,9 +1,20 @@
 version: 0.2
 
+env:
+  variables:
+    testsuites: >-
+      broadcast-flow
+      cbc-integration
+      platform-admin-flow
+      authentication-flow
+      top-rail-services
+      links-and-cookies
+
 phases:
   install:
     runtime-versions:
       python: 3.9
+
     commands:
       - apt update
       - apt install -y xvfb libxi6 libgconf-2-4 libnss3
@@ -12,25 +23,40 @@ phases:
       - unzip chromedriver_linux64.zip
       - mv chromedriver /usr/bin/chromedriver
       - apt-get install -f -y
+
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR
       - VENV_TESTS='/venv/eas-tests'
       - python3.9 -m venv $VENV_TESTS
       - . $VENV_TESTS/bin/activate
-  build:
-    commands:
       - chmod +x environment.sh
       - . ./environment.sh
-      - export BROADCAST_SERVICE_API_KEY=$(aws ssm get-parameter --name $BROADCAST_API_KEY --with-decryption --query "Parameter.Value" | jq -r)
       - export ENVIRONMENT=preview
       - python3.9 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
-      - make test
+
+  build:
+    on-failure: CONTINUE
+    commands:
+      - make test-broadcast-flow; exit 0
+      - make test-cbc-integration; exit 0
+      - make test-platform-admin-flow; exit 0
+      - make test-authentication-flow; exit 0
+      - make test-top-rail-services; exit 0
+      - make test-links-and-cookies; exit 0
+      - echo "Test run completed."
+      - touch "$(pwd)/test-failures"
+      - chmod +rw "$(pwd)/test-failures"
+      - python3.9 ./scripts/collect-failure-data.py $(pwd) $testsuites
+      - python3.9 ./scripts/report-test-failures.py "$(pwd)/test-failures"
+
   post_build:
     commands:
-      - echo "Testing passed" > screenshots/success.txt
+      - python3.9 ./scripts/signal-build-pass-or-fail.py $(pwd) $testsuites
 
 artifacts:
   files:
     - screenshots/*
+    - functional-test-reports/*
+    - test-failures

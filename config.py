@@ -27,7 +27,6 @@ config = {
         "address_line_2": "London",
         "postcode": "N1 7RA",
     },
-    # notify templates
     "notify_templates": {
         "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
         "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
@@ -40,33 +39,21 @@ config = {
 
 
 urls = {
-    "dev": {
+    "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
         "govuk_alerts": "http://localhost:6017/alerts",
     },
+    "development": {
+        "api": "https://api.dev.emergency-alerts.service.gov.uk",
+        "admin": "https://admin.dev.emergency-alerts.service.gov.uk",
+        "govuk_alerts": "tbc",
+    },
     "preview": {
-        "api": "https://api.preview.emergency-alerts.service.gov.uk/",
-        "admin": "https://admin.preview.emergency-alerts.service.gov.uk/",
+        "api": "https://api.preview.emergency-alerts.service.gov.uk",
+        "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
         "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
     },
-    # ECS apps are being deployed piecemeal and at present there are no api or govuk_alerts
-    # urls for the ecs-preview environment, so for now we will use those of the preview env
-    # "ecs-preview": {
-    #     "api": "https://api.notify.works",
-    #     "admin": "https://www-ecs.notify.works",
-    #     "govuk_alerts": "https://www.integration.publishing.service.gov.uk/alerts",
-    # },
-    # "staging": {
-    #     "api": "https://api.staging-notify.works",
-    #     "admin": "https://www.staging-notify.works",
-    #     "govuk_alerts": "not used in this environment",
-    # },
-    # "live": {
-    #     "api": "https://api.notifications.service.gov.uk",
-    #     "admin": "https://www.notifications.service.gov.uk",
-    #     "govuk_alerts": "not used in this environment",
-    # },
 }
 
 
@@ -76,16 +63,14 @@ def setup_shared_config():
     """
     env = os.environ["ENVIRONMENT"].lower()
 
-    # if env not in {"dev", "preview", "ecs-preview", "staging", "live"}:
-    #     pytest.fail('env "{}" not one of dev, preview, staging, live'.format(env))
-    if env not in {"dev", "preview"}:
-        pytest.fail('env "{}" not dev or preview'.format(env))
+    if env not in {"local", "development", "preview"}:
+        pytest.fail(f'env "{env}" not local, development or preview')
 
     config.update(
         {
             "env": env,
-            "notify_api_url": urls[env]["api"],
-            "notify_admin_url": urls[env]["admin"],
+            "eas_api_url": urls[env]["api"],
+            "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
         }
     )
@@ -113,18 +98,39 @@ def setup_preview_dev_config():
                 "broadcast_user_1": {
                     "id": os.environ["BROADCAST_USER_1_ID"],
                     "email": os.environ["BROADCAST_USER_1_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_1_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_1_NUMBER"],
                 },
                 "broadcast_user_2": {
                     "id": os.environ["BROADCAST_USER_2_ID"],
                     "email": os.environ["BROADCAST_USER_2_EMAIL"],
-                    # we are re-using seeded user's password
-                    "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
+                    "password": os.environ["BROADCAST_USER_2_PASSWORD"],
                     "mobile": os.environ["BROADCAST_USER_2_NUMBER"],
                 },
+                "broadcast_user_3": {
+                    "id": os.environ["BROADCAST_USER_3_ID"],
+                    "email": os.environ["BROADCAST_USER_3_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_3_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_3_NUMBER"],
+                },
+                "broadcast_user_4": {
+                    "id": os.environ["BROADCAST_USER_4_ID"],
+                    "email": os.environ["BROADCAST_USER_4_EMAIL"],
+                    "password": os.environ["BROADCAST_USER_4_PASSWORD"],
+                    "mobile": os.environ["BROADCAST_USER_4_NUMBER"],
+                },
+                "platform_admin": {
+                    "id": os.environ["PLATFORM_ADMIN_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
+                "service_name": os.environ["BROADCAST_SERVICE_NAME"],
+                "service_id": os.environ["BROADCAST_SERVICE_ID"],
+                "purge_older_than": os.environ["FUNCTIONAL_TEST_PURGE_OLDER_THAN"],
+                "secret_key": os.environ["SECRET_KEY"],
+                "dangerous_salt": os.environ["DANGEROUS_SALT"],
             },
             "service": {
                 "id": os.environ["FUNCTIONAL_TESTS_SERVICE_ID"],
@@ -134,8 +140,9 @@ def setup_preview_dev_config():
                     "password": os.environ["FUNCTIONAL_TESTS_SERVICE_EMAIL_PASSWORD"],
                     "mobile": os.environ["FUNCTIONAL_TESTS_SERVICE_NUMBER"],
                 },
-                "api_live_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_KEY"],
-                "api_test_key": os.environ["FUNCTIONAL_TESTS_SERVICE_API_TEST_KEY"],
+                "api_test_key": os.environ["BROADCAST_SERVICE_API_KEY"],
+                "internal_api_client_id": "notify-admin",
+                "internal_api_client_secret": os.environ["ADMIN_CLIENT_SECRET"],
                 # email address of seeded email auth user
                 "email_auth_account": os.environ[
                     "FUNCTIONAL_TESTS_SERVICE_EMAIL_AUTH_ACCOUNT"
@@ -159,6 +166,16 @@ def setup_preview_dev_config():
             "mmg_inbound_sms": {
                 "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
                 "password": os.environ["MMG_INBOUND_SMS_AUTH"],
+            },
+            "cbcs": {
+                "ee-az1": "192.168.1.7",
+                "ee-az2": "192.168.1.137",
+                "vodafone-az1": "192.168.1.57",
+                "vodafone-az2": "192.168.1.178",
+                "o2-az1": "192.168.1.79",
+                "o2-az2": "192.168.1.196",
+                "three-az1": "192.168.1.20",
+                "three-az2": "192.168.1.152",
             },
         }
     )

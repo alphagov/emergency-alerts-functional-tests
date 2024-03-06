@@ -7,6 +7,7 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     SignUpPageLocators,
+    SupportPageLocators,
     UploadCsvLocators,
     VerifyPageLocators,
 )
@@ -75,3 +76,7 @@ class FileInputElement(BasePageElement):
 
 class SubjectInputElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_SUBJECT_INPUT[1]
+
+
+class FeedbackTextAreaElement(BasePageElement):
+    name = SupportPageLocators.FEEDBACK_TEXTAREA[1]
