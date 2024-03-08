@@ -8,6 +8,7 @@ env:
       platform-admin-flow
       authentication-flow
       links-and-cookies
+      template-flow
 
 phases:
   install:
@@ -44,6 +45,7 @@ phases:
       - make test-authentication-flow; exit 0
       # - make test-top-rail-services; exit 0
       - make test-links-and-cookies; exit 0
+      - make test-template-flow; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"

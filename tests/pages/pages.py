@@ -566,7 +566,7 @@ class SendSmsTemplatePage(BasePage):
         element.click()
 
 
-class EditSmsTemplatePage(BasePage):
+class EditBroadcastTemplatePage(BasePage):
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
@@ -574,7 +574,7 @@ class EditSmsTemplatePage(BasePage):
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
     def click_save(self):
-        element = self.wait_for_element(EditSmsTemplatePage.save_button)
+        element = self.wait_for_element(EditBroadcastTemplatePage.save_button)
         element.click()
 
     def create_template(self, name="Test sms template", content=None):
@@ -586,14 +586,10 @@ class EditSmsTemplatePage(BasePage):
         self.click_save()
 
     def click_delete(self):
-        element = self.wait_for_element(EditSmsTemplatePage.delete_button)
+        element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
-        element = self.wait_for_element(EditSmsTemplatePage.confirm_delete_button)
+        element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
         element.click()
-
-
-class EditBroadcastTemplatePage(EditSmsTemplatePage):
-    pass
 
 
 class SendEmailTemplatePage(BasePage):
