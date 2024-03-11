@@ -12,7 +12,7 @@ TESTSUITE_CODE = "TEMPLATES"
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver)
+    go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
     assert page.is_page_title("Templates")
@@ -39,7 +39,7 @@ def test_create_and_delete_template(driver):
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_edit_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver)
+    go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
     assert page.is_page_title("Templates")
@@ -75,7 +75,7 @@ def test_create_edit_and_delete_template(driver):
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_populate_and_delete_folders_and_templates(driver):
     sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver)
+    go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
     timestamp = datetime.now().replace(microsecond=0).isoformat()
