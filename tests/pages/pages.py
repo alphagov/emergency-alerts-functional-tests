@@ -601,6 +601,11 @@ class EditBroadcastTemplatePage(BasePage):
         element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
         element.click()
 
+    def click_template_by_link_text(self, link_text):
+        element = self.wait_for_element(self.template_link_text(link_text))
+        self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
+        element.click()
+
 
 class SendEmailTemplatePage(BasePage):
     add_a_new_email_template_link = TemplatePageLocators.ADD_A_NEW_TEMPLATE_LINK
