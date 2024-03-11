@@ -70,6 +70,8 @@ def test_create_edit_and_delete_template(driver):
     assert edit_template.is_text_present_on_page(alert_content)
     assert edit_template.is_text_present_on_page(alert_content + extra_text)
 
+    edit_template.click_element_by_link_text("Back to current templates")
+    edit_template.click_element_by_link_text(alert_name)
     edit_template.click_delete()
 
     assert page.is_page_title("Templates")
