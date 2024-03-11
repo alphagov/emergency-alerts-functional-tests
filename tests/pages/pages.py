@@ -570,20 +570,30 @@ class EditBroadcastTemplatePage(BasePage):
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    edit_button = EditTemplatePageLocators.EDIT_BUTTON
+    prep_to_send_button = EditTemplatePageLocators.PREP_TO_SEND_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
+
+    def create_template(self, name="Template Name", content=None):
+        self.name_input = name
+        if content:
+            self.template_content_input = content
+        else:
+            self.template_content_input = "Placeholder text for alert content"
+        self.click_save()
 
     def click_save(self):
         element = self.wait_for_element(EditBroadcastTemplatePage.save_button)
         element.click()
 
-    def create_template(self, name="Test sms template", content=None):
-        self.name_input = name
-        if content:
-            self.template_content_input = content
-        else:
-            self.template_content_input = "The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))"
-        self.click_save()
+    def click_edit(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.edit_button)
+        element.click()
+
+    def click_prep_to_send(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.prep_to_send_button)
+        element.click()
 
     def click_delete(self):
         element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
