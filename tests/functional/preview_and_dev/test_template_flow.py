@@ -17,6 +17,24 @@ def test_create_and_delete_template(driver):
     page = ShowTemplatesPage(driver)
     assert page.is_page_title("Templates")
 
+    timestamp = datetime.now().replace(microsecond=0).isoformat()
+    alert_name = f"Test Alert {timestamp}"
+    alert_content = "Test alert content"
+
+    page.click_add_new_template()
+    edit_template = EditBroadcastTemplatePage(driver)
+    assert edit_template.is_page_title("New template")
+    edit_template.create_template(name=alert_name, content=alert_content)
+
+    assert edit_template.is_page_title("Template")
+    assert edit_template.is_text_present_on_page(alert_name)
+    assert edit_template.is_text_present_on_page(alert_content)
+
+    edit_template.click_delete()
+
+    assert page.is_page_title("Templates")
+    assert not page.is_text_present_on_page(alert_name)
+
 
 @pytest.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -25,13 +43,14 @@ def test_create_populate_and_delete_folders_and_templates(driver):
     go_to_templates_page(driver)
 
     page = ShowTemplatesPage(driver)
+    timestamp = datetime.now().replace(microsecond=0).isoformat()
 
-    folder_name1 = f"Folder1 {datetime.now().replace(microsecond=0).isoformat()}"
+    folder_name1 = f"Folder1 {timestamp}"
     page.click_add_new_folder(folder_name=folder_name1)
     assert page.is_page_title("Templates")
     assert page.is_text_present_on_page(folder_name1)
 
-    folder_name2 = f"Folder2 {datetime.now().replace(microsecond=0).isoformat()}"
+    folder_name2 = f"Folder2 {timestamp}"
     page.click_add_new_folder(folder_name=folder_name2)
     assert page.is_page_title("Templates")
     assert page.is_text_present_on_page(folder_name2)
