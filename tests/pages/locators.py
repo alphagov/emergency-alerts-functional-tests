@@ -58,11 +58,11 @@ class EditTemplatePageLocators(object):
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     EDIT_BUTTON = (
         By.XPATH,
-        "//a[@class = 'govuk-link' and contains(text(),'Edit')]",
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Edit')]",
     )
     PREP_TO_SEND_BUTTON = (
         By.XPATH,
-        "//a[@class = 'govuk-link' and contains(text(),'Get ready to send')]",
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Get ready to send')]",
     )
     DELETE_BUTTON = (By.LINK_TEXT, "Delete this template")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
