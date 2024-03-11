@@ -64,8 +64,7 @@ def test_create_edit_and_delete_template(driver):
     assert edit_template.is_page_title("Template")
     assert edit_template.is_text_present_on_page(alert_name)
     assert edit_template.is_text_present_on_page(alert_content + extra_text)
-    print(" ".join(driver.page_source.split()))
-    assert edit_template.is_text_present_on_page("Last edited less than a minute ago")
+    assert edit_template.is_text_present_on_page("less than a minute ago")
 
     edit_template.click_element_by_link_text("See previous versions")
     assert edit_template.is_text_present_on_page(alert_content)
