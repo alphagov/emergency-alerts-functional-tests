@@ -476,6 +476,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
     )
+    level_n_folder_radio = "imput[type='radio'][id='move_to-{}']"
 
     @staticmethod
     def template_link_text(link_text):
@@ -550,6 +551,18 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
+    def move_to_folder_level(self, level):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        radio_element = self.wait_for_invisible_element(
+            (
+                By.CSS_SELECTOR,
+                self.level_n_folder_radio.format(level),
+            )
+        )
+        self.select_checkbox_or_radio(radio_element)
+        self.click_continue()
+
     def get_folder_by_name(self, folder_name):
         try:
             return self.wait_for_invisible_element(self.template_link_text(folder_name))
@@ -599,11 +612,6 @@ class EditBroadcastTemplatePage(BasePage):
         element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
         element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
-        element.click()
-
-    def click_template_by_link_text(self, link_text):
-        element = self.wait_for_element(self.template_link_text(link_text))
-        self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
         element.click()
 
 

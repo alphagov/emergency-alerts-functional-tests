@@ -113,7 +113,6 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.skip("temporarily skip")
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_populate_and_delete_folders_and_templates(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -132,17 +131,34 @@ def test_create_populate_and_delete_folders_and_templates(driver):
     assert page.is_page_title("Templates")
     assert page.is_text_present_on_page(folder_name2)
 
+    new_template_page = EditBroadcastTemplatePage(driver)
+    templates = ShowTemplatesPage(driver)
+
     # create new template 1
     page.click_add_new_template()
-    new_template_page = EditBroadcastTemplatePage(driver)
-    new_template_page.create_template(name="Template1", content="This is an alert")
+    template1_name = f"Template1 {timestamp}"
+    new_template_page.create_template(name=template1_name, content="This is an alert")
+    template1_id = new_template_page.get_template_id()
     new_template_page.click_element_by_link_text("Templates")
 
     # move template to folder 1
+    templates.select_template_checkbox(template1_id)
+    templates.move_to_folder_level(1)
+    # assert template link is not on root
+    assert not templates.is_text_present_on_page(template1_name)
 
     # create new template 2
+    page.click_add_new_template()
+    template2_name = f"Template2 {timestamp}"
+    new_template_page.create_template(name=template2_name, content="This is an alert")
+    template2_id = new_template_page.get_template_id()
+    new_template_page.click_element_by_link_text("Templates")
 
     # move template to folder 2
+    templates.select_template_checkbox(template2_id)
+    templates.move_to_folder_level(2)
+    # assert template link is not on root
+    assert not templates.is_text_present_on_page(template2_name)
 
     # try to delete folder 1 - confirm failure
 
