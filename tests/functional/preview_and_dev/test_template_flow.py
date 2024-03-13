@@ -1,8 +1,16 @@
-from datetime import datetime
+import time
 
 import pytest
+from selenium.webdriver.common.by import By
 
-from tests.pages import EditBroadcastTemplatePage, ShowTemplatesPage
+from config import config
+from tests.pages import (
+    DashboardPage,
+    EditBroadcastTemplatePage,
+    ManageFolderPage,
+    ShowTemplatesPage,
+    ViewFolderPage,
+)
 from tests.pages.rollups import sign_in
 from tests.test_utils import go_to_templates_page
 
@@ -89,7 +97,8 @@ def test_create_prep_to_send_and_delete_template(driver):
     page = ShowTemplatesPage(driver)
     assert page.is_page_title("Templates")
 
-    timestamp = datetime.now().replace(microsecond=0).isoformat()
+    # timestamp = datetime.now().replace(microsecond=0).isoformat()
+    timestamp = str(int(time.time()))
     alert_name = f"Test Alert {timestamp}"
     alert_content = "Test alert content"
 
@@ -113,69 +122,138 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
-def test_create_populate_and_delete_folders_and_templates(driver):
+@pytest.mark.xdist_group(name="TESTSUITE_CODE")
+def test_creating_moving_and_deleting_template_folders(driver):
     sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver, service="broadcast_service")
 
-    templates = ShowTemplatesPage(driver)
-    assert templates.is_page_title("Templates")
-    timestamp = datetime.now().replace(microsecond=0).isoformat()
+    # create new template
+    timestamp = str(int(time.time()))
+    template_name = f"template-for-folder-test-{timestamp}"
+    folder_name = f"test-folder-{timestamp}"
 
-    folder_name1 = f"Folder1 {timestamp}"
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config["broadcast_service"]["id"])
+    dashboard_page.click_templates()
 
-    templates.click_add_new_folder(folder_name=folder_name1)
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
+    show_templates_page.select_email()
 
-    ######################################################
-    # templates.click_element_by_link_text("New folder")
-    # templates.add_new_folder_textbox = folder_name1
-    # templates.click_element_by_link_text("New folder")
+    edit_template_page = EditBroadcastTemplatePage(driver)
+    edit_template_page.create_template(name=template_name)
+    template_id = edit_template_page.get_template_id()
+    edit_template_page.click_templates()
 
-    assert templates.is_page_title("Templates")
-    assert templates.is_text_present_on_page(folder_name1)
-    ########################################################
+    # create folder using add to new folder
+    show_templates_page.select_template_checkbox(template_id)
+    show_templates_page.add_to_new_folder(folder_name)
 
-    # folder_name2 = f"Folder2 {timestamp}"
-    # templates.click_add_new_folder(folder_name=folder_name2)
-    # # assert page.is_page_title("Templates")
-    # # assert page.is_text_present_on_page(folder_name2)
+    # navigate into folder
+    show_templates_page.click_template_by_link_text(folder_name)
 
-    # new_template_page = EditBroadcastTemplatePage(driver)
+    # rename folder step
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_manage_folder()
 
-    # # create new template 1
-    # templates.click_add_new_template()
-    # template1_name = f"Template1 {timestamp}"
-    # new_template_page.create_template(name=template1_name, content="This is an alert")
-    # template1_id = new_template_page.get_template_id()
-    # new_template_page.click_element_by_link_text("Templates")
+    manage_folder_page = ManageFolderPage(driver)
+    new_folder_name = folder_name + "-new"
+    manage_folder_page.set_name(new_folder_name)
+    view_folder_page.assert_name_equals(new_folder_name)
 
-    # # move template to folder 1
-    # templates.select_template_checkbox(template1_id)
-    # templates.move_to_folder_level(1)
-    # # assert template link is not on root
-    # assert not templates.is_text_present_on_page(template1_name)
+    # try to delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()  # fails due to not being empty
 
-    # # create new template 2
-    # templates.click_add_new_template()
-    # template2_name = f"Template2 {timestamp}"
-    # new_template_page.create_template(name=template2_name, content="This is an alert")
-    # template2_id = new_template_page.get_template_id()
-    # new_template_page.click_element_by_link_text("Templates")
+    # check error message visible
+    assert (
+        manage_folder_page.get_errors()
+        == "You must empty this folder before you can delete it"
+    )
 
-    # # move template to folder 2
-    # templates.select_template_checkbox(template2_id)
-    # templates.move_to_folder_level(2)
-    # # assert template link is not on root
-    # assert not templates.is_text_present_on_page(template2_name)
+    # move template out of folder
+    view_folder_page.select_template_checkbox(template_id)
+    view_folder_page.move_to_root_template_folder()
 
-    # try to delete folder 1 - confirm failure
+    # delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()
+    manage_folder_page.confirm_delete_folder()
+    current_folders = [
+        x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")
+    ]
+    if len(current_folders) == 0:
+        current_folders = [
+            x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
+        ]
+    # assert folder not visible
+    assert new_folder_name not in current_folders
 
-    # try to delete folder 2 - confirm failure
+    # delete template
+    show_templates_page.click_template_by_link_text(template_name)
+    edit_template_page.click_delete()
 
-    # delete template 2
+    assert template_name not in [
+        x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
+    ]
 
-    # delete folder 2
 
-    # delete template 1
+# @pytest.mark.skip()
+# @pytest.mark.xdist_group(name=TESTSUITE_CODE)
+# def test_create_populate_and_delete_folders_and_templates_old(driver):
+#     sign_in(driver, account_type="broadcast_create_user")
+#     go_to_templates_page(driver, service="broadcast_service")
 
-    # delete folder 1
+#     templates = ShowTemplatesPage(driver)
+#     assert templates.is_page_title("Templates")
+#     timestamp = datetime.now().replace(microsecond=0).isoformat()
+
+#     folder_name1 = f"Folder1 {timestamp}"
+
+#     templates.click_add_new_folder(folder_name=folder_name1)
+#     assert templates.is_page_title("Templates")
+#     assert templates.is_text_present_on_page(folder_name1)
+
+#     folder_name2 = f"Folder2 {timestamp}"
+#     templates.click_add_new_folder(folder_name=folder_name2)
+#     assert templates.is_page_title("Templates")
+#     assert templates.is_text_present_on_page(folder_name2)
+
+#     new_template_page = EditBroadcastTemplatePage(driver)
+
+#     # create new template 1
+#     templates.click_add_new_template()
+#     template1_name = f"Template1 {timestamp}"
+#     new_template_page.create_template(name=template1_name, content="This is an alert")
+#     template1_id = new_template_page.get_template_id()
+#     new_template_page.click_element_by_link_text("Templates")
+
+#     # move template to folder 1
+#     templates.select_template_checkbox(template1_id)
+#     templates.move_to_folder_level(1)
+#     # assert template link is not on root
+#     assert not templates.is_text_present_on_page(template1_name)
+
+#     # create new template 2
+#     templates.click_add_new_template()
+#     template2_name = f"Template2 {timestamp}"
+#     new_template_page.create_template(name=template2_name, content="This is an alert")
+#     template2_id = new_template_page.get_template_id()
+#     new_template_page.click_element_by_link_text("Templates")
+
+#     # move template to folder 2
+#     templates.select_template_checkbox(template2_id)
+#     templates.move_to_folder_level(2)
+#     # assert template link is not on root
+#     assert not templates.is_text_present_on_page(template2_name)
+
+#     # try to delete folder 1 - confirm failure
+
+#     # try to delete folder 2 - confirm failure
+
+#     # delete template 2
+
+#     # delete folder 2
+
+#     # delete template 1
+
+#     # delete folder 1
