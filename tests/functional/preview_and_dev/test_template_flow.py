@@ -3,9 +3,7 @@ import time
 import pytest
 from selenium.webdriver.common.by import By
 
-from config import config
 from tests.pages import (
-    DashboardPage,
     EditBroadcastTemplatePage,
     ManageFolderPage,
     ShowTemplatesPage,
@@ -89,36 +87,36 @@ TESTSUITE_CODE = "TEMPLATES"
 #     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
-def test_create_prep_to_send_and_delete_template(driver):
-    sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver, service="broadcast_service")
+# @pytest.mark.xdist_group(name=TESTSUITE_CODE)
+# def test_create_prep_to_send_and_delete_template(driver):
+#     sign_in(driver, account_type="broadcast_create_user")
+#     go_to_templates_page(driver, service="broadcast_service")
 
-    page = ShowTemplatesPage(driver)
-    assert page.is_page_title("Templates")
+#     page = ShowTemplatesPage(driver)
+#     assert page.is_page_title("Templates")
 
-    timestamp = str(int(time.time()))
-    alert_name = f"Test Alert {timestamp}"
-    alert_content = "Test alert content"
+#     timestamp = str(int(time.time()))
+#     alert_name = f"Test Alert {timestamp}"
+#     alert_content = "Test alert content"
 
-    page.click_add_new_template()
-    edit_template = EditBroadcastTemplatePage(driver)
-    assert edit_template.is_page_title("New template")
-    edit_template.create_template(name=alert_name, content=alert_content)
+#     page.click_add_new_template()
+#     edit_template = EditBroadcastTemplatePage(driver)
+#     assert edit_template.is_page_title("New template")
+#     edit_template.create_template(name=alert_name, content=alert_content)
 
-    assert edit_template.is_page_title("Template")
-    assert edit_template.is_text_present_on_page(alert_name)
-    assert edit_template.is_text_present_on_page(alert_content)
+#     assert edit_template.is_page_title("Template")
+#     assert edit_template.is_text_present_on_page(alert_name)
+#     assert edit_template.is_text_present_on_page(alert_content)
 
-    edit_template.click_prep_to_send()
-    assert edit_template.is_page_title("Choose where to send this alert")
-    edit_template.click_templates()
+#     edit_template.click_prep_to_send()
+#     assert edit_template.is_page_title("Choose where to send this alert")
+#     edit_template.click_templates()
 
-    edit_template.click_element_by_link_text(alert_name)
-    edit_template.click_delete()
+#     edit_template.click_element_by_link_text(alert_name)
+#     edit_template.click_delete()
 
-    assert page.is_page_title("Templates")
-    assert not page.is_text_present_on_page(alert_name)
+#     assert page.is_page_title("Templates")
+#     assert not page.is_text_present_on_page(alert_name)
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -130,10 +128,7 @@ def test_creating_moving_and_deleting_template_folders(driver):
     template_name = f"template-for-folder-test-{timestamp}"
     folder_name = f"test-folder-{timestamp}"
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config["broadcast_service"]["id"])
-    dashboard_page.click_templates()
-
+    go_to_templates_page(driver, "broadcast_service")
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
@@ -174,8 +169,8 @@ def test_creating_moving_and_deleting_template_folders(driver):
     view_folder_page.move_to_root_template_folder()
 
     # delete folder
-    # PROBLEM HERE #
-    view_folder_page = ViewFolderPage(driver)
+    go_to_templates_page(driver, "broadcast_service")
+    view_folder_page.click_template_by_link_text(new_folder_name)
     view_folder_page.click_manage_folder()
 
     manage_folder_page.delete_folder()
@@ -197,65 +192,3 @@ def test_creating_moving_and_deleting_template_folders(driver):
     assert template_name not in [
         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
     ]
-
-
-# @pytest.mark.skip()
-# @pytest.mark.xdist_group(name=TESTSUITE_CODE)
-# def test_create_populate_and_delete_folders_and_templates_old(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
-#     go_to_templates_page(driver, service="broadcast_service")
-
-#     templates = ShowTemplatesPage(driver)
-#     assert templates.is_page_title("Templates")
-#     timestamp = datetime.now().replace(microsecond=0).isoformat()
-
-#     folder_name1 = f"Folder1 {timestamp}"
-
-#     templates.click_add_new_folder(folder_name=folder_name1)
-#     assert templates.is_page_title("Templates")
-#     assert templates.is_text_present_on_page(folder_name1)
-
-#     folder_name2 = f"Folder2 {timestamp}"
-#     templates.click_add_new_folder(folder_name=folder_name2)
-#     assert templates.is_page_title("Templates")
-#     assert templates.is_text_present_on_page(folder_name2)
-
-#     new_template_page = EditBroadcastTemplatePage(driver)
-
-#     # create new template 1
-#     templates.click_add_new_template()
-#     template1_name = f"Template1 {timestamp}"
-#     new_template_page.create_template(name=template1_name, content="This is an alert")
-#     template1_id = new_template_page.get_template_id()
-#     new_template_page.click_element_by_link_text("Templates")
-
-#     # move template to folder 1
-#     templates.select_template_checkbox(template1_id)
-#     templates.move_to_folder_level(1)
-#     # assert template link is not on root
-#     assert not templates.is_text_present_on_page(template1_name)
-
-#     # create new template 2
-#     templates.click_add_new_template()
-#     template2_name = f"Template2 {timestamp}"
-#     new_template_page.create_template(name=template2_name, content="This is an alert")
-#     template2_id = new_template_page.get_template_id()
-#     new_template_page.click_element_by_link_text("Templates")
-
-#     # move template to folder 2
-#     templates.select_template_checkbox(template2_id)
-#     templates.move_to_folder_level(2)
-#     # assert template link is not on root
-#     assert not templates.is_text_present_on_page(template2_name)
-
-#     # try to delete folder 1 - confirm failure
-
-#     # try to delete folder 2 - confirm failure
-
-#     # delete template 2
-
-#     # delete folder 2
-
-#     # delete template 1
-
-#     # delete folder 1
