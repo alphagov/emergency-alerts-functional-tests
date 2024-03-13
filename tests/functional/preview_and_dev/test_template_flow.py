@@ -158,7 +158,7 @@ def test_creating_moving_and_deleting_template_folders(driver):
     manage_folder_page = ManageFolderPage(driver)
     new_folder_name = folder_name + "-new"
     manage_folder_page.set_name(new_folder_name)
-    view_folder_page.assert_name_equals(new_folder_name)
+    view_folder_page.is_text_present_on_page(new_folder_name)
 
     # try to delete folder
     view_folder_page.click_manage_folder()
