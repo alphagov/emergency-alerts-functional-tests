@@ -137,7 +137,6 @@ def test_creating_moving_and_deleting_template_folders(driver):
 
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
-    show_templates_page.select_email()
 
     edit_template_page = EditBroadcastTemplatePage(driver)
     edit_template_page.create_template(name=template_name)
