@@ -97,7 +97,6 @@ def test_create_prep_to_send_and_delete_template(driver):
     page = ShowTemplatesPage(driver)
     assert page.is_page_title("Templates")
 
-    # timestamp = datetime.now().replace(microsecond=0).isoformat()
     timestamp = str(int(time.time()))
     alert_name = f"Test Alert {timestamp}"
     alert_content = "Test alert content"
@@ -175,7 +174,10 @@ def test_creating_moving_and_deleting_template_folders(driver):
     view_folder_page.move_to_root_template_folder()
 
     # delete folder
+    # PROBLEM HERE #
+    view_folder_page = ViewFolderPage(driver)
     view_folder_page.click_manage_folder()
+
     manage_folder_page.delete_folder()
     manage_folder_page.confirm_delete_folder()
     current_folders = [
