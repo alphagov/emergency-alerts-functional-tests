@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 
 import pytest
@@ -124,16 +123,13 @@ def test_create_populate_and_delete_folders_and_templates(driver):
     timestamp = datetime.now().replace(microsecond=0).isoformat()
 
     folder_name1 = f"Folder1 {timestamp}"
-    templates.click_add_new_folder(folder_name=folder_name1)
 
-    time.sleep(20)
-    templates = ShowTemplatesPage(driver)
-    assert templates.is_page_title("Templates")
+    # templates.click_add_new_folder(folder_name=folder_name1)
+    templates.click_element_by_link_text("New folder")
+    templates.add_new_folder_textbox = folder_name1
+    templates.click_element_by_link_text("New folder")
 
-    element = templates.wait_for_element(("tag name", "H1"))
-    print(element.text)
     assert templates.is_page_title("Templates")
-    print(" ".join(driver.page_source.split()))
     assert templates.is_text_present_on_page(folder_name1)
 
     # folder_name2 = f"Folder2 {timestamp}"
