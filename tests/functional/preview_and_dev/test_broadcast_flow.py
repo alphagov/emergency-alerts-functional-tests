@@ -47,7 +47,7 @@ def test_prepare_broadcast_with_new_content(driver):
     test_uuid = str(uuid.uuid4())
     broadcast_title = "test broadcast" + test_uuid
 
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -66,7 +66,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.click_continue()
 
     prepare_alert_pages.click_element_by_link_text(
-        "Preview this alert"
+        "Preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
@@ -74,7 +74,7 @@ def test_prepare_broadcast_with_new_content(driver):
 
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-    # prepare_alert_pages.click_continue()  # click "Preview this alert"
+    # prepare_alert_pages.click_continue()  # click "Preview alert"
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -144,7 +144,7 @@ def test_prepare_broadcast_with_template(driver):
     dashboard_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="template")
@@ -162,7 +162,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd21-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text(
-        "Preview this alert"
+        "Preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page("Cokeham")
@@ -170,7 +170,7 @@ def test_prepare_broadcast_with_template(driver):
 
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-    # prepare_alert_pages.click_continue()  # click "Preview this alert"
+    # prepare_alert_pages.click_continue()  # click "Preview alert"
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(
         f"{template_name} is waiting for approval"

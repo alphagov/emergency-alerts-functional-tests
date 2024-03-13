@@ -111,7 +111,7 @@ def create_alert(driver, id):
     current_alerts_page = BasePage(driver)
     broadcast_title = "test broadcast" + id
 
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -127,7 +127,7 @@ def create_alert(driver, id):
     prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
     prepare_alert_pages.click_continue()
 
-    prepare_alert_pages.click_element_by_link_text("Preview this alert")
+    prepare_alert_pages.click_element_by_link_text("Preview alert")
     assert prepare_alert_pages.is_text_present_on_page("England")
 
     prepare_alert_pages.click_continue()
