@@ -457,7 +457,8 @@ class DashboardPage(BasePage):
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
-    add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
+    # add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
+    add_new_folder_link = (By.XPATH, "//button[@value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
     move_to_existing_folder_link = (
         By.CSS_SELECTOR,
@@ -501,9 +502,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def click_add_new_folder(self, folder_name):
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
-
         self.add_new_folder_textbox = folder_name
-
         # green submit button
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()

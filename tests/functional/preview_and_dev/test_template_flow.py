@@ -124,13 +124,16 @@ def test_create_populate_and_delete_folders_and_templates(driver):
 
     folder_name1 = f"Folder1 {timestamp}"
 
-    # templates.click_add_new_folder(folder_name=folder_name1)
-    templates.click_element_by_link_text("New folder")
-    templates.add_new_folder_textbox = folder_name1
-    templates.click_element_by_link_text("New folder")
+    templates.click_add_new_folder(folder_name=folder_name1)
+
+    ######################################################
+    # templates.click_element_by_link_text("New folder")
+    # templates.add_new_folder_textbox = folder_name1
+    # templates.click_element_by_link_text("New folder")
 
     assert templates.is_page_title("Templates")
     assert templates.is_text_present_on_page(folder_name1)
+    ########################################################
 
     # folder_name2 = f"Folder2 {timestamp}"
     # templates.click_add_new_folder(folder_name=folder_name2)
