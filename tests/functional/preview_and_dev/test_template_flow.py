@@ -148,7 +148,7 @@ def test_creating_moving_and_deleting_template_folders(driver):
     show_templates_page.add_to_new_folder(folder_name)
 
     # navigate into folder
-    go_to_templates_page("broadcast_service")
+    go_to_templates_page(driver, "broadcast_service")
     show_templates_page.click_template_by_link_text(folder_name)
 
     # rename folder step
