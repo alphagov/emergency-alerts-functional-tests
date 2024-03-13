@@ -1,6 +1,5 @@
 import os
 import shutil
-import time
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -89,7 +88,6 @@ class AntiStaleElement(AntiStale):
                 self.element,
             )
             try:
-                time.sleep(1)
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
