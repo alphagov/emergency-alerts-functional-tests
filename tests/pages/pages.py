@@ -19,6 +19,7 @@ from tests.pages.element import (
     EmailInputElement,
     FeedbackTextAreaElement,
     FileInputElement,
+    FolderNameInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -457,8 +458,8 @@ class DashboardPage(BasePage):
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
-    # add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
-    add_new_folder_link = (By.XPATH, "//button[@value='add-new-folder']")
+    add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
+    # add_new_folder_link = (By.XPATH, "//button[@value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
     move_to_existing_folder_link = (
         By.CSS_SELECTOR,
@@ -470,7 +471,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     text_message_radio = (By.CSS_SELECTOR, "input[type='radio'][value='sms']")
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
 
-    add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
+    # add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
+    add_new_folder_textbox = FolderNameInputElement()
     add_to_new_folder_textbox = BasePageElement(name="move_to_new_folder_name")
 
     root_template_folder_radio = (

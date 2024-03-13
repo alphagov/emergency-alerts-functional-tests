@@ -54,6 +54,10 @@ class PasswordInputElement(BasePageElement):
     name = CommonPageLocators.PASSWORD_INPUT[1]
 
 
+class FolderNameInputElement(BasePageElement):
+    name = CommonPageLocators.FOLDER_NAME[1]
+
+
 class SmsInputElement(BasePageElement):
     name = VerifyPageLocators.SMS_INPUT[1]
 
