@@ -122,7 +122,7 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name="TESTSUITE_CODE")
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_creating_moving_and_deleting_template_folders(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
