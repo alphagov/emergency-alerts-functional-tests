@@ -123,7 +123,9 @@ def test_create_populate_and_delete_folders_and_templates(driver):
 
     folder_name1 = f"Folder1 {timestamp}"
     templates.click_add_new_folder(folder_name=folder_name1)
-    print()
+
+    templates = ShowTemplatesPage(driver)
+
     element = templates.wait_for_element(("tag name", "H1"))
     print(element.text)
     assert templates.is_page_title("Templates")
