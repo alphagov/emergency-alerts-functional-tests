@@ -16,8 +16,7 @@ phases:
       - cd /tmp/
       - wget https://storage.googleapis.com/chrome-for-testing-public/122.0.6261.128/linux64/chromedriver-linux64.zip
       - unzip chromedriver-linux64.zip
-      - mv chromedriver-linux64 chromedriver
-      - mv chromedriver /usr/bin/chromedriver
+      - mv chromedriver-linux/chromedriver /usr/bin/chromedriver
       - apt-get install -f -y
 
   pre_build:
