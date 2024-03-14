@@ -227,6 +227,7 @@ def test_template_folder_permissions(driver):
 
         # go back to view folder page
         # edit_template_page.click_folder_path(folder_name)
+        go_to_templates_page(driver, "broadcast_service")
         show_templates_page.click_template_by_link_text(folder_name)
 
     # go to Team members page
