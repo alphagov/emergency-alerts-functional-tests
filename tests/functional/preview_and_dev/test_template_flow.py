@@ -222,7 +222,6 @@ def test_template_folder_permissions(driver):
 
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
-        go_to_templates_page(driver, "broadcast_service")
         show_templates_page.click_template_by_link_text(folder_name)
 
         # # create a new template
