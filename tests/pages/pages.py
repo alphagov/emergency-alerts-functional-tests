@@ -468,7 +468,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
 
     add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
-    add_new_folder_element = (By.CSS_SELECTOR, "input[name='add_new_folder_name']")
+    # add_new_folder_element = (By.CSS_SELECTOR, "input[name='add_new_folder_name']")
     add_to_new_folder_textbox = BasePageElement(name="move_to_new_folder_name")
 
     root_template_folder_radio = (
@@ -486,14 +486,14 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             ),
         )
 
-    @staticmethod
-    def folder_link_text(folder_text):
-        return (
-            By.XPATH,
-            "//a[contains(@class, 'template-list-folder')]/span[contains(normalize-space(.), '{}')]".format(
-                folder_text
-            ),
-        )
+    # @staticmethod
+    # def folder_link_text(folder_text):
+    #     return (
+    #         By.XPATH,
+    #         "//a[contains(@class, 'template-list-folder')]/span[contains(normalize-space(.), '{}')]".format(
+    #             folder_text
+    #         ),
+    #     )
 
     @staticmethod
     def template_checkbox(template_id):
@@ -509,7 +509,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def click_add_new_folder(self, folder_name):
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
-        self.wait_for_element(self.add_new_folder_element)
+
         self.add_new_folder_textbox = folder_name
         # green submit button
         element = self.wait_for_element(self.add_new_folder_link)
@@ -520,10 +520,10 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
         element.click()
 
-    def click_folder_by_link_text(self, folder_text):
-        element = self.wait_for_element(self.folder_link_text(folder_text))
-        self.scrollToRevealElement(xpath=self.folder_link_text(folder_text)[1])
-        element.click()
+    # def click_folder_by_link_text(self, folder_text):
+    #     element = self.wait_for_element(self.folder_link_text(folder_text))
+    #     self.scrollToRevealElement(xpath=self.folder_link_text(folder_text)[1])
+    #     element.click()
 
     def _select_template_type(self, type):
         # wait for continue button to be displayed - sticky nav has rendered properly

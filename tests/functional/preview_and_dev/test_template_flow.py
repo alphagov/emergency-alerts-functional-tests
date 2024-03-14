@@ -217,21 +217,17 @@ def test_template_folder_permissions(driver):
     show_templates_page = ShowTemplatesPage(driver)
 
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
-    for folder_name in folder_names:
-        print(f"Creating folder {folder_name}")
+    # for folder_name in folder_names:
+    #     print(f"Creating folder {folder_name}")
+    #     show_templates_page.click_add_new_folder(folder_name)
+    #     go_to_templates_page(driver, "broadcast_service")
+    #     show_templates_page.click_template_by_link_text(folder_name)
 
-        # create a new folder
-        show_templates_page.click_add_new_folder(folder_name)
-        show_templates_page.click_folder_by_link_text(folder_name)
-
-        # # create a new template
-        # show_templates_page.click_add_new_template()
-        # edit_template_page = EditBroadcastTemplatePage(driver)
-        # edit_template_page.create_template(name=(folder_name + "_template"))
-
-        # # go back to view folder page
-        # go_to_templates_page(driver, "broadcast_service")
-        # show_templates_page.click_template_by_link_text(folder_name)
+    show_templates_page.click_add_new_folder(folder_names[0])
+    show_templates_page.click_template_by_link_text(folder_names[0])
+    show_templates_page.click_add_new_folder(folder_names[1])
+    show_templates_page.click_template_by_link_text(folder_names[1])
+    show_templates_page.click_add_new_folder(folder_names[2])
 
     go_to_templates_page(driver, "broadcast_service")
 
