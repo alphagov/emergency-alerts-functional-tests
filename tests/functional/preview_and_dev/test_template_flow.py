@@ -214,8 +214,8 @@ def test_template_folder_permissions(driver):
         "test-grandchild-folder {}".format(timestamp),
     ]
     go_to_templates_page(driver, "broadcast_service")
-
     show_templates_page = ShowTemplatesPage(driver)
+
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
     for folder_name in folder_names:
         print(f"Creating folder {folder_name}")

@@ -468,6 +468,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     letter_radio = (By.CSS_SELECTOR, "input[type='radio'][value='letter']")
 
     add_new_folder_textbox = BasePageElement(name="add_new_folder_name")
+    add_new_folder_element = (By.CSS_SELECTOR, "input[name='add_new_folder_name']")
     add_to_new_folder_textbox = BasePageElement(name="move_to_new_folder_name")
 
     root_template_folder_radio = (
@@ -499,6 +500,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def click_add_new_folder(self, folder_name):
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
+        self.wait_for_element(self.add_new_folder_element)
         self.add_new_folder_textbox = folder_name
         # green submit button
         element = self.wait_for_element(self.add_new_folder_link)
