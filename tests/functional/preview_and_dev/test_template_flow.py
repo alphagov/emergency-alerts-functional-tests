@@ -4,14 +4,11 @@ from datetime import datetime
 import pytest
 from selenium.webdriver.common.by import By
 
-from config import config
-from tests.pages import (
-    DashboardPage,
+# from config import config
+from tests.pages import (  # DashboardPage,; InviteUserPage,; TeamMembersPage,
     EditBroadcastTemplatePage,
-    InviteUserPage,
     ManageFolderPage,
     ShowTemplatesPage,
-    TeamMembersPage,
     ViewFolderPage,
 )
 from tests.pages.rollups import sign_in
@@ -224,90 +221,92 @@ def test_template_folder_permissions(driver):
     #     show_templates_page.click_template_by_link_text(folder_name)
 
     show_templates_page.click_add_new_folder(folder_names[0])
-    time.sleep(5)
-    show_templates_page.click_templates()
-    show_templates_page.click_template_by_link_text(folder_names[0])
-    show_templates_page.click_add_new_folder(folder_names[1])
-    show_templates_page.click_template_by_link_text(folder_names[1])
-    show_templates_page.click_add_new_folder(folder_names[2])
 
-    go_to_templates_page(driver, "broadcast_service")
+    assert show_templates_page.is_page_title("Fail")
 
-    # create three templates and put one in each test folder
-    for i, folder_name in enumerate(folder_names):
-        print(f"Creating template {folder_name}_template")
+    # show_templates_page.click_templates()
+    # show_templates_page.click_template_by_link_text(folder_names[0])
+    # show_templates_page.click_add_new_folder(folder_names[1])
+    # show_templates_page.click_template_by_link_text(folder_names[1])
+    # show_templates_page.click_add_new_folder(folder_names[2])
 
-        show_templates_page = ShowTemplatesPage(driver)
-        show_templates_page.click_add_new_template()
+    # go_to_templates_page(driver, "broadcast_service")
 
-        edit_template_page = EditBroadcastTemplatePage(driver)
-        edit_template_page.create_template(name=(folder_name + "_template"))
-        template_id = edit_template_page.get_template_id()
-        show_templates_page.select_template_checkbox(template_id)
+    # # create three templates and put one in each test folder
+    # for i, folder_name in enumerate(folder_names):
+    #     print(f"Creating template {folder_name}_template")
 
-        show_templates_page.move_to_folder_level(i + 1)
+    #     show_templates_page = ShowTemplatesPage(driver)
+    #     show_templates_page.click_add_new_template()
 
-    # go to Team members page
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
-    team_members_page = TeamMembersPage(driver)
+    #     edit_template_page = EditBroadcastTemplatePage(driver)
+    #     edit_template_page.create_template(name=(folder_name + "_template"))
+    #     template_id = edit_template_page.get_template_id()
+    #     show_templates_page.select_template_checkbox(template_id)
 
-    # edit colleague's permissions so child folder is invisible
-    team_members_page.click_edit_team_member(
-        config["broadcast_service"]["broadcast_user_2"]
-    )
-    edit_team_member_page = InviteUserPage(driver)
-    edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
-    edit_team_member_page.click_save()
+    #     show_templates_page.move_to_folder_level(i + 1)
 
-    # check if permissions saved correctly
-    dashboard_page.click_team_members_link()
-    team_members_page.click_edit_team_member(
-        config["broadcast_service"]["broadcast_user_2"]
-    )
-    assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
+    # # go to Team members page
+    # dashboard_page = DashboardPage(driver)
+    # dashboard_page.click_team_members_link()
+    # team_members_page = TeamMembersPage(driver)
 
-    # log out
-    dashboard_page.sign_out()
+    # # edit colleague's permissions so child folder is invisible
+    # team_members_page.click_edit_team_member(
+    #     config["broadcast_service"]["broadcast_user_2"]
+    # )
+    # edit_team_member_page = InviteUserPage(driver)
+    # edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
+    # edit_team_member_page.click_save()
 
-    # log in as that colleague
-    sign_in(driver, account_type="broadcast_approve_user")
-    go_to_templates_page(driver, "broadcast_service")
+    # # check if permissions saved correctly
+    # dashboard_page.click_team_members_link()
+    # team_members_page.click_edit_team_member(
+    #     config["broadcast_service"]["broadcast_user_2"]
+    # )
+    # assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
 
-    # click through, see that child folder invisible
-    show_templates_page.click_template_by_link_text(folder_names[0])
-    child_folder = show_templates_page.get_folder_by_name(folder_names[1])
-    name_of_folder_with_invisible_parent = folder_names[1] + " " + folder_names[2]
-    assert child_folder.text == name_of_folder_with_invisible_parent
+    # # log out
+    # dashboard_page.sign_out()
 
-    # grandchild folder has folder path as a name
-    show_templates_page.click_template_by_link_text(
-        name_of_folder_with_invisible_parent
-    )
+    # # log in as that colleague
+    # sign_in(driver, account_type="broadcast_approve_user")
+    # go_to_templates_page(driver, "broadcast_service")
 
-    # click grandchild folder template to see that it's there
-    show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
-    dashboard_page.sign_out()
+    # # click through, see that child folder invisible
+    # show_templates_page.click_template_by_link_text(folder_names[0])
+    # child_folder = show_templates_page.get_folder_by_name(folder_names[1])
+    # name_of_folder_with_invisible_parent = folder_names[1] + " " + folder_names[2]
+    # assert child_folder.text == name_of_folder_with_invisible_parent
 
-    # delete everything
-    sign_in(driver, account_type="broadcast_create_user")
-    go_to_templates_page(driver, "broadcast_service")
-    show_templates_page = ShowTemplatesPage(driver)
-    show_templates_page.click_template_by_link_text(folder_names[0])
+    # # grandchild folder has folder path as a name
+    # show_templates_page.click_template_by_link_text(
+    #     name_of_folder_with_invisible_parent
+    # )
 
-    view_folder_page = ViewFolderPage(driver)
-    view_folder_page.click_template_by_link_text(folder_names[1])
-    view_folder_page.click_template_by_link_text(folder_names[2])
+    # # click grandchild folder template to see that it's there
+    # show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
+    # dashboard_page.sign_out()
 
-    for folder_name in reversed(folder_names):
-        view_folder_page.click_template_by_link_text(folder_name + "_template")
-        template_page = EditBroadcastTemplatePage(driver)
-        template_page.click_delete()
+    # # delete everything
+    # sign_in(driver, account_type="broadcast_create_user")
+    # go_to_templates_page(driver, "broadcast_service")
+    # show_templates_page = ShowTemplatesPage(driver)
+    # show_templates_page.click_template_by_link_text(folder_names[0])
 
-        view_folder_page.click_manage_folder()
-        manage_folder_page = ManageFolderPage(driver)
-        manage_folder_page.delete_folder()
-        manage_folder_page.confirm_delete_folder()
+    # view_folder_page = ViewFolderPage(driver)
+    # view_folder_page.click_template_by_link_text(folder_names[1])
+    # view_folder_page.click_template_by_link_text(folder_names[2])
+
+    # for folder_name in reversed(folder_names):
+    #     view_folder_page.click_template_by_link_text(folder_name + "_template")
+    #     template_page = EditBroadcastTemplatePage(driver)
+    #     template_page.click_delete()
+
+    #     view_folder_page.click_manage_folder()
+    #     manage_folder_page = ManageFolderPage(driver)
+    #     manage_folder_page.delete_folder()
+    #     manage_folder_page.confirm_delete_folder()
 
 
 # @pytest.mark.skip()
