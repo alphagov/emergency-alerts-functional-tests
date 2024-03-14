@@ -1,6 +1,7 @@
 import time
 
 import pytest
+from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
@@ -14,9 +15,6 @@ from tests.pages import (
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import go_to_templates_page
-
-# from selenium.webdriver.common.by import By
-
 
 TESTSUITE_CODE = "TEMPLATES"
 
@@ -125,79 +123,80 @@ TESTSUITE_CODE = "TEMPLATES"
 #     assert not page.is_text_present_on_page(alert_name)
 
 
-# @pytest.mark.xdist_group(name=TESTSUITE_CODE)
-# def test_creating_moving_and_deleting_template_folders(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
+@pytest.mark.skip()
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+def test_creating_moving_and_deleting_template_folders(driver):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     # create new template
-#     timestamp = str(int(time.time()))
-#     template_name = f"template-for-folder-test-{timestamp}"
-#     folder_name = f"test-folder-{timestamp}"
+    # create new template
+    timestamp = str(int(time.time()))
+    template_name = f"template-for-folder-test-{timestamp}"
+    folder_name = f"test-folder-{timestamp}"
 
-#     go_to_templates_page(driver, "broadcast_service")
-#     show_templates_page = ShowTemplatesPage(driver)
-#     show_templates_page.click_add_new_template()
+    go_to_templates_page(driver, "broadcast_service")
+    show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page.click_add_new_template()
 
-#     edit_template_page = EditBroadcastTemplatePage(driver)
-#     edit_template_page.create_template(name=template_name)
-#     template_id = edit_template_page.get_template_id()
-#     edit_template_page.click_templates()
+    edit_template_page = EditBroadcastTemplatePage(driver)
+    edit_template_page.create_template(name=template_name)
+    template_id = edit_template_page.get_template_id()
+    edit_template_page.click_templates()
 
-#     # create folder using add to new folder
-#     show_templates_page.select_template_checkbox(template_id)
-#     show_templates_page.add_to_new_folder(folder_name)
+    # create folder using add to new folder
+    show_templates_page.select_template_checkbox(template_id)
+    show_templates_page.add_to_new_folder(folder_name)
 
-#     # navigate into folder
-#     go_to_templates_page(driver, "broadcast_service")
-#     show_templates_page.click_template_by_link_text(folder_name)
+    # navigate into folder
+    go_to_templates_page(driver, "broadcast_service")
+    show_templates_page.click_template_by_link_text(folder_name)
 
-#     # rename folder step
-#     view_folder_page = ViewFolderPage(driver)
-#     view_folder_page.click_manage_folder()
+    # rename folder step
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_manage_folder()
 
-#     manage_folder_page = ManageFolderPage(driver)
-#     new_folder_name = folder_name + "-new"
-#     manage_folder_page.set_name(new_folder_name)
-#     view_folder_page.is_text_present_on_page(new_folder_name)
+    manage_folder_page = ManageFolderPage(driver)
+    new_folder_name = folder_name + "-new"
+    manage_folder_page.set_name(new_folder_name)
+    view_folder_page.is_text_present_on_page(new_folder_name)
 
-#     # try to delete folder
-#     view_folder_page.click_manage_folder()
-#     manage_folder_page.delete_folder()  # fails due to not being empty
+    # try to delete folder
+    view_folder_page.click_manage_folder()
+    manage_folder_page.delete_folder()  # fails due to not being empty
 
-#     # check error message visible
-#     assert (
-#         manage_folder_page.get_errors()
-#         == "You must empty this folder before you can delete it"
-#     )
+    # check error message visible
+    assert (
+        manage_folder_page.get_errors()
+        == "You must empty this folder before you can delete it"
+    )
 
-#     # move template out of folder
-#     view_folder_page.select_template_checkbox(template_id)
-#     view_folder_page.move_to_root_template_folder()
+    # move template out of folder
+    view_folder_page.select_template_checkbox(template_id)
+    view_folder_page.move_to_root_template_folder()
 
-#     # delete folder
-#     go_to_templates_page(driver, "broadcast_service")
-#     view_folder_page.click_template_by_link_text(new_folder_name)
-#     view_folder_page.click_manage_folder()
+    # delete folder
+    go_to_templates_page(driver, "broadcast_service")
+    view_folder_page.click_template_by_link_text(new_folder_name)
+    view_folder_page.click_manage_folder()
 
-#     manage_folder_page.delete_folder()
-#     manage_folder_page.confirm_delete_folder()
-#     current_folders = [
-#         x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")
-#     ]
-#     if len(current_folders) == 0:
-#         current_folders = [
-#             x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
-#         ]
-#     # assert folder not visible
-#     assert new_folder_name not in current_folders
+    manage_folder_page.delete_folder()
+    manage_folder_page.confirm_delete_folder()
+    current_folders = [
+        x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")
+    ]
+    if len(current_folders) == 0:
+        current_folders = [
+            x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
+        ]
+    # assert folder not visible
+    assert new_folder_name not in current_folders
 
-#     # delete template
-#     show_templates_page.click_template_by_link_text(template_name)
-#     edit_template_page.click_delete()
+    # delete template
+    show_templates_page.click_template_by_link_text(template_name)
+    edit_template_page.click_delete()
 
-#     assert template_name not in [
-#         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
-#     ]
+    assert template_name not in [
+        x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
+    ]
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
@@ -218,6 +217,7 @@ def test_template_folder_permissions(driver):
     for folder_name in folder_names:
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
+        go_to_templates_page(driver, "broadcast_service")
         show_templates_page.click_template_by_link_text(folder_name)
 
         # create a new template
