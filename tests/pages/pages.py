@@ -474,7 +474,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
     )
-    level_n_folder_radio = "imput[type='radio'][id='move_to-{}']"
+    level_n_folder_radio = "input[type='radio'][id='move_to-{}']"
 
     @staticmethod
     def template_link_text(link_text):
