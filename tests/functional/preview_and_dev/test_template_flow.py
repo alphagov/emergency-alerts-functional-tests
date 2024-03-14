@@ -222,7 +222,6 @@ def test_template_folder_permissions(driver):
 
         # create a new template
         show_templates_page.click_add_new_template()
-        show_templates_page.select_email()
         edit_template_page = EditBroadcastTemplatePage(driver)
         edit_template_page.create_template(name=(folder_name + "_template"))
 
