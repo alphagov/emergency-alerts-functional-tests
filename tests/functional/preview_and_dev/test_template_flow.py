@@ -215,6 +215,8 @@ def test_template_folder_permissions(driver):
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
     # each folder with one template in it
     for folder_name in folder_names:
+        print(f"Creating folder {folder_name}")
+
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
         go_to_templates_page(driver, "broadcast_service")
