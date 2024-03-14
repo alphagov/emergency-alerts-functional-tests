@@ -224,6 +224,8 @@ def test_template_folder_permissions(driver):
     #     show_templates_page.click_template_by_link_text(folder_name)
 
     show_templates_page.click_add_new_folder(folder_names[0])
+    time.sleep(5)
+    show_templates_page.click_templates()
     show_templates_page.click_template_by_link_text(folder_names[0])
     show_templates_page.click_add_new_folder(folder_names[1])
     show_templates_page.click_template_by_link_text(folder_names[1])
