@@ -222,7 +222,7 @@ def test_template_folder_permissions(driver):
 
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
-        show_templates_page.click_template_by_link_text(folder_name)
+        show_templates_page.click_folder_by_link_text(folder_name)
 
         # # create a new template
         # show_templates_page.click_add_new_template()

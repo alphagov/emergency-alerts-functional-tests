@@ -487,6 +487,15 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         )
 
     @staticmethod
+    def folder_link_text(folder_text):
+        return (
+            By.XPATH,
+            "//a[contains(@class, 'template-list-folder')]/span[contains(normalize-space(.), '{}')]".format(
+                folder_text
+            ),
+        )
+
+    @staticmethod
     def template_checkbox(template_id):
         return (
             By.CSS_SELECTOR,
@@ -509,6 +518,11 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def click_template_by_link_text(self, link_text):
         element = self.wait_for_element(self.template_link_text(link_text))
         self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
+        element.click()
+
+    def click_folder_by_link_text(self, folder_text):
+        element = self.wait_for_element(self.folder_link_text(folder_text))
+        self.scrollToRevealElement(xpath=self.folder_link_text(folder_text)[1])
         element.click()
 
     def _select_template_type(self, type):
