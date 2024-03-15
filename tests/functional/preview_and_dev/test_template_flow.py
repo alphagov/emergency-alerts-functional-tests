@@ -211,7 +211,8 @@ def test_template_folder_permissions(driver):
         "test-grandchild-folder {}".format(timestamp),
     ]
     go_to_templates_page(driver, "broadcast_service")
-    show_templates_page = ShowTemplatesPage(driver)
+
+    # show_templates_page = ShowTemplatesPage(driver)
 
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
     # for folder_name in folder_names:
@@ -220,17 +221,19 @@ def test_template_folder_permissions(driver):
     #     go_to_templates_page(driver, "broadcast_service")
     #     show_templates_page.click_template_by_link_text(folder_name)
 
-    show_templates_page.click_add_new_folder(folder_names[0])
+    for folder_name in folder_names:
+        show_templates_page = ShowTemplatesPage(driver)
+        show_templates_page.click_add_new_folder(folder_name)
 
-    go_to_templates_page(driver, "broadcast_service")
-    show_templates_page = ShowTemplatesPage(driver)
-    show_templates_page.click_templates()
-    assert show_templates_page.is_page_title("Templates")
+        go_to_templates_page(driver, "broadcast_service")
+        show_templates_page = ShowTemplatesPage(driver)
+        show_templates_page.click_templates()
+        assert show_templates_page.is_page_title("Templates")
 
-    show_templates_page.click_template_by_link_text(folder_names[0])
-    assert show_templates_page.is_text_present_on_page(folder_names[0])
+        show_templates_page.click_template_by_link_text(folder_name)
+        assert show_templates_page.is_text_present_on_page(folder_name)
 
-    assert show_templates_page.is_page_title("Fail")
+    # assert show_templates_page.is_page_title("Fail")
 
     # show_templates_page.click_templates()
     # show_templates_page.click_template_by_link_text(folder_names[0])
