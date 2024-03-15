@@ -221,6 +221,7 @@ def test_template_folder_permissions(driver):
     #     show_templates_page.click_template_by_link_text(folder_name)
 
     show_templates_page.click_add_new_folder(folder_names[0])
+    show_templates_page.click_templates()
 
     assert show_templates_page.is_page_title("Fail")
 
