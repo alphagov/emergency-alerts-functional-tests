@@ -225,8 +225,10 @@ def test_template_folder_permissions(driver):
     go_to_templates_page(driver, "broadcast_service")
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_templates()
-
     assert show_templates_page.is_page_title("Templates")
+
+    show_templates_page.click_template_by_link_text(folder_names[0])
+    assert show_templates_page.is_text_present_on_page(folder_names[0])
 
     assert show_templates_page.is_page_title("Fail")
 
