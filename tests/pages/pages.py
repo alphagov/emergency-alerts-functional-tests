@@ -481,9 +481,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(
-                link_text
-            ),
+            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{link_text}')]",
         )
 
     # @staticmethod
