@@ -514,9 +514,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element.click()
 
     def click_template_by_link_text(self, link_text):
+        element = self.wait_for_element(self.template_link_text(link_text), time=60)
         self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
-        element = self.wait_for_element(self.template_link_text(link_text))
-
         element.click()
 
     # def click_folder_by_link_text(self, folder_text):
