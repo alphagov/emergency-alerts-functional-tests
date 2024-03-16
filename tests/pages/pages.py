@@ -84,15 +84,13 @@ class AntiStaleElement(AntiStale):
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
             self.driver.execute_script(
-                "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
-                self.element,
+                "arguments[0].scrollIntoViewIfNeeded()", self.element
             )
             try:
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
-                    "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
-                    self.element,
+                    "arguments[0].scrollIntoView()", self.element
                 )
                 self.element.click()
 
@@ -598,6 +596,15 @@ class EditBroadcastTemplatePage(BasePage):
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
+    @staticmethod
+    def folder_path_item(folder_name):
+        return (
+            By.XPATH,
+            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(
+                folder_name
+            ),
+        )
+
     def create_template(self, name="Template Name", content=None):
         self.name_input = name
         if content:
@@ -622,6 +629,10 @@ class EditBroadcastTemplatePage(BasePage):
         element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
         element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
+        element.click()
+
+    def click_folder_path(self, folder_name):
+        element = self.wait_for_element(self.folder_path_item(folder_name))
         element.click()
 
 

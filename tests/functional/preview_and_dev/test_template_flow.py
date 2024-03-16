@@ -212,7 +212,7 @@ def test_template_folder_permissions(driver):
     ]
     go_to_templates_page(driver, "broadcast_service")
 
-    # show_templates_page = ShowTemplatesPage(driver)
+    show_templates_page = ShowTemplatesPage(driver)
 
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
     # for folder_name in folder_names:
@@ -222,17 +222,18 @@ def test_template_folder_permissions(driver):
     #     show_templates_page.click_template_by_link_text(folder_name)
 
     for folder_name in folder_names:
-        show_templates_page = ShowTemplatesPage(driver)
+        # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
 
-        go_to_templates_page(driver, "broadcast_service")
-        show_templates_page = ShowTemplatesPage(driver)
-        show_templates_page.click_templates()
-        assert show_templates_page.is_page_title("Templates")
-
-        show_templates_page = ShowTemplatesPage(driver)
         show_templates_page.click_template_by_link_text(folder_name)
-        assert show_templates_page.is_text_present_on_page(folder_name)
+        # create a new template
+        show_templates_page.click_add_new_template()
+        show_templates_page.select_email()
+
+        edit_template_page = EditBroadcastTemplatePage(driver)
+        edit_template_page.create_template(name=(folder_name + "_template"))
+        # go back to view folder page
+        edit_template_page.click_folder_path(folder_name)
 
     # assert show_templates_page.is_page_title("Fail")
 
