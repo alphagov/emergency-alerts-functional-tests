@@ -216,22 +216,29 @@ def test_template_folder_permissions(driver):
 
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
     # each folder with one template in it
-    for i, folder_name in enumerate(folder_names):
+    for folder_name in folder_names:
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
+        show_templates_page.click_template_by_link_text(folder_name)
 
-        # show_templates_page.click_template_by_link_text(folder_name)
         # create a new template
-        show_templates_page.click_add_new_template()
+        # show_templates_page.click_add_new_template()
 
-        edit_template_page = EditBroadcastTemplatePage(driver)
-        edit_template_page.create_template(name=(folder_name + "_template"))
+        # edit_template_page = EditBroadcastTemplatePage(driver)
+        # edit_template_page.create_template(name=(folder_name + "_template"))
 
         # move template just created to desired folder
-        edit_template_page.move_to_folder_level(level=i + 1)
+        # edit_template_page.move_to_folder_level(level=i + 1)
 
         # go back to view folder page
         # edit_template_page.click_folder_path(folder_name)
+
+    for i, folder_name in enumerate(folder_names):
+        show_templates_page.click_add_new_template()
+        edit_template_page = EditBroadcastTemplatePage(driver)
+        edit_template_page.create_template(name=(folder_name + "_template"))
+        show_templates_page.click_templates()
+        show_templates_page.move_to_folder_level(level=i + 1)
 
     # # go to Team members page
     # dashboard_page = DashboardPage(driver)

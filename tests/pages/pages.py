@@ -455,10 +455,10 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
-    # move_to_existing_folder_link = (
-    #     By.CSS_SELECTOR,
-    #     "button[value='move-to-existing-folder']",
-    # )
+    move_to_existing_folder_link = (
+        By.CSS_SELECTOR,
+        "button[value='move-to-existing-folder']",
+    )
     email_filter_link = (By.LINK_TEXT, "Email")
 
     email_radio = (By.CSS_SELECTOR, "input[type='radio'][value='email']")
@@ -544,17 +544,17 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
-    # def move_to_folder_level(self, level):
-    #     move_button = self.wait_for_element(self.move_to_existing_folder_link)
-    #     move_button.click()
-    #     radio_element = self.wait_for_invisible_element(
-    #         (
-    #             By.CSS_SELECTOR,
-    #             self.level_n_folder_radio.format(level),
-    #         )
-    #     )
-    #     self.select_checkbox_or_radio(radio_element)
-    #     self.click_continue()
+    def move_to_folder_level(self, level):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        radio_element = self.wait_for_invisible_element(
+            (
+                By.CSS_SELECTOR,
+                self.level_n_folder_radio.format(level),
+            )
+        )
+        self.select_checkbox_or_radio(radio_element)
+        self.click_continue()
 
     def get_folder_by_name(self, folder_name):
         try:
@@ -580,10 +580,10 @@ class EditBroadcastTemplatePage(BasePage):
     prep_to_send_button = EditTemplatePageLocators.PREP_TO_SEND_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
-    move_to_existing_folder_link = (
-        By.CSS_SELECTOR,
-        "button[value='move-to-existing-folder']",
-    )
+    # move_to_existing_folder_link = (
+    #     By.CSS_SELECTOR,
+    #     "button[value='move-to-existing-folder']",
+    # )
 
     @staticmethod
     def folder_path_item(folder_name):
@@ -624,18 +624,17 @@ class EditBroadcastTemplatePage(BasePage):
         element = self.wait_for_element(self.folder_path_item(folder_name))
         element.click()
 
-    def move_to_folder_level(self, level):
-        self.click_edit()
-        move_button = self.wait_for_element(self.move_to_existing_folder_link)
-        move_button.click()
-        radio_element = self.wait_for_invisible_element(
-            (
-                By.CSS_SELECTOR,
-                self.level_n_folder_radio.format(level),
-            )
-        )
-        self.select_checkbox_or_radio(radio_element)
-        self.click_continue()
+    # def move_to_folder_level(self, level):
+    #     move_button = self.wait_for_element(self.move_to_existing_folder_link)
+    #     move_button.click()
+    #     radio_element = self.wait_for_invisible_element(
+    #         (
+    #             By.CSS_SELECTOR,
+    #             self.level_n_folder_radio.format(level),
+    #         )
+    #     )
+    #     self.select_checkbox_or_radio(radio_element)
+    #     self.click_continue()
 
 
 class SendEmailTemplatePage(BasePage):
