@@ -220,7 +220,7 @@ def test_template_folder_permissions(driver):
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
 
-        show_templates_page.click_template_by_link_text(folder_name)
+        # show_templates_page.click_template_by_link_text(folder_name)
         # create a new template
         show_templates_page.click_add_new_template()
 
@@ -228,7 +228,7 @@ def test_template_folder_permissions(driver):
         edit_template_page.create_template(name=(folder_name + "_template"))
 
         # move template just created to desired folder
-        show_templates_page.move_to_folder_level(level=i + 1)
+        edit_template_page.move_to_folder_level(level=i + 1)
 
         # go back to view folder page
         # edit_template_page.click_folder_path(folder_name)
