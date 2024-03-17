@@ -215,12 +215,7 @@ def test_template_folder_permissions(driver):
     show_templates_page = ShowTemplatesPage(driver)
 
     # a loop to create a folder structure with parent folder, child folder and grandchild folder,
-    # for folder_name in folder_names:
-    #     print(f"Creating folder {folder_name}")
-    #     show_templates_page.click_add_new_folder(folder_name)
-    #     go_to_templates_page(driver, "broadcast_service")
-    #     show_templates_page.click_template_by_link_text(folder_name)
-
+    # each folder with one template in it
     for folder_name in folder_names:
         # create a new folder
         show_templates_page.click_add_new_folder(folder_name)
@@ -234,30 +229,6 @@ def test_template_folder_permissions(driver):
         edit_template_page.create_template(name=(folder_name + "_template"))
         # go back to view folder page
         edit_template_page.click_folder_path(folder_name)
-
-    # assert show_templates_page.is_page_title("Fail")
-
-    # show_templates_page.click_templates()
-    # show_templates_page.click_template_by_link_text(folder_names[0])
-    # show_templates_page.click_add_new_folder(folder_names[1])
-    # show_templates_page.click_template_by_link_text(folder_names[1])
-    # show_templates_page.click_add_new_folder(folder_names[2])
-
-    # go_to_templates_page(driver, "broadcast_service")
-
-    # # create three templates and put one in each test folder
-    # for i, folder_name in enumerate(folder_names):
-    #     print(f"Creating template {folder_name}_template")
-
-    #     show_templates_page = ShowTemplatesPage(driver)
-    #     show_templates_page.click_add_new_template()
-
-    #     edit_template_page = EditBroadcastTemplatePage(driver)
-    #     edit_template_page.create_template(name=(folder_name + "_template"))
-    #     template_id = edit_template_page.get_template_id()
-    #     show_templates_page.select_template_checkbox(template_id)
-
-    #     show_templates_page.move_to_folder_level(i + 1)
 
     # # go to Team members page
     # dashboard_page = DashboardPage(driver)
