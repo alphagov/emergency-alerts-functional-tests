@@ -473,6 +473,9 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         "input[type='radio'][value='__NONE__']",
     )
     level_n_folder_radio = "input[type='radio'][id='move_to-{}']"
+    level_n_folder_radio_xpath = (
+        "//label[normalize-space(.)='{}']/preceding-sibling::input"
+    )
 
     @staticmethod
     def template_link_text(link_text):
@@ -549,8 +552,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         move_button.click()
         radio_element = self.wait_for_invisible_element(
             (
-                By.CSS_SELECTOR,
-                self.level_n_folder_radio.format(level),
+                By.XPATH,
+                self.level_n_folder_radio_xpath.format(level),
             )
         )
         self.select_checkbox_or_radio(radio_element)
