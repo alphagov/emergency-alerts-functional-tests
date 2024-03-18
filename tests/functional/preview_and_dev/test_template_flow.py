@@ -198,3 +198,169 @@ def test_creating_moving_and_deleting_template_folders(driver):
     assert template_name not in [
         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
     ]
+
+
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+def test_template_folder_permissions(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    timestamp = str(int(time.time()))
+    folder_names = [
+        "test-parent-folder-{}".format(timestamp),
+        "test-child-folder-{}".format(timestamp),
+        "test-grandchild-folder-{}".format(timestamp),
+    ]
+    go_to_templates_page(driver, "broadcast_service")
+
+    show_templates_page = ShowTemplatesPage(driver)
+
+    # a loop to create a folder structure with parent folder, child folder and grandchild folder,
+    # each folder with one template in it
+    for folder_name in folder_names:
+        # create a new folder
+        show_templates_page.click_add_new_folder(folder_name)
+        show_templates_page.click_template_by_link_text(folder_name)
+
+        # create a new template
+        # show_templates_page.click_add_new_template()
+
+        # edit_template_page = EditBroadcastTemplatePage(driver)
+        # edit_template_page.create_template(name=(folder_name + "_template"))
+
+        # move template just created to desired folder
+        # edit_template_page.move_to_folder_level(level=i + 1)
+
+        # go back to view folder page
+        # edit_template_page.click_folder_path(folder_name)
+
+    edit_template_page = EditBroadcastTemplatePage(driver)
+
+    for i, folder_name in enumerate(folder_names):
+        show_templates_page.click_add_new_template()
+        edit_template_page.create_template(name=(folder_name + "-template"))
+        show_templates_page.click_templates()
+        show_templates_page.move_to_folder_level(level=i + 1)
+
+    # # go to Team members page
+    # dashboard_page = DashboardPage(driver)
+    # dashboard_page.click_team_members_link()
+    # team_members_page = TeamMembersPage(driver)
+
+    # # edit colleague's permissions so child folder is invisible
+    # team_members_page.click_edit_team_member(
+    #     config["broadcast_service"]["broadcast_user_2"]
+    # )
+    # edit_team_member_page = InviteUserPage(driver)
+    # edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
+    # edit_team_member_page.click_save()
+
+    # # check if permissions saved correctly
+    # dashboard_page.click_team_members_link()
+    # team_members_page.click_edit_team_member(
+    #     config["broadcast_service"]["broadcast_user_2"]
+    # )
+    # assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
+
+    # # log out
+    # dashboard_page.sign_out()
+
+    # # log in as that colleague
+    # sign_in(driver, account_type="broadcast_approve_user")
+    # go_to_templates_page(driver, "broadcast_service")
+
+    # # click through, see that child folder invisible
+    # show_templates_page.click_template_by_link_text(folder_names[0])
+    # child_folder = show_templates_page.get_folder_by_name(folder_names[1])
+    # name_of_folder_with_invisible_parent = folder_names[1] + " " + folder_names[2]
+    # assert child_folder.text == name_of_folder_with_invisible_parent
+
+    # # grandchild folder has folder path as a name
+    # show_templates_page.click_template_by_link_text(
+    #     name_of_folder_with_invisible_parent
+    # )
+
+    # # click grandchild folder template to see that it's there
+    # show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
+    # dashboard_page.sign_out()
+
+    # delete everything
+    # sign_in(driver, account_type="broadcast_create_user")
+    # go_to_templates_page(driver, "broadcast_service")
+    # show_templates_page = ShowTemplatesPage(driver)
+    # show_templates_page.click_template_by_link_text(folder_names[0])
+
+    # view_folder_page = ViewFolderPage(driver)
+    # view_folder_page.click_template_by_link_text(folder_names[1])
+    # view_folder_page.click_template_by_link_text(folder_names[2])
+
+    # for folder_name in reversed(folder_names):
+    #     view_folder_page.click_template_by_link_text(folder_name + "_template")
+    #     template_page = EditBroadcastTemplatePage(driver)
+    #     template_page.click_delete()
+
+    #     view_folder_page.click_manage_folder()
+    #     manage_folder_page = ManageFolderPage(driver)
+    #     manage_folder_page.delete_folder()
+    #     manage_folder_page.confirm_delete_folder()
+
+
+# @pytest.mark.skip()
+# @pytest.mark.xdist_group(name=TESTSUITE_CODE)
+# def test_create_populate_and_delete_folders_and_templates_old(driver):
+#     sign_in(driver, account_type="broadcast_create_user")
+#     go_to_templates_page(driver, service="broadcast_service")
+
+#     templates = ShowTemplatesPage(driver)
+#     assert templates.is_page_title("Templates")
+#     timestamp = datetime.now().replace(microsecond=0).isoformat()
+
+#     folder_name1 = f"Folder1 {timestamp}"
+
+#     templates.click_add_new_folder(folder_name=folder_name1)
+#     assert templates.is_page_title("Templates")
+#     assert templates.is_text_present_on_page(folder_name1)
+
+#     folder_name2 = f"Folder2 {timestamp}"
+#     templates.click_add_new_folder(folder_name=folder_name2)
+#     assert templates.is_page_title("Templates")
+#     assert templates.is_text_present_on_page(folder_name2)
+
+#     new_template_page = EditBroadcastTemplatePage(driver)
+
+#     # create new template 1
+#     templates.click_add_new_template()
+#     template1_name = f"Template1 {timestamp}"
+#     new_template_page.create_template(name=template1_name, content="This is an alert")
+#     template1_id = new_template_page.get_template_id()
+#     new_template_page.click_element_by_link_text("Templates")
+
+#     # move template to folder 1
+#     templates.select_template_checkbox(template1_id)
+#     templates.move_to_folder_level(1)
+#     # assert template link is not on root
+#     assert not templates.is_text_present_on_page(template1_name)
+
+#     # create new template 2
+#     templates.click_add_new_template()
+#     template2_name = f"Template2 {timestamp}"
+#     new_template_page.create_template(name=template2_name, content="This is an alert")
+#     template2_id = new_template_page.get_template_id()
+#     new_template_page.click_element_by_link_text("Templates")
+
+#     # move template to folder 2
+#     templates.select_template_checkbox(template2_id)
+#     templates.move_to_folder_level(2)
+#     # assert template link is not on root
+#     assert not templates.is_text_present_on_page(template2_name)
+
+#     # try to delete folder 1 - confirm failure
+
+#     # try to delete folder 2 - confirm failure
+
+#     # delete template 2
+
+#     # delete folder 2
+
+#     # delete template 1
+
+#     # delete folder 1
