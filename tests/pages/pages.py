@@ -1,6 +1,5 @@
 import os
 import shutil
-import time
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -85,16 +84,13 @@ class AntiStaleElement(AntiStale):
             # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
             # the scrollIntoView function to bring it to the top of the page
             self.driver.execute_script(
-                "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
-                self.element,
+                "arguments[0].scrollIntoViewIfNeeded()", self.element
             )
             try:
-                time.sleep(1)
                 self.element.click()
             except WebDriverException:
                 self.driver.execute_script(
-                    "arguments[0].scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' })",
-                    self.element,
+                    "arguments[0].scrollIntoView()", self.element
                 )
                 self.element.click()
 
@@ -476,14 +472,16 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
     )
+    level_n_folder_radio = "input[type='radio'][id='move_to-{}']"
+    level_n_folder_radio_xpath = (
+        "//label[normalize-space(.)='{}']/preceding-sibling::input"
+    )
 
     @staticmethod
     def template_link_text(link_text):
         return (
             By.XPATH,
-            "//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{}')]".format(
-                link_text
-            ),
+            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{link_text}')]",
         )
 
     @staticmethod
@@ -502,7 +500,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element.click()
 
         self.add_new_folder_textbox = folder_name
-
         # green submit button
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
@@ -550,6 +547,18 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
+    def move_to_folder_level(self, level):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        radio_element = self.wait_for_invisible_element(
+            (
+                By.XPATH,
+                self.level_n_folder_radio_xpath.format(level),
+            )
+        )
+        self.select_checkbox_or_radio(radio_element)
+        self.click_continue()
+
     def get_folder_by_name(self, folder_name):
         try:
             return self.wait_for_invisible_element(self.template_link_text(folder_name))
@@ -566,34 +575,53 @@ class SendSmsTemplatePage(BasePage):
         element.click()
 
 
-class EditSmsTemplatePage(BasePage):
+class EditBroadcastTemplatePage(BasePage):
     name_input = NameInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
+    edit_button = EditTemplatePageLocators.EDIT_BUTTON
+    prep_to_send_button = EditTemplatePageLocators.PREP_TO_SEND_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
-    def click_save(self):
-        element = self.wait_for_element(EditSmsTemplatePage.save_button)
-        element.click()
+    @staticmethod
+    def folder_path_item(folder_name):
+        return (
+            By.XPATH,
+            "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(
+                folder_name
+            ),
+        )
 
-    def create_template(self, name="Test sms template", content=None):
+    def create_template(self, name="Template Name", content=None):
         self.name_input = name
         if content:
             self.template_content_input = content
         else:
-            self.template_content_input = "The quick brown fox jumped over the lazy dog. Jenkins job id: ((build_id))"
+            self.template_content_input = "Placeholder text for alert content"
         self.click_save()
 
+    def click_save(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.save_button)
+        element.click()
+
+    def click_edit(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.edit_button)
+        element.click()
+
+    def click_prep_to_send(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.prep_to_send_button)
+        element.click()
+
     def click_delete(self):
-        element = self.wait_for_element(EditSmsTemplatePage.delete_button)
+        element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
-        element = self.wait_for_element(EditSmsTemplatePage.confirm_delete_button)
+        element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
         element.click()
 
-
-class EditBroadcastTemplatePage(EditSmsTemplatePage):
-    pass
+    def click_folder_path(self, folder_name):
+        element = self.wait_for_element(self.folder_path_item(folder_name))
+        element.click()
 
 
 class SendEmailTemplatePage(BasePage):

@@ -165,8 +165,9 @@ def test_set_loopback_response_codes():
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
-    primary_cbc = "o2-az1"
-    secondary_cbc = "o2-az2"
+    mno = "ee"
+    primary_cbc = f"{mno}-az1"
+    secondary_cbc = f"{mno}-az2"
     failure_code = "500"
     success_code = "200"
 
@@ -185,10 +186,12 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     assert response is not None
 
     provider_messages = response["messages"]
+    print(provider_messages)
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
-    request_id = _dict_item_for_key_value(provider_messages, "provider", "o2", "id")
+    request_id = _dict_item_for_key_value(provider_messages, "provider", mno, "id")
+    print(request_id)
 
     db_response = ddbc.query(
         TableName="LoopbackRequests",
@@ -198,6 +201,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     )
 
     responses = db_response["Items"]
+    print(responses)
 
     o2_az1_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -216,8 +220,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
-    primary_cbc = "vodafone-az1"
-    secondary_cbc = "vodafone-az2"
+    mno = "vodafone"
+    primary_cbc = f"{mno}-az1"
+    secondary_cbc = f"{mno}-az2"
     failure_code = "500"
 
     ddbc = create_ddb_client()
@@ -239,9 +244,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
-    request_id = _dict_item_for_key_value(
-        provider_messages, "provider", "vodafone", "id"
-    )
+    request_id = _dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
     db_response = ddbc.query(
         TableName="LoopbackRequests",
@@ -281,8 +284,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 ):
     broadcast_id = str(uuid.uuid4())
 
-    primary_cbc = "three-az1"
-    secondary_cbc = "three-az2"
+    mno = "three"
+    primary_cbc = f"{mno}-az1"
+    secondary_cbc = f"{mno}-az2"
     failure_code = "500"
     success_code = "200"
 
@@ -306,7 +310,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
-    request_id = _dict_item_for_key_value(provider_messages, "provider", "three", "id")
+    request_id = _dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
     db_response = ddbc.query(
         TableName="LoopbackRequests",

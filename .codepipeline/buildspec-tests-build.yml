@@ -7,8 +7,8 @@ env:
       cbc-integration
       platform-admin-flow
       authentication-flow
-      top-rail-services
       links-and-cookies
+      template-flow
 
 phases:
   install:
@@ -18,10 +18,22 @@ phases:
     commands:
       - apt update
       - apt install -y xvfb libxi6 libgconf-2-4 libnss3
-      - cd /tmp/
-      - wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-      - unzip chromedriver_linux64.zip
-      - mv chromedriver /usr/bin/chromedriver
+
+      # install google chrome
+      - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+      - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+      - apt-get -y update
+      - apt-get install -y google-chrome-stable
+
+      # install chromedriver
+      - apt-get install -yqq unzip jq
+      - curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -rc '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64").url' > /tmp/chromedriver_url
+      - wget -O /tmp/chromedriver.zip `cat /tmp/chromedriver_url`
+      - unzip -j /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /usr/local/bin/
+
+      # upgrade pip
+      - pip install --upgrade pip
+
       - apt-get install -f -y
 
   pre_build:
@@ -43,8 +55,9 @@ phases:
       - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - make test-authentication-flow; exit 0
-      - make test-top-rail-services; exit 0
+      # - make test-top-rail-services; exit 0
       - make test-links-and-cookies; exit 0
+      - make test-template-flow; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"

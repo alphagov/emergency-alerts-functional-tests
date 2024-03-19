@@ -22,7 +22,6 @@ from tests.pages import (
     DashboardPage,
     EditBroadcastTemplatePage,
     EditEmailTemplatePage,
-    EditSmsTemplatePage,
     EmailReplyTo,
     GovUkAlertsPage,
     InviteUserPage,
@@ -295,7 +294,7 @@ def create_sms_template(driver, name="test template", content=None):
 
     show_templates_page.select_text_message()
 
-    template_page = EditSmsTemplatePage(driver)
+    template_page = EditBroadcastTemplatePage(driver)
     template_page.create_template(name=name, content=content)
     return template_page.get_template_id()
 
@@ -324,7 +323,7 @@ def delete_template(driver, template_name, service="service"):
         dashboard_page.go_to_dashboard_for_service(config[service]["id"])
         dashboard_page.click_templates()
         show_templates_page.click_template_by_link_text(template_name)
-    template_page = EditSmsTemplatePage(driver)
+    template_page = EditBroadcastTemplatePage(driver)
     template_page.click_delete()
 
 

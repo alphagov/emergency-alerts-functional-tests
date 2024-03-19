@@ -51,3 +51,9 @@ test-links-and-cookies:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_links_and_cookies.py \
 	--junitxml=functional-test-reports/links-and-cookies
+
+.PHONY: test-template-flow
+test-template-flow:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_template_flow.py \
+	--junitxml=functional-test-reports/template-flow
