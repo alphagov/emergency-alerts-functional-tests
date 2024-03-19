@@ -201,7 +201,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     )
 
     responses = db_response["Items"]
-    print(responses)
 
     o2_az1_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
