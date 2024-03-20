@@ -111,7 +111,7 @@ def create_alert(driver, id):
     current_alerts_page = BasePage(driver)
     broadcast_title = "test broadcast" + id
 
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
