@@ -221,25 +221,17 @@ def test_template_folder_permissions(driver):
         show_templates_page.click_add_new_folder(folder_name)
         show_templates_page.click_template_by_link_text(folder_name)
 
-        # create a new template
-        # show_templates_page.click_add_new_template()
-
-        # edit_template_page = EditBroadcastTemplatePage(driver)
-        # edit_template_page.create_template(name=(folder_name + "_template"))
-
-        # move template just created to desired folder
-        # edit_template_page.move_to_folder_level(level=i + 1)
-
-        # go back to view folder page
-        # edit_template_page.click_folder_path(folder_name)
-
     edit_template_page = EditBroadcastTemplatePage(driver)
 
     for i, folder_name in enumerate(folder_names):
         show_templates_page.click_add_new_template()
         edit_template_page.create_template(name=(folder_name + "-template"))
         show_templates_page.click_templates()
-        show_templates_page.move_to_folder_level(level=i + 1)
+        show_templates_page.get_template_id()
+        show_templates_page.check_radio_or_checkbox_with_label_text(
+            text=folder_name + "-template"
+        )
+        show_templates_page.move_template_to_folder(folder_name)
 
     # # go to Team members page
     # dashboard_page = DashboardPage(driver)
