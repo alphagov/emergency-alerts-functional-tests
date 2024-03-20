@@ -11,14 +11,6 @@ phases:
       python: 3.9
 
     commands:
-      # - apt update
-      # - apt install -y xvfb libxi6 libgconf-2-4 libnss3
-      # - cd /tmp/
-      # - wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-      # - unzip chromedriver_linux64.zip
-      # - mv chromedriver /usr/bin/chromedriver
-      # - apt-get install -f -y
-
       - apt update
       - apt install -y xvfb libxi6 libgconf-2-4 libnss3
 
