@@ -47,7 +47,7 @@ def test_prepare_broadcast_with_new_content(driver):
     test_uuid = str(uuid.uuid4())
     broadcast_title = "test broadcast" + test_uuid
 
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -144,7 +144,7 @@ def test_prepare_broadcast_with_template(driver):
     dashboard_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("New alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="template")
