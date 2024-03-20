@@ -81,9 +81,11 @@ def test_send_csv(
         fargs=[
             client_test_key if message_type == "letter" else client_live_key,
             notification_id,
-            NotificationStatuses.ACCEPTED
-            if message_type == "letter"
-            else NotificationStatuses.SENT,
+            (
+                NotificationStatuses.ACCEPTED
+                if message_type == "letter"
+                else NotificationStatuses.SENT
+            ),
         ],
         tries=config["notification_retry_times"],
         delay=config["notification_retry_interval"],
