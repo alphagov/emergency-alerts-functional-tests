@@ -280,7 +280,7 @@ def test_template_folder_permissions(driver):
     )
 
     # click grandchild folder template to see that it's there
-    show_templates_page.click_template_by_link_text(folder_names[2] + "_template")
+    show_templates_page.click_template_by_link_text(folder_names[2] + "-template")
     dashboard_page.sign_out()
 
     # delete everything
