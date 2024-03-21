@@ -473,15 +473,15 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         "input[type='radio'][value='__NONE__']",
     )
 
-    folder_radio_xpath = (
-        "//label[normalize-space(.)='{}']/preceding-sibling::input[@type='radio']"
-    )
+    # folder_radio_xpath = (
+    #     "//label[normalize-space(.)='{}']/preceding-sibling::input[@type='radio']"
+    # )
 
     @staticmethod
-    def input_element_by_label_text(text):
+    def input_element_by_label_text(text, input_type="checkbox"):
         return (
             By.XPATH,
-            f"//label[normalize-space(.)='{text}']/preceding-sibling::input",
+            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
         )
 
     @staticmethod
@@ -534,9 +534,9 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
         self.select_checkbox_or_radio(element)
 
-    def check_radio_or_checkbox_with_label_text(self, text):
+    def check_input_with_label_text(self, text, input_type):
         element = self.wait_for_invisible_element(
-            self.input_element_by_label_text(text)
+            self.input_element_by_label_text(text, input_type=input_type)
         )
         self.select_checkbox_or_radio(element)
 
@@ -560,26 +560,11 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
-    # def move_to_folder_level(self, level):
-    #     move_button = self.wait_for_element(self.move_to_existing_folder_link)
-    #     move_button.click()
-    #     radio_element = self.wait_for_invisible_element(
-    #         (
-    #             By.XPATH,
-    #             self.level_n_folder_radio_xpath.format(level),
-    #         )
-    #     )
-    #     self.select_checkbox_or_radio(radio_element)
-    #     self.click_continue()
-
     def move_template_to_folder(self, folder_name):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
         move_button.click()
         radio_element = self.wait_for_invisible_element(
-            (
-                By.XPATH,
-                self.folder_radio_xpath.format(folder_name),
-            )
+            self.input_element_by_label_text(text=folder_name, input_type="radio")
         )
         self.select_checkbox_or_radio(element=radio_element)
         self.click_continue()

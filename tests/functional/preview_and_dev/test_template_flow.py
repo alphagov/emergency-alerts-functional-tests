@@ -230,7 +230,9 @@ def test_template_folder_permissions(driver):
         show_templates_page.click_add_new_template()
         edit_template_page.create_template(name=template_name)
         show_templates_page.click_templates()
-        show_templates_page.check_radio_or_checkbox_with_label_text(text=template_name)
+        show_templates_page.check_input_with_label_text(
+            text=template_name, type="checkbox"
+        )
         show_templates_page.move_template_to_folder(folder_name)
 
     # # go to Team members page
