@@ -231,7 +231,7 @@ def test_template_folder_permissions(driver):
         edit_template_page.create_template(name=template_name)
         show_templates_page.click_templates()
         show_templates_page.check_input_with_label_text(
-            text=template_name, type="checkbox"
+            text=template_name, input_type="checkbox"
         )
         show_templates_page.move_template_to_folder(folder_name)
 
