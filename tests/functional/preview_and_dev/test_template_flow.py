@@ -239,7 +239,10 @@ def test_template_folder_permissions(driver):
         )
         show_templates_page.move_template_to_folder(folder_name)
 
+    show_templates_page.sign_out()
+
     # go to Team members page
+    sign_in(driver, account_type="platform_admin")
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_team_members_link()
     team_members_page = TeamMembersPage(driver)
@@ -259,7 +262,6 @@ def test_template_folder_permissions(driver):
     )
     assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
 
-    # log out
     dashboard_page.sign_out()
 
     # log in as that colleague
