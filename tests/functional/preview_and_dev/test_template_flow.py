@@ -22,7 +22,6 @@ from tests.test_utils import go_to_templates_page
 TESTSUITE_CODE = "TEMPLATES"
 
 
-@pytest.mark.skip("Temporary - remove before merge")
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -50,7 +49,6 @@ def test_create_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.skip("Temporary - remove before merge")
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_edit_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -96,7 +94,6 @@ def test_create_edit_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.skip("Temporary - remove before merge")
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_create_prep_to_send_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -129,7 +126,6 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.skip("Temporary - remove before merge")
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_creating_moving_and_deleting_template_folders(driver):
     sign_in(driver, account_type="broadcast_create_user")
