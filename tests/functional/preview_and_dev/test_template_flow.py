@@ -227,7 +227,6 @@ def test_template_folder_permissions(driver):
         show_templates_page.click_add_new_template()
         edit_template_page.create_template(name=(folder_name + "-template"))
         show_templates_page.click_templates()
-        show_templates_page.get_template_id()
         show_templates_page.check_radio_or_checkbox_with_label_text(
             text=folder_name + "-template"
         )
