@@ -225,10 +225,10 @@ def test_template_folder_permissions(driver):
 
     for i, folder_name in enumerate(folder_names):
         template_name = folder_name + "-template"
-        print(f"adding template {template_name}")
 
         show_templates_page.click_add_new_template()
         edit_template_page.create_template(name=template_name)
+
         show_templates_page.click_templates()
         show_templates_page.check_input_with_label_text(
             text=template_name, input_type="checkbox"
@@ -281,21 +281,21 @@ def test_template_folder_permissions(driver):
     # sign_in(driver, account_type="broadcast_create_user")
     # go_to_templates_page(driver, "broadcast_service")
     # show_templates_page = ShowTemplatesPage(driver)
-    # show_templates_page.click_template_by_link_text(folder_names[0])
+    show_templates_page.click_template_by_link_text(folder_names[0])
 
-    # view_folder_page = ViewFolderPage(driver)
-    # view_folder_page.click_template_by_link_text(folder_names[1])
-    # view_folder_page.click_template_by_link_text(folder_names[2])
+    view_folder_page = ViewFolderPage(driver)
+    view_folder_page.click_template_by_link_text(folder_names[1])
+    view_folder_page.click_template_by_link_text(folder_names[2])
 
-    # for folder_name in reversed(folder_names):
-    #     view_folder_page.click_template_by_link_text(folder_name + "_template")
-    #     template_page = EditBroadcastTemplatePage(driver)
-    #     template_page.click_delete()
+    for folder_name in reversed(folder_names):
+        view_folder_page.click_template_by_link_text(folder_name + "_template")
+        template_page = EditBroadcastTemplatePage(driver)
+        template_page.click_delete()
 
-    #     view_folder_page.click_manage_folder()
-    #     manage_folder_page = ManageFolderPage(driver)
-    #     manage_folder_page.delete_folder()
-    #     manage_folder_page.confirm_delete_folder()
+        view_folder_page.click_manage_folder()
+        manage_folder_page = ManageFolderPage(driver)
+        manage_folder_page.delete_folder()
+        manage_folder_page.confirm_delete_folder()
 
 
 # @pytest.mark.skip()
