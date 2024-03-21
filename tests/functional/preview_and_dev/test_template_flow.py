@@ -249,7 +249,7 @@ def test_template_folder_permissions(driver):
 
     # edit colleague's permissions so child folder is invisible
     team_members_page.click_edit_team_member(
-        config["broadcast_service"]["broadcast_user_2"]
+        config["broadcast_service"]["broadcast_user_2"]["email"]
     )
     edit_team_member_page = InviteUserPage(driver)
     edit_team_member_page.uncheck_folder_permission_checkbox(folder_names[1])
@@ -258,7 +258,7 @@ def test_template_folder_permissions(driver):
     # check if permissions saved correctly
     dashboard_page.click_team_members_link()
     team_members_page.click_edit_team_member(
-        config["broadcast_service"]["broadcast_user_2"]
+        config["broadcast_service"]["broadcast_user_2"]["email"]
     )
     assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
 
