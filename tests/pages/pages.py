@@ -579,7 +579,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
                 self.folder_radio_xpath.format(folder_name),
             )
         )
-        self.select_checkbox_or_radio(radio_element)
+        self.select_checkbox_or_radio(element=radio_element)
         self.click_continue()
 
     def get_folder_by_name(self, folder_name):
