@@ -473,7 +473,9 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         "input[type='radio'][value='__NONE__']",
     )
 
-    folder_radio_xpath = "//label[normalize-space(.)='{}']/preceding-sibling::input"
+    folder_radio_xpath = (
+        "//label[normalize-space(.)='{}']/preceding-sibling::input[@type='radio']"
+    )
 
     @staticmethod
     def input_element_by_label_text(text):
