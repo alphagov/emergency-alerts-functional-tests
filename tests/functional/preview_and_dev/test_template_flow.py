@@ -224,12 +224,13 @@ def test_template_folder_permissions(driver):
     edit_template_page = EditBroadcastTemplatePage(driver)
 
     for i, folder_name in enumerate(folder_names):
+        template_name = folder_name + "-template"
+        print(f"adding template {template_name}")
+
         show_templates_page.click_add_new_template()
-        edit_template_page.create_template(name=(folder_name + "-template"))
+        edit_template_page.create_template(name=template_name)
         show_templates_page.click_templates()
-        show_templates_page.check_radio_or_checkbox_with_label_text(
-            text=folder_name + "-template"
-        )
+        show_templates_page.check_radio_or_checkbox_with_label_text(text=template_name)
         show_templates_page.move_template_to_folder(folder_name)
 
     # # go to Team members page
