@@ -288,7 +288,7 @@ def test_template_folder_permissions(driver):
     view_folder_page.click_template_by_link_text(folder_names[2])
 
     for folder_name in reversed(folder_names):
-        view_folder_page.click_template_by_link_text(folder_name + "_template")
+        view_folder_page.click_template_by_link_text(folder_name + "-template")
         template_page = EditBroadcastTemplatePage(driver)
         template_page.click_delete()
 
