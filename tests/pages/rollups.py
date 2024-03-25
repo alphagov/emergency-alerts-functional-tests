@@ -29,7 +29,7 @@ def sign_in(driver, account_type="normal"):
     else:
         do_verify(driver, identifier)
 
-    go_to_service_dashboard("broadcast_service")
+    go_to_service_dashboard(driver, "broadcast_service")
 
     # landing_page = BasePage(driver)
     # if not landing_page.is_text_present_on_page("Current alerts"):

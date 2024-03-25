@@ -314,10 +314,8 @@ def go_to_service_dashboard(driver, service="service"):
 
 
 def go_to_templates_page(driver, service="service"):
-    # dashboard_page = DashboardPage(driver)
-    # dashboard_page.go_to_dashboard_for_service(config[service]["id"])
-    go_to_service_dashboard(driver, service=service)
     dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config[service]["id"])
     dashboard_page.click_templates()
 
 
