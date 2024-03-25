@@ -965,6 +965,7 @@ class ServiceSettingsPage(BasePage):
 
     def save_service_name(self, new_name):
         self.name_input = new_name
+        raise ValueError("Fail here")
         self.click_save()
 
 
