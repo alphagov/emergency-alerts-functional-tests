@@ -44,7 +44,7 @@ class ClearableInputElement(BasePageElement):
             lambda driver: driver.find_element(By.NAME, self.name)
         )
         input = driver.find_element(By.NAME, self.name)
-        input.send_keys(Keys.chord(Keys.CONTROL, "a"))
+        input.send_keys(Keys.CONTROL + "a")
         input.send_keys(value)
 
 
