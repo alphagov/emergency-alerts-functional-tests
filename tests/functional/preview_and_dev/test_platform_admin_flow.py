@@ -1,4 +1,4 @@
-import uuid
+import time
 
 import pytest
 
@@ -12,8 +12,8 @@ TESTSUITE_CODE = "PLATFORM-ADMIN"
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_add_new_service_platform_admin(driver):
-    temp_service_uuid = str(uuid.uuid4())
-    service_name = f"Functional Test_{temp_service_uuid}"
+    timestamp = str(int(time.time()))
+    service_name = f"Functional Test {timestamp}"
 
     sign_in(driver, account_type="platform_admin")
 
@@ -36,6 +36,7 @@ def test_add_new_service_platform_admin(driver):
     dashboard_page.click_element_by_link_text("Settings")
 
     service_settings_page = ServiceSettingsPage(driver)
+
     service_settings_page.click_element_by_link_text("Delete this service")
     delete_button = service_settings_page.wait_for_element(
         ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
