@@ -31,13 +31,6 @@ def sign_in(driver, account_type="normal"):
 
     go_to_service_dashboard(driver, "broadcast_service")
 
-    # landing_page = BasePage(driver)
-    # if not landing_page.is_text_present_on_page("Current alerts"):
-    #     landing_page.click_element_by_link_text("Switch service")
-    #     landing_page.click_element_by_link_text(
-    #         config["broadcast_service"]["service_name"]
-    #     )
-
 
 def clean_session(driver):
     driver.delete_all_cookies()

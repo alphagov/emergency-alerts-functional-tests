@@ -943,12 +943,18 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
+    name_input = NameInputElement()
+
     def check_service_name(self, expected_name):
         name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
         if name.element.text == expected_name:
             return True
         else:
             raise ValueError("Service name not changed succesfully")
+
+    def save_service_name(self, new_name):
+        self.name_input = new_name
+        self.click_save()
 
 
 class ChangeName(BasePage):
