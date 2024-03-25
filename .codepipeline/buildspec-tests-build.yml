@@ -4,6 +4,7 @@ env:
   variables:
     testsuites: >-
       platform-admin-flow
+      template-flow
 
 # broadcast-flow
 # cbc-integration
@@ -59,7 +60,7 @@ phases:
       # - make test-authentication-flow; exit 0
       # - make test-top-rail-services; exit 0
       # - make test-links-and-cookies; exit 0
-      # - make test-template-flow; exit 0
+      - make test-template-flow; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"

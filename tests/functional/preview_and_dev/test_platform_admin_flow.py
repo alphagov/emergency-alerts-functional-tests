@@ -33,10 +33,16 @@ def test_add_new_service_platform_admin(driver):
 
     assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
 
+    # test service name change
     dashboard_page.click_element_by_link_text("Settings")
-
     service_settings_page = ServiceSettingsPage(driver)
+    service_settings_page.click_element_by_link_text("Change service name")
 
+    new_service_name = service_name + " NEW"
+    service_settings_page.save_service_name(new_service_name)
+    assert service_settings_page.check_service_name(new_service_name)
+
+    # delete the service
     service_settings_page.click_element_by_link_text("Delete this service")
     delete_button = service_settings_page.wait_for_element(
         ServiceSettingsLocators.DELETE_CONFIRM_BUTTON

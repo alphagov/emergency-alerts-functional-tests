@@ -308,6 +308,11 @@ def create_broadcast_template(driver, name="test template", content=None):
     return template_page.get_template_id()
 
 
+def go_to_service_dashboard(driver, service="service"):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.go_to_dashboard_for_service(config[service]["id"])
+
+
 def go_to_templates_page(driver, service="service"):
     dashboard_page = DashboardPage(driver)
     dashboard_page.go_to_dashboard_for_service(config[service]["id"])
