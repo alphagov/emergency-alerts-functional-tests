@@ -36,6 +36,8 @@ class BasePageElement(object):
 
 
 class ClearableInputElement(BasePageElement):
+    name = CommonPageLocators.NAME_INPUT[1]
+
     def __set__(self, obj, value, clear=True):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
