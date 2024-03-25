@@ -946,7 +946,7 @@ class ServiceSettingsPage(BasePage):
     name_input = NameInputElement()
 
     @staticmethod
-    def change_setting_link(text, setting):
+    def change_setting_link(setting):
         return (
             By.XPATH,
             f"//a[contains(normalize-space(.),'Change')]/span[contains(normalize-space(.),'{setting}')]/parent::a",
