@@ -945,6 +945,17 @@ class SendOneRecipient(BasePage):
 class ServiceSettingsPage(BasePage):
     name_input = NameInputElement()
 
+    @staticmethod
+    def change_setting_link(text, setting):
+        return (
+            By.XPATH,
+            f"//a[contains(normalize-space(.),'Change')]/span[contains(normalize-space(.),'{setting}')]/parent::a",
+        )
+
+    def click_change_setting(self, setting):
+        element = self.wait_for_element(self.change_setting_link(setting))
+        element.click()
+
     def check_service_name(self, expected_name):
         name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
         if name.element.text == expected_name:

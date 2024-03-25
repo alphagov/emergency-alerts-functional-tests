@@ -11,7 +11,7 @@ TESTSUITE_CODE = "PLATFORM-ADMIN"
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
-def test_add_new_service_platform_admin(driver):
+def test_add_rename_and_delete_service(driver):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
@@ -36,7 +36,7 @@ def test_add_new_service_platform_admin(driver):
     # test service name change
     dashboard_page.click_element_by_link_text("Settings")
     service_settings_page = ServiceSettingsPage(driver)
-    service_settings_page.click_element_by_link_text("Change service name")
+    service_settings_page.click_change_setting("service name")
 
     new_service_name = service_name + " NEW"
     service_settings_page.save_service_name(new_service_name)
