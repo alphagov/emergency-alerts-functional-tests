@@ -50,7 +50,7 @@ def test_add_rename_and_delete_service(driver):
     delete_button.click()
 
     assert service_settings_page.is_text_present_on_page(
-        f"‘{service_name}’ was deleted"
+        f"‘{new_service_name}’ was deleted"
     )
 
     # sign out
