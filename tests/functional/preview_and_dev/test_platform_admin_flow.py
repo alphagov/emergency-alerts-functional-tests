@@ -39,9 +39,6 @@ def test_add_rename_and_delete_service(driver):
     service_settings_page.click_change_setting("service name")
 
     new_service_name = service_name + " NEW"
-    print("------------------------------------------------------------")
-    print(new_service_name)
-    print("------------------------------------------------------------")
     service_settings_page.save_service_name(new_service_name)
     assert service_settings_page.check_service_name(new_service_name)
 

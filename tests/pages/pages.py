@@ -15,6 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from config import config
 from tests.pages.element import (
     BasePageElement,
+    ClearableInputElement,
     EmailInputElement,
     FeedbackTextAreaElement,
     FileInputElement,
@@ -943,7 +944,7 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
-    name_input = NameInputElement()
+    name_input = ClearableInputElement()
 
     @staticmethod
     def change_setting_link(setting):
@@ -965,7 +966,6 @@ class ServiceSettingsPage(BasePage):
 
     def save_service_name(self, new_name):
         self.name_input = new_name
-        raise ValueError("Fail here")
         self.click_save()
 
 
