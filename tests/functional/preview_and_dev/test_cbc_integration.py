@@ -186,12 +186,10 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     assert response is not None
 
     provider_messages = response["messages"]
-    print(provider_messages)
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
     request_id = _dict_item_for_key_value(provider_messages, "provider", mno, "id")
-    print(request_id)
 
     db_response = ddbc.query(
         TableName="LoopbackRequests",

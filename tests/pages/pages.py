@@ -472,10 +472,13 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         By.CSS_SELECTOR,
         "input[type='radio'][value='__NONE__']",
     )
-    level_n_folder_radio = "input[type='radio'][id='move_to-{}']"
-    level_n_folder_radio_xpath = (
-        "//label[normalize-space(.)='{}']/preceding-sibling::input"
-    )
+
+    @staticmethod
+    def input_element_by_label_text(text, input_type="checkbox"):
+        return (
+            By.XPATH,
+            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
+        )
 
     @staticmethod
     def template_link_text(link_text):
@@ -527,6 +530,12 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
         self.select_checkbox_or_radio(element)
 
+    def check_input_with_label_text(self, text, input_type):
+        element = self.wait_for_invisible_element(
+            self.input_element_by_label_text(text, input_type=input_type)
+        )
+        self.select_checkbox_or_radio(element)
+
     def add_to_new_folder(self, folder_name):
         # grey button to go to the name input box
         element = self.wait_for_element(self.add_to_new_folder_link)
@@ -547,16 +556,13 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
         self.click_continue()
 
-    def move_to_folder_level(self, level):
+    def move_template_to_folder(self, folder_name):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
         move_button.click()
         radio_element = self.wait_for_invisible_element(
-            (
-                By.XPATH,
-                self.level_n_folder_radio_xpath.format(level),
-            )
+            self.input_element_by_label_text(text=folder_name, input_type="radio")
         )
-        self.select_checkbox_or_radio(radio_element)
+        self.select_checkbox_or_radio(element=radio_element)
         self.click_continue()
 
     def get_folder_by_name(self, folder_name):
