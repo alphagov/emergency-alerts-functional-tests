@@ -40,7 +40,7 @@ def test_add_rename_and_delete_service(driver):
 
     new_service_name = service_name + " NEW"
     service_settings_page.save_service_name(new_service_name)
-    assert service_settings_page.check_service_name(new_service_name)
+    assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
 
     # delete the service
     service_settings_page.click_element_by_link_text("Delete this service")
