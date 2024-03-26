@@ -959,8 +959,6 @@ class ServiceSettingsPage(BasePage):
 
     def check_service_name(self, expected_name):
         name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
-        print(expected_name)
-        print(name.element.text)
         if name.element.text == expected_name:
             return True
         else:
