@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
@@ -34,6 +35,19 @@ class BasePageElement(object):
         return element.get_attribute("value")
 
 
+class ClearableInputElement(BasePageElement):
+    name = CommonPageLocators.NAME_INPUT[1]
+
+    def __set__(self, obj, value, clear=True):
+        driver = obj.driver
+        WebDriverWait(driver, 100).until(
+            lambda driver: driver.find_element(By.NAME, self.name)
+        )
+        input = driver.find_element(By.NAME, self.name)
+        input.send_keys(Keys.CONTROL + "a")
+        input.send_keys(value)
+
+
 class ServiceInputElement(BasePageElement):
     name = AddServicePageLocators.SERVICE_INPUT[1]
 
@@ -58,7 +72,7 @@ class SmsInputElement(BasePageElement):
     name = VerifyPageLocators.SMS_INPUT[1]
 
 
-class NameInputElement(BasePageElement):
+class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 

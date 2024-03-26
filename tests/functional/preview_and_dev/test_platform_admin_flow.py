@@ -1,4 +1,4 @@
-import uuid
+import time
 
 import pytest
 
@@ -11,9 +11,9 @@ TESTSUITE_CODE = "PLATFORM-ADMIN"
 
 
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
-def test_add_new_service_platform_admin(driver):
-    temp_service_uuid = str(uuid.uuid4())
-    service_name = f"Functional Test_{temp_service_uuid}"
+def test_add_rename_and_delete_service(driver):
+    timestamp = str(int(time.time()))
+    service_name = f"Functional Test {timestamp}"
 
     sign_in(driver, account_type="platform_admin")
 
@@ -33,9 +33,16 @@ def test_add_new_service_platform_admin(driver):
 
     assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
 
+    # test service name change
     dashboard_page.click_element_by_link_text("Settings")
-
     service_settings_page = ServiceSettingsPage(driver)
+    service_settings_page.click_change_setting("service name")
+
+    new_service_name = service_name + " NEW"
+    service_settings_page.save_service_name(new_service_name)
+    assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
+
+    # delete the service
     service_settings_page.click_element_by_link_text("Delete this service")
     delete_button = service_settings_page.wait_for_element(
         ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
@@ -43,7 +50,7 @@ def test_add_new_service_platform_admin(driver):
     delete_button.click()
 
     assert service_settings_page.is_text_present_on_page(
-        f"‘{service_name}’ was deleted"
+        f"‘{new_service_name}’ was deleted"
     )
 
     # sign out
