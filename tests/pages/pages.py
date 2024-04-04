@@ -23,6 +23,10 @@ from tests.pages.element import (
     NameInputElement,
     NewPasswordInputElement,
     PasswordInputElement,
+    PostcodeInputElement,
+    PreviewButton,
+    RadiusInputElement,
+    SearchButton,
     ServiceInputElement,
     SmsInputElement,
     SubjectInputElement,
@@ -1220,3 +1224,22 @@ class SupportFeedbackPage(BasePage):
 
     def fill_textarea(self, text):
         self.text_input = text
+
+
+class SearchPostcodePage(BasePage):
+    postcode_input = PostcodeInputElement()
+    radius_input = RadiusInputElement()
+    search_button = SearchButton()
+    preview_button = PreviewButton()
+
+    def create_custom_area(self, postcode, radius):
+        self.postcode_input = postcode
+        self.radius_input = radius
+
+    def click_search_to_create_area(self):
+        element = self.wait_for_element(self.search_button)
+        element.click()
+
+    def click_preview_this_alert(self):
+        element = self.wait_for_element(self.preview_button)
+        element.click()

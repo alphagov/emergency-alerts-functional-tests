@@ -7,6 +7,7 @@ from tests.pages.locators import (
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
+    SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
     UploadCsvLocators,
@@ -94,3 +95,19 @@ class SubjectInputElement(BasePageElement):
 
 class FeedbackTextAreaElement(BasePageElement):
     name = SupportPageLocators.FEEDBACK_TEXTAREA[1]
+
+
+class PostcodeInputElement(BasePageElement):
+    postcode = SearchPostcodePageLocators.POSTCODE_TEXTAREA[1]
+
+
+class RadiusInputElement(BasePageElement):
+    radius = SearchPostcodePageLocators.RADIUS_TEXTAREA[1]
+
+
+class SearchButton(BasePageElement):
+    search_button = SearchPostcodePageLocators.SEARCH_BUTTON[1]
+
+
+class PreviewButton(BasePageElement):
+    preview_button = SearchPostcodePageLocators.PREVIEW_BUTTON[1]
