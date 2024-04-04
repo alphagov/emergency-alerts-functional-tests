@@ -37,9 +37,6 @@ def _purge_folders_and_templates():
     url = f"/service/{service}/template/purge"
     test_api_client.delete(url)
 
-    url = f"/service/{service}/template-folder/purge"
-    test_api_client.delete(url)
-
 
 def _purge_user_created_services():
     admin_user = config["broadcast_service"]["platform_admin"]["id"]
