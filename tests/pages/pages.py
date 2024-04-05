@@ -1236,10 +1236,6 @@ class SearchPostcodePage(BasePage):
         self.postcode_input = postcode
         self.radius_input = radius
 
-    def click_search_to_create_area(self):
-        element = self.wait_for_element(self.search_button)
-        element.click()
-
-    def click_preview_this_alert(self):
-        element = self.wait_for_element(self.preview_button)
+    def click_element_by_link_text(self, link_text):
+        element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
