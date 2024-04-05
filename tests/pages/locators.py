@@ -179,5 +179,5 @@ class SupportPageLocators(object):
 class SearchPostcodePageLocators(object):
     POSTCODE_TEXTAREA = (By.ID, "postcode")
     RADIUS_TEXTAREA = (By.ID, "radius")
-    SEARCH_BUTTON = (By.X_PATH, '//*[@id="main-content"]/form/div/div[3]/button')
+    SEARCH_BUTTON = (By.PARTIAL_LINK_TEXT, "Search")
     PREVIEW_BUTTON = (By.PARTIAL_LINK_TEXT, "Preview this alert")
