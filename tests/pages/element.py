@@ -98,16 +98,16 @@ class FeedbackTextAreaElement(BasePageElement):
 
 
 class PostcodeInputElement(BasePageElement):
-    postcode = SearchPostcodePageLocators.POSTCODE_TEXTAREA[1]
+    name = SearchPostcodePageLocators.POSTCODE_TEXTAREA[1]
 
 
 class RadiusInputElement(BasePageElement):
-    radius = SearchPostcodePageLocators.RADIUS_TEXTAREA[1]
+    name = SearchPostcodePageLocators.RADIUS_TEXTAREA[1]
 
 
 class SearchButton(BasePageElement):
-    search_button = SearchPostcodePageLocators.SEARCH_BUTTON[1]
+    name = SearchPostcodePageLocators.SEARCH_BUTTON[1]
 
 
 class PreviewButton(BasePageElement):
-    preview_button = SearchPostcodePageLocators.PREVIEW_BUTTON[1]
+    name = SearchPostcodePageLocators.PREVIEW_BUTTON[1]
