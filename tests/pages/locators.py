@@ -177,7 +177,7 @@ class SupportPageLocators(object):
 
 
 class SearchPostcodePageLocators(object):
-    POSTCODE_TEXTAREA = (By.ID, "postcode")
-    RADIUS_TEXTAREA = (By.ID, "radius")
+    POSTCODE_TEXTAREA = (By.NAME, "postcode")
+    RADIUS_TEXTAREA = (By.NAME, "radius")
     SEARCH_BUTTON = (By.PARTIAL_LINK_TEXT, "Search")
     PREVIEW_BUTTON = (By.PARTIAL_LINK_TEXT, "Preview this alert")
