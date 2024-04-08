@@ -326,7 +326,7 @@ def test_prepare_broadcast_with_new_content_for_custom_area(driver):
     postcode_to_search = "BD1 1EE"
     radius_to_add = "5"
     search_postcode_page.create_custom_area(postcode_to_search, radius_to_add)
-    search_postcode_page.click_element_by_link_text("Search")
+    search_postcode_page.click_search()
     # assert areas appear here
 
     search_postcode_page.click_element_by_link_text("Preview this alert")

@@ -43,6 +43,7 @@ from tests.pages.locators import (
     LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
     SingleRecipientLocators,
@@ -1236,6 +1237,6 @@ class SearchPostcodePage(BasePage):
         self.postcode_input = postcode
         self.radius_input = radius
 
-    def click_element_by_link_text(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
+    def click_search(self):
+        element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
         element.click()
