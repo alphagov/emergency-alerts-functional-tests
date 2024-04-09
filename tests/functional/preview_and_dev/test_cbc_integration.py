@@ -153,8 +153,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 @pytest.mark.xdist_group(name=test_group_name)
 @pytest.mark.parametrize(
-    "mno",
-    "az",
+    "mno, az",
     (
         ("ee", "1"),
         ("ee", "2"),
