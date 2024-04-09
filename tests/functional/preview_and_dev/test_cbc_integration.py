@@ -155,7 +155,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 @pytest.mark.parametrize(
     "mno",
     "az",
-    [
+    (
         ("ee", "1"),
         ("ee", "2"),
         ("o2", "1"),
@@ -164,7 +164,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
         ("vodafone", "2"),
         ("three", "1"),
         ("three", "2"),
-    ],
+    ),
 )
 def test_set_loopback_response_codes(mno, az):
     test_cbc = f"{mno}-az{az}"
