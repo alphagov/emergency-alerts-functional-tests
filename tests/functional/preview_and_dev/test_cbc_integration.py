@@ -8,7 +8,7 @@ from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import PROVIDERS
 
-TESTSUITE_CODE = "CBC-INTEGRATION"
+test_group_name = "cbc-integration"
 
 
 def create_ddb_client():
@@ -41,7 +41,7 @@ def create_ddb_client():
 
 
 @pytest.mark.skip()
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
     assert "ee-az2" in config["cbcs"]
@@ -54,7 +54,7 @@ def test_cbc_config():
 
 
 @pytest.mark.skip()
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
     response = ddbc.query(
@@ -69,7 +69,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
     _set_response_codes(ddbc, "all", "200")
@@ -121,7 +121,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
 
 
 @pytest.mark.skip()
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
     _set_response_codes(ddbc, "all", "200")
@@ -151,9 +151,10 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     assert response_codes.pop() == "200"
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
-def test_set_loopback_response_codes():
-    test_cbc = "ee-az1"
+@pytest.mark.xdist_group(name=test_group_name)
+@pytest.mark.parametrize("mno", PROVIDERS)
+def test_set_loopback_response_codes(mno):
+    test_cbc = f"{mno}-az1"
     test_code = "500"
     test_ip = config["cbcs"][test_cbc]
 
@@ -175,7 +176,7 @@ def test_set_loopback_response_codes():
 
 
 @pytest.mark.skip()
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -227,7 +228,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
@@ -300,7 +301,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 
 @pytest.mark.skip()
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
 ):
