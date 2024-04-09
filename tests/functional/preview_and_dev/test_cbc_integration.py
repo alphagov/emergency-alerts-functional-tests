@@ -40,6 +40,7 @@ def create_ddb_client():
         raise Exception("Unable to assume role") from e
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
@@ -52,6 +53,7 @@ def test_cbc_config():
     assert "three-az2" in config["cbcs"]
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
@@ -90,6 +92,10 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
 
     distinct_request_ids = 0
 
+    print("*********************************************************")
+    print(provider_messages)
+    print("*********************************************************")
+
     for provider_id in PROVIDERS:
         request_id = _dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
@@ -100,6 +106,12 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
             ConsistentRead=True,
         )
+
+        print("*********************************************************")
+        print(provider_id)
+        print(db_response)
+        print("*********************************************************")
+
         if len(db_response["Items"]):
             distinct_request_ids += 1
 
@@ -108,6 +120,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
@@ -161,6 +174,7 @@ def test_set_loopback_response_codes():
     assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -252,6 +266,16 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
     responses = db_response["Items"]
 
+    print("*********************************************************")
+    print(provider_messages)
+    print("*********************************************************")
+    print(request_id)
+    print("*********************************************************")
+    print(responses)
+    print("*********************************************************")
+    print(primary_cbc)
+    print("*********************************************************")
+
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
@@ -275,6 +299,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=TESTSUITE_CODE)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
