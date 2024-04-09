@@ -93,8 +93,8 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     distinct_request_ids = 0
 
     print("*********************************************************")
+    print("provider_messages")
     print(provider_messages)
-    print("*********************************************************")
 
     for provider_id in PROVIDERS:
         request_id = _dict_item_for_key_value(
@@ -108,9 +108,10 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         )
 
         print("*********************************************************")
+        print("provider_id")
         print(provider_id)
+        print("db_response")
         print(db_response)
-        print("*********************************************************")
 
         if len(db_response["Items"]):
             distinct_request_ids += 1
@@ -120,7 +121,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
@@ -152,9 +152,22 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-@pytest.mark.parametrize("mno", PROVIDERS)
-def test_set_loopback_response_codes(mno):
-    test_cbc = f"{mno}-az1"
+@pytest.mark.parametrize(
+    "mno",
+    "az",
+    [
+        ("ee", "1"),
+        ("ee", "2"),
+        ("o2", "1"),
+        ("o2", "2"),
+        ("vodafone", "1"),
+        ("vodafone", "2"),
+        ("three", "1"),
+        ("three", "2"),
+    ],
+)
+def test_set_loopback_response_codes(mno, az):
+    test_cbc = f"{mno}-az{az}"
     test_code = "500"
     test_ip = config["cbcs"][test_cbc]
 
@@ -268,14 +281,17 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     responses = db_response["Items"]
 
     print("*********************************************************")
+    print("provider_messages")
     print(provider_messages)
     print("*********************************************************")
     print(request_id)
+    print("request_id")
     print("*********************************************************")
     print(responses)
+    print("responses")
     print("*********************************************************")
+    print("primary_cbc")
     print(primary_cbc)
-    print("*********************************************************")
 
     az1_response_codes = _dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
