@@ -27,7 +27,7 @@ def test_user_can_change_profile_fields(driver):
     )
 
     # Change mobile number
-    profile_page.click_change_setting("mobile_number")
+    profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900000")
 
@@ -46,7 +46,7 @@ def test_user_can_change_profile_fields(driver):
         "Functional Tests - Broadcast User Create"
     )
 
-    profile_page.click_change_setting("mobile_number")
+    profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900111")
 
