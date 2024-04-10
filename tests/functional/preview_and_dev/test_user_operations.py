@@ -1,7 +1,7 @@
 import pytest
 
 from tests.pages import DashboardPage, ProfileSettingsPage
-from tests.pages.rollups import sign_in
+from tests.pages.rollups import get_verify_code, sign_in
 
 test_group_name = "user-operations"
 
@@ -30,6 +30,14 @@ def test_user_can_change_profile_fields(driver):
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900000")
+    profile_page.wait_until_url_ends_with("/authenticate")
+    assert profile_page.is_text_present_on_page("Change your mobile number")
+
+    profile_page.enter_password("Password1234")
+    profile_page.wait_until_url_ends_with("/confirm")
+
+    code = get_verify_code("broadcast_create_user")
+    profile_page.enter_verification_code(code=code)
 
     dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page("+447700900000")
@@ -49,6 +57,14 @@ def test_user_can_change_profile_fields(driver):
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900111")
+    profile_page.wait_until_url_ends_with("/authenticate")
+    assert profile_page.is_text_present_on_page("Change your mobile number")
+
+    profile_page.enter_password("Password1234")
+    profile_page.wait_until_url_ends_with("/confirm")
+
+    code = get_verify_code("broadcast_create_user")
+    profile_page.enter_verification_code(code=code)
 
     dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page("+447700900111")
