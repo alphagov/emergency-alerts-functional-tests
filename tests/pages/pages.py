@@ -172,11 +172,20 @@ class BasePage(object):
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
+    def wait_until_url_ends_with(self, url):
+        return WebDriverWait(self.driver, 10).until(self.url_ends_with(url))
+
     def url_contains(self, url):
         def check_contains_url(driver):
             return url in self.driver.current_url
 
         return check_contains_url
+
+    def url_ends_with(self, url):
+        def check_ends_with(driver):
+            return self.driver.current_url.endswith(url)
+
+        return check_ends_with
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
@@ -966,6 +975,30 @@ class ServiceSettingsPage(BasePage):
 
     def save_service_name(self, new_name):
         self.name_input = new_name
+        self.click_save()
+
+
+class ProfileSettingsPage(BasePage):
+    name_input = ClearableInputElement(name="name")
+    number_input = ClearableInputElement(name="mobile_number")
+
+    @staticmethod
+    def change_setting_link(setting):
+        return (
+            By.XPATH,
+            f"//a[contains(normalize-space(.),'Change')]/span[contains(normalize-space(.),'{setting}')]/parent::a",
+        )
+
+    def click_change_setting(self, setting):
+        element = self.wait_for_element(self.change_setting_link(setting))
+        element.click()
+
+    def save_name(self, new_name):
+        self.name_input = new_name
+        self.click_save()
+
+    def save_mobile_number(self, new_number):
+        self.mobile_input = new_number
         self.click_save()
 
 

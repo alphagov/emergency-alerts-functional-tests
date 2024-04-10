@@ -36,7 +36,9 @@ class BasePageElement(object):
 
 
 class ClearableInputElement(BasePageElement):
-    name = CommonPageLocators.NAME_INPUT[1]
+    def __init__(self, name=None):
+        if name:
+            self.name = name
 
     def __set__(self, obj, value, clear=True):
         driver = obj.driver
