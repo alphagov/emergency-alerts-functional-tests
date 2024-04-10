@@ -40,7 +40,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.enter_verification_code(code=code)
 
     profile_page.wait_until_url_ends_with("/user-profile")
-    profile_page.get("/user-profile")
+    profile_page.get(relative_url="/user-profile")
     assert profile_page.is_text_present_on_page("+447700900000")
 
     # Revert changes to profile settings
@@ -68,7 +68,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.enter_verification_code(code=code)
 
     profile_page.wait_until_url_ends_with("/user-profile")
-    profile_page.get("/user-profile")
+    profile_page.get(relative_url="/user-profile")
     assert profile_page.is_text_present_on_page("+447700900111")
 
 
