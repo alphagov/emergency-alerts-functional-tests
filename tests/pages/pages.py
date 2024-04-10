@@ -985,7 +985,7 @@ class ServiceSettingsPage(BasePage):
 
 class ProfileSettingsPage(BasePage):
     name_input = ClearableInputElement(name="new_name")
-    number_input = ClearableInputElement(name="mobile_number")
+    mobile_input = ClearableInputElement(name="mobile_number")
     password_input = PasswordInputElement()
     verification_code_input = SmsInputElement()
 
