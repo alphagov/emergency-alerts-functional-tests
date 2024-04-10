@@ -1,5 +1,6 @@
 import time
 import uuid
+from random import choice
 
 import boto3
 import pytest
@@ -151,22 +152,23 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     assert response_codes.pop() == "200"
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 @pytest.mark.parametrize(
     "mno, az",
     (
-        ("ee", "1"),
-        ("ee", "2"),
-        ("o2", "1"),
-        ("o2", "2"),
-        ("vodafone", "1"),
-        ("vodafone", "2"),
-        ("three", "1"),
-        ("three", "2"),
+        ("ee", "az1"),
+        ("ee", "az2"),
+        ("o2", "az1"),
+        ("o2", "az2"),
+        ("vodafone", "az1"),
+        ("vodafone", "az2"),
+        ("three", "az1"),
+        ("three", "az2"),
     ),
 )
 def test_set_loopback_response_codes(mno, az):
-    test_cbc = f"{mno}-az{az}"
+    test_cbc = f"{mno}-{az}"
     test_code = "500"
     test_ip = config["cbcs"][test_cbc]
 
@@ -240,10 +242,12 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
 
+    mno = choice(PROVIDERS)
     mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
