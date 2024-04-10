@@ -18,35 +18,39 @@ def test_user_can_change_profile_fields(driver):
 
     # Change username
     profile_page.click_change_setting("name")
+    profile_page.wait_until_url_ends_with("/name")
     profile_page.save_name("Functional Tests - Broadcast User Create - NEW")
 
-    dashboard_page.wait_until_url_ends_with("user-profile")
+    dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page(
         "Functional Tests - Broadcast User Create - NEW"
     )
 
     # Change mobile number
     profile_page.click_change_setting("mobile_number")
+    profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900000")
 
-    dashboard_page.wait_until_url_ends_with("user-profile")
+    dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page("+447700900000")
 
     # Revert changes to profile settings
     assert profile_page.is_text_present_on_page("Your profile")
 
     profile_page.click_change_setting("name")
+    profile_page.wait_until_url_ends_with("/name")
     profile_page.save_name("Functional Tests - Broadcast User Create")
 
-    dashboard_page.wait_until_url_ends_with("user-profile")
+    dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page(
         "Functional Tests - Broadcast User Create"
     )
 
     profile_page.click_change_setting("mobile_number")
+    profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900111")
 
-    dashboard_page.wait_until_url_ends_with("user-profile")
+    dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.is_text_present_on_page("+447700900111")
 
 
