@@ -23,6 +23,10 @@ from tests.pages.element import (
     NameInputElement,
     NewPasswordInputElement,
     PasswordInputElement,
+    PostcodeInputElement,
+    PreviewButton,
+    RadiusInputElement,
+    SearchButton,
     ServiceInputElement,
     SmsInputElement,
     SubjectInputElement,
@@ -39,6 +43,7 @@ from tests.pages.locators import (
     LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
     SingleRecipientLocators,
@@ -1253,3 +1258,18 @@ class SupportFeedbackPage(BasePage):
 
     def fill_textarea(self, text):
         self.text_input = text
+
+
+class SearchPostcodePage(BasePage):
+    postcode_input = PostcodeInputElement()
+    radius_input = RadiusInputElement()
+    search_button = SearchButton()
+    preview_button = PreviewButton()
+
+    def create_custom_area(self, postcode, radius):
+        self.postcode_input = postcode
+        self.radius_input = radius
+
+    def click_search(self):
+        element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
+        element.click()

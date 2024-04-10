@@ -11,18 +11,35 @@ def preview_dev_config():
     """
     setup_preview_dev_config()
 
-    _purge_functional_test_alerts()
-
-
-def _purge_functional_test_alerts():
-    client = TestApiClient()
-    client.configure_for_internal_client(
+    test_api_client = TestApiClient()
+    test_api_client.configure_for_internal_client(
         client_id=config["service"]["internal_api_client_id"],
         api_key=config["service"]["internal_api_client_secret"],
         base_url=config["eas_api_url"],
     )
+
+    _purge_functional_test_alerts(test_api_client)
+    _purge_folders_and_templates(test_api_client)
+    _purge_user_created_services(test_api_client)
+
+
+def _purge_functional_test_alerts(test_api_client):
     service = config["broadcast_service"]["service_id"]
     older_than = config["broadcast_service"]["purge_older_than"]
-    url = f"/service/{service}/broadcast-message/purge/{older_than}"
 
-    client.get(url)
+    url = f"/service/{service}/broadcast-message/purge/{older_than}"
+    test_api_client.delete(url)
+
+
+def _purge_folders_and_templates(test_api_client):
+    service = config["broadcast_service"]["service_id"]
+
+    url = f"/service/{service}/template/purge"
+    test_api_client.delete(url)
+
+
+def _purge_user_created_services(test_api_client):
+    admin_user = config["broadcast_service"]["platform_admin"]["id"]
+
+    url = f"/service/purge-services-created/{admin_user}"
+    test_api_client.delete(url)

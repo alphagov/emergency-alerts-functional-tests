@@ -15,6 +15,7 @@ from tests.pages import (
     DashboardPage,
     ShowTemplatesPage,
 )
+from tests.pages.pages import SearchPostcodePage
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
     check_alert_is_published_on_govuk_alerts,
@@ -285,3 +286,103 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     page.get()
     page.sign_out()
+
+
+@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+def test_prepare_broadcast_with_new_content_for_custom_area(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast" + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Postcode areas")
+    # This is where it varies
+    search_postcode_page = SearchPostcodePage(driver)
+    postcode_to_search = "BD1 1EE"
+    radius_to_add = "5"
+    search_postcode_page.create_custom_area(postcode_to_search, radius_to_add)
+    search_postcode_page.click_search()
+    # assert areas appear here
+
+    search_postcode_page.click_element_by_link_text("Preview this alert")
+
+    # here check if selected areas displayed
+    assert prepare_alert_pages.is_text_present_on_page(
+        "An area of 5km around the postcode BD1 1EE, in Bradford"
+    )
+
+    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    assert prepare_alert_pages.is_text_present_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    prepare_alert_pages.sign_out()
+
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.is_text_present_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_continue()
+    assert current_alerts_page.is_text_present_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
+
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
+
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
+
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_continue()  # stop broadcasting
+    assert current_alerts_page.is_text_present_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.is_text_present_on_page(broadcast_title)
+
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
