@@ -174,3 +174,10 @@ class ViewTemplatePageLocators(object):
 
 class SupportPageLocators(object):
     FEEDBACK_TEXTAREA = (By.ID, "feedback")
+
+
+class SearchPostcodePageLocators(object):
+    POSTCODE_TEXTAREA = (By.ID, "postcode")
+    RADIUS_TEXTAREA = (By.ID, "radius")
+    SEARCH_BUTTON = (By.NAME, "search")
+    PREVIEW_BUTTON = (By.NAME, "preview")
