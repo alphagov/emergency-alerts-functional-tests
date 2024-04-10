@@ -39,8 +39,8 @@ def test_user_can_change_profile_fields(driver):
     code = get_verify_code("broadcast_create_user")
     profile_page.enter_verification_code(code=code)
 
-    dashboard_page.wait_until_url_ends_with("/user-profile")
-    assert dashboard_page.is_text_present_on_page("+447700900000")
+    profile_page.wait_until_url_ends_with("/user-profile")
+    assert profile_page.is_text_present_on_page("+447700900000")
 
     # Revert changes to profile settings
     assert profile_page.is_text_present_on_page("Your profile")
@@ -49,8 +49,8 @@ def test_user_can_change_profile_fields(driver):
     profile_page.wait_until_url_ends_with("/name")
     profile_page.save_name("Functional Tests - Broadcast User Create")
 
-    dashboard_page.wait_until_url_ends_with("/user-profile")
-    assert dashboard_page.is_text_present_on_page(
+    profile_page.wait_until_url_ends_with("/user-profile")
+    assert profile_page.is_text_present_on_page(
         "Functional Tests - Broadcast User Create"
     )
 
@@ -66,8 +66,8 @@ def test_user_can_change_profile_fields(driver):
     code = get_verify_code("broadcast_create_user")
     profile_page.enter_verification_code(code=code)
 
-    dashboard_page.wait_until_url_ends_with("/user-profile")
-    assert dashboard_page.is_text_present_on_page("+447700900111")
+    profile_page.wait_until_url_ends_with("/user-profile")
+    assert profile_page.is_text_present_on_page("+447700900111")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
