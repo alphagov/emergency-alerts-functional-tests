@@ -1,6 +1,5 @@
 import time
 import uuid
-from random import choice
 
 import boto3
 import pytest
@@ -8,6 +7,9 @@ import pytest
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import PROVIDERS
+
+# from random import choice
+
 
 test_group_name = "cbc-integration"
 
@@ -242,13 +244,13 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
+@pytest.mark.parametrize("mno", PROVIDERS)
+def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client, mno):
     broadcast_id = str(uuid.uuid4())
 
-    mno = choice(PROVIDERS)
-    mno = "vodafone"
+    # mno = "vodafone"
+    # mno = choice(PROVIDERS)
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = "500"
@@ -287,11 +289,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     print("provider_messages")
     print(provider_messages)
     print("*********************************************************")
-    print(request_id)
     print("request_id")
+    print(request_id)
     print("*********************************************************")
-    print(responses)
     print("responses")
+    print(responses)
     print("*********************************************************")
     print("primary_cbc")
     print(primary_cbc)
