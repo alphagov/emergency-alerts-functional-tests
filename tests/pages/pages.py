@@ -958,7 +958,7 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
-    name_input = ClearableInputElement()
+    name_input = ClearableInputElement(name="name")
 
     @staticmethod
     def change_setting_link(setting):
