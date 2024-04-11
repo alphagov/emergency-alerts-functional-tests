@@ -981,7 +981,7 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
-    name_input = ClearableInputElement()
+    name_input = ClearableInputElement(name="name")
 
     @staticmethod
     def change_setting_link(setting):
@@ -1003,6 +1003,40 @@ class ServiceSettingsPage(BasePage):
 
     def save_service_name(self, new_name):
         self.name_input = new_name
+        self.click_save()
+
+
+class ProfileSettingsPage(BasePage):
+    name_input = ClearableInputElement(name="new_name")
+    mobile_input = ClearableInputElement(name="mobile_number")
+    password_input = PasswordInputElement()
+    verification_code_input = SmsInputElement()
+
+    @staticmethod
+    def change_setting_link(setting):
+        return (
+            By.XPATH,
+            f"//a[contains(normalize-space(.),'Change')]/span[contains(normalize-space(.),'{setting}')]/parent::a",
+        )
+
+    def click_change_setting(self, setting):
+        element = self.wait_for_element(self.change_setting_link(setting))
+        element.click()
+
+    def save_name(self, new_name):
+        self.name_input = new_name
+        self.click_save()
+
+    def save_mobile_number(self, new_number):
+        self.mobile_input = new_number
+        self.click_save()
+
+    def enter_password(self, password):
+        self.password_input = password
+        self.click_save()
+
+    def enter_verification_code(self, code):
+        self.verification_code_input = code
         self.click_save()
 
 

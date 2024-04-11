@@ -5,6 +5,7 @@ class CommonPageLocators(object):
     NAME_INPUT = (By.NAME, "name")
     EMAIL_INPUT = (By.NAME, "email_address")
     PASSWORD_INPUT = (By.NAME, "password")
+    MOBILE_NUMBER = (By.NAME, "mobile_number")
     CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
