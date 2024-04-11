@@ -7,6 +7,7 @@ from tests.pages.locators import (
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
+    PlatformAdminPageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
@@ -111,3 +112,7 @@ class SearchButton(BasePageElement):
 
 class PreviewButton(BasePageElement):
     name = SearchPostcodePageLocators.PREVIEW_BUTTON[1]
+
+
+class SearchInputElement(BasePageElement):
+    name = PlatformAdminPageLocators.SEARCH_INPUT[1]

@@ -19,10 +19,10 @@ from tests.pages import (
 from tests.pages.rollups import sign_in
 from tests.test_utils import go_to_templates_page
 
-TESTSUITE_CODE = "TEMPLATES"
+test_group_name = "templates"
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_create_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
     go_to_templates_page(driver, service="broadcast_service")
@@ -49,7 +49,7 @@ def test_create_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_create_edit_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
     go_to_templates_page(driver, service="broadcast_service")
@@ -94,7 +94,7 @@ def test_create_edit_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_create_prep_to_send_and_delete_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
     go_to_templates_page(driver, service="broadcast_service")
@@ -126,7 +126,7 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert not page.is_text_present_on_page(alert_name)
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_creating_moving_and_deleting_template_folders(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -201,7 +201,7 @@ def test_creating_moving_and_deleting_template_folders(driver):
     ]
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_template_folder_permissions(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

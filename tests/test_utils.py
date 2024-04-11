@@ -464,6 +464,12 @@ def get_verification_code_by_id(user_id):
     return response.text
 
 
+def get_verification_code_by_email(email):
+    url = f'{config["eas_api_url"]}/user/email'
+    response = requests.post(url, data={"email": email})
+    return response["data"]
+
+
 def recordtime(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):

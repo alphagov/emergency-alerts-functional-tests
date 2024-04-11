@@ -14,10 +14,10 @@ from tests.test_utils import (
     get_verify_code_from_api_by_id,
 )
 
-TESTSUITE_CODE = "AUTH-FLOW"
+test_group_name = "auth-flow"
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_reset_forgotten_password(driver):
     clean_session(driver)
 
@@ -49,7 +49,7 @@ def test_reset_forgotten_password(driver):
     assert landing_page.url_contains("current-alerts")
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_sign_in_with_email_mfa(driver):
     clean_session(driver)
 

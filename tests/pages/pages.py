@@ -27,6 +27,7 @@ from tests.pages.element import (
     PreviewButton,
     RadiusInputElement,
     SearchButton,
+    SearchInputElement,
     ServiceInputElement,
     SmsInputElement,
     SubjectInputElement,
@@ -177,11 +178,20 @@ class BasePage(object):
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
+    def wait_until_url_ends_with(self, url):
+        return WebDriverWait(self.driver, 10).until(self.url_ends_with(url))
+
     def url_contains(self, url):
         def check_contains_url(driver):
             return url in self.driver.current_url
 
         return check_contains_url
+
+    def url_ends_with(self, url):
+        def check_ends_with(driver):
+            return self.driver.current_url.endswith(url)
+
+        return check_ends_with
 
     def select_checkbox_or_radio(self, element=None, value=None):
         if not element and value:
@@ -415,6 +425,10 @@ class DashboardPage(BasePage):
 
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
+        element.click()
+
+    def click_api_integration(self):
+        element = self.wait_for_element(DashboardPage.api_keys_link)
         element.click()
 
     def click_inbox_link(self):
@@ -742,6 +756,7 @@ class TeamMembersPage(BasePage):
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
+    confirm_remove_button = TeamMembersPageLocators.CONFIRM_REMOVE_BUTTON
 
     def get_edit_link_for_member_name(self, email):
         return self.wait_for_element(
@@ -763,6 +778,10 @@ class TeamMembersPage(BasePage):
 
     def click_edit_team_member(self, email):
         element = self.get_edit_link_for_member_name(email)
+        element.click()
+
+    def click_yes_remove(self):
+        element = self.wait_for_element(TeamMembersPage.confirm_remove_button)
         element.click()
 
 
@@ -813,6 +832,11 @@ class InviteUserPage(BasePage):
             self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
+        element = self.wait_for_element(InviteUserPage.send_invitation_button)
+        element.click()
+
+    def send_invitation_without_permissions(self, email):
+        self.email_input = email
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
@@ -896,6 +920,14 @@ class ApiIntegrationPage(BasePage):
     def go_to_preview_letter(self):
         link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
         self.driver.get(link.get_attribute("href"))
+
+
+# class ApiKeysPage(BasePage):
+#
+#
+#   CONTINUE FROM HERE
+#
+#
 
 
 class PreviewLetterPage(BasePage):
@@ -1240,3 +1272,20 @@ class SearchPostcodePage(BasePage):
     def click_search(self):
         element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
         element.click()
+
+
+class PlatformAdminPage(BasePage):
+    search_link = (By.LINK_TEXT, "Search")
+    search_input = SearchInputElement()
+
+    def subheading_is(self, expected_subheading):
+        element = self.wait_for_element(CommonPageLocators.H2)
+        return element.text == expected_subheading
+
+    def click_search_link(self):
+        element = self.wait_for_element(PlatformAdminPage.search_link)
+        element.click()
+
+    def search_for(self, text):
+        self.search_input = text
+        self.click_continue()
