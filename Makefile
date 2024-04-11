@@ -57,3 +57,9 @@ test-template-flow:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_template_flow.py \
 	--junitxml=functional-test-reports/template-flow
+
+.PHONY: test-user-operations
+test-user-operations:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_user_operations.py \
+	--junitxml=functional-test-reports/user-operations

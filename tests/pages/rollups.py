@@ -11,6 +11,7 @@ from tests.test_utils import (
     do_email_auth_verify,
     do_verify,
     do_verify_by_id,
+    get_verification_code_by_id,
     go_to_service_dashboard,
 )
 
@@ -30,6 +31,11 @@ def sign_in(driver, account_type="normal"):
         do_verify(driver, identifier)
 
     go_to_service_dashboard(driver, "broadcast_service")
+
+
+def get_verify_code(account_identifier):
+    identifier = get_identifier(account_type=account_identifier)
+    return get_verification_code_by_id(identifier)
 
 
 def clean_session(driver):

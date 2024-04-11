@@ -9,6 +9,7 @@ env:
       authentication-flow
       links-and-cookies
       template-flow
+      user-operations
 
 phases:
   install:
@@ -57,6 +58,7 @@ phases:
       - make test-authentication-flow; exit 0
       - make test-links-and-cookies; exit 0
       - make test-template-flow; exit 0
+      - make test-user-operations; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
