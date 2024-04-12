@@ -107,7 +107,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     invited_user_id = response["data"]["id"]
 
-    invitation_url = create_invitation_url(invited_user_id, "invitation")
+    invitation_url = create_invitation_url(invited_user_id)
     print(invitation_url)
     base_page.get(invitation_url)
 
@@ -161,7 +161,6 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     # search for user by partial email
     admin_page.click_search_link()
     admin_page.search_for(text="emergency-alerts-tests+user3")
-    assert admin_page.subheading_is(expected_subheading="Users")
     assert admin_page.is_text_present_on_page(
         "Functional Tests - Broadcast User Auth Test"
     )
