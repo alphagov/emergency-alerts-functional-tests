@@ -9,10 +9,7 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import (
-    create_url_with_token,
-    get_verify_code_from_api_by_id,
-)
+from tests.test_utils import create_sign_in_url, get_verify_code_from_api_by_id
 
 test_group_name = "auth-flow"
 
@@ -31,7 +28,7 @@ def test_reset_forgotten_password(driver):
     forgot_password_page.click_continue()
     assert forgot_password_page.is_text_present_on_page("Check your email")
 
-    password_reset_url = create_url_with_token(login_email, "new-password")
+    password_reset_url = create_sign_in_url(login_email, "new-password")
     new_password_page = NewPasswordPage(driver, password_reset_url)
     assert new_password_page.is_text_present_on_page("create a new password")
 
@@ -63,7 +60,7 @@ def test_sign_in_with_email_mfa(driver):
 
     assert sign_in_page.is_text_present_on_page("a link to sign in")
 
-    sign_in_url = create_url_with_token(login_email, "email-auth")
+    sign_in_url = create_sign_in_url(login_email, "email-auth")
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)

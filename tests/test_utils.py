@@ -561,16 +561,16 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
 
 
-def create_url_with_token(email, url, next_redirect=None):
-    data = json.dumps({"email": email, "created_at": str(datetime.utcnow())})
+def create_sign_in_url(email, url, next_redirect=None):
+    data = json.dumps({"email": email, "created_at": str(datetime.now(datetime.UTC))})
     full_url = _url_with_token(data, f"/{url}/", config)
     if next_redirect:
         full_url += "?{}".format(urlencode({"next": next_redirect}))
     return full_url
 
 
-def create_invitation_url(email, url, next_redirect=None):
-    full_url = _url_with_token(email, f"/{url}/", config)
+def create_invitation_url(user_id, url, next_redirect=None):
+    full_url = _url_with_token(user_id, f"/{url}/", config)
     if next_redirect:
         full_url += "?{}".format(urlencode({"next": next_redirect}))
     return full_url

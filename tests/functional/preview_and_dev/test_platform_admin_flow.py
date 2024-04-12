@@ -16,7 +16,7 @@ from tests.pages.pages import (
 )
 from tests.pages.rollups import go_to_service_dashboard, sign_in
 from tests.test_utils import (
-    create_url_with_token,
+    create_invitation_url,
     get_verification_code_by_email,
 )
 
@@ -72,7 +72,7 @@ def test_add_rename_and_delete_service(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_admin_can_invite_new_user_and_delete_user(driver):
+def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     timestamp = str(int(time.time()))
 
     sign_in(driver, account_type="platform_admin")
@@ -99,7 +99,15 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver):
 
     # respond to invitation
     base_page = BasePage(driver)
-    invitation_url = create_url_with_token(invited_user_email, "invitation")
+
+    # get user_id from db using email
+    data = {"email": invited_user_email}
+    response = api_client.post(url="/user/email", data=data)
+    print(response)
+
+    invited_user_id = "user_id_goes_here"
+
+    invitation_url = create_invitation_url(invited_user_id, "invitation")
     print(invitation_url)
     base_page.get(invitation_url)
 
