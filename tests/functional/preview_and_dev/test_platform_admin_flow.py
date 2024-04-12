@@ -105,7 +105,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     response = api_client.post(url="/user/email", data=data)
     print(response)
 
-    invited_user_id = "user_id_goes_here"
+    invited_user_id = response["data"]["id"]
 
     invitation_url = create_invitation_url(invited_user_id, "invitation")
     print(invitation_url)
