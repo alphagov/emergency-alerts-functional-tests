@@ -569,6 +569,13 @@ def create_url_with_token(email, url, next_redirect=None):
     return full_url
 
 
+def create_invitation_url(email, url, next_redirect=None):
+    full_url = _url_with_token(email, f"/{url}/", config)
+    if next_redirect:
+        full_url += "?{}".format(urlencode({"next": next_redirect}))
+    return full_url
+
+
 def _url_with_token(data, url, config):
     token = (
         URLSafeTimedSerializer(config["broadcast_service"]["secret_key"])
