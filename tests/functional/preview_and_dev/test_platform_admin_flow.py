@@ -5,7 +5,8 @@ import pytest
 # from config import config
 from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
 from tests.pages.locators import ServiceSettingsLocators
-from tests.pages.pages import (  # ApiKeysPage,
+from tests.pages.pages import (
+    ApiKeysPage,
     BasePage,
     InviteUserPage,
     PlatformAdminPage,
@@ -165,13 +166,40 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_can_create_and_revoke_api_keys(driver):
+def test_service_can_create_revoke_and_audit_api_keys(driver):
     sign_in(driver, account_type="platform_admin")
 
     dashboard_page = DashboardPage(driver)
     dashboard_page.click_api_integration()
-    assert dashboard_page.is_page_title("API keys")
 
-    dashboard_page.click_element_by_link_text("Create an API key")
+    api_keys_page = ApiKeysPage(driver)
+    assert api_keys_page.is_page_title("API keys")
 
-    # api_keys_page = ApiKeysPage(driver)
+    # create api key
+    api_keys_page.click_element_by_link_text("Create an API key")
+    assert api_keys_page.is_page_title("Create an API key")
+
+    timestamp = str(int(time.time()))
+    key_name = "Key-" + timestamp
+    api_keys_page.create_key(key_name=key_name)
+    assert api_keys_page.is_text_present_on_page("Copy your key to somewhere safe")
+    assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
+
+    # revoke api key
+    api_keys_page.click_element_by_link_text("Back to API keys")
+    assert api_keys_page.is_page_title("API keys")
+
+    api_keys_page.revoke_api_key(key_name=key_name)
+    assert api_keys_page.is_text_present_on_page(f"’{key_name}’ was revoked")
+
+    # check audit trail for api key
+    api_keys_page.click_element_by_link_text("Settings")
+    api_keys_page.click_element_by_link_text("Service history")
+    api_keys_page.click_element_by_link_text("API keys")
+
+    assert api_keys_page.is_text_present_on_page(
+        f"Created an API key called ‘{key_name}’"
+    )
+    assert api_keys_page.is_text_present_on_page(f"Revoked the ‘{key_name}’ API key")
+
+    api_keys_page.sign_out()

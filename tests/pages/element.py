@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
     AddServicePageLocators,
+    ApiKeysPageLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
@@ -118,3 +119,7 @@ class PreviewButton(BasePageElement):
 
 class SearchInputElement(BasePageElement):
     name = PlatformAdminPageLocators.SEARCH_INPUT[1]
+
+
+class KeyNameInputElement(BasePageElement):
+    name = ApiKeysPageLocators.KEY_NAME_INPUT[1]

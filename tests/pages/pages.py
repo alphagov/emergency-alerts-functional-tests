@@ -19,6 +19,7 @@ from tests.pages.element import (
     EmailInputElement,
     FeedbackTextAreaElement,
     FileInputElement,
+    KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -36,6 +37,7 @@ from tests.pages.element import (
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
+    ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
@@ -922,12 +924,39 @@ class ApiIntegrationPage(BasePage):
         self.driver.get(link.get_attribute("href"))
 
 
-# class ApiKeysPage(BasePage):
-#
-#
-#   CONTINUE FROM HERE
-#
-#
+class ApiKeysPage(BasePage):
+    create_key_link = ApiKeysPageLocators.CREATE_KEY_BUTTON
+    key_name_input = KeyNameInputElement()
+    key_copy_value = ApiKeysPageLocators.KEY_COPY_VALUE
+    confirm_revoke_button = ApiKeysPageLocators.CONFIRM_REVOKE_BUTTON
+
+    def click_create_key(self):
+        element = self.wait_for_element(ApiKeysPage.create_key_link)
+        element.click()
+
+    def create_key(self, key_name):
+        self.key_name_input = key_name
+        self.select_checkbox_or_radio(value="normal")
+        self.click_continue()
+
+    def check_new_key_name(self, starts_with):
+        element = self.wait_for_element(ApiKeysPage.key_copy_value)
+        return element.text.startswith(starts_with)
+
+    def get_revoke_link_for_api_key(self, key_name):
+        return self.wait_for_element(
+            (
+                By.XPATH,
+                f"//tr[.//div[contains(normalize-space(.),'{key_name}')]]//a",
+            )
+        )
+
+    def revoke_api_key(self, key_name):
+        element = self.get_revoke_link_for_api_key(key_name)
+        element.click()
+
+        element = self.wait_for_element(ApiKeysPage.confirm_revoke_button)
+        element.click()
 
 
 class PreviewLetterPage(BasePage):

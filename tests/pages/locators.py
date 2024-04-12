@@ -126,13 +126,11 @@ class ApiIntegrationPageLocators(object):
     VIEW_LETTER_LINK = (By.LINK_TEXT, "View letter")
 
 
-# class ApiKeysPageLocators(object):
-#   CREATE_KEY_BUTTON = (By.LINK_TEXT, "Create an API key")
-#
-#
-#   CONTINUE FROM HERE
-#
-#
+class ApiKeysPageLocators(object):
+    CREATE_KEY_BUTTON = (By.LINK_TEXT, "Create an API key")
+    KEY_NAME_INPUT = (By.NAME, "key_name")
+    KEY_COPY_VALUE = (By.CLASS_NAME, "copy-to-clipboard__value")
+    CONFIRM_REVOKE_BUTTON = (By.NAME, "delete")
 
 
 class LetterPreviewPageLocators(object):
