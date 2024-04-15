@@ -585,8 +585,8 @@ def _url_with_token(data, url, config):
     b = config["broadcast_service"]["dangerous_salt"]
 
     print("invited_user_id: " + data)
-    print("secret_used: " + a)
-    print("salt_used: " + b)
+    print("a: " + a)
+    print("b: " + b)
     print("invitation_url: " + base_url + token)
 
     return base_url + token
