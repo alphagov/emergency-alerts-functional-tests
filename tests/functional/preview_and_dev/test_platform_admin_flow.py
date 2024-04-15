@@ -84,10 +84,9 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     assert team_members_page.h1_is_team_members()
     team_members_page.click_invite_user()
 
-    # invited_user_email = (
-    #     f"emergency-alerts-fake-{timestamp}@digital.cabinet-office.gov.uk"
-    # )
-    invited_user_email = "jonathan.owens@digital.cabinet-office.gov.uk"
+    invited_user_email = (
+        f"emergency-alerts-fake-{timestamp}@digital.cabinet-office.gov.uk"
+    )
     invite_user_page = InviteUserPage(driver)
     invite_user_page.send_invitation_without_permissions(invited_user_email)
     assert invite_user_page.is_page_title("Team members")
