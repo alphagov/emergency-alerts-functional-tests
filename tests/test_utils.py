@@ -468,9 +468,9 @@ def get_verification_code_by_email(email):
     url = f'{config["eas_api_url"]}/user/email'
     response = requests.post(url, data={"email": email})
 
-    print(response["data"]["id"])
+    print(response.json())
 
-    user_id = response["data"]["id"]
+    user_id = response.json()["data"]["id"]
     return get_verification_code_by_id(user_id)
 
 
