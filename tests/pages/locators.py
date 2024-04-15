@@ -182,3 +182,11 @@ class SearchPostcodePageLocators(object):
     RADIUS_TEXTAREA = (By.ID, "radius")
     SEARCH_BUTTON = (By.NAME, "search")
     PREVIEW_BUTTON = (By.NAME, "preview")
+
+
+class SearchCoordinatePageLocators(object):
+    FIRST_COORDINATE_TEXTAREA = (By.ID, "first_coordinate")
+    SECOND_COORDINATE_TEXTAREA = (By.ID, "second_coordinate")
+    RADIUS_TEXTAREA = (By.ID, "radius")
+    SEARCH_BUTTON = (By.NAME, "search")
+    PREVIEW_BUTTON = (By.NAME, "preview")

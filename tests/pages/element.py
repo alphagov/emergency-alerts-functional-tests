@@ -7,6 +7,7 @@ from tests.pages.locators import (
     CommonPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
+    SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
@@ -113,3 +114,23 @@ class SearchButton(BasePageElement):
 
 class PreviewButton(BasePageElement):
     name = SearchPostcodePageLocators.PREVIEW_BUTTON[1]
+
+
+class FirstCoordinateInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.FIRST_COORDINATE_TEXTAREA[1]
+
+
+class SecondCoordinateInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.SECOND_COORDINATE_TEXTAREA[1]
+
+
+class CoordinateRadiusInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.RADIUS_TEXTAREA[1]
+
+
+class CoordinateSearchButton(BasePageElement):
+    name = SearchCoordinatePageLocators.SEARCH_BUTTON[1]
+
+
+class CoordinatePreviewButton(BasePageElement):
+    name = SearchCoordinatePageLocators.PREVIEW_BUTTON[1]

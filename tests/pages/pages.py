@@ -16,9 +16,13 @@ from config import config
 from tests.pages.element import (
     BasePageElement,
     ClearableInputElement,
+    CoordinatePreviewButton,
+    CoordinateRadiusInputElement,
+    CoordinateSearchButton,
     EmailInputElement,
     FeedbackTextAreaElement,
     FileInputElement,
+    FirstCoordinateInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -27,6 +31,7 @@ from tests.pages.element import (
     PreviewButton,
     RadiusInputElement,
     SearchButton,
+    SecondCoordinateInputElement,
     ServiceInputElement,
     SmsInputElement,
     SubjectInputElement,
@@ -43,6 +48,7 @@ from tests.pages.locators import (
     LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
@@ -1282,4 +1288,25 @@ class SearchPostcodePage(BasePage):
 
     def click_search(self):
         element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
+        element.click()
+
+
+class ChooseCoordinatesType(BasePage):
+    pass
+
+
+class ChooseCoordinateArea(BasePage):
+    first_coordinate_input = FirstCoordinateInputElement()
+    second_coordinate_input = SecondCoordinateInputElement()
+    radius_input = CoordinateRadiusInputElement()
+    search_button = CoordinateSearchButton()
+    preview_button = CoordinatePreviewButton()
+
+    def create_coordinate_area(self, first_coordinate, second_coordinate, radius):
+        self.first_coordinate_input = first_coordinate
+        self.second_coordinate_input = second_coordinate
+        self.radius_input = radius
+
+    def click_search(self):
+        element = self.wait_for_element(SearchCoordinatePageLocators.SEARCH_BUTTON)
         element.click()
