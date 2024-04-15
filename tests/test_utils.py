@@ -464,16 +464,6 @@ def get_verification_code_by_id(user_id):
     return response.text
 
 
-# def get_verification_code_by_email(email):
-#     url = f'{config["eas_api_url"]}/user/email'
-#     response = requests.post(url, data={"email": email})
-
-#     print(response.json())
-
-#     user_id = response.json()["data"]["id"]
-#     return get_verification_code_by_id(user_id)
-
-
 def recordtime(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -584,14 +574,4 @@ def _url_with_token(data, url, config):
         .replace(".", "%2E")
     )
     base_url = config["eas_admin_url"] + url
-
-    a = config["broadcast_service"]["secret_key"]
-    b = config["broadcast_service"]["dangerous_salt"]
-
-    c = a[0:5] + " " + b[0:5]
-
-    print("invited_user_id: " + data)
-    print("auth: " + c)
-    print("invitation_url: " + base_url + token)
-
     return base_url + token

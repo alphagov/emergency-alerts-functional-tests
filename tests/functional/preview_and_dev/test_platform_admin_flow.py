@@ -98,13 +98,10 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
-    print(response)
-
     user_invitation_id = response["data"]["id"]
 
     # generate the same invitation url that is sent by email
     invitation_url = create_invitation_url(str(user_invitation_id))
-    print(invitation_url)
     base_page.get(invitation_url)
 
     registration_page = RegisterFromInvite(driver)
@@ -114,7 +111,6 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     # get user_id of invited user by their email
     response = api_client.post(url="/user/email", data={"email": invited_user_email})
-    print(response)
     user_id = response["data"]["id"]
     code = get_verification_code_by_id(user_id)
 
