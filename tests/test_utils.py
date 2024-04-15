@@ -581,9 +581,12 @@ def _url_with_token(data, url, config):
     )
     base_url = config["eas_admin_url"] + url
 
+    a = config["broadcast_service"]["secret_key"]
+    b = config["broadcast_service"]["dangerous_salt"]
+
     print("invited_user_id: " + data)
-    print("secret_used: " + config["broadcast_service"]["secret_key"])
-    print("salt_used: " + config["broadcast_service"]["dangerous_salt"])
+    print("secret_used: " + a)
+    print("salt_used: " + b)
     print("invitation_url: " + base_url + token)
 
     return base_url + token
