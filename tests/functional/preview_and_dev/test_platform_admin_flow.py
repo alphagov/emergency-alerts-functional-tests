@@ -101,8 +101,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     base_page = BasePage(driver)
 
     # get user_id from db using email
-    data = {"email": invited_user_email}
-    response = api_client.post(url="/user/invited/email", data=data)
+    response = api_client.post(url="/user/invited", data={"email": invited_user_email})
     print(response)
 
     invited_user_id = response["data"]["id"]
