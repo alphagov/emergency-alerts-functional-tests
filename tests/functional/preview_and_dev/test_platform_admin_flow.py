@@ -8,6 +8,7 @@ from tests.pages.locators import ServiceSettingsLocators
 from tests.pages.pages import (
     ApiKeysPage,
     BasePage,
+    HomePage,
     InviteUserPage,
     PlatformAdminPage,
     RegisterFromInvite,
@@ -93,16 +94,16 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     invite_user_page.sign_out()
 
-    # respond to invitation
-    base_page = BasePage(driver)
-
     # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
     user_invitation_id = response["data"]["id"]
 
     # generate the same invitation url that is sent by email
     invitation_url = create_invitation_url(str(user_invitation_id))
-    base_page.get(invitation_url)
+
+    home_page = HomePage(driver)
+    home_page.get(invitation_url)
+    home_page.accept_cookie_warning()
 
     registration_page = RegisterFromInvite(driver)
     assert registration_page.is_page_title("Create an account")
