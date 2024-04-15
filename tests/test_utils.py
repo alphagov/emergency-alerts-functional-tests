@@ -6,7 +6,7 @@ import os
 import re
 import tempfile
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urlencode
 
 import requests
@@ -556,7 +556,7 @@ def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_conte
 
 
 def create_sign_in_url(email, url, next_redirect=None):
-    data = json.dumps({"email": email, "created_at": str(datetime.now(datetime.UTC))})
+    data = json.dumps({"email": email, "created_at": str(datetime.now(timezone.utc))})
     full_url = _url_with_token(data, f"/{url}/", config)
     if next_redirect:
         full_url += "?{}".format(urlencode({"next": next_redirect}))
