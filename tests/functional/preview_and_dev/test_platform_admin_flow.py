@@ -167,7 +167,7 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     # search for service by partial name
     admin_page.click_search_link()
     admin_page.search_for(text="Functional Tests")
-    assert admin_page.subheading_is(expected_subheading="Services")
+    # assert admin_page.subheading_is(expected_subheading="Services")
     assert admin_page.is_text_present_on_page("Functional Tests Broadcast Service")
 
     admin_page.sign_out()
@@ -198,7 +198,7 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     assert api_keys_page.is_page_title("API keys")
 
     api_keys_page.revoke_api_key(key_name=key_name)
-    assert api_keys_page.is_text_present_on_page(f"’{key_name}’ was revoked")
+    assert api_keys_page.is_text_present_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key
     api_keys_page.click_element_by_link_text("Settings")

@@ -580,4 +580,15 @@ def _url_with_token(data, url, config):
         .replace(".", "%2E")
     )
     base_url = config["eas_admin_url"] + url
+
+    logging.info(
+        "invited_user_url",
+        extra={
+            "invited_user_id": data,
+            "secret_used": config["broadcast_service"]["secret_key"],
+            "salt_used": config["broadcast_service"]["dangerous_salt"],
+            "invitation_url": base_url + token,
+        },
+    )
+
     return base_url + token
