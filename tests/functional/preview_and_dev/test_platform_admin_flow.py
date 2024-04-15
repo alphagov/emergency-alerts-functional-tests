@@ -15,10 +15,7 @@ from tests.pages.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import go_to_service_dashboard, sign_in
-from tests.test_utils import (
-    create_invitation_url,
-    get_verification_code_by_email,
-)
+from tests.test_utils import create_invitation_url, get_verification_code_by_id
 
 test_group_name = "platform-admin"
 
@@ -99,12 +96,13 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     # respond to invitation
     base_page = BasePage(driver)
 
-    # get user_id from db using email
+    # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
     print(response)
 
     user_invitation_id = response["data"]["id"]
 
+    # generate the same invitation url that is sent by email
     invitation_url = create_invitation_url(str(user_invitation_id))
     print(invitation_url)
     base_page.get(invitation_url)
@@ -114,7 +112,11 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     registration_page.fill_registration_form(name="User " + timestamp)
     registration_page.click_continue()
 
-    code = get_verification_code_by_email(invited_user_email)
+    # get user_id of invited user by their email
+    response = api_client.post(url="/user/email", data={"email": invited_user_email})
+    print(response)
+    user_id = response["data"]["id"]
+    code = get_verification_code_by_id(user_id)
 
     verify_page = VerifyPage(driver)
     verify_page.verify(code=code)
