@@ -2,7 +2,6 @@ import time
 
 import pytest
 
-# from config import config
 from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
 from tests.pages.locators import ServiceSettingsLocators
 from tests.pages.pages import (
