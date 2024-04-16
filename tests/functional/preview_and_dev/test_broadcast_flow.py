@@ -25,10 +25,10 @@ from tests.test_utils import (
     go_to_templates_page,
 )
 
-TESTSUITE_CODE = "BROADCAST-FLOW"
+test_group_name = "broadcast-flow"
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -128,7 +128,7 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -188,7 +188,7 @@ def test_prepare_broadcast_with_template(driver):
     current_alerts_page.sign_out()
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)
@@ -229,7 +229,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.sign_out()
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.utcnow() - timedelta(hours=1)
@@ -288,7 +288,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.sign_out()
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_prepare_broadcast_with_new_content_for_custom_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

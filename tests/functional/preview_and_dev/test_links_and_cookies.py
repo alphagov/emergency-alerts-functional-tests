@@ -3,10 +3,10 @@ import pytest
 from tests.pages import BasePage
 from tests.pages.rollups import sign_in
 
-TESTSUITE_CODE = "LINKS-COOKIES"
+test_group_name = "links-cookies"
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_user_left_rail_nav(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -31,7 +31,7 @@ def test_user_left_rail_nav(driver):
     assert landing_page.is_page_title("Team members")
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_footer_links(driver):
     sign_in(driver, account_type="broadcast_create_user")
     back_link = "accounts-or-dashboard"
@@ -62,7 +62,7 @@ def test_footer_links(driver):
     assert landing_page.is_page_title("Security")
 
 
-@pytest.mark.xdist_group(name=TESTSUITE_CODE)
+@pytest.mark.xdist_group(name=test_group_name)
 def test_reject_analytics_cookies(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
