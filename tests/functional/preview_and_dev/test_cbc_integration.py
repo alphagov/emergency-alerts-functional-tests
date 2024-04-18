@@ -101,6 +101,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
             ConsistentRead=True,
         )
+        print(db_response)
         if len(db_response["Items"]):
             distinct_request_ids += 1
 
@@ -198,18 +199,18 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
-
+    print(db_response)
     responses = db_response["Items"]
 
-    o2_az1_response_code = _dynamo_item_for_key_value(
+    az1_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    assert o2_az1_response_code == failure_code
+    assert az1_response_code == failure_code
 
-    o2_az2_response_code = _dynamo_item_for_key_value(
+    az2_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    assert o2_az2_response_code == success_code
+    assert az2_response_code == success_code
 
     cancel_alert(driver, broadcast_id)
 
@@ -251,7 +252,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
-
+    print(db_response)
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
@@ -317,7 +318,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
-
+    print(db_response)
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
