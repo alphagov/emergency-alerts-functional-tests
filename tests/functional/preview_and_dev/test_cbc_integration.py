@@ -85,6 +85,9 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
+    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
+    print(response)
+
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -101,6 +104,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
             ConsistentRead=True,
         )
+        print(f">>> loopback requests for request ID {request_id}")
         print(db_response)
         if len(db_response["Items"]):
             distinct_request_ids += 1
@@ -142,25 +146,39 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_set_loopback_response_codes():
-    test_cbc = "ee-az1"
-    test_code = "500"
-    test_ip = config["cbcs"][test_cbc]
-
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
-    _set_response_codes(ddbc, test_cbc, test_code)
 
-    db_response = ddbc.query(
-        TableName="LoopbackResponses",
-        KeyConditionExpression="IpAddress = :IpAddress",
-        ExpressionAttributeValues={
-            ":IpAddress": {"S": test_ip},
-        },
-        ConsistentRead=True,
-    )
+    test_code = "403"
+    _set_response_codes(ddbc, "all", test_code)
+    for mno in PROVIDERS:
+        test_cbc = f"{mno}-az1"
+        test_ip = config["cbcs"][test_cbc]
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": test_ip},
+            },
+            ConsistentRead=True,
+        )
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
-    assert db_response["Count"] == 1
-    assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+    test_code = "200"
+    _set_response_codes(ddbc, "all", test_code)
+    for mno in PROVIDERS:
+        test_cbc = f"{mno}-az1"
+        test_ip = config["cbcs"][test_cbc]
+        db_response = ddbc.query(
+            TableName="LoopbackResponses",
+            KeyConditionExpression="IpAddress = :IpAddress",
+            ExpressionAttributeValues={
+                ":IpAddress": {"S": test_ip},
+            },
+            ConsistentRead=True,
+        )
+        assert db_response["Count"] == 1
+        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -187,6 +205,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
+    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
+    print(response)
+
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -199,7 +220,10 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
+
+    print(f">>> loopback requests for request ID {request_id}")
     print(db_response)
+
     responses = db_response["Items"]
 
     az1_response_code = _dynamo_item_for_key_value(
@@ -240,6 +264,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
+    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
+    print(response)
+
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -252,7 +279,10 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
+
+    print(f">>> loopback requests for request ID {request_id}")
     print(db_response)
+
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
@@ -306,6 +336,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     response = api_client.get(url=url)
     assert response is not None
 
+    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
+    print(response)
+
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -318,7 +351,10 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
+
+    print(f">>> loopback requests for request ID {request_id}")
     print(db_response)
+
     responses = db_response["Items"]
 
     az1_response_codes = _dynamo_items_for_key_value(
