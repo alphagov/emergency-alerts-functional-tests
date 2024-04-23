@@ -71,7 +71,6 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
@@ -117,7 +116,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
     )
@@ -129,6 +127,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     for item in db_response["Items"]:
         response_mnos.add(item["Name"]["S"])
         response_codes.add(item["ResponseCode"]["N"])
+
     expected_mnos = {
         "ee-az1",
         "ee-az2",
@@ -149,36 +148,37 @@ def test_set_loopback_response_codes():
     ddbc = create_ddb_client()
 
     test_code = "403"
-    _set_response_codes(ddbc, "all", test_code)
+    set_error_response_codes(ddbc, response_code=test_code)
     for mno in PROVIDERS:
-        test_cbc = f"{mno}-az1"
-        test_ip = config["cbcs"][test_cbc]
-        db_response = ddbc.query(
-            TableName="LoopbackResponses",
-            KeyConditionExpression="IpAddress = :IpAddress",
-            ExpressionAttributeValues={
-                ":IpAddress": {"S": test_ip},
-            },
-            ConsistentRead=True,
-        )
-        assert db_response["Count"] == 1
-        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+        for az in ["az1", "az2"]:
+            test_cbc = f"{mno}-{az}"
+            test_ip = config["cbcs"][test_cbc]
+            db_response = ddbc.query(
+                TableName="LoopbackResponses",
+                KeyConditionExpression="IpAddress = :IpAddress",
+                ExpressionAttributeValues={
+                    ":IpAddress": {"S": test_ip},
+                },
+                ConsistentRead=True,
+            )
+            assert db_response["Count"] == 1
+            assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
 
-    test_code = "200"
-    _set_response_codes(ddbc, "all", test_code)
+    reset_response_codes(ddbc)
     for mno in PROVIDERS:
-        test_cbc = f"{mno}-az1"
-        test_ip = config["cbcs"][test_cbc]
-        db_response = ddbc.query(
-            TableName="LoopbackResponses",
-            KeyConditionExpression="IpAddress = :IpAddress",
-            ExpressionAttributeValues={
-                ":IpAddress": {"S": test_ip},
-            },
-            ConsistentRead=True,
-        )
-        assert db_response["Count"] == 1
-        assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+        for az in ["az1", "az2"]:
+            test_cbc = f"{mno}-{az}"
+            test_ip = config["cbcs"][test_cbc]
+            db_response = ddbc.query(
+                TableName="LoopbackResponses",
+                KeyConditionExpression="IpAddress = :IpAddress",
+                ExpressionAttributeValues={
+                    ":IpAddress": {"S": test_ip},
+                },
+                ConsistentRead=True,
+            )
+            assert db_response["Count"] == 1
+            assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -189,11 +189,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = "500"
-    success_code = "200"
 
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
-    _set_response_codes(ddbc, primary_cbc, failure_code)
+    set_error_response_codes(ddbc, response_code=failure_code, cbc_list=[primary_cbc])
 
     broadcast_alert(driver, broadcast_id)
     (service_id, broadcast_message_id) = _get_service_and_broadcast_id(
@@ -221,6 +219,8 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
         ConsistentRead=True,
     )
 
+    reset_response_codes(ddbc)
+
     print(f">>> loopback requests for request ID {request_id}")
     print(db_response)
 
@@ -234,7 +234,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     az2_response_code = _dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-    assert az2_response_code == success_code
+    assert az2_response_code == "200"
 
     cancel_alert(driver, broadcast_id)
 
@@ -250,8 +250,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     failure_code = "500"
 
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
-    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+    _set_response_codes(
+        ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
+    )
 
     broadcast_alert(driver, broadcast_id)
     time.sleep(300)  # wait for exponential backoff of retries
@@ -279,6 +280,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
+
+    reset_response_codes(ddbc)
 
     print(f">>> loopback requests for request ID {request_id}")
     print(db_response)
@@ -318,18 +321,18 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = "500"
-    success_code = "200"
 
     ddbc = create_ddb_client()
-    _set_response_codes(ddbc, "all", "200")
-    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], failure_code)
+    _set_response_codes(
+        ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
+    )
 
     broadcast_alert(driver, broadcast_id)
     (service_id, broadcast_message_id) = _get_service_and_broadcast_id(
         driver.current_url
     )
     time.sleep(10)  # wait for some retries
-    _set_response_codes(ddbc, [primary_cbc, secondary_cbc], success_code)
+    reset_response_codes(ddbc)
     time.sleep(60)  # wait for more retries
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
@@ -368,7 +371,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
     assert failure_code in response_codes
-    assert success_code in response_codes
+    assert "200" in response_codes
 
     cancel_alert(driver, broadcast_id)
 
@@ -378,28 +381,6 @@ def _get_service_and_broadcast_id(url):
     service_id = alerturl.split("/current-alerts/")[0]
     broadcast_message_id = alerturl.split("/current-alerts/")[1]
     return (service_id, broadcast_message_id)
-
-
-def _set_response_codes(ddbc, az_name="all", response_code="200"):
-    if ddbc is None:
-        print("Please provide a dynamoDB client")
-
-    if isinstance(az_name, str) and az_name.lower() != "all":
-        ips = [config["cbcs"][az_name]]
-    else:
-        ips = config["cbcs"].values()
-
-    for ip in ips:
-        ddbc.update_item(
-            TableName="LoopbackResponses",
-            Key={
-                "IpAddress": {"S": ip},
-            },
-            UpdateExpression="SET ResponseCode = :code",
-            ExpressionAttributeValues={
-                ":code": {"N": response_code},
-            },
-        )
 
 
 def _dict_item_for_key_value(data, key, value, item):
@@ -422,3 +403,105 @@ def _dynamo_items_for_key_value(data, key, value, item):
         if list(d[key].values())[0] == value:
             items.append(list(d[item].values())[0])
     return items
+
+
+def _create_cloudwatch_client():
+    try:
+        cloudwatch_client = boto3.client("cloudwatch")
+
+        sts_session = cloudwatch_client.assume_role(
+            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-cloudwatch-access",
+            RoleSessionNme="access-cloudwatch-for-functional-test",
+        )
+
+        KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+        ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+        TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        try:
+            return boto3.client(
+                "cloudwatch",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            raise Exception("Unable to create CloudWatch client") from e
+
+    except Exception as e:
+        raise Exception("Unable to assume role") from e
+
+
+def _put_functional_test_blackout_metric(cbc_list, blackout):
+
+    if cbc_list is None:
+        cbc_list = config["cbcs"].values()
+
+    try:
+        cwc = _create_cloudwatch_client()
+        for cbc in cbc_list:
+            mno, az = cbc.split("-")
+            cwc.put_metric_data(
+                MetricData=[
+                    {
+                        "MetricName": "FunctionalTestBlackout",
+                        "Dimensions": [
+                            {
+                                "Name": "MNO",
+                                "Value": mno,
+                            },
+                            {
+                                "Name": "AZ",
+                                "Value": az,
+                            },
+                        ],
+                        "Unit": "Count",
+                        "Value": 0.0 if blackout else 1.0,
+                    },
+                ],
+                Namespace="FunctionalTests",
+            )
+    except BaseException:
+        print("Error sending response code metric to CW")
+
+
+def is_list_of_strings(arg):
+    if isinstance(arg, list):
+        return all(isinstance(item, str) for item in arg)
+    return False
+
+
+def _set_response_codes(ddbc, response_code="200", cbc_list=None):
+    if ddbc is None:
+        print("Please provide a dynamoDB client")
+
+    if cbc_list is None:
+        cbc_list = config["cbcs"].keys()
+
+    if not is_list_of_strings(cbc_list):
+        print("Please provide a list of cbc identifiers")
+
+    for cbc in cbc_list:
+        ip = config["cbcs"][cbc]
+        ddbc.update_item(
+            TableName="LoopbackResponses",
+            Key={
+                "IpAddress": {"S": ip},
+            },
+            UpdateExpression="SET ResponseCode = :code",
+            ExpressionAttributeValues={
+                ":code": {"N": response_code},
+            },
+        )
+
+
+def set_error_response_codes(ddbc, response_code="200", cbc_list=None):
+    _put_functional_test_blackout_metric(cbc_list, True)
+    _set_response_codes(ddbc, response_code=response_code, cbc_list=cbc_list)
+
+
+def reset_response_codes(ddbc):
+    _set_response_codes(ddbc)
+    _put_functional_test_blackout_metric(None, False)
