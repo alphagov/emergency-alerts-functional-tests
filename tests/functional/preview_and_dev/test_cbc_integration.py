@@ -411,7 +411,7 @@ def _create_cloudwatch_client():
 
         sts_session = cloudwatch_client.assume_role(
             RoleArn="arn:aws:iam::519419547532:role/mno-loopback-cloudwatch-access",
-            RoleSessionNme="access-cloudwatch-for-functional-test",
+            RoleSessionName="access-cloudwatch-for-functional-test",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
@@ -434,7 +434,7 @@ def _create_cloudwatch_client():
         raise Exception("Unable to assume role") from e
 
 
-def _put_functional_test_blackout_metric(cbc_list, blackout):
+def _put_functional_test_blackout_metric(cbc_list, status):
 
     if cbc_list is None:
         cbc_list = config["cbcs"].values()
@@ -449,16 +449,12 @@ def _put_functional_test_blackout_metric(cbc_list, blackout):
                         "MetricName": "FunctionalTestBlackout",
                         "Dimensions": [
                             {
-                                "Name": "MNO",
-                                "Value": mno,
-                            },
-                            {
-                                "Name": "AZ",
-                                "Value": az,
+                                "Name": "Status",
+                                "Value": status,
                             },
                         ],
                         "Unit": "Count",
-                        "Value": 0.0 if blackout else 1.0,
+                        "Value": 1 if status > 299 else 0,
                     },
                 ],
                 Namespace="FunctionalTests",
