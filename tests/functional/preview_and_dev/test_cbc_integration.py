@@ -59,9 +59,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
-    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
-    print(response)
-
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -78,8 +75,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
             ExpressionAttributeValues={":RequestId": {"S": request_id}},
             ConsistentRead=True,
         )
-        print(f">>> loopback requests for request ID {request_id}")
-        print(db_response)
         if len(db_response["Items"]):
             distinct_request_ids += 1
 
@@ -178,9 +173,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
-    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
-    print(response)
-
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -195,9 +187,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     )
 
     reset_response_codes(ddbc)
-
-    print(f">>> loopback requests for request ID {request_id}")
-    print(db_response)
 
     responses = db_response["Items"]
 
@@ -240,9 +229,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     response = api_client.get(url=url)
     assert response is not None
 
-    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
-    print(response)
-
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -257,9 +243,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     )
 
     reset_response_codes(ddbc)
-
-    print(f">>> loopback requests for request ID {request_id}")
-    print(db_response)
 
     responses = db_response["Items"]
 
@@ -314,9 +297,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     response = api_client.get(url=url)
     assert response is not None
 
-    print(f">>> provider messages for broadcast message ID {broadcast_message_id}")
-    print(response)
-
     provider_messages = response["messages"]
     assert provider_messages is not None
     assert len(provider_messages) == 4
@@ -329,9 +309,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
-
-    print(f">>> loopback requests for request ID {request_id}")
-    print(db_response)
 
     responses = db_response["Items"]
 
