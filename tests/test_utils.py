@@ -667,7 +667,7 @@ def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
         )
 
 
-def put_functional_test_blackout_metric(status):
+def put_functional_test_blackout_metric(status: int):
     try:
         cwc = create_cloudwatch_client()
         cwc.put_metric_data(

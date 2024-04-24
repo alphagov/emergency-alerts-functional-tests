@@ -122,7 +122,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 def test_set_loopback_response_codes():
     ddbc = create_ddb_client()
 
-    test_code = "403"
+    test_code = 403
     set_error_response_codes(ddbc, response_code=test_code)
     for mno in PROVIDERS:
         for az in ["az1", "az2"]:
@@ -137,7 +137,7 @@ def test_set_loopback_response_codes():
                 ConsistentRead=True,
             )
             assert db_response["Count"] == 1
-            assert db_response["Items"][0]["ResponseCode"]["N"] == test_code
+            assert db_response["Items"][0]["ResponseCode"]["N"] == str(test_code)
 
     reset_response_codes(ddbc)
     for mno in PROVIDERS:
@@ -163,7 +163,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     mno = "ee"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
-    failure_code = "500"
+    failure_code = 500
 
     ddbc = create_ddb_client()
     set_error_response_codes(ddbc, response_code=failure_code, cbc_list=[primary_cbc])
@@ -380,11 +380,11 @@ def dynamo_items_for_key_value(data, key, value, item):
     return items
 
 
-def set_error_response_codes(ddbc, response_code="200", cbc_list=None):
+def set_error_response_codes(ddbc, response_code=200, cbc_list=None):
     put_functional_test_blackout_metric(status=response_code)
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
 
 
 def reset_response_codes(ddbc):
     set_response_codes(ddbc=ddbc)
-    put_functional_test_blackout_metric(status="200")
+    put_functional_test_blackout_metric(status=200)
