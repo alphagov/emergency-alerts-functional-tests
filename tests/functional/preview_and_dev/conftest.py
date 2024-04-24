@@ -2,6 +2,10 @@ import pytest
 
 from clients.test_api_client import TestApiClient
 from config import config, setup_preview_dev_config
+from tests.test_utils import (
+    put_functional_test_blackout_metric,
+    set_response_codes,
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -18,12 +22,17 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    _purge_functional_test_alerts(test_api_client)
-    _purge_folders_and_templates(test_api_client)
-    _purge_user_created_services(test_api_client)
+    purge_functional_test_alerts(test_api_client)
+    purge_folders_and_templates(test_api_client)
+    purge_user_created_services(test_api_client)
+
+    yield
+
+    set_response_codes()
+    put_functional_test_blackout_metric(None, False)
 
 
-def _purge_functional_test_alerts(test_api_client):
+def purge_functional_test_alerts(test_api_client):
     service = config["broadcast_service"]["service_id"]
     older_than = config["broadcast_service"]["purge_older_than"]
 
@@ -31,14 +40,14 @@ def _purge_functional_test_alerts(test_api_client):
     test_api_client.delete(url)
 
 
-def _purge_folders_and_templates(test_api_client):
+def purge_folders_and_templates(test_api_client):
     service = config["broadcast_service"]["service_id"]
 
     url = f"/service/{service}/template/purge"
     test_api_client.delete(url)
 
 
-def _purge_user_created_services(test_api_client):
+def purge_user_created_services(test_api_client):
     admin_user = config["broadcast_service"]["platform_admin"]["id"]
 
     url = f"/service/purge-services-created/{admin_user}"
