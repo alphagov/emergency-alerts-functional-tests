@@ -403,7 +403,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "432994",
                 "radius": "3",
             },
-            "An area of 3km around the coordinates [416567.0, 432994.0], in Bradford",
+            "An area of 3km around the Easting of 416567.0 and the Northing of 432994.0, in Bradford",
         ),
         (
             "cartesian",
@@ -412,17 +412,17 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "456038",
                 "radius": "5",
             },
-            "An area of 5km around the coordinates [419763.0, 456038.0], in Harrogate",
+            "An area of 5km around the Easting of 419763.0 and the Northing of 456038.0, in Harrogate",
         ),
         (
             "decimal",
             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
-            "An area of 3km around the coordinates [53.793, -1.75], in Bradford",
+            "An area of 3km around 53.793 Latitude, -1.75 Longitude, in Bradford",
         ),
         (
             "decimal",
             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-            "An area of 5km around the coordinates [54, -1.7], in Harrogate",
+            "An area of 5km around 54 Latitude, -1.7 Longitude, in Harrogate",
         ),
     ),
 )
