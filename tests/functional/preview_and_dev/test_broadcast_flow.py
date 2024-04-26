@@ -462,7 +462,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     prepare_alert_pages.click_element_by_link_text("Coordinates")
     # This is where it varies
     choose_type_page = ChooseCoordinatesType(driver)
-    choose_type_page.select_checkbox_or_radio(value="decimal")
+    choose_type_page.select_checkbox_or_radio(value=coordinate_type)
     choose_type_page.click_continue()
 
     choose_coordinate_area_page = ChooseCoordinateArea(driver)
