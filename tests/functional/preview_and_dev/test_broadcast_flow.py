@@ -422,7 +422,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
         (
             "decimal",
             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-            "An area of 5km around 54 Latitude, -1.7 Longitude, in Harrogate",
+            "An area of 5km around 54.0 Latitude, -1.7 Longitude, in Harrogate",
         ),
     ),
 )
