@@ -23,6 +23,7 @@ from tests.pages.element import (
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
+    KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -31,6 +32,7 @@ from tests.pages.element import (
     PreviewButton,
     RadiusInputElement,
     SearchButton,
+    SearchInputElement,
     SecondCoordinateInputElement,
     ServiceInputElement,
     SmsInputElement,
@@ -40,6 +42,7 @@ from tests.pages.element import (
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiIntegrationPageLocators,
+    ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
     EditTemplatePageLocators,
@@ -432,6 +435,10 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.team_members_link)
         element.click()
 
+    def click_api_integration(self):
+        element = self.wait_for_element(DashboardPage.api_keys_link)
+        element.click()
+
     def click_inbox_link(self):
         element = self.wait_for_element(DashboardPage.inbox_link)
         element.click()
@@ -757,6 +764,7 @@ class TeamMembersPage(BasePage):
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
     edit_team_member_link = TeamMembersPageLocators.EDIT_TEAM_MEMBER_LINK
+    confirm_remove_button = TeamMembersPageLocators.CONFIRM_REMOVE_BUTTON
 
     def get_edit_link_for_member_name(self, email):
         return self.wait_for_element(
@@ -778,6 +786,10 @@ class TeamMembersPage(BasePage):
 
     def click_edit_team_member(self, email):
         element = self.get_edit_link_for_member_name(email)
+        element.click()
+
+    def click_yes_remove(self):
+        element = self.wait_for_element(TeamMembersPage.confirm_remove_button)
         element.click()
 
 
@@ -828,6 +840,11 @@ class InviteUserPage(BasePage):
             self.select_checkbox_or_radio(element)
 
     def send_invitation(self):
+        element = self.wait_for_element(InviteUserPage.send_invitation_button)
+        element.click()
+
+    def send_invitation_without_permissions(self, email):
+        self.email_input = email
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
@@ -911,6 +928,41 @@ class ApiIntegrationPage(BasePage):
     def go_to_preview_letter(self):
         link = self.wait_for_elements(ApiIntegrationPage.view_letter_link)[0]
         self.driver.get(link.get_attribute("href"))
+
+
+class ApiKeysPage(BasePage):
+    create_key_link = ApiKeysPageLocators.CREATE_KEY_BUTTON
+    key_name_input = KeyNameInputElement()
+    key_copy_value = ApiKeysPageLocators.KEY_COPY_VALUE
+    confirm_revoke_button = ApiKeysPageLocators.CONFIRM_REVOKE_BUTTON
+
+    def click_create_key(self):
+        element = self.wait_for_element(ApiKeysPage.create_key_link)
+        element.click()
+
+    def create_key(self, key_name):
+        self.key_name_input = key_name
+        self.select_checkbox_or_radio(value="normal")
+        self.click_continue()
+
+    def check_new_key_name(self, starts_with):
+        element = self.wait_for_element(ApiKeysPage.key_copy_value)
+        return element.text.startswith(starts_with)
+
+    def get_revoke_link_for_api_key(self, key_name):
+        return self.wait_for_element(
+            (
+                By.XPATH,
+                f"//tr[.//div[contains(normalize-space(.),'{key_name}')]]//a",
+            )
+        )
+
+    def revoke_api_key(self, key_name):
+        element = self.get_revoke_link_for_api_key(key_name)
+        element.click()
+
+        element = self.wait_for_element(ApiKeysPage.confirm_revoke_button)
+        element.click()
 
 
 class PreviewLetterPage(BasePage):
@@ -1289,6 +1341,23 @@ class SearchPostcodePage(BasePage):
     def click_search(self):
         element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
         element.click()
+
+
+class PlatformAdminPage(BasePage):
+    search_link = (By.LINK_TEXT, "Search")
+    search_input = SearchInputElement()
+
+    def subheading_is(self, expected_subheading):
+        element = self.wait_for_element(CommonPageLocators.H2)
+        return element.text == expected_subheading
+
+    def click_search_link(self):
+        element = self.wait_for_element(PlatformAdminPage.search_link)
+        element.click()
+
+    def search_for(self, text):
+        self.search_input = text
+        self.click_continue()
 
 
 class ChooseCoordinatesType(BasePage):

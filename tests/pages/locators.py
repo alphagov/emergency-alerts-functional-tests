@@ -82,6 +82,7 @@ class TeamMembersPageLocators(object):
     H1 = (By.TAG_NAME, "h1")
     INVITE_TEAM_MEMBER_BUTTON = (By.CSS_SELECTOR, "a.govuk-button")
     EDIT_TEAM_MEMBER_LINK = (By.LINK_TEXT, "Edit team member")
+    CONFIRM_REMOVE_BUTTON = (By.NAME, "delete")
 
 
 class InviteUserPageLocators(object):
@@ -122,6 +123,13 @@ class ApiIntegrationPageLocators(object):
     MESSAGE_LIST = (By.CSS_SELECTOR, ".api-notifications-item__data-value")
     STATUS = (By.CSS_SELECTOR, ".api-notifications-item__data-value:last-of-type")
     VIEW_LETTER_LINK = (By.LINK_TEXT, "View letter")
+
+
+class ApiKeysPageLocators(object):
+    CREATE_KEY_BUTTON = (By.LINK_TEXT, "Create an API key")
+    KEY_NAME_INPUT = (By.NAME, "key_name")
+    KEY_COPY_VALUE = (By.CLASS_NAME, "copy-to-clipboard__value")
+    CONFIRM_REVOKE_BUTTON = (By.NAME, "delete")
 
 
 class LetterPreviewPageLocators(object):
@@ -190,3 +198,7 @@ class SearchCoordinatePageLocators(object):
     RADIUS_TEXTAREA = (By.ID, "radius")
     SEARCH_BUTTON = (By.NAME, "radius_btn")
     PREVIEW_BUTTON = (By.NAME, "preview")
+
+
+class PlatformAdminPageLocators(object):
+    SEARCH_INPUT = (By.NAME, "search")
