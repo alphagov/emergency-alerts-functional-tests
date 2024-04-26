@@ -466,7 +466,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     choose_type_page.click_continue()
 
     choose_coordinate_area_page = ChooseCoordinateArea(driver)
-    choose_coordinate_area_page.create_custom_area(
+    choose_coordinate_area_page.create_coordinate_area(
         post_data["first_coordinate"],
         post_data["second_coordinate"],
         post_data["radius"],
