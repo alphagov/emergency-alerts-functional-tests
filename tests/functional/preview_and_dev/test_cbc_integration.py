@@ -153,7 +153,6 @@ def test_set_loopback_response_codes():
             assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -206,7 +205,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -272,7 +270,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
