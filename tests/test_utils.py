@@ -647,11 +647,10 @@ def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
         ddbc = create_ddb_client()
 
     if cbc_list is None:
-        cbc_list = config["cbcs"].keys()
+        cbc_list = list(config["cbcs"].keys())
 
     if not is_list_of_strings(cbc_list):
         print("Please provide a list of cbc identifiers")
-        print(cbc_list)
         return
 
     for cbc in cbc_list:
