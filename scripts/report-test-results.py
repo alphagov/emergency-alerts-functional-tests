@@ -21,12 +21,12 @@ def main():
     for test_file in test_files:
         test_results = extract_test_result(parse(test_file))
         for r in test_results:
-            result = f"PRV-FT-{r[0].upper()} | NAME: {r[1]} | TIME: {r[2]} | "
+            success = "PASS" if len(r) < 4 else "FAIL"
+
+            result = f"PRV-FT-{r[0].upper()} | {success} | NAME: {r[1]} | TIME: {r[2]}"
 
             if len(r) > 3:
-                result = result + f"FAIL | FILE: {r[3]} | ERROR: {r[4]}"
-            else:
-                result = result + "PASS"
+                result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
 
             print(result.replace("\n", " "), sep="")
 
