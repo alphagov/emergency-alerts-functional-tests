@@ -195,7 +195,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     az1_response_code = dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    assert az1_response_code == failure_code
+    assert az1_response_code == str(failure_code)
 
     az2_response_code = dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
