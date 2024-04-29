@@ -42,7 +42,6 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
-# @pytest.mark.skip("Skip while vodafone loopback architecture issue is investigated")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
@@ -203,7 +202,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-# @pytest.mark.skip("Skip while vodafone loopback architecture issue is investigated")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
