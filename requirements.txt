@@ -7,7 +7,7 @@ flake8==7.0.0
 isort==5.13.2
 itsdangerous>=1.1.0
 notifications-python-client==9.0.0
-pytest==8.1.1
+pytest==8.2.0
 pytest-xdist==3.5.0
 requests==2.31.0
 retry==0.9.2
