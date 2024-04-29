@@ -26,7 +26,7 @@ def main():
             if len(r) > 3:
                 result = result + f"FAIL | FILE: {r[3]} | ERROR: {r[4]}"
             else:
-                result = "PASS"
+                result = result + "PASS"
 
             print(result.replace("\n", " "), sep="")
 
