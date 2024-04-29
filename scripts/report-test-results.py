@@ -46,9 +46,9 @@ def extract_test_result(document):
 
         test_failure = None
         if len(failure) > 0:
-            test_failure = failure
+            test_failure = failure[0]
         elif len(error) > 0:
-            test_failure = error
+            test_failure = error[0]
 
         failure_message, failure_summary = extract_failure_detail(test_failure)
 
