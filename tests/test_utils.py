@@ -651,6 +651,7 @@ def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
 
     if not is_list_of_strings(cbc_list):
         print("Please provide a list of cbc identifiers")
+        print(cbc_list)
         return
 
     for cbc in cbc_list:

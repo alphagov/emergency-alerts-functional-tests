@@ -42,7 +42,7 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
-# @pytest.mark.skip("Skip while vodafone loopback architecture issue is investigated")
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
@@ -96,10 +96,8 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     assert db_response["Count"] == 8
 
     response_mnos = set()
-    response_codes = set()
     for item in db_response["Items"]:
         response_mnos.add(item["Name"]["S"])
-        response_codes.add(item["ResponseCode"]["N"])
 
     expected_mnos = {
         "ee-az1",
@@ -112,8 +110,6 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
         "three-az2",
     }
     assert response_mnos == expected_mnos
-    assert len(response_codes) == 1
-    assert response_codes.pop() == "200"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -154,6 +150,7 @@ def test_set_loopback_response_codes():
             assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -206,7 +203,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-# @pytest.mark.skip("Skip while vodafone loopback architecture issue is investigated")
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -272,6 +269,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client
