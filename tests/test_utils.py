@@ -662,7 +662,7 @@ def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
-                ":code": {"N": int(response_code)},
+                ":code": {"N": response_code},
             },
         )
 

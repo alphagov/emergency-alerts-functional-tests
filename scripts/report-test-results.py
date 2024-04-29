@@ -21,7 +21,7 @@ def main():
     for test_file in test_files:
         test_results = extract_test_result(parse(test_file))
         for r in test_results:
-            result = f"PRV-FT-{r[0]} | NAME: {r[1]} | TIME: {r[2]} | "
+            result = f"PRV-FT-{r[0].upper()} | NAME: {r[1]} | TIME: {r[2]} | "
 
             if len(r) > 3:
                 result = result + f"FAIL | FILE: {r[3]} | ERROR: {r[4]}"
