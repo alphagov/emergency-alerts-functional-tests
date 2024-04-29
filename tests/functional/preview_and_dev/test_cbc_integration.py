@@ -42,7 +42,6 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(response["Items"]) == 0
 
 
-@pytest.mark.skip()
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
