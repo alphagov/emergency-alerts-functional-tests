@@ -583,7 +583,7 @@ def create_ddb_client():
         sts_client = boto3.client("sts")
 
         sts_session = sts_client.assume_role(
-            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-database-access",
+            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
             RoleSessionName="access-loopback-for-functional-test",
         )
 
