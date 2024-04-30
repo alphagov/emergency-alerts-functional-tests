@@ -686,5 +686,5 @@ def put_functional_test_blackout_metric(status: int):
             ],
             Namespace="FunctionalTests",
         )
-    except BaseException:
-        print("Error sending response code metric to CW")
+    except BaseException as e:
+        print(f"Error sending response code metric to CW: {e}")
