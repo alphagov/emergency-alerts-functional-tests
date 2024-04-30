@@ -1,6 +1,8 @@
 import sys
 from xml.dom.minidom import Node, parse
 
+import boto3
+
 
 def main():
     if len(sys.argv) < 3:
@@ -18,6 +20,8 @@ def main():
         print("Please provide a list of test files")
         sys.exit(0)
 
+    s3_bucket_id = get_smoke_test_bucket_name()
+
     for test_file in test_files:
         test_results = extract_test_result(parse(test_file))
         for r in test_results:
@@ -27,6 +31,12 @@ def main():
 
             if len(r) > 3:
                 result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
+                if s3_bucket_id is not None:
+                    result = (
+                        result
+                        + " | Output and screenshots saved to S3 bucket "
+                        + f"https://eu-west-2.console.aws.amazon.com/s3/buckets/{s3_bucket_id}"
+                    )
 
             print(result.replace("\n", " "), sep="")
 
@@ -93,6 +103,16 @@ def extract_failure_summary(s):
 
     parts = s.split(":")
     return f"{parts[0]}, line {parts[1]}"
+
+
+def get_smoke_test_bucket_name():
+    s3_client = boto3.client("s3")
+    buckets = s3_client.list_buckets()["Buckets"]
+    for bucket in buckets:
+        bucket_name = bucket["Name"]
+        if "smoke-test" in bucket_name:
+            return bucket_name
+    return None
 
 
 if __name__ == "__main__":
