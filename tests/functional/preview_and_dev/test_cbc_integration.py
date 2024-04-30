@@ -276,7 +276,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     mno = "three"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
-    failure_code = "500"
+    failure_code = 500
 
     ddbc = create_ddb_client()
     set_response_codes(
@@ -320,7 +320,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
-    assert failure_code in response_codes
+    assert str(failure_code) in response_codes
     assert "200" in response_codes
 
     cancel_alert(driver, broadcast_id)
