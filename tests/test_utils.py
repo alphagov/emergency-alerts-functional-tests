@@ -609,9 +609,9 @@ def create_ddb_client():
 
 def create_cloudwatch_client():
     try:
-        cloudwatch_client = boto3.client("cloudwatch")
+        sts_client = boto3.client("sts")
 
-        sts_session = cloudwatch_client.assume_role(
+        sts_session = sts_client.assume_role(
             RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
             RoleSessionName="access-cloudwatch-for-functional-test",
         )
