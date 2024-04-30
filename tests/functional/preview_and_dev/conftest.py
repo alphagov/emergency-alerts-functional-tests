@@ -22,6 +22,8 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
+    set_response_codes()
+
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
