@@ -681,7 +681,7 @@ def put_functional_test_blackout_metric(status: int):
                         },
                     ],
                     "Unit": "Count",
-                    "Value": 1 if status > 299 else 0,
+                    "Value": "1" if status > 299 else "0",
                 },
             ],
             Namespace="FunctionalTests",
