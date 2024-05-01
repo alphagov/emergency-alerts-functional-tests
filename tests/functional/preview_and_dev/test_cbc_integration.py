@@ -85,7 +85,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
-
     db_response = ddbc.scan(
         TableName="LoopbackResponses",
     )
