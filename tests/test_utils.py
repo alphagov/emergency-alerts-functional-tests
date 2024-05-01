@@ -674,12 +674,12 @@ def put_functional_test_blackout_metric(status: int):
             MetricData=[
                 {
                     "MetricName": "FunctionalTestBlackout",
-                    "Dimensions": [
-                        {
-                            "Name": "Status",
-                            "Value": str(status),
-                        },
-                    ],
+                    # "Dimensions": [
+                    #     {
+                    #         "Name": "Status",
+                    #         "Value": str(status),
+                    #     },
+                    # ],
                     "Unit": "Count",
                     "Value": 1 if status > 299 else 0,
                 },
