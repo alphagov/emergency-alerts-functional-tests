@@ -677,11 +677,11 @@ def put_functional_test_blackout_metric(status: int):
                     "Dimensions": [
                         {
                             "Name": "Status",
-                            "Value": status,
+                            "Value": str(status),
                         },
                     ],
                     "Unit": "Count",
-                    "Value": "1" if status > 299 else "0",
+                    "Value": 1 if status > 299 else 0,
                 },
             ],
             Namespace="FunctionalTests",
