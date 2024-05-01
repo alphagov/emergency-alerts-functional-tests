@@ -113,7 +113,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_set_loopback_response_codes():
+def test_set_loopback_response_codes(blackout_reset):
     ddbc = create_ddb_client()
 
     test_code = 403
@@ -151,7 +151,7 @@ def test_set_loopback_response_codes():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
+def test_broadcast_with_az1_failure_tries_az2(driver, api_client, blackout_reset):
     broadcast_id = str(uuid.uuid4())
 
     mno = "ee"
@@ -192,7 +192,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     az1_response_code = dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-    assert az1_response_code == failure_code
+    assert az1_response_code == str(failure_code)
 
     az2_response_code = dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
@@ -203,16 +203,18 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
+def test_broadcast_with_both_azs_failing_retries_requests(
+    driver, api_client, blackout_reset
+):
     broadcast_id = str(uuid.uuid4())
 
     mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
-    failure_code = "500"
+    failure_code = 500
 
     ddbc = create_ddb_client()
-    set_response_codes(
+    set_error_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
@@ -250,7 +252,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
     az1_codes_set = set(az1_response_codes)
     assert len(az1_codes_set) == 1  # assert that all codes are the same
-    assert az1_codes_set.pop() == failure_code
+    assert az1_codes_set.pop() == str(failure_code)
 
     az2_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
@@ -258,7 +260,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
     az2_codes_set = set(az2_response_codes)
     assert len(az2_codes_set) == 1  # assert that all codes are the same
-    assert az2_codes_set.pop() == failure_code
+    assert az2_codes_set.pop() == str(failure_code)
 
     # Assert that the AZs have the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
@@ -269,17 +271,17 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
-    driver, api_client
+    driver, api_client, blackout_reset
 ):
     broadcast_id = str(uuid.uuid4())
 
     mno = "three"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
-    failure_code = "500"
+    failure_code = 500
 
     ddbc = create_ddb_client()
-    set_response_codes(
+    set_error_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
@@ -320,7 +322,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
-    assert failure_code in response_codes
+    assert str(failure_code) in response_codes
     assert "200" in response_codes
 
     cancel_alert(driver, broadcast_id)

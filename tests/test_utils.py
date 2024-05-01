@@ -609,10 +609,10 @@ def create_ddb_client():
 
 def create_cloudwatch_client():
     try:
-        cloudwatch_client = boto3.client("cloudwatch")
+        sts_client = boto3.client("sts")
 
-        sts_session = cloudwatch_client.assume_role(
-            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-cloudwatch-access",
+        sts_session = sts_client.assume_role(
+            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
             RoleSessionName="access-cloudwatch-for-functional-test",
         )
 
@@ -642,12 +642,12 @@ def is_list_of_strings(arg):
     return False
 
 
-def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
+def set_response_codes(ddbc=None, response_code: int = 200, cbc_list=None):
     if ddbc is None:
         ddbc = create_ddb_client()
 
     if cbc_list is None:
-        cbc_list = config["cbcs"].keys()
+        cbc_list = list(config["cbcs"].keys())
 
     if not is_list_of_strings(cbc_list):
         print("Please provide a list of cbc identifiers")
@@ -662,7 +662,7 @@ def set_response_codes(ddbc=None, response_code="200", cbc_list=None):
             },
             UpdateExpression="SET ResponseCode = :code",
             ExpressionAttributeValues={
-                ":code": {"N": response_code},
+                ":code": {"N": str(response_code)},
             },
         )
 
@@ -674,17 +674,11 @@ def put_functional_test_blackout_metric(status: int):
             MetricData=[
                 {
                     "MetricName": "FunctionalTestBlackout",
-                    "Dimensions": [
-                        {
-                            "Name": "Status",
-                            "Value": status,
-                        },
-                    ],
                     "Unit": "Count",
                     "Value": 1 if status > 299 else 0,
                 },
             ],
             Namespace="FunctionalTests",
         )
-    except BaseException:
-        print("Error sending response code metric to CW")
+    except BaseException as e:
+        raise Exception("Error sending response code metric to CW") from e
