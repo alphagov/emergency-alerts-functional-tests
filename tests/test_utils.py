@@ -643,8 +643,6 @@ def is_list_of_strings(arg):
 
 
 def set_response_codes(ddbc=None, response_code: int = 200, cbc_list=None):
-    print(f"Set response codes to {response_code}")
-
     if ddbc is None:
         ddbc = create_ddb_client()
 
@@ -670,19 +668,12 @@ def set_response_codes(ddbc=None, response_code: int = 200, cbc_list=None):
 
 
 def put_functional_test_blackout_metric(status: int):
-    print(f"Put metric data with status of {str(status)}")
     try:
         cwc = create_cloudwatch_client()
         cwc.put_metric_data(
             MetricData=[
                 {
                     "MetricName": "FunctionalTestBlackout",
-                    # "Dimensions": [
-                    #     {
-                    #         "Name": "Status",
-                    #         "Value": str(status),
-                    #     },
-                    # ],
                     "Unit": "Count",
                     "Value": 1 if status > 299 else 0,
                 },

@@ -22,17 +22,11 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    print("Reset response codes from session fixture")
     set_response_codes()
 
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
-
-    # yield
-
-    # set_response_codes()
-    # put_functional_test_blackout_metric(200)
 
 
 def purge_functional_test_alerts(test_api_client):
@@ -59,8 +53,6 @@ def purge_user_created_services(test_api_client):
 
 @pytest.fixture(scope="module", autouse=False)
 def blackout_reset():
-    print("In blackout_reset fixture - BEFORE yield")
     yield
-    print("In blackout_reset fixture - AFTER yield")
     set_response_codes()
     put_functional_test_blackout_metric(200)

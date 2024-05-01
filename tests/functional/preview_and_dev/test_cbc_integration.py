@@ -214,7 +214,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     failure_code = "500"
 
     ddbc = create_ddb_client()
-    set_response_codes(
+    set_error_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
@@ -281,7 +281,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     failure_code = 500
 
     ddbc = create_ddb_client()
-    set_response_codes(
+    set_error_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
