@@ -24,10 +24,9 @@ test-broadcast-flow:
 
 .PHONY: test-cbc-integration
 test-cbc-integration:
-	pytest -v -n auto --dist=loadgroup \
+	pytest -v -n -s auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_cbc_integration.py \
-	--junitxml=functional-test-reports/cbc-integration \
-	--capture=no
+	--junitxml=functional-test-reports/cbc-integration
 
 .PHONY: test-platform-admin-flow
 test-platform-admin-flow:
