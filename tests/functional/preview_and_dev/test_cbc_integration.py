@@ -327,6 +327,8 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     cancel_alert(driver, broadcast_id)
 
+    assert "fail" in response_codes
+
 
 def get_service_and_broadcast_id(url):
     alerturl = url.split("services/")[1]
