@@ -211,7 +211,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
-    failure_code = "500"
+    failure_code = 500
 
     ddbc = create_ddb_client()
     set_error_response_codes(
@@ -252,7 +252,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     az1_codes_set = set(az1_response_codes)
     assert len(az1_codes_set) == 1  # assert that all codes are the same
-    assert az1_codes_set.pop() == failure_code
+    assert az1_codes_set.pop() == str(failure_code)
 
     az2_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
@@ -260,7 +260,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     az2_codes_set = set(az2_response_codes)
     assert len(az2_codes_set) == 1  # assert that all codes are the same
-    assert az2_codes_set.pop() == failure_code
+    assert az2_codes_set.pop() == str(failure_code)
 
     # Assert that the AZs have the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
