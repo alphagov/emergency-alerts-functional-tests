@@ -28,10 +28,10 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
 
-    yield
+    # yield
 
-    set_response_codes()
-    put_functional_test_blackout_metric(200)
+    # set_response_codes()
+    # put_functional_test_blackout_metric(200)
 
 
 def purge_functional_test_alerts(test_api_client):
@@ -54,3 +54,10 @@ def purge_user_created_services(test_api_client):
 
     url = f"/service/purge-services-created/{admin_user}"
     test_api_client.delete(url)
+
+
+@pytest.fixture(scope="module", autouse=False)
+def blackout_reset():
+    yield
+    set_response_codes()
+    put_functional_test_blackout_metric(200)

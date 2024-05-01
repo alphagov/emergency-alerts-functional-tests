@@ -113,7 +113,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_set_loopback_response_codes():
+def test_set_loopback_response_codes(blackout_reset):
     ddbc = create_ddb_client()
 
     test_code = 403
@@ -151,7 +151,7 @@ def test_set_loopback_response_codes():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
+def test_broadcast_with_az1_failure_tries_az2(driver, api_client, blackout_reset):
     broadcast_id = str(uuid.uuid4())
 
     mno = "ee"
@@ -203,7 +203,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
+def test_broadcast_with_both_azs_failing_retries_requests(
+    driver, api_client, blackout_reset
+):
     broadcast_id = str(uuid.uuid4())
 
     mno = "vodafone"
@@ -269,7 +271,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
-    driver, api_client
+    driver, api_client, blackout_reset
 ):
     broadcast_id = str(uuid.uuid4())
 
