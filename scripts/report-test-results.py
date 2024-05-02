@@ -1,7 +1,6 @@
+import os
 import sys
 from xml.dom.minidom import Node, parse
-
-import boto3
 
 
 def main():
@@ -20,7 +19,7 @@ def main():
         print("Please provide a list of test files")
         sys.exit(0)
 
-    s3_bucket_id = get_smoke_test_bucket_name()
+    artefact_bucket = get_smoke_test_bucket_name()
 
     for test_file in test_files:
         test_results = extract_test_result(parse(test_file))
@@ -31,11 +30,11 @@ def main():
 
             if len(r) > 3:
                 result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
-                if s3_bucket_id is not None:
+                if artefact_bucket is not None:
                     result = (
                         result
                         + " | Output and screenshots saved to S3 bucket "
-                        + f"https://eu-west-2.console.aws.amazon.com/s3/buckets/{s3_bucket_id}"
+                        + f"https://eu-west-2.console.aws.amazon.com/s3/buckets/{artefact_bucket}"
                     )
 
             print(result.replace("\n", " "), sep="")
@@ -106,13 +105,7 @@ def extract_failure_summary(s):
 
 
 def get_smoke_test_bucket_name():
-    s3_client = boto3.client("s3")
-    buckets = s3_client.list_buckets()["Buckets"]
-    for bucket in buckets:
-        bucket_name = bucket["Name"]
-        if "smoke-test" in bucket_name:
-            return bucket_name
-    return None
+    return os.environ.get("FUNCTIONAL_TEST_ARTEFACT_BUCKET")
 
 
 if __name__ == "__main__":
