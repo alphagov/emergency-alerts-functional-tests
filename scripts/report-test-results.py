@@ -105,7 +105,7 @@ def extract_failure_summary(s):
 
 
 def get_smoke_test_bucket_name():
-    return os.environ.get("FUNCTIONAL_TEST_ARTEFACT_BUCKET")
+    return os.environ.get("FUNCTIONAL_TEST_ARTEFACT_BUCKET_NAME")
 
 
 if __name__ == "__main__":
