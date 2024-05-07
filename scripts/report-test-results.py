@@ -31,9 +31,7 @@ def main():
             if len(r) > 3:
                 result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
                 if artefact_bucket is not None:
-                    result = (
-                        result + f" | Test output saved to bucket {artefact_bucket}"
-                    )
+                    result = result + f" | Test output bucket: {artefact_bucket}"
 
             print(result.replace("\n", " "), sep="")
 
