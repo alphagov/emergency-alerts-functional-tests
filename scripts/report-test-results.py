@@ -6,7 +6,7 @@ from xml.dom.minidom import Node, parse
 def main():
     if len(sys.argv) < 3:
         print("Usage: python report-test-results.py working-dir testsuite-list")
-        sys.exit(0)
+        sys.exit(1)
 
     working_dir = sys.argv[1]
     test_file_names = sys.argv[2:]
@@ -17,7 +17,7 @@ def main():
 
     if not len(test_files):
         print("Please provide a list of test files")
-        sys.exit(0)
+        sys.exit(1)
 
     artefact_bucket = get_smoke_test_bucket_name()
 
