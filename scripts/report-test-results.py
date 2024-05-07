@@ -32,9 +32,7 @@ def main():
                 result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
                 if artefact_bucket is not None:
                     result = (
-                        result
-                        + " | Output and screenshots saved to S3 bucket "
-                        + f"https://eu-west-2.console.aws.amazon.com/s3/buckets/{artefact_bucket}"
+                        result + f" | Test output saved to bucket {artefact_bucket}"
                     )
 
             print(result.replace("\n", " "), sep="")
