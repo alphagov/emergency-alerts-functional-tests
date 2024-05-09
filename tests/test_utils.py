@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 
+import boto3
 import requests
 from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -575,3 +576,109 @@ def _url_with_token(data, url, config):
     )
     base_url = config["eas_admin_url"] + url
     return base_url + token
+
+
+def create_ddb_client():
+    try:
+        sts_client = boto3.client("sts")
+
+        sts_session = sts_client.assume_role(
+            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
+            RoleSessionName="access-loopback-for-functional-test",
+        )
+
+        KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+        ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+        TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        try:
+            return boto3.client(
+                "dynamodb",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            raise Exception("Unable to create DB client") from e
+
+    except Exception as e:
+        raise Exception("Unable to assume role") from e
+
+
+def create_cloudwatch_client():
+    try:
+        sts_client = boto3.client("sts")
+
+        sts_session = sts_client.assume_role(
+            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
+            RoleSessionName="access-cloudwatch-for-functional-test",
+        )
+
+        KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+        ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+        TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        try:
+            return boto3.client(
+                "cloudwatch",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            raise Exception("Unable to create CloudWatch client") from e
+
+    except Exception as e:
+        raise Exception("Unable to assume role") from e
+
+
+def is_list_of_strings(arg):
+    if isinstance(arg, list):
+        return all(isinstance(item, str) for item in arg)
+    return False
+
+
+def set_response_codes(ddbc=None, response_code: int = 200, cbc_list=None):
+    if ddbc is None:
+        ddbc = create_ddb_client()
+
+    if cbc_list is None:
+        cbc_list = list(config["cbcs"].keys())
+
+    if not is_list_of_strings(cbc_list):
+        print("Please provide a list of cbc identifiers")
+        return
+
+    for cbc in cbc_list:
+        ip = config["cbcs"][cbc]
+        ddbc.update_item(
+            TableName="LoopbackResponses",
+            Key={
+                "IpAddress": {"S": ip},
+            },
+            UpdateExpression="SET ResponseCode = :code",
+            ExpressionAttributeValues={
+                ":code": {"N": str(response_code)},
+            },
+        )
+
+
+def put_functional_test_blackout_metric(status: int):
+    try:
+        cwc = create_cloudwatch_client()
+        cwc.put_metric_data(
+            MetricData=[
+                {
+                    "MetricName": "FunctionalTestBlackout",
+                    "Unit": "Count",
+                    "Value": 1 if status > 299 else 0,
+                },
+            ],
+            Namespace="FunctionalTests",
+        )
+    except BaseException as e:
+        raise Exception("Error sending response code metric to CW") from e

@@ -62,8 +62,7 @@ phases:
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
-      - python3.9 ./scripts/collect-failure-data.py $(pwd) $testsuites
-      - python3.9 ./scripts/report-test-failures.py "$(pwd)/test-failures"
+      - python3.9 ./scripts/report-test-results.py $(pwd) $testsuites
 
   post_build:
     commands:
