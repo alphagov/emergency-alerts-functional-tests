@@ -333,7 +333,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     search_postcode_page.click_search()
     # assert areas appear here
 
-    search_postcode_page.click_element_by_link_text("Preview this alert")
+    search_postcode_page.click_element_by_link_text("Preview alert")
 
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page(
@@ -473,7 +473,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     )
     choose_coordinate_area_page.click_search()
 
-    choose_coordinate_area_page.click_element_by_link_text("Preview this alert")
+    choose_coordinate_area_page.click_element_by_link_text("Preview alert")
 
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page(id)
