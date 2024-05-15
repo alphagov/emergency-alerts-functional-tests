@@ -337,7 +337,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page(
-        "5km around the postcode BD1 1EE, in Bradford"
+        "5km around the postcode BD1 1EE in Bradford"
     )
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
@@ -403,7 +403,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "432994",
                 "radius": "3",
             },
-            "3km around the easting of 416567.0 and the northing of 432994.0, in Bradford",
+            "3km around the easting of 416567 and the northing of 432994 in Bradford",
         ),
         (
             "cartesian",
@@ -412,17 +412,17 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "456038",
                 "radius": "5",
             },
-            "5km around the easting of 419763.0 and the northing of 456038.0, in Harrogate",
+            "5km around the easting of 419763 and the northing of 456038 in Harrogate",
         ),
         (
             "decimal",
             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
-            "3km around 53.793 latitude, -1.75 longitude, in Bradford",
+            "3km around 53.793 latitude, -1.75 longitude in Bradford",
         ),
         (
             "decimal",
             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-            "5km around 54.0 latitude, -1.7 longitude, in Harrogate",
+            "5km around 54.0 latitude, -1.7 longitude in Harrogate",
         ),
     ),
 )
