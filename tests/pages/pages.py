@@ -1342,6 +1342,10 @@ class SearchPostcodePage(BasePage):
         element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
         element.click()
 
+    def click_preview(self):
+        element = self.wait_for_element(SearchPostcodePageLocators.PREVIEW_BUTTON)
+        element.click()
+
 
 class PlatformAdminPage(BasePage):
     search_link = (By.LINK_TEXT, "Search")
@@ -1378,4 +1382,8 @@ class ChooseCoordinateArea(BasePage):
 
     def click_search(self):
         element = self.wait_for_element(SearchCoordinatePageLocators.SEARCH_BUTTON)
+        element.click()
+
+    def click_preview(self):
+        element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
         element.click()

@@ -333,7 +333,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     search_postcode_page.click_search()
     # assert areas appear here
 
-    search_postcode_page.click_element_by_link_text("Preview alert")
+    search_postcode_page.click_preview()
 
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page(
@@ -397,7 +397,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     "coordinate_type, post_data, id",
     (
         (
-            "cartesian",
+            "easting_northing",
             {
                 "first_coordinate": "416567",
                 "second_coordinate": "432994",
@@ -406,7 +406,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
             "3km around the easting of 416567 and the northing of 432994 in Bradford",
         ),
         (
-            "cartesian",
+            "easting_northing",
             {
                 "first_coordinate": "419763",
                 "second_coordinate": "456038",
@@ -415,12 +415,12 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
             "5km around the easting of 419763 and the northing of 456038 in Harrogate",
         ),
         (
-            "decimal",
+            "latitude_longitude",
             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
             "3km around 53.793 latitude, -1.75 longitude in Bradford",
         ),
         (
-            "decimal",
+            "latitude_longitude",
             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
             "5km around 54.0 latitude, -1.7 longitude in Harrogate",
         ),
@@ -472,8 +472,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
         post_data["radius"],
     )
     choose_coordinate_area_page.click_search()
-
-    choose_coordinate_area_page.click_element_by_link_text("Preview alert")
+    choose_coordinate_area_page.click_preview()
 
     # here check if selected areas displayed
     assert prepare_alert_pages.is_text_present_on_page(id)
