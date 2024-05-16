@@ -394,7 +394,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
 @pytest.mark.xdist_group(name=test_group_name)
 @pytest.mark.parametrize(
-    "coordinate_type, post_data, id",
+    "coordinate_type, post_data, expected_area_description",
     (
         (
             "easting_northing",
@@ -427,7 +427,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     ),
 )
 def test_prepare_broadcast_with_new_content_for_coordinate_area(
-    driver, coordinate_type, post_data, id
+    driver, coordinate_type, post_data, expected_area_description
 ):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -475,7 +475,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     choose_coordinate_area_page.click_preview()
 
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page(id)
+    assert prepare_alert_pages.is_text_present_on_page(expected_area_description)
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.is_text_present_on_page(
