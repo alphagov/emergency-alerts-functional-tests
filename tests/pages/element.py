@@ -9,6 +9,7 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
+    SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
@@ -123,3 +124,23 @@ class SearchInputElement(BasePageElement):
 
 class KeyNameInputElement(BasePageElement):
     name = ApiKeysPageLocators.KEY_NAME_INPUT[1]
+
+
+class FirstCoordinateInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.FIRST_COORDINATE_TEXTAREA[1]
+
+
+class SecondCoordinateInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.SECOND_COORDINATE_TEXTAREA[1]
+
+
+class CoordinateRadiusInputElement(BasePageElement):
+    name = SearchCoordinatePageLocators.RADIUS_TEXTAREA[1]
+
+
+class CoordinateSearchButton(BasePageElement):
+    name = SearchCoordinatePageLocators.SEARCH_BUTTON[1]
+
+
+class CoordinatePreviewButton(BasePageElement):
+    name = SearchCoordinatePageLocators.PREVIEW_BUTTON[1]

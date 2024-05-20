@@ -16,9 +16,13 @@ from config import config
 from tests.pages.element import (
     BasePageElement,
     ClearableInputElement,
+    CoordinatePreviewButton,
+    CoordinateRadiusInputElement,
+    CoordinateSearchButton,
     EmailInputElement,
     FeedbackTextAreaElement,
     FileInputElement,
+    FirstCoordinateInputElement,
     KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
@@ -29,6 +33,7 @@ from tests.pages.element import (
     RadiusInputElement,
     SearchButton,
     SearchInputElement,
+    SecondCoordinateInputElement,
     ServiceInputElement,
     SmsInputElement,
     SubjectInputElement,
@@ -46,6 +51,7 @@ from tests.pages.locators import (
     LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
@@ -1336,6 +1342,10 @@ class SearchPostcodePage(BasePage):
         element = self.wait_for_element(SearchPostcodePageLocators.SEARCH_BUTTON)
         element.click()
 
+    def click_preview(self):
+        element = self.wait_for_element(SearchPostcodePageLocators.PREVIEW_BUTTON)
+        element.click()
+
 
 class PlatformAdminPage(BasePage):
     search_link = (By.LINK_TEXT, "Search")
@@ -1352,3 +1362,28 @@ class PlatformAdminPage(BasePage):
     def search_for(self, text):
         self.search_input = text
         self.click_continue()
+
+
+class ChooseCoordinatesType(BasePage):
+    pass
+
+
+class ChooseCoordinateArea(BasePage):
+    first_coordinate_input = FirstCoordinateInputElement()
+    second_coordinate_input = SecondCoordinateInputElement()
+    radius_input = CoordinateRadiusInputElement()
+    search_button = CoordinateSearchButton()
+    preview_button = CoordinatePreviewButton()
+
+    def create_coordinate_area(self, first_coordinate, second_coordinate, radius):
+        self.first_coordinate_input = first_coordinate
+        self.second_coordinate_input = second_coordinate
+        self.radius_input = radius
+
+    def click_search(self):
+        element = self.wait_for_element(SearchCoordinatePageLocators.SEARCH_BUTTON)
+        element.click()
+
+    def click_preview(self):
+        element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
+        element.click()
