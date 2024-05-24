@@ -56,6 +56,8 @@ urls = {
     },
 }
 
+aws_accounts = {"development": "388086622185", "preview": "519419547532"}
+
 
 def setup_shared_config():
     """
@@ -72,6 +74,7 @@ def setup_shared_config():
             "eas_api_url": urls[env]["api"],
             "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
+            "aws_account": aws_accounts[env],
         }
     )
 
