@@ -287,7 +287,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # ensure the app has time to send out the four messages
+    # ensure the app has time to broadcast to four MNOs
     time.sleep(10)
     response = api_client.get(url=url)
     assert response is not None
