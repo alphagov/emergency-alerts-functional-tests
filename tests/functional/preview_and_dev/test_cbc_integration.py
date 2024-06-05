@@ -31,17 +31,7 @@ def test_cbc_config():
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
-    # response = ddbc.query(
-    #     TableName="LoopbackRequests",
-    #     KeyConditionExpression="RequestId = :RequestId",
-    #     ExpressionAttributeValues={
-    #         ":RequestId": {"S": "1234"},
-    #     },
-    #     ConsistentRead=True,
-    # )
-
     responses = get_loopback_request_items(ddbc=ddbc, request_id="1234")
-
     assert len(responses) == 0
 
 
@@ -71,15 +61,7 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
-        # db_response = ddbc.query(
-        #     TableName="LoopbackRequests",
-        #     KeyConditionExpression="RequestId = :RequestId",
-        #     ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        #     ConsistentRead=True,
-        # )
-
         responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
-
         if len(responses):
             distinct_request_ids += 1
 
@@ -160,7 +142,6 @@ def test_set_loopback_response_codes(blackout_reset):
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client, blackout_reset):
     broadcast_id = str(uuid.uuid4())
 
-    # mno = "ee"
     mno = choice(PROVIDERS)
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
@@ -207,7 +188,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 ):
     broadcast_id = str(uuid.uuid4())
 
-    # mno = "vodafone"
     mno = choice(PROVIDERS)
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
@@ -267,7 +247,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 ):
     broadcast_id = str(uuid.uuid4())
 
-    # mno = "three"
     mno = choice(PROVIDERS)
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
