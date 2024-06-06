@@ -264,9 +264,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
-    # add a delay, as going straight to broadcast sometimes receives a '200'
-    # which is not what we expect here
-    time.sleep(10)
+    # # add a delay, as going straight to broadcast sometimes receives a '200'
+    # # which is not what we expect here
+    # time.sleep(10)
     broadcast_alert(driver, broadcast_id)
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
