@@ -16,7 +16,6 @@ from tests.test_utils import (
 test_group_name = "cbc-integration"
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
@@ -29,7 +28,6 @@ def test_cbc_config():
     assert "three-az2" in config["cbcs"]
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_request_with_bad_id_returns_no_items():
     ddbc = create_ddb_client()
@@ -37,7 +35,6 @@ def test_get_loopback_request_with_bad_id_returns_no_items():
     assert len(responses) == 0
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_generates_four_provider_messages(driver, api_client):
     ddbc = create_ddb_client()
@@ -73,7 +70,6 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     ddbc = create_ddb_client()
@@ -104,7 +100,6 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
     assert response_codes.pop() == "200"
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_set_loopback_response_codes():
     ddbc = create_ddb_client()
@@ -143,7 +138,6 @@ def test_set_loopback_response_codes():
             assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     broadcast_id = str(uuid.uuid4())
@@ -188,7 +182,6 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
     cancel_alert(driver, broadcast_id)
 
 
-@pytest.mark.skip("TEMPORARY - DO NOT MERGE")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
     broadcast_id = str(uuid.uuid4())
