@@ -26,10 +26,18 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
 
+    # set_response_codes()
+
+    # yield
+
+    # set_response_codes()
+    # put_functional_test_blackout_metric(200)
+
+
+@pytest.fixture(scope="module")
+def cbc_blackout():
     set_response_codes()
-
     yield
-
     set_response_codes()
     put_functional_test_blackout_metric(200)
 

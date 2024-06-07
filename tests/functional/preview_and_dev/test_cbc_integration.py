@@ -6,12 +6,7 @@ import pytest
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import (
-    PROVIDERS,
-    create_ddb_client,
-    put_functional_test_blackout_metric,
-    set_response_codes,
-)
+from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
 
 test_group_name = "cbc-integration"
 
@@ -101,7 +96,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_set_loopback_response_codes():
+def test_set_loopback_response_codes(cbc_blackout):
     ddbc = create_ddb_client()
 
     test_code = 403
@@ -139,7 +134,7 @@ def test_set_loopback_response_codes():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
+def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     broadcast_id = str(uuid.uuid4())
 
     mno = choice(PROVIDERS)
@@ -183,7 +178,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
+def test_broadcast_with_both_azs_failing_retries_requests(
+    driver, api_client, cbc_blackout
+):
     broadcast_id = str(uuid.uuid4())
 
     mno = choice(PROVIDERS)
@@ -241,7 +238,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
-    driver, api_client
+    driver, api_client, cbc_blackout
 ):
     broadcast_id = str(uuid.uuid4())
 
@@ -339,12 +336,12 @@ def dynamo_items_for_key_value(data, key, value, item):
 
 
 def set_error_response_codes(ddbc, response_code=200, cbc_list=None):
-    put_functional_test_blackout_metric(status=response_code)
+    # put_functional_test_blackout_metric(status=response_code)
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
-    time.sleep(5)
+    time.sleep(10)
 
 
 def reset_response_codes(ddbc):
     set_response_codes(ddbc=ddbc)
-    time.sleep(5)
-    put_functional_test_blackout_metric(status=200)
+    # time.sleep(5)
+    # put_functional_test_blackout_metric(status=200)
