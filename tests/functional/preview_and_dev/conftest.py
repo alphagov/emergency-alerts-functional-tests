@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from clients.test_api_client import TestApiClient
@@ -36,9 +38,12 @@ def preview_dev_config():
 
 @pytest.fixture(scope="module")
 def cbc_blackout():
+    put_functional_test_blackout_metric(500)
+    time.sleep(10)
     set_response_codes()
     yield
     set_response_codes()
+    time.sleep(10)
     put_functional_test_blackout_metric(200)
 
 
