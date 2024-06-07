@@ -336,12 +336,9 @@ def dynamo_items_for_key_value(data, key, value, item):
 
 
 def set_error_response_codes(ddbc, response_code=200, cbc_list=None):
-    # put_functional_test_blackout_metric(status=response_code)
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
     time.sleep(10)
 
 
 def reset_response_codes(ddbc):
     set_response_codes(ddbc=ddbc)
-    # time.sleep(5)
-    # put_functional_test_blackout_metric(status=200)
