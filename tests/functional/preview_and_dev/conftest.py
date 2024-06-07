@@ -22,8 +22,6 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    set_response_codes()
-
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
@@ -51,8 +49,9 @@ def purge_user_created_services(test_api_client):
     test_api_client.delete(url)
 
 
-@pytest.fixture(scope="module", autouse=False)
+@pytest.fixture(scope="session", autouse=True)
 def blackout_reset():
+    set_response_codes()
     yield
     set_response_codes()
     put_functional_test_blackout_metric(200)
