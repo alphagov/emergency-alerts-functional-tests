@@ -100,7 +100,7 @@ def test_set_loopback_response_codes(cbc_blackout):
     ddbc = create_ddb_client()
 
     test_code = 403
-    set_error_response_codes(ddbc, response_code=test_code)
+    set_loopback_response_codes(ddbc, response_code=test_code)
     for mno in PROVIDERS:
         for az in ["az1", "az2"]:
             test_cbc = f"{mno}-{az}"
@@ -116,7 +116,7 @@ def test_set_loopback_response_codes(cbc_blackout):
             assert db_response["Count"] == 1
             assert db_response["Items"][0]["ResponseCode"]["N"] == str(test_code)
 
-    reset_response_codes(ddbc)
+    set_loopback_response_codes(ddbc=ddbc, response_code=200)
     for mno in PROVIDERS:
         for az in ["az1", "az2"]:
             test_cbc = f"{mno}-{az}"
@@ -143,7 +143,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     failure_code = 500
 
     ddbc = create_ddb_client()
-    set_error_response_codes(ddbc, response_code=failure_code, cbc_list=[primary_cbc])
+    set_loopback_response_codes(
+        ddbc, response_code=failure_code, cbc_list=[primary_cbc]
+    )
 
     broadcast_alert(driver, broadcast_id)
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
@@ -162,7 +164,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
 
-    reset_response_codes(ddbc)
+    set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
     az1_response_code = dynamo_item_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -189,7 +191,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     failure_code = 500
 
     ddbc = create_ddb_client()
-    set_error_response_codes(
+    set_loopback_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
@@ -211,7 +213,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
 
-    reset_response_codes(ddbc)
+    set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -248,7 +250,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     failure_code = 500
 
     ddbc = create_ddb_client()
-    set_error_response_codes(
+    set_loopback_response_codes(
         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
     )
 
@@ -275,7 +277,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         time.sleep(1)
         responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
 
-    reset_response_codes(ddbc)
+    set_loopback_response_codes(ddbc=ddbc, response_code=200)
     time.sleep(60)  # wait for more retries
 
     responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
@@ -335,10 +337,6 @@ def dynamo_items_for_key_value(data, key, value, item):
     return items
 
 
-def set_error_response_codes(ddbc, response_code=200, cbc_list=None):
+def set_loopback_response_codes(ddbc, response_code=200, cbc_list=None):
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
     time.sleep(10)
-
-
-def reset_response_codes(ddbc):
-    set_response_codes(ddbc=ddbc)
