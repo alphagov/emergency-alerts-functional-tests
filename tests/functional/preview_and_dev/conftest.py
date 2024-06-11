@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from clients.test_api_client import TestApiClient
@@ -22,11 +24,20 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    set_response_codes()
-
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
+
+
+@pytest.fixture(scope="module")
+def cbc_blackout():
+    put_functional_test_blackout_metric(500)
+    time.sleep(10)
+    set_response_codes()
+    yield
+    set_response_codes()
+    time.sleep(10)
+    put_functional_test_blackout_metric(200)
 
 
 def purge_functional_test_alerts(test_api_client):
@@ -49,10 +60,3 @@ def purge_user_created_services(test_api_client):
 
     url = f"/service/purge-services-created/{admin_user}"
     test_api_client.delete(url)
-
-
-@pytest.fixture(scope="module", autouse=False)
-def blackout_reset():
-    yield
-    set_response_codes()
-    put_functional_test_blackout_metric(200)
