@@ -36,7 +36,7 @@ def cbc_blackout():
     set_response_codes()
     yield
     set_response_codes()
-    time.sleep(10)
+    time.sleep(180)
     put_functional_test_blackout_metric(200)
 
 
