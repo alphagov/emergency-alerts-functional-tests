@@ -42,6 +42,17 @@ def cbc_blackout():
     put_functional_test_blackout_metric(200)
 
 
+@pytest.fixture(scope="module")
+def cbc_blackout():
+    put_functional_test_blackout_metric(500)
+    time.sleep(10)
+    set_response_codes()
+    yield
+    set_response_codes()
+    time.sleep(10)
+    put_functional_test_blackout_metric(200)
+
+
 def purge_functional_test_alerts(test_api_client):
     service = config["broadcast_service"]["service_id"]
     older_than = config["broadcast_service"]["purge_older_than"]

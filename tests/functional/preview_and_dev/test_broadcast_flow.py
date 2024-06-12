@@ -412,7 +412,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "456038",
                 "radius": "5",
             },
-            "5km around the easting of 419763 and the northing of 456038 in Harrogate",
+            "5km around the easting of 419763 and the northing of 456038 in North Yorkshire",
         ),
         (
             "latitude_longitude",
@@ -422,7 +422,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
         (
             "latitude_longitude",
             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-            "5km around 54.0 latitude, -1.7 longitude in Harrogate",
+            "5km around 54.0 latitude, -1.7 longitude in North Yorkshire",
         ),
     ),
 )
