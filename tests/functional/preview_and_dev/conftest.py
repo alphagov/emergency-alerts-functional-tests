@@ -1,4 +1,4 @@
-# import time
+import time
 
 import pytest
 
@@ -27,8 +27,8 @@ def preview_dev_config():
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
-    yield
-    put_functional_test_blackout_metric(200)
+    # yield
+    # put_functional_test_blackout_metric(200)
 
 
 @pytest.fixture(scope="module")
@@ -38,8 +38,8 @@ def cbc_blackout():
     set_response_codes()
     yield
     set_response_codes()
-    # time.sleep(180)
-    # put_functional_test_blackout_metric(200)
+    time.sleep(10)
+    put_functional_test_blackout_metric(200)
 
 
 def purge_functional_test_alerts(test_api_client):
