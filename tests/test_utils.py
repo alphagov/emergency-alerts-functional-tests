@@ -684,7 +684,7 @@ def put_functional_test_blackout_metric(status: int):
         raise Exception("Error sending response code metric to CW") from e
 
 
-def reset_proxy_invoke_metric():
+def clear_proxy_error_alarm():
     try:
         cwc = create_cloudwatch_client()
         for mno in PROVIDERS:
