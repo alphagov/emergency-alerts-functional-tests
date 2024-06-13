@@ -689,21 +689,11 @@ def reset_proxy_invoke_metric():
         cwc = create_cloudwatch_client()
         for mno in PROVIDERS:
             for az in ["1", "2"]:
-                cwc.put_metric_data(
-                    MetricData=[
-                        {
-                            "MetricName": "Errors",
-                            "Dimensions": [
-                                {
-                                    "Name": "FunctionName",
-                                    "Value": f"{mno}-{az}-proxy",
-                                },
-                            ],
-                            "Unit": "Count",
-                            "Value": 0,
-                        },
-                    ],
-                    Namespace="AWS/Lambda",
+                cwc.set_alarm_state(
+                    AlarmName=f"{mno}-{az}-proxy-error",
+                    StateValue="OK",
+                    StateReason="Functional test alarm reset",
                 )
+
     except BaseException as e:
         raise Exception("Error writing proxy count metric to CW") from e
