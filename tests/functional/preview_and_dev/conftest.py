@@ -6,6 +6,7 @@ from clients.test_api_client import TestApiClient
 from config import config, setup_preview_dev_config
 from tests.test_utils import (
     put_functional_test_blackout_metric,
+    reset_proxy_invoke_metric,
     set_response_codes,
 )
 
@@ -37,6 +38,7 @@ def cbc_blackout():
     yield
     set_response_codes()
     time.sleep(10)
+    reset_proxy_invoke_metric()
     put_functional_test_blackout_metric(200)
 
 

@@ -682,3 +682,22 @@ def put_functional_test_blackout_metric(status: int):
         )
     except BaseException as e:
         raise Exception("Error sending response code metric to CW") from e
+
+
+def reset_proxy_invoke_metric():
+    try:
+        cwc = create_cloudwatch_client()
+        for mno in PROVIDERS:
+            for az in ["1", "2"]:
+                cwc.put_metric_data(
+                    MetricData=[
+                        {
+                            "MetricName": "Errors",
+                            "FunctionName": f"{mno}-{az}-proxy",
+                            "Value": 0,
+                        },
+                    ],
+                    Namespace="AWS/Lambda",
+                )
+    except BaseException as e:
+        raise Exception("Error writing proxy count metric to CW") from e
