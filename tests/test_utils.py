@@ -693,7 +693,13 @@ def reset_proxy_invoke_metric():
                     MetricData=[
                         {
                             "MetricName": "Errors",
-                            "FunctionName": f"{mno}-{az}-proxy",
+                            "Dimensions": [
+                                {
+                                    "Name": "FunctionName",
+                                    "Value": f"{mno}-{az}-proxy",
+                                },
+                            ],
+                            "Unit": "Count",
                             "Value": 0,
                         },
                     ],
