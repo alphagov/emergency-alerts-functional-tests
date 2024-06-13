@@ -694,6 +694,5 @@ def reset_proxy_invoke_metric():
                     StateValue="OK",
                     StateReason="Functional test alarm reset",
                 )
-
     except BaseException as e:
         raise Exception("Error writing proxy count metric to CW") from e
