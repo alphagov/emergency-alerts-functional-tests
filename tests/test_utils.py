@@ -682,3 +682,17 @@ def put_functional_test_blackout_metric(status: int):
         )
     except BaseException as e:
         raise Exception("Error sending response code metric to CW") from e
+
+
+def clear_proxy_error_alarm():
+    try:
+        cwc = create_cloudwatch_client()
+        for mno in PROVIDERS:
+            for az in ["1", "2"]:
+                cwc.set_alarm_state(
+                    AlarmName=f"{mno}-{az}-proxy-error",
+                    StateValue="OK",
+                    StateReason="Functional test alarm reset",
+                )
+    except BaseException as e:
+        raise Exception("Error writing proxy count metric to CW") from e
