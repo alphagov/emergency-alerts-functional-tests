@@ -38,8 +38,8 @@ def cbc_blackout():
     yield
     set_response_codes()
     time.sleep(10)
-    clear_proxy_error_alarm()
     put_functional_test_blackout_metric(200)
+    clear_proxy_error_alarm()
 
 
 def purge_functional_test_alerts(test_api_client):
