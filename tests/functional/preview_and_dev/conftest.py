@@ -11,7 +11,7 @@ from tests.test_utils import (
 )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def preview_dev_config():
     """
     Setup
@@ -25,10 +25,6 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    print("************************************************")
-    print("preview_dev_config()")
-    assert False
-
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
@@ -36,6 +32,9 @@ def preview_dev_config():
 
 @pytest.fixture(scope="module")
 def cbc_blackout():
+
+    assert False
+
     put_functional_test_blackout_metric(500)
     time.sleep(10)
     set_response_codes()
