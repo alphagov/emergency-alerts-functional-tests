@@ -47,7 +47,7 @@ phases:
     on-failure: CONTINUE
     commands:
       # - make test-broadcast-flow; exit 0
-      # - make test-cbc-integration; exit 0
+      - make test-cbc-integration; exit 0
       - make test-platform-admin-flow; exit 0
       - make test-authentication-flow; exit 0
       # - make test-links-and-cookies; exit 0

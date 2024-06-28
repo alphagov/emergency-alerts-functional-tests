@@ -18,23 +18,37 @@ def preview_dev_config():
     """
     setup_preview_dev_config()
 
+    # test_api_client = TestApiClient()
+    # test_api_client.configure_for_internal_client(
+    #     client_id=config["service"]["internal_api_client_id"],
+    #     api_key=config["service"]["internal_api_client_secret"],
+    #     base_url=config["eas_api_url"],
+    # )
+
+    # purge_functional_test_alerts(test_api_client)
+    # purge_folders_and_templates(test_api_client)
+    # purge_user_created_services(test_api_client)
+    # purge_users_created_by_functional_tests(test_api_client)
+
+    purge_functional_test_alerts()
+    purge_folders_and_templates()
+    purge_user_created_services()
+    # purge_users_created_by_functional_tests()
+
+
+@pytest.fixture(scope="session")
+def test_api_client():
     test_api_client = TestApiClient()
     test_api_client.configure_for_internal_client(
         client_id=config["service"]["internal_api_client_id"],
         api_key=config["service"]["internal_api_client_secret"],
         base_url=config["eas_api_url"],
     )
-
-    purge_functional_test_alerts(test_api_client)
-    purge_folders_and_templates(test_api_client)
-    purge_user_created_services(test_api_client)
+    yield test_api_client
 
 
 @pytest.fixture(scope="module")
 def cbc_blackout():
-
-    assert False
-
     put_functional_test_blackout_metric(500)
     time.sleep(10)
     set_response_codes()
