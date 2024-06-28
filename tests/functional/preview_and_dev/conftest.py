@@ -1,3 +1,4 @@
+import logging
 import time
 
 import pytest
@@ -9,6 +10,8 @@ from tests.test_utils import (
     put_functional_test_blackout_metric,
     set_response_codes,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -25,8 +28,8 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    print("************************************************")
-    print("preview_dev_config()")
+    logger.info("************************************************")
+    logger.info("preview_dev_config()")
 
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
@@ -64,4 +67,9 @@ def purge_user_created_services(test_api_client):
     admin_user = config["broadcast_service"]["platform_admin"]["id"]
 
     url = f"/service/purge-services-created/{admin_user}"
+    test_api_client.delete(url)
+
+
+def purge_users_created_by_functional_tests(test_api_client):
+    url = "/service/purge-users-created-by-tests"
     test_api_client.delete(url)
