@@ -1,4 +1,3 @@
-import logging
 import time
 
 import pytest
@@ -10,8 +9,6 @@ from tests.test_utils import (
     put_functional_test_blackout_metric,
     set_response_codes,
 )
-
-logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -28,8 +25,9 @@ def preview_dev_config():
         base_url=config["eas_api_url"],
     )
 
-    logger.info("************************************************")
-    logger.info("preview_dev_config()")
+    print("************************************************")
+    print("preview_dev_config()")
+    assert False
 
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)

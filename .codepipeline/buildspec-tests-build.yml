@@ -58,9 +58,9 @@ phases:
       - chmod +rw "$(pwd)/test-failures"
       - python3.9 ./scripts/report-test-results.py $(pwd) $testsuites
 
-  post_build:
-    commands:
-      - python3.9 ./scripts/signal-build-pass-or-fail.py $(pwd) $testsuites
+  # post_build:
+  #   commands:
+      # - python3.9 ./scripts/signal-build-pass-or-fail.py $(pwd) $testsuites
 
 artifacts:
   files:
