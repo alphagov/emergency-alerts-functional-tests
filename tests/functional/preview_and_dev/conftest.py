@@ -11,7 +11,7 @@ from tests.test_utils import (
 )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def preview_dev_config():
     """
     Setup
