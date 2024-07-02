@@ -28,6 +28,7 @@ def preview_dev_config():
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
+    purge_users_created_by_functional_tests(test_api_client)
 
 
 @pytest.fixture(scope="module")
@@ -61,4 +62,9 @@ def purge_user_created_services(test_api_client):
     admin_user = config["broadcast_service"]["platform_admin"]["id"]
 
     url = f"/service/purge-services-created/{admin_user}"
+    test_api_client.delete(url)
+
+
+def purge_users_created_by_functional_tests(test_api_client):
+    url = "/service/purge-users-created-by-tests"
     test_api_client.delete(url)
