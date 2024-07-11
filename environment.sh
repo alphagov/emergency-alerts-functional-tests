@@ -55,3 +55,8 @@ export PLATFORM_ADMIN_ID='c3d33860-a967-40cf-8eb4-ec1ee38a4df9'
 export PLATFORM_ADMIN_EMAIL='emergency-alerts-tests+admin@digital.cabinet-office.gov.uk'
 export PLATFORM_ADMIN_PASSWORD=Password1234
 export PLATFORM_ADMIN_NUMBER=07700900222
+
+export THROTTLED_USER_ID='c3d33860-a967-40cf-8eb4-ec1ee38a4df9'
+export THROTTLED_USER_EMAIL='emergency-alerts-tests+admin@digital.cabinet-office.gov.uk'
+export THROTTLED_USER_PASSWORD=Password1234
+export THROTTLED_USER_NUMBER=07700900222

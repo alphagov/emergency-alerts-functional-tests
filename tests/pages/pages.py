@@ -1387,3 +1387,7 @@ class ChooseCoordinateArea(BasePage):
     def click_preview(self):
         element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
         element.click()
+
+
+class ThrottledPage(BasePage):
+    pass

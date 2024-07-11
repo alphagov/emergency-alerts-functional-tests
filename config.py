@@ -125,6 +125,12 @@ def setup_preview_dev_config():
                     "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
                 },
+                "throttled_user": {
+                    "id": os.environ["THROTTLED_USER_ID"],
+                    "email": os.environ["THROTTLED_USER_EMAIL"],
+                    "password": os.environ["THROTTLED_USER_PASSWORD"],
+                    "mobile": os.environ["THROTTLED_USER_NUMBER"],
+                },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "service_name": os.environ["BROADCAST_SERVICE_NAME"],
                 "service_id": os.environ["BROADCAST_SERVICE_ID"],
