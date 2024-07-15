@@ -47,6 +47,8 @@ def test_login_attempt_throttled_after_failed_login(driver):
     time.sleep(11)
 
     # Attempts again
+    throttled_page.click_element_by_link_text("Sign in")
+
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = config["broadcast_service"]["throttled_user"]["password"]
 
@@ -60,11 +62,6 @@ def test_login_attempt_throttled_after_failed_login(driver):
     assert sign_in_page.is_text_present_on_page("a link to sign in")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
-
-    landing_page = BasePage(driver)
-    landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
