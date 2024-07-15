@@ -19,6 +19,8 @@ config = {
     "provider_retry_interval": 22,
     "verify_code_retry_times": 8,
     "verify_code_retry_interval": 9,
+    "ui_wait_retry_times": 20,
+    "ui_wait_retry_interval": 10,
     "govuk_alerts_wait_retry_times": 24,
     "govuk_alerts_wait_retry_interval": 10,
     "functional_test_service_name": "Functional Test Service_",
@@ -76,7 +78,7 @@ def setup_shared_config():
     )
 
 
-def setup_preview_dev_config():
+def setup_test_config():
     uuid_for_test_run = str(uuid.uuid4())
 
     config.update(

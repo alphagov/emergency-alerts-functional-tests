@@ -5,10 +5,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from config import config
-from tests.functional.preview_and_dev.sample_cap_xml import (
-    ALERT_XML,
-    CANCEL_XML,
-)
+from tests.functional.sample_cap_xml import ALERT_XML, CANCEL_XML
 from tests.pages import (
     BasePage,
     BroadcastFreeformPage,

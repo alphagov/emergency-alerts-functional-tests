@@ -3,7 +3,7 @@ import time
 import pytest
 
 from clients.test_api_client import TestApiClient
-from config import config, setup_preview_dev_config
+from config import config, setup_test_config
 from tests.test_utils import (
     clear_proxy_error_alarm,
     put_functional_test_blackout_metric,
@@ -12,11 +12,11 @@ from tests.test_utils import (
 
 
 @pytest.fixture(scope="session", autouse=True)
-def preview_dev_config():
+def functional_test_config():
     """
     Setup
     """
-    setup_preview_dev_config()
+    setup_test_config()
 
     test_api_client = TestApiClient()
     test_api_client.configure_for_internal_client(

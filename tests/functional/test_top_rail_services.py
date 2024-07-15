@@ -6,6 +6,7 @@ from tests.pages.rollups import get_email_and_password, sign_in
 test_group_name = "top-rail"
 
 
+@pytest.mark.skip("Skip until the main channel alerting on this can be blocked")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_report_a_problem(driver):
     sign_in(driver, account_type="broadcast_create_user")
@@ -34,6 +35,7 @@ def test_report_a_problem(driver):
     report_problem_page.sign_out()
 
 
+@pytest.mark.skip("Skip until the main channel alerting on this can be blocked")
 @pytest.mark.xdist_group(name=test_group_name)
 def test_question_or_feedback(driver):
     sign_in(driver, account_type="broadcast_create_user")
