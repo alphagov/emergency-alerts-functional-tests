@@ -43,8 +43,8 @@ def test_login_attempt_throttled_after_failed_login(driver):
         "You've been temporarily throttled due to too many login attempts."
     )
 
-    # Waits some time
-    time.sleep(11)
+    # Waits some time to avoid throttle
+    time.sleep(30)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")
