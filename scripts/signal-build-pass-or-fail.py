@@ -15,17 +15,13 @@ def main():
     ]
 
     pattern = r'(errors|failures)="([1-9][0-9]*)"'
-    failed_reports = []
 
     for test_report in test_reports:
         with open(test_report, "r") as file:
             report = file.read()
             if re.search(pattern, report):
-                failed_reports.append(report)
-
-    if failed_reports:
-        print("Non-passing tests found. Exiting with status 1.")
-        sys.exit(1)
+                print("Non-passing tests found. Exiting with status 1.")
+                sys.exit(1)
 
 
 if __name__ == "__main__":
