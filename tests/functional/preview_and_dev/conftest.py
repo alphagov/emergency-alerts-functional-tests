@@ -72,5 +72,6 @@ def purge_users_created_by_functional_tests(test_api_client):
 
 
 def purge_failed_logins_created_by_functional_tests(test_api_client):
-    url = "/service/purge-failed-logins-created-by-tests"
+    service = config["broadcast_service"]["service_id"]
+    url = f"/service/{service}/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
