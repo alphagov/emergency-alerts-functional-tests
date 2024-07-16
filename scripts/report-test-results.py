@@ -45,17 +45,14 @@ def main():
 
 
 def log_final_results(failed_tests):
-    tests = []
     test_string = ""
 
     if len(failed_tests) > 3:
         failed_tests_count = len(failed_tests) - 3
         failed_tests = failed_tests[:3]
-        tests = failed_tests[:3]
-        print("One", tests)
-        tests.append(f"- ...{failed_tests_count} more failed.")
-        print("Two", tests)
-        test_string = "".join(tests)
+        failed_tests.append(f"- ...{failed_tests_count} more failed.")
+
+    test_string = "".join(failed_tests)
 
     print(
         json.dumps(
