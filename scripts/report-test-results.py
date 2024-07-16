@@ -37,9 +37,17 @@ def main():
                     result = result + f" | Test output bucket: {artefact_bucket}"
 
             if success == "FAIL":
-                failed_tests.append(result)
+                failed_tests.append(f"- {r[1]}: {r[3]}\n")
 
             print(result.replace("\n", " "), sep="")
+
+    log_final_results(failed_tests=failed_tests)
+
+
+def log_final_results(failed_tests):
+    if len(failed_tests) > 3:
+        failed_tests = failed_tests[:3]
+        failed_tests = f"{failed_tests}- ...{len(failed_tests)} more failed."
 
     print(
         json.dumps(
