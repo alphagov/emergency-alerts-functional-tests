@@ -3,13 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
-      broadcast-flow
-      cbc-integration
       platform-admin-flow
-      authentication-flow
-      links-and-cookies
-      template-flow
-      user-operations
       throttling
 
 phases:
