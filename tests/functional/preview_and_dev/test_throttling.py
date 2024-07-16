@@ -59,9 +59,7 @@ def test_login_attempt_throttled_after_failed_login(driver):
 
     # Successful login renders MFA page
 
-    assert sign_in_page.is_text_present_on_page(
-        "We've sent you a text message with a security code."
-    )
+    assert sign_in_page.is_text_present_on_page("text message with a security code")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
 
