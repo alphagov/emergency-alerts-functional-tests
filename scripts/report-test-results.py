@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from xml.dom.minidom import Node, parse
@@ -21,6 +22,8 @@ def main():
 
     artefact_bucket = get_smoke_test_bucket_name()
 
+    failed_tests = []
+
     for test_file in test_files:
         test_results = extract_test_result(parse(test_file))
         for r in test_results:
@@ -33,7 +36,20 @@ def main():
                 if artefact_bucket is not None:
                     result = result + f" | Test output bucket: {artefact_bucket}"
 
+            if success == "FAIL":
+                failed_tests.append(result)
+
             print(result.replace("\n", " "), sep="")
+
+    print(
+        json.dumps(
+            {
+                "status": "FAILED" if failed_tests else "PASSED",
+                "failures": failed_tests,
+            },
+            indent=4,
+        )
+    )
 
 
 def extract_test_result(document):
