@@ -37,15 +37,27 @@ def main():
                     result = result + f" | Test output bucket: {artefact_bucket}"
 
             if success == "FAIL":
-                failed_tests.append(result)
+                failed_tests.append(f"- {r[1]}: {r[3]}")
 
             print(result.replace("\n", " "), sep="")
+
+    log_final_results(failed_tests=failed_tests)
+
+
+def log_final_results(failed_tests):
+    failures_message = ""
+
+    if len(failed_tests) > 3:
+        failed_tests_count = len(failed_tests)
+        failed_tests = failed_tests[:3]
+        failed_tests = failed_tests.append(f"- ...{failed_tests_count} more failed.")
+        failures_message = "\n".join(failed_tests)
 
     print(
         json.dumps(
             {
                 "status": "FAILED" if failed_tests else "PASSED",
-                "failures": failed_tests,
+                "failures": failures_message,
             },
             indent=4,
         )
