@@ -41,7 +41,8 @@ def main():
 
             print(result.replace("\n", " "), sep="")
 
-    log_final_results(failed_tests=failed_tests.copy())
+    print(failed_tests)
+    log_final_results(failed_tests=failed_tests)
 
 
 def log_final_results(failed_tests):
