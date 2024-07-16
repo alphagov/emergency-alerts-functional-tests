@@ -58,7 +58,7 @@ def log_final_results(failed_tests):
         json.dumps(
             {
                 "status": "FAILED" if failed_tests else "PASSED",
-                "failures": test_string,
+                "failures": test_string if test_string != "" else None,
             },
             indent=4,
         )
