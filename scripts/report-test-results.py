@@ -41,7 +41,6 @@ def main():
 
             print(result.replace("\n", " "), sep="")
 
-    print(failed_tests)
     log_final_results(failed_tests)
 
 
@@ -53,7 +52,9 @@ def log_final_results(failed_tests):
         failed_tests_count = len(failed_tests) - 3
         failed_tests = failed_tests[:3]
         tests = failed_tests[:3]
+        print("One", tests)
         tests.append(f"- ...{failed_tests_count} more failed.")
+        print("Two", tests)
         test_string = "".join(tests)
 
     print(
