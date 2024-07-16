@@ -51,13 +51,13 @@ def log_final_results(failed_tests):
         failed_tests_count = len(failed_tests)
         failed_tests = failed_tests[:3]
         failed_tests = failed_tests.append(f"- ...{failed_tests_count} more failed.")
-        failures_message = failures_message.join(failed_tests, "\n")
+        failures_message = "\n".join(failed_tests)
 
     print(
         json.dumps(
             {
                 "status": "FAILED" if failed_tests else "PASSED",
-                "failures": failed_tests,
+                "failures": failures_message,
             },
             indent=4,
         )
