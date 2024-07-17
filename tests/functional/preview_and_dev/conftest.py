@@ -10,6 +10,13 @@ from tests.test_utils import (
     set_response_codes,
 )
 
+test_api_client = TestApiClient()
+test_api_client.configure_for_internal_client(
+    client_id=config["service"]["internal_api_client_id"],
+    api_key=config["service"]["internal_api_client_secret"],
+    base_url=config["eas_api_url"],
+)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def preview_dev_config():
@@ -17,13 +24,6 @@ def preview_dev_config():
     Setup
     """
     setup_preview_dev_config()
-
-    test_api_client = TestApiClient()
-    test_api_client.configure_for_internal_client(
-        client_id=config["service"]["internal_api_client_id"],
-        api_key=config["service"]["internal_api_client_secret"],
-        base_url=config["eas_api_url"],
-    )
 
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
@@ -42,6 +42,12 @@ def cbc_blackout():
     clear_proxy_error_alarm()
     time.sleep(90)
     put_functional_test_blackout_metric(200)
+
+
+@pytest.fixture(scope="module")
+def failed_login_purge():
+    purge_failed_logins_created_by_functional_tests(test_api_client)
+    yield
 
 
 def purge_functional_test_alerts(test_api_client):
