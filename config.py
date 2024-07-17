@@ -21,6 +21,8 @@ config = {
     "verify_code_retry_interval": 9,
     "govuk_alerts_wait_retry_times": 24,
     "govuk_alerts_wait_retry_interval": 10,
+    "ui_element_retry_times": 20,
+    "ui_element_retry_interval": 5,
     "functional_test_service_name": "Functional Test Service_",
     "letter_contact_data": {
         "address_line_1": "test",
