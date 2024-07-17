@@ -14,7 +14,6 @@ test_group_name = "throttling"
 @pytest.mark.xdist_group(name=test_group_name)
 def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     clean_session(driver)
-    failed_login_purge()
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"
@@ -39,13 +38,13 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page.login(login_email, login_pw)
 
     throttled_page = ThrottledPage(driver)
-    assert throttled_page.check_page_for_text_with_retry("Too many requests")
-    assert throttled_page.check_page_for_text_with_retry(
+    assert throttled_page.is_text_present_on_page("Too many requests")
+    assert throttled_page.is_text_present_on_page(
         "You've been temporarily throttled due to too many login attempts."
     )
 
     # Waits some time to avoid throttle
-    time.sleep(12)
+    time.sleep(15)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")
@@ -60,9 +59,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
 
     # Successful login renders MFA page
 
-    assert sign_in_page.check_page_for_text_with_retry(
-        "text message with a security code"
-    )
+    assert sign_in_page.is_text_present_on_page("text message with a security code")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
 
