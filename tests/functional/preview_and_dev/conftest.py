@@ -52,6 +52,7 @@ def failed_login_purge():
     test_api_client = create_test_client()
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
+    purge_failed_logins_created_by_functional_tests(test_api_client)
 
 
 def purge_functional_test_alerts(test_api_client):
