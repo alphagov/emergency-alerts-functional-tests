@@ -244,6 +244,7 @@ class BasePage(object):
         if search_text not in normalized_page_source:
             self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
+        return True
 
     def is_text_present_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
