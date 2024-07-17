@@ -93,7 +93,6 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     )
 
     invite_user_page.sign_out()
-    time.sleep(30)
 
     # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
