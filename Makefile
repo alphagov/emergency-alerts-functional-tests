@@ -7,7 +7,7 @@ help:
 
 .PHONY: bootstrap
 bootstrap: ## Install build dependencies
-	mkdir -p logs screenshots functional-test-reports
+	mkdir -p logs screenshots functional-test-reports test-reports
 	pip install -r requirements.txt
 
 .PHONY: lint
@@ -16,50 +16,62 @@ lint:
 	flake8 .
 	black --check .
 
-.PHONY: test-broadcast-flow
-test-broadcast-flow:
+.PHONY: functional-tests
+functional-tests:
 	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_broadcast_flow.py \
-	--junitxml=functional-test-reports/broadcast-flow
+	tests/functional \
+	--junitxml=test-reports/functional-tests
 
-.PHONY: test-cbc-integration
-test-cbc-integration:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_cbc_integration.py \
-	--junitxml=functional-test-reports/cbc-integration
+.PHONY: integration-tests
+integration-tests:
+    pytest -v -n auto --dist=loadgroup \
+	tests/integration \
+	--junitxml=test-reports/integration-tests
 
-.PHONY: test-platform-admin-flow
-test-platform-admin-flow:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_platform_admin_flow.py \
-	--junitxml=functional-test-reports/platform-admin-flow
+# .PHONY: test-broadcast-flow
+# test-broadcast-flow:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_broadcast_flow.py \
+# 	--junitxml=functional-test-reports/broadcast-flow
 
-.PHONY: test-authentication-flow
-test-authentication-flow:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_authentication_flow.py \
-	--junitxml=functional-test-reports/authentication-flow
+# .PHONY: test-cbc-integration
+# test-cbc-integration:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_cbc_integration.py \
+# 	--junitxml=functional-test-reports/cbc-integration
 
-.PHONY: test-top-rail-services
-test-top-rail-services:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_top_rail_services.py \
-	--junitxml=functional-test-reports/top-rail-services
+# .PHONY: test-platform-admin-flow
+# test-platform-admin-flow:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_platform_admin_flow.py \
+# 	--junitxml=functional-test-reports/platform-admin-flow
 
-.PHONY: test-links-and-cookies
-test-links-and-cookies:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_links_and_cookies.py \
-	--junitxml=functional-test-reports/links-and-cookies
+# .PHONY: test-authentication-flow
+# test-authentication-flow:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_authentication_flow.py \
+# 	--junitxml=functional-test-reports/authentication-flow
 
-.PHONY: test-template-flow
-test-template-flow:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_template_flow.py \
-	--junitxml=functional-test-reports/template-flow
+# .PHONY: test-top-rail-services
+# test-top-rail-services:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_top_rail_services.py \
+# 	--junitxml=functional-test-reports/top-rail-services
 
-.PHONY: test-user-operations
-test-user-operations:
-	pytest -v -n auto --dist=loadgroup \
-	tests/functional/preview_and_dev/test_user_operations.py \
-	--junitxml=functional-test-reports/user-operations
+# .PHONY: test-links-and-cookies
+# test-links-and-cookies:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_links_and_cookies.py \
+# 	--junitxml=functional-test-reports/links-and-cookies
+
+# .PHONY: test-template-flow
+# test-template-flow:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_template_flow.py \
+# 	--junitxml=functional-test-reports/template-flow
+
+# .PHONY: test-user-operations
+# test-user-operations:
+# 	pytest -v -n auto --dist=loadgroup \
+# 	tests/functional/preview_and_dev/test_user_operations.py \
+# 	--junitxml=functional-test-reports/user-operations
