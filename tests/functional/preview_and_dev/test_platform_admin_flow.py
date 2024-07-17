@@ -104,7 +104,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     home_page.get(invitation_url)
     home_page.accept_cookie_warning()
 
-    time.sleep(30)  # To avoid throttle
+    time.sleep(60)  # To avoid throttle
 
     registration_page = RegisterFromInvite(driver)
     assert registration_page.is_page_title("Create an account")
