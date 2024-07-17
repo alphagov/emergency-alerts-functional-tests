@@ -44,7 +44,7 @@ def test_login_attempt_throttled_after_failed_login(driver):
     )
 
     # Waits some time to avoid throttle
-    time.sleep(30)
+    time.sleep(60)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")

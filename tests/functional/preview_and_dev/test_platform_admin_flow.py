@@ -104,6 +104,8 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     home_page.get(invitation_url)
     home_page.accept_cookie_warning()
 
+    time.sleep(30)  # To avoid throttle
+
     registration_page = RegisterFromInvite(driver)
     assert registration_page.is_page_title("Create an account")
     registration_page.fill_registration_form(name="User " + timestamp)
@@ -146,6 +148,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_service_admin_search_for_user_by_name_and_email(driver):
+    time.sleep(30)
     sign_in(driver, account_type="platform_admin")
 
     dashboard_page = DashboardPage(driver)
