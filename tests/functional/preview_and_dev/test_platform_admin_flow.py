@@ -71,7 +71,7 @@ def test_add_rename_and_delete_service(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     timestamp = str(int(time.time()))
-    time.sleep(10)
+    time.sleep(30)
 
     sign_in(driver, account_type="platform_admin")
 
@@ -93,7 +93,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     )
 
     invite_user_page.sign_out()
-    time.sleep(10)
+    time.sleep(30)
 
     # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
