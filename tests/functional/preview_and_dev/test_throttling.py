@@ -14,6 +14,7 @@ test_group_name = "throttling"
 @pytest.mark.xdist_group(name=test_group_name)
 def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     clean_session(driver)
+    failed_login_purge()
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"
@@ -44,7 +45,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     )
 
     # Waits some time to avoid throttle
-    time.sleep(30)
+    time.sleep(12)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")
