@@ -234,6 +234,18 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_title
 
+    @retry(
+        RetryException,
+        tries=config["ui_element_retry_times"],
+        delay=config["ui_element_retry_interval"],
+    )
+    def check_page_for_text_with_retry(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        if search_text not in normalized_page_source:
+            self.driver.refresh()
+            raise RetryException(f'Could not find text "{search_text}"')
+        return True
+
     def is_text_present_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
 
@@ -1387,3 +1399,7 @@ class ChooseCoordinateArea(BasePage):
     def click_preview(self):
         element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
         element.click()
+
+
+class ThrottledPage(BasePage):
+    pass
