@@ -57,7 +57,7 @@ def log_final_results(failed_tests):
         {
             "status": "FAILED" if failed_tests else "PASSED",
             "failures": test_string if test_string != "" else None,
-        },
+        }
     )
 
 
