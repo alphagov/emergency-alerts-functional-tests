@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 from xml.dom.minidom import Node, parse
@@ -55,13 +54,10 @@ def log_final_results(failed_tests):
     test_string = "".join(failed_tests)
 
     print(
-        json.dumps(
-            {
-                "test_run_status": "FAILED" if failed_tests else "PASSED",
-                "failures": test_string if test_string != "" else None,
-            },
-            indent=4,
-        )
+        {
+            "status": "FAILED" if failed_tests else "PASSED",
+            "failures": test_string if test_string != "" else None,
+        },
     )
 
 
