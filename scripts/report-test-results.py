@@ -41,19 +41,24 @@ def main():
 
             print(result.replace("\n", " "), sep="")
 
-    log_final_results(failed_tests=failed_tests)
+    log_final_results(failed_tests)
 
 
 def log_final_results(failed_tests):
+    test_string = ""
+
     if len(failed_tests) > 3:
+        failed_tests_count = len(failed_tests) - 3
         failed_tests = failed_tests[:3]
-        failed_tests = f"{failed_tests}- ...{len(failed_tests)} more failed."
+        failed_tests.append(f"- ...{failed_tests_count} more failed.")
+
+    test_string = "".join(failed_tests)
 
     print(
         json.dumps(
             {
-                "status": "FAILED" if failed_tests else "PASSED",
-                "failures": failed_tests,
+                "test_run_status": "FAILED" if failed_tests else "PASSED",
+                "failures": test_string if test_string != "" else None,
             },
             indent=4,
         )

@@ -5,7 +5,8 @@ VALUES
     ('1048af40-45f6-4249-a670-df72ba3352d7', 'Functional Tests - Broadcast User Approve',    'emergency-alerts-tests+user2@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth',   NOW()),
     ('f972899a-3aff-4474-a800-2d9d9e9b0b23', 'Functional Tests - Broadcast User Auth Test',  'emergency-alerts-tests+user3@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'sms_auth',   NOW()),
     ('69634ab0-28ab-4ea1-856e-36423058de45', 'Functional Tests - Broadcast User Email Auth', 'emergency-alerts-tests+user4@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'email_auth', NOW()),
-    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin',            'emergency-alerts-tests+admin@digital.cabinet-office.gov.uk',      '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true,  NULL, 'sms_auth',   NOW());
+    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'Functional Tests - Platform Admin',            'emergency-alerts-tests+admin@digital.cabinet-office.gov.uk',      '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', true,  NULL, 'sms_auth',   NOW()),
+    ('7a7d9571-7583-4b69-86c7-256753797dbe', 'Functional Tests - Throttling Login', 'emergency-alerts-tests+user5@digital.cabinet-office.gov.uk', '2021-07-14 14:52:41.503215', '2021-07-14 14:53:59.806529', '$2b$10$t2gDo8ymix/7BcPHZVxdNOh8uN1kEf.9tuMAOxgV79YzTUDAC70ZC', '07700900222', '2021-07-14 14:52:41.496841', '2021-07-14 14:53:00.204258', 0, 'active', false, NULL, 'email_auth', NOW());
 
 
 INSERT INTO organisation
@@ -89,7 +90,8 @@ VALUES
     ('1048af40-45f6-4249-a670-df72ba3352d7', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
     ('f972899a-3aff-4474-a800-2d9d9e9b0b23', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
     ('69634ab0-28ab-4ea1-856e-36423058de45', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
-    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', '8e1d56fa-12a8-4d00-bed2-db47180bed0a');
+    ('c3d33860-a967-40cf-8eb4-ec1ee38a4df9', '8e1d56fa-12a8-4d00-bed2-db47180bed0a'),
+    ('7a7d9571-7583-4b69-86c7-256753797dbe', '8e1d56fa-12a8-4d00-bed2-db47180bed0a');
 
 
 INSERT INTO user_to_organisation
