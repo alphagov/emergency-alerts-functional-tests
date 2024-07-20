@@ -85,6 +85,11 @@ def get_email_and_password(account_type):
             config["broadcast_service"]["platform_admin"]["email"],
             config["broadcast_service"]["platform_admin"]["password"],
         )
+    elif account_type == "session_timeout":
+        return (
+            config["broadcast_service"]["session_timeout"]["email"],
+            config["broadcast_service"]["session_timeout"]["password"],
+        )
     raise Exception("unknown account_type {}".format(account_type))
 
 
