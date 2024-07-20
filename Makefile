@@ -69,3 +69,9 @@ test-throttling:
 	pytest -v -n auto --dist=loadgroup \
 	tests/functional/preview_and_dev/test_throttling.py \
 	--junitxml=functional-test-reports/throttling
+
+.PHONY: test-session-timeout
+test-session-timeout:
+	pytest -v -n auto --dist=loadgroup \
+	tests/functional/preview_and_dev/test_session_timeout.py \
+	--junitxml=functional-test-reports/session-timeout
