@@ -20,9 +20,17 @@ from tests.pages.element import (
     CoordinateRadiusInputElement,
     CoordinateSearchButton,
     EmailInputElement,
+    ExpiryDialog,
+    ExpiryDialogCloseButton,
+    ExpiryDialogContinueButton,
+    ExpiryDialogSignOutButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
+    InactivityDialog,
+    InactivityDialogCloseButton,
+    InactivityDialogSignOutButton,
+    InactivityDialogStaySignedInButton,
     KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
@@ -45,6 +53,8 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
+    DashboardWithExpiryDialogPageLocators,
+    DashboardWithInactivityDialogPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
@@ -1403,3 +1413,53 @@ class ChooseCoordinateArea(BasePage):
 
 class ThrottledPage(BasePage):
     pass
+
+
+class DashboardWithInactivityDialog(BasePage):
+    inactivity_dialog = InactivityDialog()
+    inactivity_close_btn = InactivityDialogCloseButton()
+    inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
+    inactivity_sign_out_btn = InactivityDialogSignOutButton()
+
+    def close_dialog(self):
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.CLOSE_BUTTON
+        )
+        element.click()
+
+    def click_stay_signed_in(self):
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.STAY_SIGNED_IN_BUTTON
+        )
+        element.click()
+
+    def click_sign_out(self):
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.SIGN_OUT_BUTTON
+        )
+        element.click()
+
+
+class DashboardWithExpiryDialog(BasePage):
+    expiry_dialog = ExpiryDialog()
+    expiry_close_btn = ExpiryDialogCloseButton()
+    expiry_continue_btn = ExpiryDialogContinueButton()
+    expiry_sign_out_btn = ExpiryDialogSignOutButton()
+
+    def close_dialog(self):
+        element = self.wait_for_element(
+            DashboardWithExpiryDialogPageLocators.CLOSE_BUTTON
+        )
+        element.click()
+
+    def click_continue(self):
+        element = self.wait_for_element(
+            DashboardWithExpiryDialogPageLocators.CONTINUE_BUTTON
+        )
+        element.click()
+
+    def click_sign_out(self):
+        element = self.wait_for_element(
+            DashboardWithExpiryDialogPageLocators.SIGN_OUT_BUTTON
+        )
+        element.click()
