@@ -1439,6 +1439,12 @@ class DashboardWithInactivityDialog(BasePage):
         )
         element.click()
 
+    def is_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.DIALOG
+        )
+        return element.is_displayed()
+
 
 class DashboardWithExpiryDialog(BasePage):
     expiry_dialog = ExpiryDialog()
@@ -1463,3 +1469,7 @@ class DashboardWithExpiryDialog(BasePage):
             DashboardWithExpiryDialogPageLocators.SIGN_OUT_BUTTON
         )
         element.click()
+
+    def is_dialog_visible(self):
+        element = self.wait_for_element(DashboardWithExpiryDialogPageLocators.DIALOG)
+        return element.is_displayed()
