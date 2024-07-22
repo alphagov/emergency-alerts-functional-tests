@@ -26,6 +26,9 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     assert sign_in_page.is_text_present_on_page(
         "You’ve been signed out due to inactivity"
     )
+    assert sign_in_page.is_text_present_on_page(
+        "We do this to keep your information secure. Sign back in to continue where you left off."
+    )
     assert inactive_dashboard_page.url_contains("status=inactive")
     assert inactive_dashboard_page.url_contains("templates")
 
