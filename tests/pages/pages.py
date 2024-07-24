@@ -21,14 +21,12 @@ from tests.pages.element import (
     CoordinateSearchButton,
     EmailInputElement,
     ExpiryDialog,
-    ExpiryDialogCloseButton,
     ExpiryDialogContinueButton,
     ExpiryDialogSignOutButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
     InactivityDialog,
-    InactivityDialogCloseButton,
     InactivityDialogSignOutButton,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
@@ -1417,15 +1415,8 @@ class ThrottledPage(BasePage):
 
 class DashboardWithInactivityDialog(BasePage):
     inactivity_dialog = InactivityDialog()
-    inactivity_close_btn = InactivityDialogCloseButton()
     inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
     inactivity_sign_out_btn = InactivityDialogSignOutButton()
-
-    def close_dialog(self):
-        element = self.wait_for_element(
-            DashboardWithInactivityDialogPageLocators.CLOSE_BUTTON
-        )
-        element.click()
 
     def click_stay_signed_in(self):
         element = self.wait_for_element(
@@ -1448,15 +1439,8 @@ class DashboardWithInactivityDialog(BasePage):
 
 class DashboardWithExpiryDialog(BasePage):
     expiry_dialog = ExpiryDialog()
-    expiry_close_btn = ExpiryDialogCloseButton()
     expiry_continue_btn = ExpiryDialogContinueButton()
     expiry_sign_out_btn = ExpiryDialogSignOutButton()
-
-    def close_dialog(self):
-        element = self.wait_for_element(
-            DashboardWithExpiryDialogPageLocators.CLOSE_BUTTON
-        )
-        element.click()
 
     def click_continue(self):
         element = self.wait_for_element(
