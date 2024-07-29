@@ -94,20 +94,20 @@ def get_email_and_password(account_type):
 
 
 def get_identifier(account_type):
-    if account_type == "normal":
-        return config["user"]["mobile"]
-    elif account_type == "seeded":
-        return config["service"]["seeded_user"]["mobile"]
-    elif account_type == "email_auth":
-        return config["user"]["mobile"]
-    elif account_type == "broadcast_create_user":
-        return config["broadcast_service"]["broadcast_user_1"]["id"]
-    elif account_type == "broadcast_approve_user":
+    if account_type == "broadcast_approve_user":
         return config["broadcast_service"]["broadcast_user_2"]["id"]
     elif account_type == "broadcast_auth_test_user":
         return config["broadcast_service"]["broadcast_user_3"]["id"]
+    elif account_type == "broadcast_create_user":
+        return config["broadcast_service"]["broadcast_user_1"]["id"]
+    elif account_type in ["normal", "email_auth"]:
+        return config["user"]["mobile"]
     elif account_type == "platform_admin":
         return config["broadcast_service"]["platform_admin"]["id"]
+    elif account_type == "seeded":
+        return config["service"]["seeded_user"]["mobile"]
+    elif account_type == "session_timeout":
+        return config["broadcast_service"]["session_timeout"]["id"]
     raise Exception("unknown account_type {}".format(account_type))
 
 
