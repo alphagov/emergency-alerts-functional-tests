@@ -107,7 +107,7 @@ def get_identifier(account_type):
     elif account_type == "seeded":
         return config["service"]["seeded_user"]["mobile"]
     elif account_type == "session_timeout":
-        return config["broadcast_service"]["session_timeout"]["id"]
+        return config["broadcast_service"]["session_timeout"]["mobile"]
     raise Exception("unknown account_type {}".format(account_type))
 
 
