@@ -148,10 +148,6 @@ class CoordinatePreviewButton(BasePageElement):
     name = SearchCoordinatePageLocators.PREVIEW_BUTTON[1]
 
 
-class InactivityDialogCloseButton(BasePageElement):
-    name = DashboardWithInactivityDialogPageLocators.CLOSE_BUTTON[1]
-
-
 class InactivityDialogStaySignedInButton(BasePageElement):
     name = DashboardWithInactivityDialogPageLocators.STAY_SIGNED_IN_BUTTON[1]
 
@@ -162,10 +158,6 @@ class InactivityDialogSignOutButton(BasePageElement):
 
 class InactivityDialog(BasePageElement):
     name = DashboardWithInactivityDialogPageLocators.DIALOG[1]
-
-
-class ExpiryDialogCloseButton(BasePageElement):
-    name = DashboardWithExpiryDialogPageLocators.CLOSE_BUTTON[1]
 
 
 class ExpiryDialogContinueButton(BasePageElement):
