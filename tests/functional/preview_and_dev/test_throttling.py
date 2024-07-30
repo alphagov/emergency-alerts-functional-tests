@@ -62,6 +62,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     assert sign_in_page.check_page_for_text_with_retry("a link to sign in")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
+    assert sign_in_url == 1
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
