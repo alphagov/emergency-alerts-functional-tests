@@ -60,7 +60,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     # Successful login renders MFA page
 
     assert sign_in_page.check_page_for_text_with_retry(
-        "text message with a security code"
+        "We've emailed you a link to sign in to Emergency Alerts."
     )
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
