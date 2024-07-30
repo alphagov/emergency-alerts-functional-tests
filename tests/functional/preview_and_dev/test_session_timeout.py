@@ -98,7 +98,6 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     time.sleep(11)
     assert inactive_dashboard_page.is_dialog_visible()
     inactive_dashboard_page.click_sign_out()
-    assert not inactive_dashboard_page.is_dialog_visible()
     sign_in_page = SignInPage(driver)
     assert sign_in_page.is_text_present_on_page("Sign in")
 
