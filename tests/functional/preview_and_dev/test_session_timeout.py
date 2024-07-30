@@ -67,8 +67,13 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     assert inactive_dashboard_page.check_page_for_text_with_retry("Current alerts")
     time.sleep(11)
     assert inactive_dashboard_page.is_dialog_visible()
+    assert inactive_dashboard_page.is_text_present_on_page("remaining in your session")
     inactive_dashboard_page.click_stay_signed_in()
-    assert not inactive_dashboard_page.is_dialog_visible()
+    time.sleep(1)
+    # assert not inactive_dashboard_page.is_dialog_visible()
+    assert not inactive_dashboard_page.is_text_present_on_page(
+        "remaining in your session"
+    )
     inactive_dashboard_page.click_element_by_link_text("Templates")
     assert inactive_dashboard_page.is_page_title("Templates")
     time.sleep(20)
