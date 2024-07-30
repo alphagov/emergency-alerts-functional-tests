@@ -9,6 +9,7 @@ from tests.pages.pages import (
     SignInPage,
 )
 from tests.pages.rollups import clean_session
+from tests.test_utils import create_sign_in_url
 
 test_group_name = "session-timeout"
 
@@ -23,7 +24,14 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
+    assert sign_in_page.check_page_for_text_with_retry(
+        "We've emailed you a link to sign in to Emergency Alerts."
+    )
+    sign_in_url = create_sign_in_url(login_email, "email-auth")
+
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
+    inactive_dashboard_page.get(sign_in_url)
+
     inactive_dashboard_page.click_element_by_link_text("Templates")
     assert inactive_dashboard_page.is_page_title("Templates")
     time.sleep(11)
@@ -50,7 +58,14 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
+    assert sign_in_page.check_page_for_text_with_retry(
+        "We've emailed you a link to sign in to Emergency Alerts."
+    )
+
+    sign_in_url = create_sign_in_url(login_email, "email-auth")
+
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
+    inactive_dashboard_page.get(sign_in_url)
     time.sleep(11)
     assert inactive_dashboard_page.is_dialog_visible()
     inactive_dashboard_page.click_stay_signed_in()
@@ -82,7 +97,13 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
+    assert sign_in_page.check_page_for_text_with_retry(
+        "We've emailed you a link to sign in to Emergency Alerts."
+    )
+    sign_in_url = create_sign_in_url(login_email, "email-auth")
+
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
+    inactive_dashboard_page.get(sign_in_url)
     time.sleep(11)
     assert inactive_dashboard_page.is_dialog_visible()
     inactive_dashboard_page.click_sign_out()
@@ -101,7 +122,13 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
+    assert sign_in_page.check_page_for_text_with_retry(
+        "We've emailed you a link to sign in to Emergency Alerts."
+    )
+    sign_in_url = create_sign_in_url(login_email, "email-auth")
+
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
+    inactive_dashboard_page.get(sign_in_url)
     time.sleep(11)
     assert inactive_dashboard_page.is_dialog_visible()
     inactive_dashboard_page.click_stay_signed_in()
