@@ -205,12 +205,12 @@ class PlatformAdminPageLocators(object):
 
 
 class DashboardWithInactivityDialogPageLocators(object):
-    STAY_SIGNED_IN_BUTTON = (By.ID, "hmrc-timeout-keep-signin-btn")
+    STAY_SIGNED_IN_BUTTON = (By.NAME, "stay-signed-in-btn")
     SIGN_OUT_BUTTON = (By.ID, "hmrc-timeout-sign-out-link")
     DIALOG = (By.CLASS_NAME, "hmrc-timeout-dialog")
 
 
 class DashboardWithExpiryDialogPageLocators(object):
-    CONTINUE_BUTTON = (By.ID, "continue-button")
+    CONTINUE_BUTTON = (By.NAME, "continue-btn")
     SIGN_OUT_BUTTON = (By.ID, "hmrc-timeout-sign-out-link")
     DIALOG = (By.CLASS_NAME, "hmrc-timeout-dialog")
