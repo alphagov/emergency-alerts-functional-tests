@@ -3,6 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
+      throttling
       session-timeout
 
 phases:
@@ -53,7 +54,7 @@ phases:
       # - make test-links-and-cookies; exit 0
       # - make test-template-flow; exit 0
       # - make test-user-operations; exit 0
-      # - make test-throttling; exit 0
+      - make test-throttling; exit 0
       - make test-session-timeout; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
