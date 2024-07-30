@@ -8,7 +8,7 @@ from tests.pages.pages import (
     DashboardWithInactivityDialog,
     SignInPage,
 )
-from tests.pages.rollups import clean_session
+from tests.pages.rollups import clean_session, sign_in
 from tests.test_utils import create_sign_in_url
 
 test_group_name = "session-timeout"
@@ -18,17 +18,9 @@ test_group_name = "session-timeout"
 def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(driver):
     clean_session(driver)
 
-    login_email = config["broadcast_service"]["session_timeout"]["email"]
-    login_pw = config["broadcast_service"]["session_timeout"]["password"]
-    sign_in_page = SignInPage(driver)
-    sign_in_page.get()
-    sign_in_page.login(login_email, login_pw)
-
-    assert sign_in_page.check_page_for_text_with_retry("a link to sign in")
-    sign_in_url = create_sign_in_url(login_email, "email-auth")
+    sign_in(driver, account_type="session_timeout")
 
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
-    inactive_dashboard_page.get(sign_in_url)
 
     inactive_dashboard_page.click_element_by_link_text("Templates")
     assert inactive_dashboard_page.is_page_title("Templates")
