@@ -4,12 +4,12 @@ import pytest
 
 from config import config
 from tests.pages.pages import (
-    BasePage,
     DashboardWithInactivityDialog,
     SignInPage,
+    VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url
+from tests.test_utils import get_verify_code_from_api
 
 test_group_name = "session-timeout"
 
@@ -24,18 +24,18 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
-    assert sign_in_page.check_page_for_text_with_retry("a link to sign in")
-    sign_in_url = create_sign_in_url(login_email, "email-auth")
-    assert sign_in_url == 1
+    assert sign_in_page.check_page_for_text_with_retry(
+        "a text message with a security code"
+    )
+    mfa_code = get_verify_code_from_api(
+        config["broadcast_service"]["session_timeout"]["mobile"]
+    )
 
-    landing_page = BasePage(driver)
-    landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
-    assert sign_in_page.check_page_for_text_with_retry("Current alerts")
+    verify_page = VerifyPage(driver)
+    verify_page.verify(code=mfa_code)
 
     inactive_dashboard_page = DashboardWithInactivityDialog(driver)
-
+    assert inactive_dashboard_page.check_page_for_text_with_retry("Current alerts")
     inactive_dashboard_page.click_element_by_link_text("Templates")
     assert inactive_dashboard_page.is_page_title("Templates")
     time.sleep(11)
