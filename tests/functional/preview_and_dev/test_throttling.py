@@ -6,7 +6,7 @@ from config import config
 from tests.pages import BasePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
 from tests.pages.rollups import clean_session
-from tests.test_utils import get_verify_code_from_api, recordtime
+from tests.test_utils import get_verification_code_by_id, recordtime
 
 test_group_name = "throttling"
 
@@ -63,8 +63,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     assert sign_in_page.check_page_for_text_with_retry(
         "a text message with a security code"
     )
-    mfa_code = get_verify_code_from_api(
-        config["broadcast_service"]["throttled_user"]["mobile"]
+    mfa_code = get_verification_code_by_id(
+        config["broadcast_service"]["throttled_user"]["id"]
     )
 
     verify_page = VerifyPage(driver)

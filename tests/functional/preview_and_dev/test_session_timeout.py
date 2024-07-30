@@ -9,7 +9,7 @@ from tests.pages.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import get_verify_code_from_api
+from tests.test_utils import get_verification_code_by_id
 
 test_group_name = "session-timeout"
 
@@ -27,8 +27,8 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     assert sign_in_page.check_page_for_text_with_retry(
         "a text message with a security code"
     )
-    mfa_code = get_verify_code_from_api(
-        config["broadcast_service"]["session_timeout"]["mobile"]
+    mfa_code = get_verification_code_by_id(
+        config["broadcast_service"]["session_timeout"]["id"]
     )
 
     verify_page = VerifyPage(driver)
