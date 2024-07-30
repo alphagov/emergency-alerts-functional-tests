@@ -62,10 +62,7 @@ VALUES
     ('308280b1-10b3-417b-934c-ea090cd79c6a', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_settings', '2021-07-14 14:53:00.409842'),
     ('9b7b5770-7299-4e25-9d85-85bb65814f33', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_templates', '2021-07-14 14:53:00.409852'),
     ('e1042928-5c7c-4dc4-b150-b6614b65d4f5', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'manage_users', '2021-07-14 14:53:00.409881'),
-    ('ee8f6a8b-cbc0-43ab-a710-402c5929f557', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'view_activity', '2021-07-14 14:53:00.409891'),
-
-    -- Functional Tests - Session timeout user
-    ('47077214-ca6e-4ee2-85b1-c04e72b85407', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', '44153bb8-db31-4cb0-8cee-b909a5482d1a', 'view_activity', '2021-07-14 14:53:00.409881');
+    ('ee8f6a8b-cbc0-43ab-a710-402c5929f557', '8e1d56fa-12a8-4d00-bed2-db47180bed0a', 'c3d33860-a967-40cf-8eb4-ec1ee38a4df9', 'view_activity', '2021-07-14 14:53:00.409891');
 
 
 INSERT INTO service_broadcast_settings
