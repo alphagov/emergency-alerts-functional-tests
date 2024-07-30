@@ -1419,7 +1419,9 @@ class DashboardWithInactivityDialog(BasePage):
     inactivity_sign_out_btn = InactivityDialogSignOutButton()
 
     def click_stay_signed_in(self):
-        element = self.wait_for_element(self.inactivity_stay_signed_in_btn)
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.STAY_SIGNED_IN_BUTTON
+        )
         element.click()
 
     def click_sign_out(self):
