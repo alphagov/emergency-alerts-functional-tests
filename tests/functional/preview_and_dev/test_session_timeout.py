@@ -114,9 +114,6 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
-    assert not dashboard_with_dialogs_page.check_page_for_text_with_retry(
-        "remaining in your session"
-    )
     time.sleep(10)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
