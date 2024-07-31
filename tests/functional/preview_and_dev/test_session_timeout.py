@@ -76,8 +76,12 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
+    assert dashboard_with_dialogs_page.is_text_present_on_page(
+        "remaining in your session"
+    )
     assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     time.sleep(10)
+    # Asserting that inactivity dialog has been displayed
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
     )
