@@ -1422,10 +1422,6 @@ class DashboardWithDialogs(BasePage):
         )
         element.click()
 
-    def click_sign_out_dialog(self):
-        element = self.wait_for_element(DashboardWithDialogPageLocators.SIGN_OUT_BUTTON)
-        element.click()
-
     def click_continue(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()

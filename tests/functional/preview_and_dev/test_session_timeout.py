@@ -64,7 +64,7 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
     )
-    dashboard_with_dialogs_page.click_sign_out_dialog()
+    dashboard_with_dialogs_page.click_element_by_link_text("Sign out now")
     sign_in_page = SignInPage(driver)
     assert sign_in_page.is_text_present_on_page("Sign in")
 
