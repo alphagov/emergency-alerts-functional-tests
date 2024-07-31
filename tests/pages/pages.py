@@ -19,15 +19,13 @@ from tests.pages.element import (
     CoordinatePreviewButton,
     CoordinateRadiusInputElement,
     CoordinateSearchButton,
+    Dialog,
+    DialogSignOutButton,
     EmailInputElement,
-    ExpiryDialog,
     ExpiryDialogContinueButton,
-    ExpiryDialogSignOutButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
-    InactivityDialog,
-    InactivityDialogSignOutButton,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
     MobileInputElement,
@@ -1413,13 +1411,10 @@ class ThrottledPage(BasePage):
 
 
 class DashboardWithDialogs(BasePage):
-    inactivity_dialog = InactivityDialog()
+    inactivity_dialog = Dialog()
     inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
-    inactivity_sign_out_btn = InactivityDialogSignOutButton()
-
-    expiry_dialog = ExpiryDialog()
+    sign_out_btn = DialogSignOutButton()
     expiry_continue_btn = ExpiryDialogContinueButton()
-    expiry_sign_out_btn = ExpiryDialogSignOutButton()
 
     def click_stay_signed_in(self):
         element = self.wait_for_element(

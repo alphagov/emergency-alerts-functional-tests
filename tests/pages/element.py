@@ -6,8 +6,7 @@ from tests.pages.locators import (
     AddServicePageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
-    DashboardWithExpiryDialogPageLocators,
-    DashboardWithInactivityDialogPageLocators,
+    DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
@@ -149,24 +148,16 @@ class CoordinatePreviewButton(BasePageElement):
 
 
 class InactivityDialogStaySignedInButton(BasePageElement):
-    name = DashboardWithInactivityDialogPageLocators.STAY_SIGNED_IN_BUTTON[1]
+    name = DashboardWithDialogPageLocators.STAY_SIGNED_IN_BUTTON[1]
 
 
-class InactivityDialogSignOutButton(BasePageElement):
-    name = DashboardWithInactivityDialogPageLocators.SIGN_OUT_BUTTON[1]
+class DialogSignOutButton(BasePageElement):
+    name = DashboardWithDialogPageLocators.SIGN_OUT_BUTTON[1]
 
 
-class InactivityDialog(BasePageElement):
-    name = DashboardWithInactivityDialogPageLocators.DIALOG[1]
+class Dialog(BasePageElement):
+    name = DashboardWithDialogPageLocators.DIALOG[1]
 
 
 class ExpiryDialogContinueButton(BasePageElement):
-    name = DashboardWithExpiryDialogPageLocators.CONTINUE_BUTTON[1]
-
-
-class ExpiryDialogSignOutButton(BasePageElement):
-    name = DashboardWithExpiryDialogPageLocators.SIGN_OUT_BUTTON[1]
-
-
-class ExpiryDialog(BasePageElement):
-    name = DashboardWithExpiryDialogPageLocators.DIALOG[1]
+    name = DashboardWithDialogPageLocators.CONTINUE_BUTTON[1]
