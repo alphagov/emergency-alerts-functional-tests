@@ -1425,3 +1425,7 @@ class DashboardWithDialogs(BasePage):
     def click_continue(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()
+
+    def is_dialog_visible(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.DIALOG)
+        return element.__getattr__("open") is not None
