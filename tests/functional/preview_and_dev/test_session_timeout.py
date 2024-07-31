@@ -53,6 +53,21 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
+    clean_session(driver)
+
+    sign_in_as_session_timeout_user(driver)
+
+    dashboard_with_dialogs_page = DashboardWithDialogs(driver)
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
+    time.sleep(11)
+    assert dashboard_with_dialogs_page.is_inactivity_dialog_visible()
+    dashboard_with_dialogs_page.click_sign_out_in_inactivity_dialog()
+    sign_in_page = SignInPage(driver)
+    assert sign_in_page.is_text_present_on_page("Sign in")
+
+
+@pytest.mark.xdist_group(name=test_group_name)
 def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     clean_session(driver)
 
@@ -80,21 +95,6 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     )
     assert dashboard_with_dialogs_page.url_contains("status=expired")
     assert dashboard_with_dialogs_page.url_contains("templates")
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
-    clean_session(driver)
-
-    sign_in_as_session_timeout_user(driver)
-
-    dashboard_with_dialogs_page = DashboardWithDialogs(driver)
-    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
-    time.sleep(11)
-    assert dashboard_with_dialogs_page.is_inactivity_dialog_visible()
-    dashboard_with_dialogs_page.click_sign_out_in_inactivity_dialog()
-    sign_in_page = SignInPage(driver)
-    assert sign_in_page.is_text_present_on_page("Sign in")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
