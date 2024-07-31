@@ -17,9 +17,7 @@ def sign_in_as_session_timeout_user(driver):
     sign_in_page.get()
     sign_in_page.login(login_email, login_pw)
 
-    assert sign_in_page.check_page_for_text_with_retry(
-        "a text message with a security code"
-    )
+    assert sign_in_page.is_text_present_on_page("a text message with a security code")
     mfa_code = get_verification_code_by_id(
         config["broadcast_service"]["session_timeout"]["id"]
     )
@@ -35,7 +33,7 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
-    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
+    assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
     time.sleep(11)
@@ -61,7 +59,7 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
-    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
+    assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     time.sleep(11)
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
@@ -78,7 +76,7 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
-    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
+    assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     time.sleep(10)
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
@@ -113,7 +111,7 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
-    assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
+    assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     time.sleep(10)
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
