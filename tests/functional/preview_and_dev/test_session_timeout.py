@@ -36,6 +36,9 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     assert dashboard_with_dialogs_page.is_text_present_on_page("Current alerts")
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
+    assert not dashboard_with_dialogs_page.is_text_present_on_page(
+        "remaining in your session"
+    )
     time.sleep(11)
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
