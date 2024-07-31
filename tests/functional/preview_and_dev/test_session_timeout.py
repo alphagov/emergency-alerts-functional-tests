@@ -124,7 +124,7 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
-    time.sleep(7)
+    time.sleep(6)
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "You can no longer extend your session"
     )
