@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import pytest
 
@@ -84,15 +85,18 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
     time.sleep(10)
+    print(datetime.datetime.now())
     assert dashboard_with_dialogs_page.is_inactivity_dialog_visible()
     assert dashboard_with_dialogs_page.is_text_present_on_page(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
     time.sleep(10)
+    print(datetime.datetime.now())
     assert dashboard_with_dialogs_page.is_expiry_dialog_visible()
     dashboard_with_dialogs_page.click_continue()
     time.sleep(10)
+    print(datetime.datetime.now())
     sign_in_page = SignInPage(driver)
     assert sign_in_page.is_text_present_on_page("You’ve been signed out")
     assert sign_in_page.is_text_present_on_page(
@@ -105,18 +109,22 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     clean_session(driver)
+    print(datetime.datetime.now())
 
     sign_in_as_session_timeout_user(driver)
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
     time.sleep(10)
+    print(datetime.datetime.now())
     assert dashboard_with_dialogs_page.is_inactivity_dialog_visible()
     dashboard_with_dialogs_page.click_stay_signed_in()
     time.sleep(10)
+    print(datetime.datetime.now())
     assert dashboard_with_dialogs_page.is_inactivity_dialog_visible()
     dashboard_with_dialogs_page.click_stay_signed_in()
     time.sleep(10)
+    print(datetime.datetime.now())
     assert dashboard_with_dialogs_page.is_expiry_dialog_visible()
     dashboard_with_dialogs_page.click_sign_out_in_expiry_dialog()
     sign_in_page = SignInPage(driver)
