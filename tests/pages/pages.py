@@ -19,13 +19,14 @@ from tests.pages.element import (
     CoordinatePreviewButton,
     CoordinateRadiusInputElement,
     CoordinateSearchButton,
-    Dialog,
     DialogSignOutButton,
     EmailInputElement,
+    ExpiryDialog,
     ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
+    InactivityDialog,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
     MobileInputElement,
@@ -1411,10 +1412,11 @@ class ThrottledPage(BasePage):
 
 
 class DashboardWithDialogs(BasePage):
-    inactivity_dialog = Dialog()
+    inactivity_dialog = InactivityDialog()
     inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
     sign_out_btn = DialogSignOutButton()
     expiry_continue_btn = ExpiryDialogContinueButton()
+    expiry_dialog = ExpiryDialog()
 
     def click_stay_signed_in(self):
         element = self.wait_for_element(
@@ -1426,6 +1428,12 @@ class DashboardWithDialogs(BasePage):
         element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()
 
-    def is_dialog_visible(self):
-        element = self.wait_for_element(DashboardWithDialogPageLocators.DIALOG)
+    def is_inactivity_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return element.get_attribute("open")
+
+    def is_expiry_dialog_visible(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
         return element.get_attribute("open")

@@ -155,8 +155,12 @@ class DialogSignOutButton(BasePageElement):
     name = DashboardWithDialogPageLocators.SIGN_OUT_BUTTON[1]
 
 
-class Dialog(BasePageElement):
-    name = DashboardWithDialogPageLocators.DIALOG[1]
+class InactivityDialog(BasePageElement):
+    name = DashboardWithDialogPageLocators.INACTIVITY_DIALOG[1]
+
+
+class ExpiryDialog(BasePageElement):
+    name = DashboardWithDialogPageLocators.EXPIRY_DIALOG[1]
 
 
 class ExpiryDialogContinueButton(BasePageElement):
