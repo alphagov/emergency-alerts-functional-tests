@@ -1428,4 +1428,4 @@ class DashboardWithDialogs(BasePage):
 
     def is_dialog_visible(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.DIALOG)
-        return element.__getattr__("open") is not None
+        return element.get_attribute("open")
