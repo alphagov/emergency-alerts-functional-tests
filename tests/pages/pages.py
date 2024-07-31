@@ -51,8 +51,7 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
-    DashboardWithExpiryDialogPageLocators,
-    DashboardWithInactivityDialogPageLocators,
+    DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
@@ -1424,34 +1423,14 @@ class DashboardWithDialogs(BasePage):
 
     def click_stay_signed_in(self):
         element = self.wait_for_element(
-            DashboardWithInactivityDialogPageLocators.STAY_SIGNED_IN_BUTTON
+            DashboardWithDialogPageLocators.STAY_SIGNED_IN_BUTTON
         )
         element.click()
 
-    def click_sign_out_in_inactivity_dialog(self):
-        element = self.wait_for_element(
-            DashboardWithInactivityDialogPageLocators.SIGN_OUT_BUTTON
-        )
+    def click_sign_out_dialog(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.SIGN_OUT_BUTTON)
         element.click()
 
     def click_continue(self):
-        element = self.wait_for_element(
-            DashboardWithExpiryDialogPageLocators.CONTINUE_BUTTON
-        )
+        element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()
-
-    def click_sign_out_in_expiry_dialog(self):
-        element = self.wait_for_element(
-            DashboardWithExpiryDialogPageLocators.SIGN_OUT_BUTTON
-        )
-        element.click()
-
-    def is_expiry_dialog_visible(self):
-        element = self.wait_for_element(DashboardWithExpiryDialogPageLocators.DIALOG)
-        return element.is_displayed()
-
-    def is_inactivity_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithInactivityDialogPageLocators.DIALOG
-        )
-        return element.is_displayed()
