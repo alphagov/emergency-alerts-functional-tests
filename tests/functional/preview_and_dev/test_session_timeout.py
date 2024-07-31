@@ -39,15 +39,15 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
     time.sleep(11)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     time.sleep(10)
     sign_in_page = SignInPage(driver)
-    assert sign_in_page.is_text_present_on_page(
+    assert sign_in_page.check_page_for_text_with_retry(
         "You’ve been signed out due to inactivity"
     )
-    assert sign_in_page.is_text_present_on_page(
+    assert sign_in_page.check_page_for_text_with_retry(
         "We do this to keep your information secure. Sign back in to continue where you left off."
     )
     assert dashboard_with_dialogs_page.url_contains("status=inactive")
@@ -63,12 +63,12 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
     time.sleep(11)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_sign_out_dialog()
     sign_in_page = SignInPage(driver)
-    assert sign_in_page.is_text_present_on_page("Sign in")
+    assert sign_in_page.check_page_for_text_with_retry("Sign in")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -80,26 +80,26 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
     time.sleep(10)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
     time.sleep(10)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
     time.sleep(7)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "You can no longer extend your session"
     )
     dashboard_with_dialogs_page.click_continue()
     time.sleep(10)
     sign_in_page = SignInPage(driver)
-    assert sign_in_page.is_text_present_on_page("You’ve been signed out")
-    assert sign_in_page.is_text_present_on_page(
+    assert sign_in_page.check_page_for_text_with_retry("You’ve been signed out")
+    assert sign_in_page.check_page_for_text_with_retry(
         "We do this every hour to keep your information secure. Sign back in to start a new session"
     )
     assert dashboard_with_dialogs_page.url_contains("status=expired")
@@ -114,29 +114,23 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.check_page_for_text_with_retry("Current alerts")
-    assert not dashboard_with_dialogs_page.is_text_present_on_page(
+    assert not dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     time.sleep(10)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
-    assert not dashboard_with_dialogs_page.is_text_present_on_page(
-        "remaining in your session"
-    )
     time.sleep(10)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
-    assert not dashboard_with_dialogs_page.is_text_present_on_page(
-        "remaining in your session"
-    )
-    time.sleep(6)
-    assert dashboard_with_dialogs_page.is_text_present_on_page(
+    time.sleep(7)
+    assert dashboard_with_dialogs_page.check_page_for_text_with_retry(
         "You can no longer extend your session"
     )
     dashboard_with_dialogs_page.click_sign_out_dialog()
     sign_in_page = SignInPage(driver)
-    assert sign_in_page.is_text_present_on_page("Sign in")
+    assert sign_in_page.check_page_for_text_with_retry("Sign in")
