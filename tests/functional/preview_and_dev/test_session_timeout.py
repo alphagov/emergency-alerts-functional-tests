@@ -89,10 +89,10 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
         "remaining in your session"
     )
     dashboard_with_dialogs_page.click_stay_signed_in()
-    time.sleep(10)
+    time.sleep(7)
     assert dashboard_with_dialogs_page.is_expiry_dialog_visible()
     dashboard_with_dialogs_page.click_continue()
-    time.sleep(7)
+    time.sleep(10)
     sign_in_page = SignInPage(driver)
     assert sign_in_page.is_text_present_on_page("You’ve been signed out")
     assert sign_in_page.is_text_present_on_page(
