@@ -1413,10 +1413,14 @@ class ThrottledPage(BasePage):
     pass
 
 
-class DashboardWithInactivityDialog(BasePage):
+class DashboardWithDialogs(BasePage):
     inactivity_dialog = InactivityDialog()
     inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
     inactivity_sign_out_btn = InactivityDialogSignOutButton()
+
+    expiry_dialog = ExpiryDialog()
+    expiry_continue_btn = ExpiryDialogContinueButton()
+    expiry_sign_out_btn = ExpiryDialogSignOutButton()
 
     def click_stay_signed_in(self):
         element = self.wait_for_element(
@@ -1424,23 +1428,11 @@ class DashboardWithInactivityDialog(BasePage):
         )
         element.click()
 
-    def click_sign_out(self):
+    def click_sign_out_in_inactivity_dialog(self):
         element = self.wait_for_element(
             DashboardWithInactivityDialogPageLocators.SIGN_OUT_BUTTON
         )
         element.click()
-
-    def is_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithInactivityDialogPageLocators.DIALOG
-        )
-        return element.is_displayed()
-
-
-class DashboardWithExpiryDialog(BasePage):
-    expiry_dialog = ExpiryDialog()
-    expiry_continue_btn = ExpiryDialogContinueButton()
-    expiry_sign_out_btn = ExpiryDialogSignOutButton()
 
     def click_continue(self):
         element = self.wait_for_element(
@@ -1448,12 +1440,18 @@ class DashboardWithExpiryDialog(BasePage):
         )
         element.click()
 
-    def click_sign_out(self):
+    def click_sign_out_in_expiry_dialog(self):
         element = self.wait_for_element(
             DashboardWithExpiryDialogPageLocators.SIGN_OUT_BUTTON
         )
         element.click()
 
-    def is_dialog_visible(self):
+    def is_expiry_dialog_visible(self):
         element = self.wait_for_element(DashboardWithExpiryDialogPageLocators.DIALOG)
+        return element.is_displayed()
+
+    def is_inactivity_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithInactivityDialogPageLocators.DIALOG
+        )
         return element.is_displayed()
