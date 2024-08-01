@@ -4,8 +4,9 @@ import pytest
 
 from config import config
 from tests.pages import BasePage, SignInPage, ThrottledPage
+from tests.pages.pages import VerifyPage
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, recordtime
+from tests.test_utils import get_verification_code_by_id, recordtime
 
 test_group_name = "throttling"
 
@@ -60,12 +61,14 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     # Successful login renders MFA page
 
     assert sign_in_page.check_page_for_text_with_retry(
-        "text message with a security code"
+        "a text message with a security code"
+    )
+    mfa_code = get_verification_code_by_id(
+        config["broadcast_service"]["throttled_user"]["id"]
     )
 
-    sign_in_url = create_sign_in_url(login_email, "email-auth")
+    verify_page = VerifyPage(driver)
+    verify_page.verify(code=mfa_code)
 
     landing_page = BasePage(driver)
-    landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
+    assert landing_page.url_contains("current-alerts")

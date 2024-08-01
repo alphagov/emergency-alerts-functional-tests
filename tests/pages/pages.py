@@ -19,10 +19,15 @@ from tests.pages.element import (
     CoordinatePreviewButton,
     CoordinateRadiusInputElement,
     CoordinateSearchButton,
+    DialogSignOutButton,
     EmailInputElement,
+    ExpiryDialog,
+    ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
+    InactivityDialog,
+    InactivityDialogStaySignedInButton,
     KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
@@ -45,6 +50,7 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
+    DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
@@ -1403,3 +1409,43 @@ class ChooseCoordinateArea(BasePage):
 
 class ThrottledPage(BasePage):
     pass
+
+
+class DashboardWithDialogs(BasePage):
+    inactivity_dialog = InactivityDialog()
+    inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
+    sign_out_btn = DialogSignOutButton()
+    expiry_continue_btn = ExpiryDialogContinueButton()
+    expiry_dialog = ExpiryDialog()
+
+    def click_stay_signed_in(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.STAY_SIGNED_IN_BUTTON
+        )
+        element.click()
+
+    def click_continue(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def is_inactivity_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return element.get_attribute("open")
+
+    def is_expiry_dialog_visible(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
+        return element.get_attribute("open")
+
+    def is_inactivity_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return not element.get_attribute("open")
+
+    def is_expiry_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+        )
+        return not element.get_attribute("open")

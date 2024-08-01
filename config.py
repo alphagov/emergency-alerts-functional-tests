@@ -133,6 +133,12 @@ def setup_preview_dev_config():
                     "password": os.environ["THROTTLED_USER_PASSWORD"],
                     "mobile": os.environ["THROTTLED_USER_NUMBER"],
                 },
+                "session_timeout": {
+                    "id": os.environ["SESSION_TIMEOUT_USER_ID"],
+                    "email": os.environ["SESSION_TIMEOUT_USER_EMAIL"],
+                    "password": os.environ["SESSION_TIMEOUT_USER_PASSWORD"],
+                    "mobile": os.environ["SESSION_TIMEOUT_USER_NUMBER"],
+                },
                 "api_key_live": os.environ["BROADCAST_SERVICE_API_KEY"],
                 "service_name": os.environ["BROADCAST_SERVICE_NAME"],
                 "service_id": os.environ["BROADCAST_SERVICE_ID"],

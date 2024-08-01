@@ -202,3 +202,14 @@ class SearchCoordinatePageLocators(object):
 
 class PlatformAdminPageLocators(object):
     SEARCH_INPUT = (By.NAME, "search")
+
+
+class DashboardWithDialogPageLocators(object):
+    STAY_SIGNED_IN_BUTTON = (By.NAME, "stay-signed-in-btn")
+    SIGN_OUT_BUTTON = (By.ID, "hmrc-timeout-sign-out-link")
+    EXPIRY_DIALOG = (By.XPATH, '//*[@id="expiry" and @class="hmrc-timeout-dialog"]')
+    INACTIVITY_DIALOG = (
+        By.XPATH,
+        '//*[@id="activity" and @class="hmrc-timeout-dialog"]',
+    )
+    CONTINUE_BUTTON = (By.NAME, "continue-btn")
