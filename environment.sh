@@ -57,6 +57,11 @@ export PLATFORM_ADMIN_PASSWORD=Password1234
 export PLATFORM_ADMIN_NUMBER=07700900222
 
 export THROTTLED_USER_ID='7a7d9571-7583-4b69-86c7-256753797dbe'
-export THROTTLED_USER_EMAIL='emergency-alerts-tests+admin@digital.cabinet-office.gov.uk'
+export THROTTLED_USER_EMAIL='emergency-alerts-tests+user5@digital.cabinet-office.gov.uk'
 export THROTTLED_USER_PASSWORD=Password1234
 export THROTTLED_USER_NUMBER=07700900222
+
+export SESSION_TIMEOUT_USER_ID='44153bb8-db31-4cb0-8cee-b909a5482d1a'
+export SESSION_TIMEOUT_USER_EMAIL='emergency-alerts-tests+user6@digital.cabinet-office.gov.uk'
+export SESSION_TIMEOUT_USER_PASSWORD=Password1234
+export SESSION_TIMEOUT_USER_NUMBER=07700900222
