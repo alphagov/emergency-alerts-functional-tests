@@ -19,10 +19,15 @@ from tests.pages.element import (
     CoordinatePreviewButton,
     CoordinateRadiusInputElement,
     CoordinateSearchButton,
+    DialogSignOutButton,
     EmailInputElement,
+    ExpiryDialog,
+    ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
     FileInputElement,
     FirstCoordinateInputElement,
+    InactivityDialog,
+    InactivityDialogStaySignedInButton,
     KeyNameInputElement,
     MobileInputElement,
     NameInputElement,
@@ -45,6 +50,7 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
+    DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
     EmailReplyToLocators,
     InviteUserPageLocators,
@@ -233,6 +239,18 @@ class BasePage(object):
     def is_page_title(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_title
+
+    @retry(
+        RetryException,
+        tries=config["ui_element_retry_times"],
+        delay=config["ui_element_retry_interval"],
+    )
+    def check_page_for_text_with_retry(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        if search_text not in normalized_page_source:
+            self.driver.refresh()
+            raise RetryException(f'Could not find text "{search_text}"')
+        return True
 
     def is_text_present_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
@@ -1387,3 +1405,47 @@ class ChooseCoordinateArea(BasePage):
     def click_preview(self):
         element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
         element.click()
+
+
+class ThrottledPage(BasePage):
+    pass
+
+
+class DashboardWithDialogs(BasePage):
+    inactivity_dialog = InactivityDialog()
+    inactivity_stay_signed_in_btn = InactivityDialogStaySignedInButton()
+    sign_out_btn = DialogSignOutButton()
+    expiry_continue_btn = ExpiryDialogContinueButton()
+    expiry_dialog = ExpiryDialog()
+
+    def click_stay_signed_in(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.STAY_SIGNED_IN_BUTTON
+        )
+        element.click()
+
+    def click_continue(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def is_inactivity_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return element.get_attribute("open")
+
+    def is_expiry_dialog_visible(self):
+        element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
+        return element.get_attribute("open")
+
+    def is_inactivity_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return not element.get_attribute("open")
+
+    def is_expiry_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+        )
+        return not element.get_attribute("open")

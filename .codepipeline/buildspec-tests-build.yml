@@ -10,6 +10,8 @@ env:
       links-and-cookies
       template-flow
       user-operations
+      throttling
+      session-timeout
 
 phases:
   install:
@@ -59,6 +61,8 @@ phases:
       - make test-links-and-cookies; exit 0
       - make test-template-flow; exit 0
       - make test-user-operations; exit 0
+      - make test-throttling; exit 0
+      - make test-session-timeout; exit 0
       - echo "Test run completed."
       - touch "$(pwd)/test-failures"
       - chmod +rw "$(pwd)/test-failures"
