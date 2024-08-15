@@ -398,9 +398,7 @@ def send_notification_to_one_recipient(
     if placeholders_number:
         assert len(placeholders) == placeholders_number
     for placeholder in placeholders:
-        assert send_to_one_recipient_page.is_text_present_on_page(
-            list(placeholder.values())[0]
-        )
+        assert send_to_one_recipient_page.text_is_on_page(list(placeholder.values())[0])
     if message_type == "email":
         _assert_one_off_email_filled_in_properly(
             driver, template_name, test, recipient_data

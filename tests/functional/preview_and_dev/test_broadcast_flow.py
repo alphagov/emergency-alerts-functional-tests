@@ -37,7 +37,7 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -74,14 +74,14 @@ def test_prepare_broadcast_with_new_content(driver):
         "Preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
-    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("Eastbrook")
 
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
     # prepare_alert_pages.click_continue()  # click "Preview alert"
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
+    assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -91,7 +91,7 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -104,7 +104,7 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
-    assert current_alerts_page.is_text_present_on_page("since today at")
+    assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
     time.sleep(10)
@@ -118,12 +118,12 @@ def test_prepare_broadcast_with_new_content(driver):
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_continue()  # stop broadcasting
-    assert current_alerts_page.is_text_present_on_page(
+    assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
     current_alerts_page.click_element_by_link_text("Past alerts")
     past_alerts_page = BasePage(driver)
-    assert past_alerts_page.is_text_present_on_page(broadcast_title)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
@@ -170,21 +170,21 @@ def test_prepare_broadcast_with_template(driver):
         "Preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page("Cokeham")
-    assert prepare_alert_pages.is_text_present_on_page("Eastbrook")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("Eastbrook")
 
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
     # prepare_alert_pages.click_continue()  # click "Preview alert"
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
+    assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
 
     prepare_alert_pages.click_element_by_link_text("Discard this alert")
     prepare_alert_pages.click_element_by_link_text("Rejected alerts")
     rejected_alerts_page = BasePage(driver)
-    assert rejected_alerts_page.is_text_present_on_page(template_name)
+    assert rejected_alerts_page.text_is_on_page(template_name)
 
     delete_template(driver, template_name, service="broadcast_service")
 
@@ -215,7 +215,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
 
-    assert page.is_text_present_on_page(f"An API call wants to broadcast {event}")
+    assert page.text_is_on_page(f"An API call wants to broadcast {event}")
 
     reject_broadcast_xml = CANCEL_XML.format(
         identifier=identifier,
@@ -227,7 +227,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 
     time.sleep(10)
     page.click_element_by_link_text("Rejected alerts")
-    assert page.is_text_present_on_page(event)
+    assert page.text_is_on_page(event)
 
     page.get()
     page.sign_out()
@@ -259,7 +259,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
     page.click_continue()
 
-    assert page.is_text_present_on_page("since today at")
+    assert page.text_is_on_page("since today at")
 
     alert_page_url = page.current_url
 
@@ -281,9 +281,9 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.get(alert_page_url)
 
     # assert that it's now cancelled
-    assert page.is_text_present_on_page("Stopped by an API call")
+    assert page.text_is_on_page("Stopped by an API call")
     page.click_element_by_link_text("Past alerts")
-    assert page.is_text_present_on_page(event)
+    assert page.text_is_on_page(event)
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
@@ -297,7 +297,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -336,12 +336,12 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     search_postcode_page.click_preview()
 
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page(
+    assert prepare_alert_pages.text_is_on_page(
         "5km around the postcode BD1 1EE in Bradford"
     )
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
+    assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -351,7 +351,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -364,7 +364,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
-    assert current_alerts_page.is_text_present_on_page("since today at")
+    assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
     time.sleep(10)
@@ -378,12 +378,12 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_continue()  # stop broadcasting
-    assert current_alerts_page.is_text_present_on_page(
+    assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
     current_alerts_page.click_element_by_link_text("Past alerts")
     past_alerts_page = BasePage(driver)
-    assert past_alerts_page.is_text_present_on_page(broadcast_title)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
@@ -432,7 +432,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -475,10 +475,10 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     choose_coordinate_area_page.click_preview()
 
     # here check if selected areas displayed
-    assert prepare_alert_pages.is_text_present_on_page(expected_area_description)
+    assert prepare_alert_pages.text_is_on_page(expected_area_description)
 
     prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.is_text_present_on_page(
+    assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -488,7 +488,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.is_text_present_on_page("Current alerts"):
+    if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -501,7 +501,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
     current_alerts_page.click_continue()
-    assert current_alerts_page.is_text_present_on_page("since today at")
+    assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
     time.sleep(10)
@@ -515,12 +515,12 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_continue()  # stop broadcasting
-    assert current_alerts_page.is_text_present_on_page(
+    assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
     current_alerts_page.click_element_by_link_text("Past alerts")
     past_alerts_page = BasePage(driver)
-    assert past_alerts_page.is_text_present_on_page(broadcast_title)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
