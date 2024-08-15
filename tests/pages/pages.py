@@ -69,10 +69,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
-
-
-class RetryException(Exception):
-    pass
+from tests.test_utils import RetryException
 
 
 class AntiStale:

@@ -3,10 +3,16 @@ import uuid
 from random import choice
 
 import pytest
+from retry import retry
 
 from config import config
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
+from tests.test_utils import (
+    PROVIDERS,
+    RetryException,
+    create_ddb_client,
+    set_response_codes,
+)
 
 test_group_name = "cbc-integration"
 
@@ -162,7 +168,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 2
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
@@ -211,7 +219,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 12
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
@@ -233,7 +243,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     # Assert that the AZs have the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
-    assert len(az1_response_codes) == 12 or len(az2_response_codes) == 12
+    assert len(az1_response_codes) == 12 and len(az2_response_codes) == 12
 
     cancel_alert(driver, broadcast_id)
 
@@ -272,15 +282,20 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
     # wait for at least one response (which should be a '500' at this stage)
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
-    while len(responses) == 0:
-        time.sleep(1)
-        responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    _ = get_loopback_request_items(
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"] < 1)
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
     time.sleep(60)  # wait for more retries
 
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc,
+        request_id=request_id,
+        retry_if=lambda resp: len(
+            resp["Items"] < 4
+        ),  # assuming response time of both AZs are similar
+    )
 
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -298,13 +313,21 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     cancel_alert(driver, broadcast_id)
 
 
-def get_loopback_request_items(ddbc, request_id):
+@retry(
+    RetryException,
+    tries=config["dynamo_query_retry_times"],
+    delay=config["dynamo_query_retry_interval"],
+)
+def get_loopback_request_items(ddbc, request_id, retry_if=None):
     db_response = ddbc.query(
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
         ConsistentRead=True,
     )
+    if retry_if is not None and retry_if(db_response):
+        raise RetryException("DynamoDB did not return expected response. Retrying...")
+
     return db_response["Items"]
 
 
