@@ -239,7 +239,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     # Assert that the AZs have the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
-    assert len(az1_response_codes) == 12 and len(az2_response_codes) == 12
+    assert len(az1_response_codes) == 12
+    assert len(az2_response_codes) == 12
 
     cancel_alert(driver, broadcast_id)
 
@@ -283,14 +284,13 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
-    time.sleep(60)  # wait for more retries
+    # time.sleep(60)  # wait for more retries
 
     responses = get_loopback_request_items(
         ddbc=ddbc,
         request_id=request_id,
-        retry_if=lambda resp: len(
-            resp["Items"] < 4
-        ),  # assuming response time of both AZs are similar
+        retry_if=lambda resp: len(resp["Items"])
+        < 4,  # assuming response time of both AZs are similar
     )
 
     az1_response_codes = dynamo_items_for_key_value(
