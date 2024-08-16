@@ -287,7 +287,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
-    # time.sleep(60)  # wait for more retries
 
     responses = get_loopback_request_items(
         ddbc=ddbc,
@@ -325,7 +324,9 @@ def get_loopback_request_items(ddbc, request_id, retry_if=None):
         ConsistentRead=True,
     )
     if retry_if is not None and retry_if(db_response):
-        raise RetryException("DynamoDB did not return expected response. Retrying...")
+        raise RetryException(
+            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. Retrying...)'
+        )
 
     return db_response["Items"]
 
