@@ -6,13 +6,9 @@ import pytest
 from retry import retry
 
 from config import config
+from tests.pages import RetryException
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import (
-    PROVIDERS,
-    RetryException,
-    create_ddb_client,
-    set_response_codes,
-)
+from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
 
 test_group_name = "cbc-integration"
 

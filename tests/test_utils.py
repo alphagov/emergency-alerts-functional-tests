@@ -29,6 +29,7 @@ from tests.pages import (
     MainPage,
     RegisterFromInvite,
     RegistrationPage,
+    RetryException,
     SendOneRecipient,
     ShowTemplatesPage,
     SmsSenderPage,
@@ -82,10 +83,6 @@ def convert_naive_utc_datetime_to_cap_standard_string(dt):
     `+` if the timezone is > UTC, otherwise `-`
     """
     return f"{dt.strftime('%Y-%m-%dT%H:%M:%S')}-00:00"
-
-
-class RetryException(Exception):
-    pass
 
 
 def assert_notification_body(notification_id, notification):
