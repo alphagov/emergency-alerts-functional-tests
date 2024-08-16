@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
-      cbc-integration
+      test-cbc-integration
 
 phases:
   install:
