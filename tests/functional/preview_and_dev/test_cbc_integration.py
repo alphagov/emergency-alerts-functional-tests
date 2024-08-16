@@ -193,6 +193,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
+    expected_total_retry_count = 24
 
     ddbc = create_ddb_client()
     set_loopback_response_codes(
@@ -216,7 +217,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 12
+        ddbc=ddbc,
+        request_id=request_id,
+        retry_if=lambda resp: len(resp["Items"]) < expected_total_retry_count,
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
@@ -239,8 +242,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     # Assert that the AZs have the retry count we expect:
     # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
-    assert len(az1_response_codes) == 12
-    assert len(az2_response_codes) == 12
+    assert len(az1_response_codes) == expected_total_retry_count / 2
+    assert len(az2_response_codes) == expected_total_retry_count / 2
 
     cancel_alert(driver, broadcast_id)
 
