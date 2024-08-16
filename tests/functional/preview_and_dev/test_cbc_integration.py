@@ -201,7 +201,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     )
 
     broadcast_alert(driver, broadcast_id)
-    # time.sleep(300)  # wait for exponential backoff of retries
+    time.sleep(10)  # wait for send_broadcast_message to be invoked
 
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
