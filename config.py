@@ -23,7 +23,7 @@ config = {
     "govuk_alerts_wait_retry_interval": 10,
     "ui_element_retry_times": 20,
     "ui_element_retry_interval": 5,
-    "dynamo_query_retry_times": 30,
+    "dynamo_query_retry_times": 40,
     "dynamo_query_retry_interval": 10,
     "functional_test_service_name": "Functional Test Service_",
     "letter_contact_data": {
