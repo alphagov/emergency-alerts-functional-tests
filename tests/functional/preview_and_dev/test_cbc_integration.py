@@ -279,7 +279,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     # wait for at least one response (which should be a '500' at this stage)
     _ = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"] < 1)
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 1
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
