@@ -321,7 +321,7 @@ def get_loopback_request_items(ddbc, request_id, retry_if=None):
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        ConsistentRead=True,
+        # ConsistentRead=True,
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
