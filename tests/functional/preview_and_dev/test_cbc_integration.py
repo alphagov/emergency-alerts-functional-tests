@@ -265,13 +265,13 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     broadcast_alert(driver, broadcast_id)
+    time.sleep(10)  # wait for send_broadcast_message to be invoked
+
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
     )
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # ensure the app has time to broadcast to four MNOs
-    time.sleep(10)
     response = api_client.get(url=url)
     assert response is not None
 
@@ -287,12 +287,13 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
+    time.sleep(120)
 
     responses = get_loopback_request_items(
         ddbc=ddbc,
         request_id=request_id,
-        retry_if=lambda resp: len(resp["Items"])
-        < 4,  # assuming response time of both AZs are similar
+        # retry_if=lambda resp: len(resp["Items"])
+        # < 4,  # assuming response time of both AZs are similar
     )
 
     az1_response_codes = dynamo_items_for_key_value(
