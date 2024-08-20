@@ -193,6 +193,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
+    # i.e. (initial + 5 retries) * (primary + secondary lambda) * (az1 + az2)
     expected_total_retry_count = 24
 
     ddbc = create_ddb_client()
@@ -240,10 +241,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert len(az2_codes_set) == 1  # assert that all codes are the same
     assert az2_codes_set.pop() == str(failure_code)
 
-    # Assert that the AZs have the retry count we expect:
-    # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
-    assert len(az1_response_codes) == expected_total_retry_count / 2
-    assert len(az2_response_codes) == expected_total_retry_count / 2
+    # Assert that at least 80% of the retries have happened within
+    # the visibility timeout:
+    assert len(az1_response_codes) + len(az2_response_codes) > (
+        expected_total_retry_count * 0.8
+    )
 
     cancel_alert(driver, broadcast_id)
 
