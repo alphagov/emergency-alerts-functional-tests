@@ -26,11 +26,11 @@ def test_reset_forgotten_password(driver):
     forgot_password_page = ForgotPasswordPage(driver)
     forgot_password_page.input_email_address(login_email)
     forgot_password_page.click_continue()
-    assert forgot_password_page.is_text_present_on_page("Check your email")
+    assert forgot_password_page.text_is_on_page("Check your email")
 
     password_reset_url = create_sign_in_url(login_email, "new-password")
     new_password_page = NewPasswordPage(driver, password_reset_url)
-    assert new_password_page.is_text_present_on_page("create a new password")
+    assert new_password_page.text_is_on_page("create a new password")
 
     new_password = "ks94ijwld"
     new_password_page.input_new_password(new_password)
@@ -58,7 +58,7 @@ def test_sign_in_with_email_mfa(driver):
     assert sign_in_page.is_current()
     sign_in_page.login(login_email, login_pw)
 
-    assert sign_in_page.is_text_present_on_page("a link to sign in")
+    assert sign_in_page.text_is_on_page("a link to sign in")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
 

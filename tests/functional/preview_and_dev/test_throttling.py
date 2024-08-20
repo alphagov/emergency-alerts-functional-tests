@@ -25,7 +25,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page.login(login_email, login_pw)
 
     # Assert here that error text appears
-    assert sign_in_page.is_text_present_on_page(
+    assert sign_in_page.text_is_on_page(
         "The email address or password you entered is incorrect."
     )
 
@@ -39,8 +39,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page.login(login_email, login_pw)
 
     throttled_page = ThrottledPage(driver)
-    assert throttled_page.check_page_for_text_with_retry("Too many requests")
-    assert throttled_page.check_page_for_text_with_retry(
+    assert throttled_page.text_is_on_page("Too many requests")
+    assert throttled_page.text_is_on_page(
         "You've been temporarily throttled due to too many login attempts."
     )
 
@@ -60,9 +60,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
 
     # Successful login renders MFA page
 
-    assert sign_in_page.check_page_for_text_with_retry(
-        "a text message with a security code"
-    )
+    assert sign_in_page.text_is_on_page("a text message with a security code")
     mfa_code = get_verification_code_by_id(
         config["broadcast_service"]["throttled_user"]["id"]
     )

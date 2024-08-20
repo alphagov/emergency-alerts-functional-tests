@@ -29,6 +29,7 @@ from tests.pages import (
     MainPage,
     RegisterFromInvite,
     RegistrationPage,
+    RetryException,
     SendOneRecipient,
     ShowTemplatesPage,
     SmsSenderPage,
@@ -82,10 +83,6 @@ def convert_naive_utc_datetime_to_cap_standard_string(dt):
     `+` if the timezone is > UTC, otherwise `-`
     """
     return f"{dt.strftime('%Y-%m-%dT%H:%M:%S')}-00:00"
-
-
-class RetryException(Exception):
-    pass
 
 
 def assert_notification_body(notification_id, notification):
@@ -398,9 +395,7 @@ def send_notification_to_one_recipient(
     if placeholders_number:
         assert len(placeholders) == placeholders_number
     for placeholder in placeholders:
-        assert send_to_one_recipient_page.is_text_present_on_page(
-            list(placeholder.values())[0]
-        )
+        assert send_to_one_recipient_page.text_is_on_page(list(placeholder.values())[0])
     if message_type == "email":
         _assert_one_off_email_filled_in_properly(
             driver, template_name, test, recipient_data

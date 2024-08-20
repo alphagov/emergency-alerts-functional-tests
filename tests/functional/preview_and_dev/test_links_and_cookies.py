@@ -73,7 +73,7 @@ def test_reject_analytics_cookies(driver):
     analytics_off_radio = driver.find_element("id", "cookies-analytics-no")
     landing_page.select_checkbox_or_radio(element=analytics_off_radio)
     landing_page.click_continue()
-    assert landing_page.is_text_present_on_page("cookie settings were saved")
+    assert landing_page.text_is_on_page("cookie settings were saved")
 
     print(driver.get_cookie("cookies_policy"))
     assert driver.get_cookie("cookies_policy")["value"] == '{"analytics":false}'

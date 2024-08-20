@@ -3,8 +3,10 @@ import uuid
 from random import choice
 
 import pytest
+from retry import retry
 
 from config import config
+from tests.pages import RetryException
 from tests.pages.rollups import broadcast_alert, cancel_alert
 from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
 
@@ -162,7 +164,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 2
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
@@ -189,6 +193,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
+    # i.e. (initial + 5 retries) * (primary + secondary lambda) * (az1 + az2)
+    expected_total_retry_count = 24
 
     ddbc = create_ddb_client()
     set_loopback_response_codes(
@@ -196,7 +202,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     )
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(300)  # wait for exponential backoff of retries
+    time.sleep(10)  # wait for send_broadcast_message to be invoked
 
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
@@ -211,7 +217,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc,
+        request_id=request_id,
+        retry_if=lambda resp: len(resp["Items"]) < expected_total_retry_count,
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
 
@@ -231,9 +241,11 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert len(az2_codes_set) == 1  # assert that all codes are the same
     assert az2_codes_set.pop() == str(failure_code)
 
-    # Assert that the AZs have the retry count we expect:
-    # i.e. (initial invocation + 5 retries) * (primary + secondary attempt) = 12
-    assert len(az1_response_codes) == 12 or len(az2_response_codes) == 12
+    # Assert that at least 80% of the retries have happened within
+    # the visibility timeout:
+    assert len(az1_response_codes) + len(az2_response_codes) > (
+        expected_total_retry_count * 0.8
+    )
 
     cancel_alert(driver, broadcast_id)
 
@@ -255,13 +267,13 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     broadcast_alert(driver, broadcast_id)
+    time.sleep(10)  # wait for send_broadcast_message to be invoked
+
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
     )
 
     url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # ensure the app has time to broadcast to four MNOs
-    time.sleep(10)
     response = api_client.get(url=url)
     assert response is not None
 
@@ -272,15 +284,17 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
     # wait for at least one response (which should be a '500' at this stage)
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
-    while len(responses) == 0:
-        time.sleep(1)
-        responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    _ = get_loopback_request_items(
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 1
+    )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
-    time.sleep(60)  # wait for more retries
+    time.sleep(120)
 
-    responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+    responses = get_loopback_request_items(
+        ddbc=ddbc,
+        request_id=request_id,
+    )
 
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -298,13 +312,22 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     cancel_alert(driver, broadcast_id)
 
 
-def get_loopback_request_items(ddbc, request_id):
+@retry(
+    RetryException,
+    tries=config["dynamo_query_retry_times"],
+    delay=config["dynamo_query_retry_interval"],
+)
+def get_loopback_request_items(ddbc, request_id, retry_if=None):
     db_response = ddbc.query(
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        ConsistentRead=True,
     )
+    if retry_if is not None and retry_if(db_response):
+        raise RetryException(
+            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. Retrying...)'
+        )
+
     return db_response["Items"]
 
 

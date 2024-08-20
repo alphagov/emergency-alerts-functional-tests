@@ -40,8 +40,8 @@ def test_create_and_delete_template(driver):
     edit_template.create_template(name=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
-    assert edit_template.is_text_present_on_page(alert_name)
-    assert edit_template.is_text_present_on_page(alert_content)
+    assert edit_template.text_is_on_page(alert_name)
+    assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_delete()
 
@@ -67,21 +67,21 @@ def test_create_edit_and_delete_template(driver):
     edit_template.create_template(name=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
-    assert edit_template.is_text_present_on_page(alert_name)
-    assert edit_template.is_text_present_on_page(alert_content)
+    assert edit_template.text_is_on_page(alert_name)
+    assert edit_template.text_is_on_page(alert_content)
 
     extra_text = " with some extra text"
     edit_template.click_edit()
     edit_template.create_template(name=alert_name, content=alert_content + extra_text)
 
     assert edit_template.is_page_title("Template")
-    assert edit_template.is_text_present_on_page(alert_name)
-    assert edit_template.is_text_present_on_page(alert_content + extra_text)
-    assert edit_template.is_text_present_on_page("less than a minute ago")
+    assert edit_template.text_is_on_page(alert_name)
+    assert edit_template.text_is_on_page(alert_content + extra_text)
+    assert edit_template.text_is_on_page("less than a minute ago")
 
     edit_template.click_element_by_link_text("See previous versions")
-    assert edit_template.is_text_present_on_page(alert_content)
-    assert edit_template.is_text_present_on_page(alert_content + extra_text)
+    assert edit_template.text_is_on_page(alert_content)
+    assert edit_template.text_is_on_page(alert_content + extra_text)
 
     edit_template.click_element_by_link_text("Back to current templates")
 
@@ -112,8 +112,8 @@ def test_create_prep_to_send_and_delete_template(driver):
     edit_template.create_template(name=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
-    assert edit_template.is_text_present_on_page(alert_name)
-    assert edit_template.is_text_present_on_page(alert_content)
+    assert edit_template.text_is_on_page(alert_name)
+    assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_prep_to_send()
     assert edit_template.is_page_title("Choose where to send this alert")
@@ -159,7 +159,7 @@ def test_creating_moving_and_deleting_template_folders(driver):
     manage_folder_page = ManageFolderPage(driver)
     new_folder_name = folder_name + "-new"
     manage_folder_page.set_name(new_folder_name)
-    view_folder_page.is_text_present_on_page(new_folder_name)
+    view_folder_page.text_is_on_page(new_folder_name)
 
     # try to delete folder
     view_folder_page.click_manage_folder()

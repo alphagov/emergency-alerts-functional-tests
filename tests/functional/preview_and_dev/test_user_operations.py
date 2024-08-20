@@ -14,7 +14,7 @@ def test_user_can_change_profile_fields(driver):
     dashboard_page.click_element_by_link_text("Profile")
 
     profile_page = ProfileSettingsPage(driver)
-    assert profile_page.is_text_present_on_page("Your profile")
+    assert profile_page.text_is_on_page("Your profile")
 
     # Change username
     profile_page.click_change_setting("name")
@@ -22,7 +22,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.save_name("Functional Tests - Broadcast User Create - NEW")
 
     dashboard_page.wait_until_url_ends_with("/user-profile")
-    assert dashboard_page.is_text_present_on_page(
+    assert dashboard_page.text_is_on_page(
         "Functional Tests - Broadcast User Create - NEW"
     )
 
@@ -31,7 +31,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900000")
     profile_page.wait_until_url_ends_with("/authenticate")
-    assert profile_page.is_text_present_on_page("Change your mobile number")
+    assert profile_page.text_is_on_page("Change your mobile number")
 
     profile_page.enter_password("Password1234")
     profile_page.wait_until_url_ends_with("/confirm")
@@ -41,25 +41,23 @@ def test_user_can_change_profile_fields(driver):
 
     profile_page.wait_until_url_ends_with("/user-profile")
     profile_page.get(relative_url="/user-profile")
-    assert profile_page.is_text_present_on_page("+447700900000")
+    assert profile_page.text_is_on_page("+447700900000")
 
     # Revert changes to profile settings
-    assert profile_page.is_text_present_on_page("Your profile")
+    assert profile_page.text_is_on_page("Your profile")
 
     profile_page.click_change_setting("name")
     profile_page.wait_until_url_ends_with("/name")
     profile_page.save_name("Functional Tests - Broadcast User Create")
 
     profile_page.wait_until_url_ends_with("/user-profile")
-    assert profile_page.is_text_present_on_page(
-        "Functional Tests - Broadcast User Create"
-    )
+    assert profile_page.text_is_on_page("Functional Tests - Broadcast User Create")
 
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
     profile_page.save_mobile_number("+447700900111")
     profile_page.wait_until_url_ends_with("/authenticate")
-    assert profile_page.is_text_present_on_page("Change your mobile number")
+    assert profile_page.text_is_on_page("Change your mobile number")
 
     profile_page.enter_password("Password1234")
     profile_page.wait_until_url_ends_with("/confirm")
@@ -69,7 +67,7 @@ def test_user_can_change_profile_fields(driver):
 
     profile_page.wait_until_url_ends_with("/user-profile")
     profile_page.get(relative_url="/user-profile")
-    assert profile_page.is_text_present_on_page("+447700900111")
+    assert profile_page.text_is_on_page("+447700900111")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -83,10 +81,8 @@ def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
     assert dashboard_page.is_page_title("Team members")
 
     # verify presence of other users
-    assert dashboard_page.is_text_present_on_page("Functional Tests - Platform Admin")
-    assert dashboard_page.is_text_present_on_page(
-        "Functional Tests - Broadcast User Approve"
-    )
+    assert dashboard_page.text_is_on_page("Functional Tests - Platform Admin")
+    assert dashboard_page.text_is_on_page("Functional Tests - Broadcast User Approve")
 
     # verify that invitation button is not available
     assert not dashboard_page.is_text_present_on_page("Invite a team member")

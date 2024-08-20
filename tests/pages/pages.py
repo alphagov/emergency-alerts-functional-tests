@@ -245,7 +245,7 @@ class BasePage(object):
         tries=config["ui_element_retry_times"],
         delay=config["ui_element_retry_interval"],
     )
-    def check_page_for_text_with_retry(self, search_text):
+    def text_is_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
         if search_text not in normalized_page_source:
             self.driver.refresh()
@@ -1332,7 +1332,7 @@ class GovUkAlertsPage(BasePage):
         delay=config["govuk_alerts_wait_retry_interval"],
     )
     def check_alert_is_published(self, broadcast_content):
-        if not self.is_text_present_on_page(broadcast_content):
+        if not self.text_is_on_page(broadcast_content):
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
