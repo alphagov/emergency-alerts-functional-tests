@@ -294,8 +294,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     responses = get_loopback_request_items(
         ddbc=ddbc,
         request_id=request_id,
-        # retry_if=lambda resp: len(resp["Items"])
-        # < 4,  # assuming response time of both AZs are similar
     )
 
     az1_response_codes = dynamo_items_for_key_value(
@@ -324,7 +322,6 @@ def get_loopback_request_items(ddbc, request_id, retry_if=None):
         TableName="LoopbackRequests",
         KeyConditionExpression="RequestId = :RequestId",
         ExpressionAttributeValues={":RequestId": {"S": request_id}},
-        # ConsistentRead=True,
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
