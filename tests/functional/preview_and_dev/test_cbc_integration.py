@@ -193,8 +193,10 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
-    # i.e. (initial + 5 retries) * (primary + secondary lambda) * (az1 + az2)
-    expected_total_retry_count = 24
+    # Expect that at least 80% of the maximum possible retries have occurred
+    # within the visibility timeout window
+    # i.e. (initial + 5 retries) * (primary + secondary lambda) * (az1 + az2) * 80%
+    expected_retry_count = 24 * 0.8
 
     ddbc = create_ddb_client()
     set_loopback_response_codes(
@@ -220,7 +222,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     responses = get_loopback_request_items(
         ddbc=ddbc,
         request_id=request_id,
-        retry_if=lambda resp: len(resp["Items"]) < expected_total_retry_count,
+        retry_if=lambda resp: len(resp["Items"]) < expected_retry_count,
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
@@ -243,9 +245,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     # Assert that at least 80% of the retries have happened within
     # the visibility timeout:
-    assert len(az1_response_codes) + len(az2_response_codes) > (
-        expected_total_retry_count * 0.8
-    )
+    assert len(az1_response_codes) + len(az2_response_codes) > expected_retry_count
 
     cancel_alert(driver, broadcast_id)
 
