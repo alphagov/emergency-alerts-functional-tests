@@ -59,6 +59,11 @@ def test_add_rename_and_delete_service(driver):
     )
     delete_button.click()
 
+    print("-----------------------------------------------------------")
+    print(" ".join(driver.page_source.split()))
+    print("-----------------------------------------------------------")
+    print(f"‘{new_service_name}’ was deleted")
+    print("-----------------------------------------------------------")
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
     # sign out
@@ -186,6 +191,11 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
+    print("-----------------------------------------------------------")
+    print(" ".join(driver.page_source.split()))
+    print("-----------------------------------------------------------")
+    print("Copy your key to somewhere safe")
+    print("-----------------------------------------------------------")
     assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
 
