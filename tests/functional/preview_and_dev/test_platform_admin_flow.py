@@ -3,7 +3,6 @@ import time
 import pytest
 
 from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
-from tests.pages.locators import ServiceSettingsLocators
 from tests.pages.pages import (
     ApiKeysPage,
     BasePage,
@@ -36,34 +35,44 @@ def test_add_rename_and_delete_service(driver):
 
     add_service_page = AddServicePage(driver)
     add_service_page.add_service(service_name)
+    add_service_page.select_training_mode()
+    add_service_page.confirm_settings()
 
-    dashboard_page = DashboardPage(driver)
-    service_id = dashboard_page.get_service_id()
-    dashboard_page.go_to_dashboard_for_service(service_id)
+    service_settings_page = ServiceSettingsPage(driver)
+    assert service_settings_page.get_service_name() == f"{service_name} TRAINING"
 
-    assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
+    service_settings_page.click_change_setting("service name")
+
+    # dashboard_page = DashboardPage(driver)
+    # service_id = dashboard_page.get_service_id()
+    # dashboard_page.go_to_dashboard_for_service(service_id)
+
+    # assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
 
     # test service name change
-    dashboard_page.click_element_by_link_text("Settings")
-    service_settings_page = ServiceSettingsPage(driver)
-    service_settings_page.click_change_setting("service name")
+    # dashboard_page.click_element_by_link_text("Settings")
+    # service_settings_page = ServiceSettingsPage(driver)
+    # service_settings_page.click_change_setting("service name")
 
     new_service_name = service_name + " NEW"
     service_settings_page.save_service_name(new_service_name)
-    assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
+    # assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
+    assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
     # delete the service
-    service_settings_page.click_element_by_link_text("Delete this service")
-    delete_button = service_settings_page.wait_for_element(
-        ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
-    )
-    delete_button.click()
+    # service_settings_page.click_element_by_link_text("Delete this service")
+    # delete_button = service_settings_page.wait_for_element(
+    #     ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
+    # )
+    # delete_button.click()
 
-    print("-----------------------------------------------------------")
-    print(" ".join(driver.page_source.split()))
-    print("-----------------------------------------------------------")
-    print(f"‘{new_service_name}’ was deleted")
-    print("-----------------------------------------------------------")
+    # print("-----------------------------------------------------------")
+    # print(" ".join(driver.page_source.split()))
+    # print("-----------------------------------------------------------")
+    # print(f"‘{new_service_name}’ was deleted")
+    # print("-----------------------------------------------------------")
+
+    service_settings_page.delete_service()
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
     # sign out

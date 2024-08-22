@@ -340,6 +340,7 @@ class RegistrationPage(BasePage):
 class AddServicePage(BasePage):
     service_input = ServiceInputElement()
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
+    service_mode_input = AddServicePageLocators.SERVICE_MODE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
@@ -351,8 +352,18 @@ class AddServicePage(BasePage):
             self.click_org_type_input()
         except NoSuchElementException:
             pass
-
         self.click_add_service_button()
+
+    def select_training_mode(self):
+        try:
+            self.click_service_mode_input()
+        except NoSuchElementException:
+            pass
+        self.click_continue()
+
+    def confirm_settings(self):
+        self.wait_until_url_ends_with("confirm")
+        self.click_continue()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
@@ -361,6 +372,13 @@ class AddServicePage(BasePage):
     def click_org_type_input(self):
         try:
             element = self.wait_for_invisible_element(AddServicePage.org_type_input)
+            element.click()
+        except TimeoutException:
+            pass
+
+    def click_service_mode_input(self):
+        try:
+            element = self.wait_for_invisible_element(AddServicePage.service_mode_input)
             element.click()
         except TimeoutException:
             pass
@@ -1034,6 +1052,7 @@ class SendOneRecipient(BasePage):
 
 
 class ServiceSettingsPage(BasePage):
+    h2 = (By.CLASS_NAME, "navigation-service-name")
     name_input = ClearableInputElement(name="name")
 
     @staticmethod
@@ -1047,16 +1066,25 @@ class ServiceSettingsPage(BasePage):
         element = self.wait_for_element(self.change_setting_link(setting))
         element.click()
 
-    def check_service_name(self, expected_name):
-        name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
-        if name.element.text == expected_name:
-            return True
-        else:
-            raise ValueError("Service name not changed succesfully")
+    # def check_service_name(self, expected_name):
+    #     name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
+    #     if name.element.text == expected_name:
+    #         return True
+    #     else:
+    #         raise ValueError("Service name not changed succesfully")
+
+    def get_service_name(self):
+        element = self.wait_for_element(ServiceSettingsPage.h2)
+        return element.text
 
     def save_service_name(self, new_name):
         self.name_input = new_name
         self.click_save()
+
+    def delete_service(self):
+        self.click_element_by_link_text("Delete this service")
+        element = self.wait_for_element(ServiceSettingsLocators.DELETE_CONFIRM_BUTTON)
+        element.click()
 
 
 class ProfileSettingsPage(BasePage):
