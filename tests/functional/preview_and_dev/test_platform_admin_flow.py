@@ -204,11 +204,11 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     assert api_keys_page.is_page_title("API keys")
 
     api_keys_page.revoke_api_key(key_name=key_name)
-    # print("-----------------------------------------------------------")
-    # print(" ".join(driver.page_source.split()))
-    # print("-----------------------------------------------------------")
-    # print(f"‘{key_name}’ was revoked")
-    # print("-----------------------------------------------------------")
+    print("-----------------------------------------------------------")
+    print(" ".join(driver.page_source.split()))
+    print("-----------------------------------------------------------")
+    print(f"‘{key_name}’ was revoked")
+    print("-----------------------------------------------------------")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key
