@@ -1074,7 +1074,7 @@ class ServiceSettingsPage(BasePage):
     #         raise ValueError("Service name not changed succesfully")
 
     def get_service_name(self):
-        element = self.wait_for_element(ServiceSettingsPage.h2)
+        element = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
         return element.text
 
     def save_service_name(self, new_name):
