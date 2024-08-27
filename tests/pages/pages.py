@@ -969,7 +969,6 @@ class ApiIntegrationPage(BasePage):
 class ApiKeysPage(BasePage):
     create_key_link = ApiKeysPageLocators.CREATE_KEY_BUTTON
     key_name_input = KeyNameInputElement()
-    key_copy_value = ApiKeysPageLocators.KEY_COPY_VALUE
     confirm_revoke_button = ApiKeysPageLocators.CONFIRM_REVOKE_BUTTON
 
     def click_create_key(self):
@@ -981,9 +980,20 @@ class ApiKeysPage(BasePage):
         self.select_checkbox_or_radio(value="normal")
         self.click_continue()
 
+    def get_key_name(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
+        return element.text
+
+    def wait_for_key_copy_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
+        return element
+
+    def wait_for_show_key_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
+        return element
+
     def check_new_key_name(self, starts_with):
-        element = self.wait_for_element(ApiKeysPage.key_copy_value)
-        return element.text.startswith(starts_with)
+        return self.get_key_name().startswith(starts_with)
 
     def get_revoke_link_for_api_key(self, key_name):
         return self.wait_for_element(

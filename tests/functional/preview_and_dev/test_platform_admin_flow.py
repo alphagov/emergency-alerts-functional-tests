@@ -175,11 +175,17 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
-    # print("-----------------------------------------------------------")
-    # print(" ".join(driver.page_source.split()))
-    # print("-----------------------------------------------------------")
-    # print("Copy your key to somewhere safe")
-    # print("-----------------------------------------------------------")
+
+    copy_key_btn = api_keys_page.wait_for_key_copy_button()
+
+    # get text from span with class copy-to-clipboard__value
+    generated_key = api_keys_page.get_key_name()
+
+    # click "copy key" and verify contents of clipboard
+    copy_key_btn.click()
+    _ = api_keys_page.wait_for_show_key_button()
+    assert generated_key == driver.get_clipboard_data()
+
     assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
 
