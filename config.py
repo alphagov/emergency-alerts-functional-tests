@@ -172,11 +172,11 @@ def setup_preview_dev_config():
                     "FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_3"
                 ),
                 "sms_sender_text": "func tests",
-                "templates": {
-                    "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
-                    "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
-                    "letter": os.environ["JENKINS_BUILD_LETTER_TEMPLATE_ID"],
-                },
+                # "templates": {
+                #     "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
+                #     "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
+                #     "letter": os.environ["JENKINS_BUILD_LETTER_TEMPLATE_ID"],
+                # },
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
             },
             "mmg_inbound_sms": {
