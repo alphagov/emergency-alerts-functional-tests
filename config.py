@@ -174,10 +174,6 @@ def setup_preview_dev_config():
                 "sms_sender_text": "func tests",
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
             },
-            "mmg_inbound_sms": {
-                "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
-                "password": os.environ["MMG_INBOUND_SMS_AUTH"],
-            },
             "cbcs": {
                 "ee-az1": "192.168.1.7",
                 "ee-az2": "192.168.1.137",
