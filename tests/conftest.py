@@ -86,30 +86,9 @@ def driver(_driver, request):
         print("Error screenshot saved to " + filename)
 
 
-# @pytest.fixture(scope="module")
-# def login_user(_driver):
-#     sign_in_email_auth(_driver)
-
-
 @pytest.fixture(scope="module")
 def login_seeded_user(_driver):
     sign_in(_driver, account_type="seeded")
-
-
-# @pytest.fixture(scope="module")
-# def client_live_key():
-#     client = NotificationsAPIClient(
-#         base_url=config["eas_api_url"], api_key=config["service"]["api_live_key"]
-#     )
-#     return client
-
-
-# @pytest.fixture(scope="module")
-# def client_test_key():
-#     client = NotificationsAPIClient(
-#         base_url=config["eas_api_url"], api_key=config["service"]["api_test_key"]
-#     )
-#     return client
 
 
 @pytest.fixture(scope="module")

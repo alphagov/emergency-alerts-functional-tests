@@ -43,34 +43,9 @@ def test_add_rename_and_delete_service(driver):
 
     service_settings_page.click_change_setting("service name")
 
-    # dashboard_page = DashboardPage(driver)
-    # service_id = dashboard_page.get_service_id()
-    # dashboard_page.go_to_dashboard_for_service(service_id)
-
-    # assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
-
-    # test service name change
-    # dashboard_page.click_element_by_link_text("Settings")
-    # service_settings_page = ServiceSettingsPage(driver)
-    # service_settings_page.click_change_setting("service name")
-
     new_service_name = service_name + " NEW"
     service_settings_page.save_service_name(new_service_name)
-    # assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
     assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
-
-    # delete the service
-    # service_settings_page.click_element_by_link_text("Delete this service")
-    # delete_button = service_settings_page.wait_for_element(
-    #     ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
-    # )
-    # delete_button.click()
-
-    # print("-----------------------------------------------------------")
-    # print(" ".join(driver.page_source.split()))
-    # print("-----------------------------------------------------------")
-    # print(f"‘{new_service_name}’ was deleted")
-    # print("-----------------------------------------------------------")
 
     service_settings_page.delete_service()
     time.sleep(10)
@@ -201,11 +176,11 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
-    print("-----------------------------------------------------------")
-    print(" ".join(driver.page_source.split()))
-    print("-----------------------------------------------------------")
-    print("Copy your key to somewhere safe")
-    print("-----------------------------------------------------------")
+    # print("-----------------------------------------------------------")
+    # print(" ".join(driver.page_source.split()))
+    # print("-----------------------------------------------------------")
+    # print("Copy your key to somewhere safe")
+    # print("-----------------------------------------------------------")
     assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
 
