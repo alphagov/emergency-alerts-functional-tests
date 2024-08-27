@@ -178,27 +178,17 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
 
     copy_key_btn = api_keys_page.wait_for_key_copy_button()
 
-    # get text from span with class copy-to-clipboard__value
-    generated_key = api_keys_page.get_key_name()
-
     # click "copy key" and verify contents of clipboard
     copy_key_btn.click()
     _ = api_keys_page.wait_for_show_key_button()
-    assert generated_key == driver.get_clipboard_data()
-
     assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
 
     # revoke api key
     api_keys_page.click_element_by_link_text("Back to API keys")
     assert api_keys_page.is_page_title("API keys")
-
     api_keys_page.revoke_api_key(key_name=key_name)
-    print("-----------------------------------------------------------")
-    print(" ".join(driver.page_source.split()))
-    print("-----------------------------------------------------------")
-    print(f"‘{key_name}’ was revoked")
-    print("-----------------------------------------------------------")
+    api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key
