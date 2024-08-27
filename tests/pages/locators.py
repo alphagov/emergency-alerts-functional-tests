@@ -129,7 +129,7 @@ class ApiIntegrationPageLocators(object):
 class ApiKeysPageLocators(object):
     CREATE_KEY_BUTTON = (By.LINK_TEXT, "Create an API key")
     KEY_NAME_INPUT = (By.NAME, "key_name")
-    KEY_COPY_VALUE = (By.CLASS_NAME, "copy-to-clipboard__value")
+    KEY_COPY_VALUE = (By.CLASS_NAME, "copy-to-clipboard")
     KEY_COPY_BUTTON = (By.CLASS_NAME, "copy-to-clipboard__button--copy")
     KEY_SHOW_BUTTON = (By.CLASS_NAME, "copy-to-clipboard__button--show")
     CONFIRM_REVOKE_BUTTON = (By.NAME, "delete")
