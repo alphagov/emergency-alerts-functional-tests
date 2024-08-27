@@ -153,7 +153,6 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     # search for service by partial name
     admin_page.click_search_link()
     admin_page.search_for(text="Functional Tests")
-    # assert admin_page.subheading_is(expected_subheading="Services")
     assert admin_page.text_is_on_page("Functional Tests Broadcast Service")
 
     admin_page.sign_out()
