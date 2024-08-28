@@ -1076,13 +1076,6 @@ class ServiceSettingsPage(BasePage):
         element = self.wait_for_element(self.change_setting_link(setting))
         element.click()
 
-    # def check_service_name(self, expected_name):
-    #     name = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
-    #     if name.element.text == expected_name:
-    #         return True
-    #     else:
-    #         raise ValueError("Service name not changed succesfully")
-
     def get_service_name(self):
         element = self.wait_for_element(ServiceSettingsLocators.SERVICE_NAME)
         return element.text
