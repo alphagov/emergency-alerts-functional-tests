@@ -3,7 +3,6 @@ import time
 import pytest
 
 from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
-from tests.pages.locators import ServiceSettingsLocators
 from tests.pages.pages import (
     ApiKeysPage,
     BasePage,
@@ -36,29 +35,20 @@ def test_add_rename_and_delete_service(driver):
 
     add_service_page = AddServicePage(driver)
     add_service_page.add_service(service_name)
+    add_service_page.select_training_mode()
+    add_service_page.confirm_settings()
 
-    dashboard_page = DashboardPage(driver)
-    service_id = dashboard_page.get_service_id()
-    dashboard_page.go_to_dashboard_for_service(service_id)
-
-    assert dashboard_page.get_service_name() == f"{service_name} TRAINING"
-
-    # test service name change
-    dashboard_page.click_element_by_link_text("Settings")
     service_settings_page = ServiceSettingsPage(driver)
+    assert service_settings_page.get_service_name() == f"{service_name} TRAINING"
+
     service_settings_page.click_change_setting("service name")
 
     new_service_name = service_name + " NEW"
     service_settings_page.save_service_name(new_service_name)
-    assert service_settings_page.check_service_name(f"{new_service_name} TRAINING")
+    assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
-    # delete the service
-    service_settings_page.click_element_by_link_text("Delete this service")
-    delete_button = service_settings_page.wait_for_element(
-        ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
-    )
-    delete_button.click()
-
+    service_settings_page.delete_service()
+    time.sleep(10)
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
     # sign out
@@ -163,7 +153,6 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     # search for service by partial name
     admin_page.click_search_link()
     admin_page.search_for(text="Functional Tests")
-    # assert admin_page.subheading_is(expected_subheading="Services")
     assert admin_page.text_is_on_page("Functional Tests Broadcast Service")
 
     admin_page.sign_out()
@@ -186,14 +175,21 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
-    assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
+
+    copy_key_btn = api_keys_page.wait_for_key_copy_button()
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
+
+    # click "copy key"
+    copy_key_btn.click()
+    _ = api_keys_page.wait_for_show_key_button()
+    assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
+    assert api_keys_page.text_is_on_page("Copied to clipboard")
 
     # revoke api key
     api_keys_page.click_element_by_link_text("Back to API keys")
     assert api_keys_page.is_page_title("API keys")
-
     api_keys_page.revoke_api_key(key_name=key_name)
+    api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key

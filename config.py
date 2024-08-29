@@ -172,16 +172,7 @@ def setup_preview_dev_config():
                     "FUNCTIONAL_TESTS_SERVICE_EMAIL_REPLY_TO_3"
                 ),
                 "sms_sender_text": "func tests",
-                "templates": {
-                    "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
-                    "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
-                    "letter": os.environ["JENKINS_BUILD_LETTER_TEMPLATE_ID"],
-                },
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
-            },
-            "mmg_inbound_sms": {
-                "username": os.environ["MMG_INBOUND_SMS_USERNAME"],
-                "password": os.environ["MMG_INBOUND_SMS_AUTH"],
             },
             "cbcs": {
                 "ee-az1": "192.168.1.7",
@@ -192,34 +183,6 @@ def setup_preview_dev_config():
                 "o2-az2": "192.168.1.196",
                 "three-az1": "192.168.1.20",
                 "three-az2": "192.168.1.152",
-            },
-        }
-    )
-
-
-def setup_staging_prod_config():
-    # staging and prod run the same simple smoke tests
-    config.update(
-        {
-            "name": "{} Functional Tests".format(config["env"]),
-            "user": {
-                "email": os.environ["FUNCTIONAL_TEST_EMAIL"],
-                "password": os.environ["FUNCTIONAL_TEST_PASSWORD"],
-                "mobile": os.environ["TEST_NUMBER"],
-            },
-            "notify_service_api_key": os.environ["NOTIFY_SERVICE_API_KEY"],
-            "service": {
-                "id": os.environ["SERVICE_ID"],
-                "api_live_key": os.environ["API_KEY"],
-                "api_test_key": os.environ["API_TEST_KEY"],
-                "email_auth_account": os.environ["FUNCTIONAL_TEST_EMAIL_AUTH"],
-                "seeded_user": {"password": os.environ["FUNCTIONAL_TEST_PASSWORD"]},
-                "templates": {
-                    "email": os.environ["JENKINS_BUILD_EMAIL_TEMPLATE_ID"],
-                    "sms": os.environ["JENKINS_BUILD_SMS_TEMPLATE_ID"],
-                    # letter template not set up on staging and prod
-                },
-                "inbound_number": os.environ["PROVIDER_TEST_INBOUND_NUMBER"],
             },
         }
     )
