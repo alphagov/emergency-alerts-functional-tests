@@ -378,7 +378,7 @@ def send_notification_to_one_recipient(
         send_to_one_recipient_page.click_continue()
     placeholders = []
     index = 0
-    while send_to_one_recipient_page.is_page_title("Personalise this message"):
+    while send_to_one_recipient_page.is_page_header("Personalise this message"):
         if not send_to_one_recipient_page.is_placeholder_a_recipient_field(
             message_type
         ):
@@ -416,7 +416,7 @@ def _assert_one_off_sms_filled_in_properly(
 
     assert sms_sender.text == "From: {}".format(config["service"]["sms_sender_text"])
     assert sms_recipient.text == "To: {}".format(recipient_number)
-    assert sms_sender_page.is_page_title("Preview of ‘" + template_name + "’")
+    assert sms_sender_page.is_page_header("Preview of ‘" + template_name + "’")
 
 
 def _assert_one_off_email_filled_in_properly(
@@ -434,7 +434,7 @@ def _assert_one_off_email_filled_in_properly(
     else:
         assert recipient_email in str(preview_rows[2].text)
     assert "Subject" in str(preview_rows[3].text)
-    assert send_to_one_recipient_page.is_page_title(
+    assert send_to_one_recipient_page.is_page_header(
         "Preview of ‘" + template_name + "’"
     )
 

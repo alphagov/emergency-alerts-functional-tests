@@ -75,7 +75,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     )
     invite_user_page = InviteUserPage(driver)
     invite_user_page.send_invitation_without_permissions(invited_user_email)
-    assert invite_user_page.is_page_title("Team members")
+    assert invite_user_page.is_page_header("Team members")
     assert invite_user_page.text_is_on_page("Invite sent to " + invited_user_email)
 
     invite_user_page.sign_out()
@@ -95,7 +95,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     time.sleep(30)  # To avoid throttle
 
     registration_page = RegisterFromInvite(driver)
-    assert registration_page.is_page_title("Create an account")
+    assert registration_page.is_page_header("Create an account")
     registration_page.fill_registration_form(name="User " + timestamp)
     registration_page.click_continue()
     time.sleep(30)
@@ -109,7 +109,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     go_to_service_dashboard(driver, "broadcast_service")
     dashboard_page = DashboardPage(driver)
-    assert dashboard_page.is_page_title("Current alerts")
+    assert dashboard_page.is_page_header("Current alerts")
     dashboard_page.sign_out()
 
     # delete new user
@@ -166,11 +166,11 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     dashboard_page.click_api_integration()
 
     api_keys_page = ApiKeysPage(driver)
-    assert api_keys_page.is_page_title("API keys")
+    assert api_keys_page.is_page_header("API keys")
 
     # create api key
     api_keys_page.click_element_by_link_text("Create an API key")
-    assert api_keys_page.is_page_title("Create an API key")
+    assert api_keys_page.is_page_header("Create an API key")
 
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
@@ -187,7 +187,8 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
 
     # revoke api key
     api_keys_page.click_element_by_link_text("Back to API keys")
-    assert api_keys_page.is_page_title("API keys")
+    assert api_keys_page.is_page_header("API keys")
+
     api_keys_page.revoke_api_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")

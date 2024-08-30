@@ -78,7 +78,7 @@ def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
     dashboard_page.click_team_members_link()
 
     dashboard_page.wait_until_url_ends_with("users")
-    assert dashboard_page.is_page_title("Team members")
+    assert dashboard_page.is_page_header("Team members")
 
     # verify presence of other users
     assert dashboard_page.text_is_on_page("Functional Tests - Platform Admin")

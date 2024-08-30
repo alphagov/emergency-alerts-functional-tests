@@ -12,23 +12,23 @@ def test_user_left_rail_nav(driver):
 
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
-    assert landing_page.is_page_title("Current alerts")
+    assert landing_page.is_page_header("Current alerts")
 
     landing_page.click_element_by_link_text("Past alerts")
     assert landing_page.url_contains("past-alerts")
-    assert landing_page.is_page_title("Past alerts")
+    assert landing_page.is_page_header("Past alerts")
 
     landing_page.click_element_by_link_text("Rejected alerts")
     assert landing_page.url_contains("rejected-alerts")
-    assert landing_page.is_page_title("Rejected alerts")
+    assert landing_page.is_page_header("Rejected alerts")
 
     landing_page.click_element_by_link_text("Templates")
     assert landing_page.url_contains("rejected-alerts")
-    assert landing_page.is_page_title("Templates")
+    assert landing_page.is_page_header("Templates")
 
     landing_page.click_element_by_link_text("Team members")
     assert landing_page.url_contains("users")
-    assert landing_page.is_page_title("Team members")
+    assert landing_page.is_page_header("Team members")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -39,27 +39,27 @@ def test_footer_links(driver):
     landing_page = BasePage(driver)
     landing_page.click_element_by_link_text("Privacy")
     assert landing_page.url_contains("privacy")
-    assert landing_page.is_page_title("Emergency Alerts administrators privacy notice")
+    assert landing_page.is_page_header("Emergency Alerts administrators privacy notice")
 
     landing_page.get(relative_url=back_link)
     landing_page.click_element_by_link_text("Accessibility statement")
     assert landing_page.url_contains("accessibility-statement")
-    assert landing_page.is_page_title("Accessibility statement")
+    assert landing_page.is_page_header("Accessibility statement")
 
     landing_page.get(relative_url=back_link)
     landing_page.click_element_by_link_text("Terms of use")
     assert landing_page.url_contains("terms")
-    assert landing_page.is_page_title("Terms of use")
+    assert landing_page.is_page_header("Terms of use")
 
     landing_page.get(relative_url=back_link)
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.url_contains("cookies")
-    assert landing_page.is_page_title("Cookies")
+    assert landing_page.is_page_header("Cookies")
 
     landing_page.get(relative_url=back_link)
     landing_page.click_element_by_link_text("Security")
     assert landing_page.url_contains("security")
-    assert landing_page.is_page_title("Security")
+    assert landing_page.is_page_header("Security")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -68,7 +68,7 @@ def test_reject_analytics_cookies(driver):
 
     landing_page = BasePage(driver)
     landing_page.click_element_by_link_text("Cookies")
-    assert landing_page.is_page_title("Cookies")
+    assert landing_page.is_page_header("Cookies")
 
     analytics_off_radio = driver.find_element("id", "cookies-analytics-no")
     landing_page.select_checkbox_or_radio(element=analytics_off_radio)

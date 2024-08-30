@@ -28,7 +28,7 @@ def test_create_and_delete_template(driver):
     go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
 
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     alert_name = f"Test Alert {timestamp}"
@@ -36,16 +36,16 @@ def test_create_and_delete_template(driver):
 
     page.click_add_new_template()
     edit_template = EditBroadcastTemplatePage(driver)
-    assert edit_template.is_page_title("New template")
+    assert edit_template.is_page_header("New template")
     edit_template.create_template(name=alert_name, content=alert_content)
 
-    assert edit_template.is_page_title("Template")
+    assert edit_template.is_page_header("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_delete()
 
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
     assert not page.is_text_present_on_page(alert_name)
 
 
@@ -55,7 +55,7 @@ def test_create_edit_and_delete_template(driver):
     go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
 
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     alert_name = f"Test Alert {timestamp}"
@@ -63,10 +63,10 @@ def test_create_edit_and_delete_template(driver):
 
     page.click_add_new_template()
     edit_template = EditBroadcastTemplatePage(driver)
-    assert edit_template.is_page_title("New template")
+    assert edit_template.is_page_header("New template")
     edit_template.create_template(name=alert_name, content=alert_content)
 
-    assert edit_template.is_page_title("Template")
+    assert edit_template.is_page_header("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
 
@@ -74,7 +74,7 @@ def test_create_edit_and_delete_template(driver):
     edit_template.click_edit()
     edit_template.create_template(name=alert_name, content=alert_content + extra_text)
 
-    assert edit_template.is_page_title("Template")
+    assert edit_template.is_page_header("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content + extra_text)
     assert edit_template.text_is_on_page("less than a minute ago")
@@ -90,7 +90,7 @@ def test_create_edit_and_delete_template(driver):
 
     edit_template.click_delete()
 
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
     assert not page.is_text_present_on_page(alert_name)
 
 
@@ -100,7 +100,7 @@ def test_create_prep_to_send_and_delete_template(driver):
     go_to_templates_page(driver, service="broadcast_service")
 
     page = ShowTemplatesPage(driver)
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
 
     timestamp = str(int(time.time()))
     alert_name = f"Test Alert {timestamp}"
@@ -108,21 +108,21 @@ def test_create_prep_to_send_and_delete_template(driver):
 
     page.click_add_new_template()
     edit_template = EditBroadcastTemplatePage(driver)
-    assert edit_template.is_page_title("New template")
+    assert edit_template.is_page_header("New template")
     edit_template.create_template(name=alert_name, content=alert_content)
 
-    assert edit_template.is_page_title("Template")
+    assert edit_template.is_page_header("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_prep_to_send()
-    assert edit_template.is_page_title("Choose where to send this alert")
+    assert edit_template.is_page_header("Choose where to send this alert")
     edit_template.click_templates()
 
     edit_template.click_element_by_link_text(alert_name)
     edit_template.click_delete()
 
-    assert page.is_page_title("Templates")
+    assert page.is_page_header("Templates")
     assert not page.is_text_present_on_page(alert_name)
 
 
