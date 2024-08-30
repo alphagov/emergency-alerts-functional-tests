@@ -236,8 +236,12 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
         element.click()
 
-    def is_page_title(self, expected_page_title):
+    def is_page_header(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.H1)
+        return element.text == expected_page_title
+
+    def is_page_title(self, expected_page_title):
+        element = self.wait_for_element(CommonPageLocators.TITLE)
         return element.text == expected_page_title
 
     @retry(
