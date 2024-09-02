@@ -84,6 +84,11 @@ def test_prepare_broadcast_with_new_content(driver):
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
+    assert prepare_alert_pages.is_page_title(
+        f"{broadcast_title} is waiting for approval - "
+        f"{config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
 
     prepare_alert_pages.sign_out()
 
@@ -117,6 +122,11 @@ def test_prepare_broadcast_with_new_content(driver):
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
+    assert prepare_alert_pages.is_page_title(
+        f"Are you sure you want to stop this broadcast now?"
+        f" - {config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
     current_alerts_page.click_continue()  # stop broadcasting
     assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
@@ -180,6 +190,11 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
+    assert prepare_alert_pages.is_page_title(
+        f"{template_name} is waiting for approval - "
+        f"{config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
 
     prepare_alert_pages.click_element_by_link_text("Discard this alert")
     prepare_alert_pages.click_element_by_link_text("Rejected alerts")
@@ -216,6 +231,10 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     page.click_element_by_link_text(event)
 
     assert page.text_is_on_page(f"An API call wants to broadcast {event}")
+    assert page.is_page_title(
+        f"An API call wants to broadcast {event}"
+        f" - {config['broadcast_service']['service_name']} - GOV.UK Emergency Alerts"
+    )
 
     reject_broadcast_xml = CANCEL_XML.format(
         identifier=identifier,
@@ -344,6 +363,11 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
+    assert prepare_alert_pages.is_page_title(
+        f"{broadcast_title} is waiting for approval - "
+        f"{config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
 
     prepare_alert_pages.sign_out()
 
@@ -377,6 +401,11 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
+    assert prepare_alert_pages.is_page_title(
+        f"Are you sure you want to stop this broadcast now?"
+        f" - {config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
     current_alerts_page.click_continue()  # stop broadcasting
     assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
@@ -481,6 +510,11 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
+    assert prepare_alert_pages.is_page_title(
+        f"{broadcast_title} is waiting for approval - "
+        f"{config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
 
     prepare_alert_pages.sign_out()
 
@@ -514,6 +548,11 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
+    assert prepare_alert_pages.is_page_title(
+        f"Are you sure you want to stop this broadcast now?"
+        f" - {config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
     current_alerts_page.click_continue()  # stop broadcasting
     assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
