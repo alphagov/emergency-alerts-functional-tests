@@ -327,7 +327,9 @@ def delete_template(driver, template_name, service="service"):
         dashboard_page.click_templates()
         show_templates_page.click_template_by_link_text(template_name)
     template_page = EditBroadcastTemplatePage(driver)
-    template_page.click_delete()
+    template_page.click_delete(
+        template_name, config["broadcast_service"]["service_name"]
+    )
 
 
 def get_verify_code_from_api(mobile_number):

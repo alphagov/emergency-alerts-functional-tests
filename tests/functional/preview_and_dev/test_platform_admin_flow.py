@@ -2,6 +2,7 @@ import time
 
 import pytest
 
+from config import config
 from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
 from tests.pages.pages import (
     ApiKeysPage,
@@ -47,7 +48,7 @@ def test_add_rename_and_delete_service(driver):
     service_settings_page.save_service_name(new_service_name)
     assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
-    service_settings_page.delete_service()
+    service_settings_page.delete_service(new_service_name)
     time.sleep(10)
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
@@ -144,16 +145,19 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     dashboard_page.click_element_by_link_text("Platform admin")
 
     admin_page = PlatformAdminPage(driver)
+    assert admin_page.is_page_title("Search - GOV.UK Emergency Alerts")
 
     # search for user by partial email
     admin_page.click_search_link()
     admin_page.search_for(text="emergency-alerts-tests+user3")
     assert admin_page.text_is_on_page("Functional Tests - Broadcast User Auth Test")
+    assert admin_page.is_page_title("Search results - GOV.UK Emergency Alerts")
 
     # search for service by partial name
     admin_page.click_search_link()
     admin_page.search_for(text="Functional Tests")
     assert admin_page.text_is_on_page("Functional Tests Broadcast Service")
+    assert admin_page.is_page_title("Search results - GOV.UK Emergency Alerts")
 
     admin_page.sign_out()
 
@@ -189,7 +193,9 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     api_keys_page.click_element_by_link_text("Back to API keys")
     assert api_keys_page.is_page_header("API keys")
 
-    api_keys_page.revoke_api_key(key_name=key_name)
+    api_keys_page.revoke_api_key(
+        key_name=key_name, service=config["platform_admin"]["service_name"]
+    )
     api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 

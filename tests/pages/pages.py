@@ -687,9 +687,13 @@ class EditBroadcastTemplatePage(BasePage):
         element = self.wait_for_element(EditBroadcastTemplatePage.prep_to_send_button)
         element.click()
 
-    def click_delete(self):
+    def click_delete(self, template_name, service_name):
         element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
+        assert self.is_page_title(
+            f"Are you sure you want to delete '{template_name}'? - {template_name} - Templates - "
+            f"{service_name} - GOV.UK Emergency Alerts"
+        )
         element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
         element.click()
 
@@ -828,8 +832,12 @@ class TeamMembersPage(BasePage):
         element = self.get_edit_link_for_member_name(email)
         element.click()
 
-    def click_yes_remove(self):
+    def click_yes_remove(self, user, service_name):
         element = self.wait_for_element(TeamMembersPage.confirm_remove_button)
+        assert self.is_page_title(
+            f"Are you sure you want to remove {user}? - "
+            f"{service_name} - GOV.UK Emergency Alerts"
+        )
         element.click()
 
 
@@ -1007,10 +1015,13 @@ class ApiKeysPage(BasePage):
             )
         )
 
-    def revoke_api_key(self, key_name):
+    def revoke_api_key(self, key_name, service):
         element = self.get_revoke_link_for_api_key(key_name)
         element.click()
-
+        assert self.is_page_title(
+            f"Are you sure you want to revoke '{key_name}'? - API keys - "
+            f"{service} - GOV.UK Emergency Alerts"
+        )
         element = self.wait_for_element(ApiKeysPage.confirm_revoke_button)
         element.click()
 
@@ -1088,8 +1099,12 @@ class ServiceSettingsPage(BasePage):
         self.name_input = new_name
         self.click_save()
 
-    def delete_service(self):
+    def delete_service(self, service):
         self.click_element_by_link_text("Delete this service")
+        assert self.is_page_title(
+            f"Are you sure you want to delete '{service}'? - Settings - "
+            f"{service} - GOV.UK Emergency Alerts"
+        )
         element = self.wait_for_element(ServiceSettingsLocators.DELETE_CONFIRM_BUTTON)
         element.click()
 
