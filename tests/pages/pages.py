@@ -241,7 +241,8 @@ class BasePage(object):
         return element.text == expected_page_title
 
     def is_page_title(self, expected_page_title):
-        return self.driver.title == expected_page_title
+        element = self.wait_for_element(CommonPageLocators.TITLE)
+        return element.text == expected_page_title
 
     @retry(
         RetryException,
