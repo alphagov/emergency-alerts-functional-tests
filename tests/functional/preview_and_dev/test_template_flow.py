@@ -188,6 +188,10 @@ def test_creating_moving_and_deleting_template_folders(driver):
     view_folder_page.click_manage_folder()
 
     manage_folder_page.delete_folder()
+    assert manage_folder_page.is_page_title(
+        f"Are you sure you want to delete the '{new_folder_name}' folder? - {new_folder_name} - Templates - "
+        f"{config['broadcast_service']['service_name']} - GOV.UK Emergency Alerts"
+    )
     manage_folder_page.confirm_delete_folder()
     current_folders = [
         x.text for x in driver.find_elements(By.CLASS_NAME, "template-list-item-label")
@@ -306,4 +310,9 @@ def test_template_folder_permissions(driver):
         view_folder_page.click_manage_folder()
         manage_folder_page = ManageFolderPage(driver)
         manage_folder_page.delete_folder()
+        assert manage_folder_page.is_page_title(
+            f"Are you sure you want to delete the '{folder_name}' folder? - {' - '.join(reversed(folder_names))}"
+            f" - Templates - "
+            f"{config['broadcast_service']['service_name']} - GOV.UK Emergency Alerts"
+        )
         manage_folder_page.confirm_delete_folder()
