@@ -171,6 +171,13 @@ def test_creating_moving_and_deleting_template_folders(driver):
         == "You must empty this folder before you can delete it"
     )
 
+    assert manage_folder_page.is_page_title(
+        f"You must empty this folder before you can delete it"
+        f" - {new_folder_name} - Templates"
+        f" - {config['broadcast_service']['service_name']}"
+        f" - GOV.UK Emergency Alerts"
+    )
+
     # move template out of folder
     view_folder_page.select_template_checkbox(template_id)
     view_folder_page.move_to_root_template_folder()
