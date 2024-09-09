@@ -240,7 +240,7 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_header
 
-    def is_page_title(self, driver, expected_page_title):
+    def is_page_title(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.TITLE)
         return element.get_attribute("innerHTML") == expected_page_title
 
