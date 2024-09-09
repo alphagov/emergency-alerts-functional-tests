@@ -688,14 +688,16 @@ class EditBroadcastTemplatePage(BasePage):
         element.click()
 
     def click_delete(self, template_name, service_name):
+        is_page_title_text_expected = False
         element = self.wait_for_element(EditBroadcastTemplatePage.delete_button)
         element.click()
-        assert self.is_page_title(
+        is_page_title_text_expected = self.is_page_title(
             f"Are you sure you want to delete '{template_name}'? - {template_name} - Templates - "
             f"{service_name} - GOV.UK Emergency Alerts"
         )
         element = self.wait_for_element(EditBroadcastTemplatePage.confirm_delete_button)
         element.click()
+        return is_page_title_text_expected
 
     def click_folder_path(self, folder_name):
         element = self.wait_for_element(self.folder_path_item(folder_name))
@@ -833,12 +835,14 @@ class TeamMembersPage(BasePage):
         element.click()
 
     def click_yes_remove(self, user, service_name):
+        is_page_title_text_expected = False
         element = self.wait_for_element(TeamMembersPage.confirm_remove_button)
-        assert self.is_page_title(
+        is_page_title_text_expected = self.is_page_title(
             f"Are you sure you want to remove {user}? - "
             f"{service_name} - GOV.UK Emergency Alerts"
         )
         element.click()
+        return is_page_title_text_expected
 
 
 class InviteUserPage(BasePage):
@@ -1016,14 +1020,16 @@ class ApiKeysPage(BasePage):
         )
 
     def revoke_api_key(self, key_name, service):
+        is_page_title_text_expected = False
         element = self.get_revoke_link_for_api_key(key_name)
         element.click()
-        assert self.is_page_title(
+        is_page_title_text_expected = self.is_page_title(
             f"Are you sure you want to revoke '{key_name}'? - API keys - "
             f"{service} - GOV.UK Emergency Alerts"
         )
         element = self.wait_for_element(ApiKeysPage.confirm_revoke_button)
         element.click()
+        return is_page_title_text_expected
 
 
 class PreviewLetterPage(BasePage):
@@ -1100,13 +1106,15 @@ class ServiceSettingsPage(BasePage):
         self.click_save()
 
     def delete_service(self, service):
+        is_page_title_text_expected = False
         self.click_element_by_link_text("Delete this service")
-        assert self.is_page_title(
+        is_page_title_text_expected = self.is_page_title(
             f"Are you sure you want to delete '{service}'? - Settings - "
             f"{service} - GOV.UK Emergency Alerts"
         )
         element = self.wait_for_element(ServiceSettingsLocators.DELETE_CONFIRM_BUTTON)
         element.click()
+        return is_page_title_text_expected
 
 
 class ProfileSettingsPage(BasePage):

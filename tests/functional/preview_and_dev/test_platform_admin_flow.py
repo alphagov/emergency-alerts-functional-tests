@@ -48,7 +48,8 @@ def test_add_rename_and_delete_service(driver):
     service_settings_page.save_service_name(new_service_name)
     assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
-    service_settings_page.delete_service(new_service_name)
+    is_page_title_text_expected = service_settings_page.delete_service(new_service_name)
+    assert is_page_title_text_expected is True
     time.sleep(10)
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
@@ -128,8 +129,10 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     # click link with text "Remove this team member"
     team_members_page.click_element_by_link_text("Remove this team member")
-    team_members_page.click_yes_remove()
-
+    is_page_title_text_expected = team_members_page.click_yes_remove(
+        "User " + timestamp, config["platform_admin"]["service_name"]
+    )
+    assert is_page_title_text_expected is True
     team_members_page.wait_until_url_ends_with("/users")
     assert not team_members_page.is_text_present_on_page(invited_user_email)
 
@@ -193,9 +196,10 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     api_keys_page.click_element_by_link_text("Back to API keys")
     assert api_keys_page.is_page_header("API keys")
 
-    api_keys_page.revoke_api_key(
+    is_page_title_text_expected = api_keys_page.revoke_api_key(
         key_name=key_name, service=config["platform_admin"]["service_name"]
     )
+    assert is_page_title_text_expected is True
     api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 
