@@ -8,6 +8,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     WebDriverException,
 )
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -241,8 +242,8 @@ class BasePage(object):
         return element.text == expected_page_header
 
     def is_page_title(self, expected_page_title):
-        element = self.wait_for_element(CommonPageLocators.TITLE)
-        return element.text == expected_page_title
+        title = Chrome().title
+        return title == expected_page_title
 
     @retry(
         RetryException,
