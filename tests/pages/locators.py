@@ -10,7 +10,7 @@ class CommonPageLocators(object):
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
     H1 = (By.TAG_NAME, "H1")
-    TITLE = (By.TAG_NAME, "title")
+    TITLE = (By.XPATH, "//title")
 
 
 class MainPageLocators(object):
