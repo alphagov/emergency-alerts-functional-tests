@@ -130,7 +130,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     # click link with text "Remove this team member"
     team_members_page.click_element_by_link_text("Remove this team member")
     is_page_title_text_expected = team_members_page.click_yes_remove(
-        "User " + timestamp, config["platform_admin"]["service_name"]
+        user=f"User {timestamp}", service=config["platform_admin"]["service_name"]
     )
     team_members_page.wait_until_url_ends_with("/users")
     assert not team_members_page.is_text_present_on_page(invited_user_email)
