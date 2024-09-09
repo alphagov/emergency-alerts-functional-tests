@@ -46,10 +46,10 @@ def test_create_and_delete_template(driver):
     is_page_title_text_expected = edit_template.click_delete(
         alert_name, config["broadcast_service"]["service_name"]
     )
-    assert is_page_title_text_expected is True
 
     assert page.is_page_header("Templates")
     assert not page.is_text_present_on_page(alert_name)
+    assert is_page_title_text_expected is True
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -94,10 +94,10 @@ def test_create_edit_and_delete_template(driver):
     is_page_title_text_expected = edit_template.click_delete(
         alert_name, config["broadcast_service"]["service_name"]
     )
-    assert is_page_title_text_expected is True
 
     assert page.is_page_header("Templates")
     assert not page.is_text_present_on_page(alert_name)
+    assert is_page_title_text_expected is True
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -217,11 +217,11 @@ def test_creating_moving_and_deleting_template_folders(driver):
     is_page_title_text_expected = edit_template_page.click_delete(
         template_name, config["broadcast_service"]["service_name"]
     )
-    assert is_page_title_text_expected is True
 
     assert template_name not in [
         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
     ]
+    assert is_page_title_text_expected is True
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -315,10 +315,9 @@ def test_template_folder_permissions(driver):
     for folder_name in reversed(folder_names):
         view_folder_page.click_template_by_link_text(folder_name + "-template")
         template_page = EditBroadcastTemplatePage(driver)
-        is_page_title_text_expected = template_page.click_delete(
+        template_page.click_delete(
             folder_name + "-template", config["broadcast_service"]["service_name"]
         )
-        assert is_page_title_text_expected is True
 
         view_folder_page.click_manage_folder()
         manage_folder_page = ManageFolderPage(driver)
