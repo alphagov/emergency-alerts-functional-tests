@@ -41,7 +41,7 @@ config = {
     },
 }
 
-tenant = f"{os.environ.get('TENANT')}." if bool(os.environ.get("TENANT")) else ""
+tenant = f"{os.environ.get('TENANT')}."
 govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL")
 urls = {
     "local": {
