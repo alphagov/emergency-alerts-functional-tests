@@ -23,6 +23,12 @@ def shared_config():
     Setup shared config variables (eg env and urls)
     """
     setup_shared_config()
+    print(
+        config["env"],
+        config["eas_api_url"],
+        config["eas_admin_url"],
+        config["govuk_alerts_url"],
+    )
 
 
 @pytest.fixture(scope="session")
