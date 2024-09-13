@@ -43,11 +43,6 @@ config = {
 
 tenant = f"{os.environ.get('TENANT')}."
 govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL")
-
-# TODO: Remove. For testing.
-print(f"THE TENANT IS {tenant}")
-print(f"THE GOVUK ALERTS URL IS {govuk_alerts_url}")
-print(f"THE ENVIRONMENT IS {os.environ.get('ENVIRONMENT')}")
 urls = {
     "local": {
         "api": "http://localhost:6011",
