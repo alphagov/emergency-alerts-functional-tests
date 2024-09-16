@@ -61,6 +61,8 @@ urls = {
     },
 }
 
+account_numbers = {"development": "388086622185", "preview": "071839617283"}
+
 
 def setup_shared_config():
     """
@@ -77,6 +79,7 @@ def setup_shared_config():
             "eas_api_url": urls[env]["api"],
             "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
+            "cbc_account_number": account_numbers[env],
         }
     )
 
