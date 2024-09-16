@@ -57,6 +57,8 @@ phases:
       - |
         if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "true" ]; then
           make test-cbc-integration; exit 0
+        else
+          echo "SKIPPING WORKFLOW 'test-cbc-integration'..."
         fi
       - make test-platform-admin-flow; exit 0
       - make test-authentication-flow; exit 0
