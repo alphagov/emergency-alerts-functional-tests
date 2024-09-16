@@ -60,7 +60,6 @@ urls = {
         "govuk_alerts": f"https://{govuk_alerts_url}",
     },
 }
-
 account_numbers = {"development": "388086622185", "preview": "071839617283"}
 
 
