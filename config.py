@@ -60,7 +60,7 @@ urls = {
         "govuk_alerts": f"https://{govuk_alerts_url}",
     },
 }
-account_numbers = {"development": "388086622185", "preview": "071839617283"}
+account_numbers = {"development": "388086622185", "preview": "519419547532"}
 
 
 def setup_shared_config():
