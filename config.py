@@ -41,7 +41,8 @@ config = {
     },
 }
 
-
+tenant = f"{os.environ.get('TENANT')}."
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL")
 urls = {
     "local": {
         "api": "http://localhost:6011",
@@ -49,16 +50,17 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "development": {
-        "api": "https://api.dev.emergency-alerts.service.gov.uk",
-        "admin": "https://admin.dev.emergency-alerts.service.gov.uk",
-        "govuk_alerts": "tbc",
+        "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
+        "admin": f"https://{tenant}admin.dev.emergency-alerts.service.gov.uk",
+        "govuk_alerts": f"https://{govuk_alerts_url}",
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk",
         "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
-        "govuk_alerts": "https://d70jn492f2qbx.cloudfront.net",
+        "govuk_alerts": f"https://{govuk_alerts_url}",
     },
 }
+account_numbers = {"development": "388086622185", "preview": "071839617283"}
 
 
 def setup_shared_config():
@@ -76,6 +78,7 @@ def setup_shared_config():
             "eas_api_url": urls[env]["api"],
             "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
+            "cbc_account_number": account_numbers[env],
         }
     )
 

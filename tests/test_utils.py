@@ -578,7 +578,7 @@ def create_ddb_client():
         sts_client = boto3.client("sts")
 
         sts_session = sts_client.assume_role(
-            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
+            RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-loopback-for-functional-test",
         )
 
@@ -607,7 +607,7 @@ def create_cloudwatch_client():
         sts_client = boto3.client("sts")
 
         sts_session = sts_client.assume_role(
-            RoleArn="arn:aws:iam::519419547532:role/mno-loopback-access-role",
+            RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-cloudwatch-for-functional-test",
         )
 

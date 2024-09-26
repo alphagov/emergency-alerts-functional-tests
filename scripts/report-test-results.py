@@ -20,8 +20,14 @@ def main():
         print("Please provide a list of test files")
         sys.exit(1)
 
-    artefact_bucket = get_smoke_test_bucket_name()
+    failed_tests = aggregate_failures(test_files)
 
+    if os.environ["ENVIRONMENT"] == "preview":
+        log_final_results(failed_tests)
+
+
+def aggregate_failures(test_files):
+    artefact_bucket = get_smoke_test_bucket_name()
     failed_tests = []
 
     for test_file in test_files:
@@ -32,16 +38,16 @@ def main():
             result = f"PRV-FT-{r[0].upper()} | {success} | NAME: {r[1]} | TIME: {r[2]}"
 
             if len(r) > 3:
-                result = result + f" | ERROR: {r[3]} | FILE: {r[4]}"
+                result = f"{result} | ERROR: {r[3]} | FILE: {r[4]}"
                 if artefact_bucket is not None:
-                    result = result + f" | Test output bucket: {artefact_bucket}"
+                    result = f"{result} | Test output bucket: {artefact_bucket}"
 
             if success == "FAIL":
                 failed_tests.append(f"- {r[1]}: {r[3]}\n")
 
             print(result.replace("\n", " "), sep="")
 
-    log_final_results(failed_tests)
+    return failed_tests
 
 
 def log_final_results(failed_tests):
