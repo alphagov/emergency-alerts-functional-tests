@@ -236,6 +236,10 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
         element.click()
 
+    def click_continue_to_signin(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
+        element.click()
+
     def is_page_title(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_title
@@ -269,10 +273,6 @@ class BasePage(object):
 
     def click_element_by_id(self, id):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
-        element.click()
-
-    def click_button_by_text(self, button_text):
-        element = self.wait_for_element((By.XPATH, f'//button[text()="{button_text}"]'))
         element.click()
 
     def get_errors(self):
@@ -427,7 +427,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_button_by_text("Continue")
+        self.click_continue()
 
 
 class VerifyPage(BasePage):

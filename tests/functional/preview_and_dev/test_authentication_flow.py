@@ -34,7 +34,7 @@ def test_reset_forgotten_password(driver):
 
     new_password = "ks94ijwld"
     new_password_page.input_new_password(new_password)
-    new_password_page.click_button_by_text("Continue")
+    new_password_page.click_continue_to_signin()
 
     verify_code = get_verify_code_from_api_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
