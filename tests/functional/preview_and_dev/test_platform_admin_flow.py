@@ -97,7 +97,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     registration_page = RegisterFromInvite(driver)
     assert registration_page.is_page_title("Create an account")
     registration_page.fill_registration_form(name="User " + timestamp)
-    registration_page.click_continue()
+    registration_page.click_button_by_text("Continue")
     time.sleep(30)
     # get user_id of invited user by their email
     response = api_client.post(url="/user/email", data={"email": invited_user_email})

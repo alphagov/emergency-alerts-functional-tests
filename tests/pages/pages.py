@@ -271,6 +271,10 @@ class BasePage(object):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
+    def click_button_by_text(self, button_text):
+        element = self.wait_for_element((By.XPATH, f'//button[text()="{button_text}"]'))
+        element.click()
+
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
         errors = self.wait_for_element(error_message)
@@ -423,7 +427,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_continue()
+        self.click_button_by_text("Continue")
 
 
 class VerifyPage(BasePage):
