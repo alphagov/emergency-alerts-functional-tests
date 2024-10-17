@@ -29,7 +29,7 @@ class SignInPageLocators(object):
 
 
 class NewPasswordPageLocators(object):
-    NEW_PASSWORD_INPUT = (By.NAME, "password")
+    NEW_PASSWORD_INPUT = (By.NAME, "new_password")
 
 
 class VerifyPageLocators(object):
