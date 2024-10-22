@@ -33,6 +33,7 @@ def preview_dev_config():
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
 
 
 @pytest.fixture(scope="module")
@@ -53,6 +54,14 @@ def failed_login_purge():
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
     purge_failed_logins_created_by_functional_tests(test_api_client)
+
+
+@pytest.fixture(scope="module")
+def historic_password_purge():
+    test_api_client = create_test_client()
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
+    yield
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
 
 
 def purge_functional_test_alerts(test_api_client):
@@ -85,3 +94,12 @@ def purge_users_created_by_functional_tests(test_api_client):
 def purge_failed_logins_created_by_functional_tests(test_api_client):
     url = "/service/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
+
+
+def purge_historic_passwords_created_by_functional_tests(test_api_client):
+    for _, user in config["broadcast_service"].items():
+        if isinstance(user, dict):
+            url = (
+                f'/service/purge-historic-passwords-created-by-tests/{str(user["id"])}'
+            )
+            test_api_client.delete(url)

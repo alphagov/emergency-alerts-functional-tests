@@ -18,7 +18,7 @@ test_group_name = "auth-flow"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_reset_forgotten_password(driver):
+def test_reset_forgotten_password(driver, historic_password_purge):
     clean_session(driver)
 
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
