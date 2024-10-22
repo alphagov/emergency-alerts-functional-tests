@@ -1,3 +1,6 @@
+import random
+import string
+
 import pytest
 
 from config import config
@@ -32,7 +35,12 @@ def test_reset_forgotten_password(driver):
     new_password_page = NewPasswordPage(driver, password_reset_url)
     assert new_password_page.text_is_on_page("create a new password")
 
-    new_password = "ks94ijwld!!!"
+    new_password = "".join(
+        [
+            random.choice(string.ascii_letters + string.digits + string.punctuation)
+            for _ in range(15)
+        ]
+    )
     new_password_page.input_new_password(new_password)
     new_password_page.click_continue_to_signin()
 
