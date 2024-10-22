@@ -53,6 +53,34 @@ def test_reset_forgotten_password(driver):
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 
+    # Sign out then reset password
+
+    landing_page.sign_out()
+    sign_in_page = SignInPage(driver)
+    sign_in_page.click_forgot_password_link()
+
+    forgot_password_page = ForgotPasswordPage(driver)
+    forgot_password_page.input_email_address(login_email)
+    forgot_password_page.click_continue()
+    assert forgot_password_page.text_is_on_page("Check your email")
+
+    password_reset_url = create_sign_in_url(login_email, "new-password")
+    new_password_page = NewPasswordPage(driver, password_reset_url)
+    assert new_password_page.text_is_on_page("create a new password")
+
+    new_password = config["broadcast_service"]["broadcast_user_3"]["password"]
+    new_password_page.input_new_password(new_password)
+    new_password_page.click_continue_to_signin()
+
+    verify_code = get_verify_code_from_api_by_id(
+        config["broadcast_service"]["broadcast_user_3"]["id"]
+    )
+    verify_page = VerifyPage(driver)
+    verify_page.verify(verify_code)
+
+    landing_page = BasePage(driver)
+    assert landing_page.url_contains("current-alerts")
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_sign_in_with_email_mfa(driver):
