@@ -598,7 +598,7 @@ def test_reject_alert_with_reason(driver):
 
     current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
 
-    alert_page_with_rejection = RejectionForm()
+    alert_page_with_rejection = RejectionForm(driver)
     alert_page_with_rejection.click_open_reject_detail()
     assert alert_page_with_rejection.rejection_details_is_open()
 
