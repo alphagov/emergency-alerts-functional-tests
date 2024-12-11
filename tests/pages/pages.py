@@ -36,6 +36,9 @@ from tests.pages.element import (
     PostcodeInputElement,
     PreviewButton,
     RadiusInputElement,
+    RejectAlertButton,
+    RejectionDetailElement,
+    RejectionReasonTextArea,
     SearchButton,
     SearchInputElement,
     SecondCoordinateInputElement,
@@ -57,6 +60,7 @@ from tests.pages.locators import (
     LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    RejectionFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
@@ -1484,3 +1488,24 @@ class DashboardWithDialogs(BasePage):
             DashboardWithDialogPageLocators.EXPIRY_DIALOG
         )
         return not element.get_attribute("open")
+
+
+class RejectionForm(BasePage):
+    rejection_detail_element = RejectionDetailElement()
+    rejection_reason_text_area = RejectionReasonTextArea()
+    reject_alert_btn = RejectAlertButton()
+
+    def click_open_reject_detail(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        element.click()
+
+    def rejection_details_is_open(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        return element.get_attribute("open")
+
+    def click_reject_alert(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECT_ALERT_BUTTON)
+        element.click()
+
+    def create_rejection_reason_input(self, content):
+        self.rejection_reason_text_area = content

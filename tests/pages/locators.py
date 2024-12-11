@@ -220,3 +220,9 @@ class DashboardWithDialogPageLocators(object):
         '//*[@id="activity" and @class="hmrc-timeout-dialog"]',
     )
     CONTINUE_BUTTON = (By.NAME, "continue-btn")
+
+
+class RejectionFormLocators(object):
+    REJECTION_DETAIL_ELEMENT = (By.ID, "rejection_reason_details")
+    REJECTION_REASON_TEXTAREA = (By.ID, "rejection_reason")
+    REJECT_ALERT_BUTTON = (By.CLASS_NAME, ".govuk-button--warning.page-footer__button")
