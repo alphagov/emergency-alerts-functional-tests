@@ -178,3 +178,7 @@ class RejectionReasonTextArea(BasePageElement):
 
 class RejectAlertButton(BasePageElement):
     name = RejectionFormLocators.REJECT_ALERT_BUTTON[1]
+
+
+class RejectionDetailLink:
+    name = RejectionFormLocators.REJECTION_DETAIL_LINK[1]

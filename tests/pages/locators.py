@@ -223,6 +223,10 @@ class DashboardWithDialogPageLocators(object):
 
 
 class RejectionFormLocators(object):
+    REJECTION_DETAIL_LINK = (
+        By.XPATH,
+        '//*[@id="rejection_reason_details"]/summary/span',
+    )
     REJECTION_DETAIL_ELEMENT = (By.ID, "rejection_reason_details")
     REJECTION_REASON_TEXTAREA = (By.ID, "rejection_reason")
     REJECT_ALERT_BUTTON = (By.CLASS_NAME, ".govuk-button--warning.page-footer__button")

@@ -38,6 +38,7 @@ from tests.pages.element import (
     RadiusInputElement,
     RejectAlertButton,
     RejectionDetailElement,
+    RejectionDetailLink,
     RejectionReasonTextArea,
     SearchButton,
     SearchInputElement,
@@ -1494,9 +1495,10 @@ class RejectionForm(BasePage):
     rejection_detail_element = RejectionDetailElement()
     rejection_reason_text_area = RejectionReasonTextArea()
     reject_alert_btn = RejectAlertButton()
+    rejection_detail_link = RejectionDetailLink()
 
     def click_open_reject_detail(self):
-        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_LINK)
         element.click()
 
     def rejection_details_is_open(self):
