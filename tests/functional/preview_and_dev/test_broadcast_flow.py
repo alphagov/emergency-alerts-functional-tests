@@ -585,7 +585,10 @@ def test_reject_alert_with_reason(driver):
     alert_page_with_rejection.click_reject_alert()
 
     # Assert errors appear
-    assert alert_page_with_rejection.get_errors() == "Enter rejection reason"
+    assert (
+        alert_page_with_rejection.get_rejection_form_errors()
+        == "Enter rejection reason"
+    )
 
     # With rejection reason
     rejection_reason = "This is a test rejection reason."

@@ -1515,3 +1515,8 @@ class RejectionForm(BasePage):
 
     def create_rejection_reason_input(self, content):
         self.rejection_reason_text_area = content
+
+    def get_rejection_form_errors(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-message")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
