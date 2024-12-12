@@ -10,6 +10,7 @@ from tests.pages.locators import (
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
+    RejectionFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
@@ -165,3 +166,19 @@ class ExpiryDialog(BasePageElement):
 
 class ExpiryDialogContinueButton(BasePageElement):
     name = DashboardWithDialogPageLocators.CONTINUE_BUTTON[1]
+
+
+class RejectionDetailElement(BasePageElement):
+    name = RejectionFormLocators.REJECTION_DETAIL_ELEMENT[1]
+
+
+class RejectionReasonTextArea(BasePageElement):
+    name = RejectionFormLocators.REJECTION_REASON_TEXTAREA[1]
+
+
+class RejectAlertButton(BasePageElement):
+    name = RejectionFormLocators.REJECT_ALERT_BUTTON[1]
+
+
+class RejectionDetailLink:
+    name = RejectionFormLocators.REJECTION_DETAIL_LINK[1]
