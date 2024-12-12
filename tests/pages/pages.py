@@ -1505,6 +1505,10 @@ class RejectionForm(BasePage):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
         return element.get_attribute("open")
 
+    def rejection_details_is_closed(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        return not element.get_attribute("open")
+
     def click_reject_alert(self):
         element = self.wait_for_element(RejectionFormLocators.REJECT_ALERT_BUTTON)
         element.click()
