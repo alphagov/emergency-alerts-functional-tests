@@ -74,15 +74,6 @@ class EditTemplatePageLocators(object):
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
 
 
-class UploadCsvLocators(object):
-    FILE_INPUT = (By.ID, "file")
-    SEND_BUTTON = (
-        By.CSS_SELECTOR,
-        "form button.govuk-button:not(.govuk-button--secondary)",
-    )
-    FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, "table-row")
-
-
 class TeamMembersPageLocators(object):
     H1 = (By.TAG_NAME, "h1")
     INVITE_TEAM_MEMBER_BUTTON = (By.CSS_SELECTOR, "a.govuk-button")
@@ -137,41 +128,6 @@ class ApiKeysPageLocators(object):
     KEY_COPY_BUTTON = (By.CLASS_NAME, "copy-to-clipboard__button--copy")
     KEY_SHOW_BUTTON = (By.CLASS_NAME, "copy-to-clipboard__button--show")
     CONFIRM_REVOKE_BUTTON = (By.NAME, "delete")
-
-
-class LetterPreviewPageLocators(object):
-    DOWNLOAD_PDF_LINK = (By.LINK_TEXT, "Download as a PDF")
-    PDF_IMAGE = (By.CSS_SELECTOR, ".letter img")
-
-
-class SingleRecipientLocators(object):
-    USE_MY_EMAIL = (By.LINK_TEXT, "Use my email address")
-    USE_MY_NUMBER = (By.LINK_TEXT, "Use my phone number")
-    PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
-    PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
-    PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")
-    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-
-
-class EmailReplyToLocators(object):
-    ADD_EMAIL_REPLY_TO_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
-    CONTINUE_BUTTON = (
-        By.XPATH,
-        "//a[@class = 'govuk-button' and contains(text(),'Continue')]",
-    )
-    EMAIL_ADDRESS_FIELD = (By.ID, "email_address")
-    REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
-    IS_DEFAULT_CHECKBOX = (By.ID, "is_default")
-
-
-class SmsSenderLocators(object):
-    SMS_SENDER_FIELD = (By.ID, "sms_sender")
-    SAVE_SMS_SENDER_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
-    ALL_SMS_SENDERS = (By.TAG_NAME, "main")
-    FIRST_CHANGE_LINK = (By.PARTIAL_LINK_TEXT, "Change")
-    SMS_SENDER = (By.CLASS_NAME, "sms-message-sender")
-    SMS_RECIPIENT = (By.CLASS_NAME, "sms-message-recipient")
-    SMS_CONTENT = (By.CLASS_NAME, "sms-message-wrapper")
 
 
 class ServiceSettingsLocators(object):
