@@ -1,11 +1,7 @@
-import csv
 import functools
 import json
 import logging
-import os
 import re
-import tempfile
-import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 
@@ -19,12 +15,9 @@ from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
-    AddServicePage,
     DashboardPage,
     EditBroadcastTemplatePage,
     GovUkAlertsPage,
-    MainPage,
-    RegistrationPage,
     RetryException,
     ShowTemplatesPage,
     VerifyPage,
@@ -33,10 +26,6 @@ from tests.pages import (
 logging.basicConfig(
     filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO
 )
-
-jenkins_build_id = os.getenv("BUILD_ID", "No build id")
-
-default = " (default)"
 
 ACCOUNTS_REQUIRING_SMS_2FA = [
     "broadcast_create_user",
@@ -47,26 +36,6 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
 PROVIDERS = ["ee", "o2", "vodafone", "three"]
 
 
-class NotificationStatuses:
-    VIRUS_SCAN_FAILED = "virus-scan-failed"
-    ACCEPTED = {"accepted"}
-    RECEIVED = {"received"}
-    DELIVERED = {"delivered", "temporary-failure", "permanent-failure"}
-    SENT = RECEIVED | DELIVERED | {"sending", "pending"}
-
-
-def create_temp_csv(fields):
-    directory_name = tempfile.mkdtemp()
-    csv_filename = "{}-sample.csv".format(uuid.uuid4())
-    csv_file_path = os.path.join(directory_name, csv_filename)
-    fields.update({"build_id": jenkins_build_id})
-    with open(csv_file_path, "w") as csv_file:
-        csv_writer = csv.DictWriter(csv_file, fieldnames=fields.keys())
-        csv_writer.writeheader()
-        csv_writer.writerow(fields)
-    return directory_name, csv_filename
-
-
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
     """
     As defined in section 3.3.2 of
@@ -75,11 +44,6 @@ def convert_naive_utc_datetime_to_cap_standard_string(dt):
     `+` if the timezone is > UTC, otherwise `-`
     """
     return f"{dt.strftime('%Y-%m-%dT%H:%M:%S')}-00:00"
-
-
-def assert_notification_body(notification_id, notification):
-    assert notification["id"] == notification_id
-    assert "The quick brown fox jumped over the lazy dog" in notification["body"]
 
 
 def get_link(template_id, email):
@@ -164,37 +128,6 @@ def do_email_verification(driver, template_id, email_address):
     except (NoSuchElementException, TimeoutException):
         # no error - that means we're logged in! hurray.
         return True
-
-
-def do_user_registration(driver):
-    main_page = MainPage(driver)
-    main_page.get()
-    main_page.click_set_up_account()
-
-    registration_page = RegistrationPage(driver)
-    assert registration_page.is_current()
-
-    registration_page.register()
-
-    assert driver.current_url == config["eas_admin_url"] + "/registration-continue"
-
-    registration_link = get_link(
-        config["notify_templates"]["registration_template_id"], config["user"]["email"]
-    )
-
-    driver.get(registration_link)
-
-    do_verify(driver, config["user"]["mobile"])
-
-    add_service_page = AddServicePage(driver)
-    assert add_service_page.is_current()
-    add_service_page.add_service(config["service_name"])
-
-    dashboard_page = DashboardPage(driver)
-    service_id = dashboard_page.get_service_id()
-    dashboard_page.go_to_dashboard_for_service(service_id)
-
-    assert dashboard_page.get_service_name() == config["service_name"]
 
 
 def create_broadcast_template(driver, name="test template", content=None):
