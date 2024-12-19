@@ -433,14 +433,8 @@ class VerifyPage(BasePage):
 
 class DashboardPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
-    # sms_templates_link = (By.LINK_TEXT, "Text message templates")
-    # email_templates_link = (By.LINK_TEXT, "Email templates")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
-    # total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
-    # total_sms_div = (By.CSS_SELECTOR, "#total-sms .big-number-number")
-    # total_letter_div = (By.CSS_SELECTOR, "#total-letters .big-number-number")
-    # inbox_link = (By.CSS_SELECTOR, "#total-received")
     navigation = (By.CLASS_NAME, "navigation")
 
     def _message_count_for_template_div(self, template_id):
@@ -454,14 +448,6 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.h2)
         return element.text
 
-    # def click_sms_templates(self):
-    #     element = self.wait_for_element(DashboardPage.sms_templates_link)
-    #     element.click()
-
-    # def click_email_templates(self):
-    #     element = self.wait_for_element(DashboardPage.email_templates_link)
-    #     element.click()
-
     def click_team_members_link(self):
         element = self.wait_for_element(DashboardPage.team_members_link)
         element.click()
@@ -470,10 +456,6 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.api_keys_link)
         element.click()
 
-    # def click_inbox_link(self):
-    #     element = self.wait_for_element(DashboardPage.inbox_link)
-    #     element.click()
-
     def get_service_id(self):
         return self.driver.current_url.split("/services/")[1].split("/")[0]
 
@@ -481,33 +463,11 @@ class DashboardPage(BasePage):
         element = self.wait_for_element(DashboardPage.navigation)
         return element.text
 
-    # def get_notification_id(self):
-    #     return self.driver.current_url.split("notification/")[1].split("?")[0]
-
     def go_to_dashboard_for_service(self, service_id=None):
         if not service_id:
             service_id = self.get_service_id()
         url = "{}/services/{}/dashboard".format(self.base_url, service_id)
         self.driver.get(url)
-
-    # def get_total_message_count(self, message_type):
-    #     if message_type == "email":
-    #         target_div = DashboardPage.total_email_div
-    #     elif message_type == "letter":
-    #         target_div = DashboardPage.total_letter_div
-    #     else:
-    #         target_div = DashboardPage.total_sms_div
-    #     element = self.wait_for_element(target_div)
-
-    #     return int(element.text)
-
-    # def get_template_message_count(self, template_id):
-    #     messages_sent_count_for_template_div = self._message_count_for_template_div(
-    #         template_id
-    #     )
-    #     element = self.wait_for_element(messages_sent_count_for_template_div)
-
-    #     return int(element.text)
 
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
@@ -578,12 +538,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         self.select_checkbox_or_radio(radio_element)
 
         self.click_continue()
-
-    # def select_email(self):
-    #     self._select_template_type(self.email_radio)
-
-    # def select_text_message(self):
-    #     self._select_template_type(self.text_message_radio)
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
