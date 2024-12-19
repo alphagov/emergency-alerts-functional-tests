@@ -1,6 +1,3 @@
-import os
-import shutil
-
 from retry import retry
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -24,7 +21,6 @@ from tests.pages.element import (
     ExpiryDialog,
     ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
-    FileInputElement,
     FirstCoordinateInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
@@ -52,20 +48,15 @@ from tests.pages.locators import (
     CommonPageLocators,
     DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
-    EmailReplyToLocators,
     InviteUserPageLocators,
-    LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
-    SingleRecipientLocators,
-    SmsSenderLocators,
     TeamMembersPageLocators,
     TemplatePageLocators,
-    UploadCsvLocators,
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
@@ -763,43 +754,6 @@ class EditEmailTemplatePage(BasePage):
         element.click()
 
 
-class UploadCsvPage(BasePage):
-    file_input_element = FileInputElement()
-    send_button = UploadCsvLocators.SEND_BUTTON
-    first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
-
-    def click_send(self):
-        element = self.wait_for_element(UploadCsvPage.send_button)
-        element.click()
-
-    def upload_csv(self, directory, path):
-        file_path = os.path.join(directory, path)
-        self.file_input_element = file_path
-        self.click_send()
-        shutil.rmtree(directory, ignore_errors=True)
-
-    # we've been having issues with celery short polling causing notifications to take a long time.
-    @retry(RetryException, tries=10, delay=10)
-    def get_notification_id_after_upload(self):
-        try:
-            element = self.wait_for_element(UploadCsvPage.first_notification)
-            notification_id = element.get_attribute("id")
-            if not notification_id:
-                raise RetryException(
-                    "No notification id yet {}".format(notification_id)
-                )
-            else:
-                return notification_id
-        except StaleElementReferenceException:
-            raise RetryException("Could not find element...")
-
-    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = "{}/services/{}/send/{}/csv".format(
-            self.base_url, service_id, template_id
-        )
-        self.driver.get(url)
-
-
 class TeamMembersPage(BasePage):
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
@@ -1015,56 +969,6 @@ class ApiKeysPage(BasePage):
         element.click()
 
 
-class PreviewLetterPage(BasePage):
-    download_pdf_link = LetterPreviewPageLocators.DOWNLOAD_PDF_LINK
-    pdf_image = LetterPreviewPageLocators.PDF_IMAGE
-
-    def get_download_pdf_link(self):
-        link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
-        return link.get_attribute("href")
-
-    def get_image_src(self):
-        link = self.wait_for_element(PreviewLetterPage.pdf_image)
-        return link.get_attribute("src")
-
-
-class SendOneRecipient(BasePage):
-    def is_placeholder_a_recipient_field(self, message_type):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
-        if message_type == "email":
-            return element.text.strip() == "email address"
-        else:
-            return element.text.strip() == "phone number"
-
-    def get_placeholder_name(self):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
-        return element.text.strip()
-
-    def enter_placeholder_value(self, placeholder_value):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
-        element.send_keys(placeholder_value)
-
-    def get_preview_contents(self):
-        table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
-        rows = table.find_elements(
-            By.TAG_NAME, "tr"
-        )  # get all of the rows in the table
-        return rows
-
-    def choose_alternative_sender(self):
-        radio = self.wait_for_invisible_element(
-            SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO
-        )
-        radio.click()
-
-    def send_to_myself(self, message_type):
-        if message_type == "email":
-            element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
-        else:
-            element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
-        element.click()
-
-
 class ServiceSettingsPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     name_input = ClearableInputElement(name="name")
@@ -1137,79 +1041,6 @@ class ChangeName(BasePage):
         element = self.wait_for_element(ChangeNameLocators.CHANGE_NAME_FIELD)
         element.clear()
         element.send_keys(new_name)
-
-
-class EmailReplyTo(BasePage):
-    def go_to_add_email_reply_to_address(self, service_id):
-        url = "{}/services/{}/service-settings/email-reply-to/add".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def click_add_email_reply_to(self):
-        element = self.wait_for_element(EmailReplyToLocators.ADD_EMAIL_REPLY_TO_BUTTON)
-        element.click()
-
-    def click_continue_button(self, time=120):
-        element = self.wait_for_element(EmailReplyToLocators.CONTINUE_BUTTON, time=time)
-        element.click()
-
-    def insert_email_reply_to_address(self, email_address):
-        element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
-        element.send_keys(email_address)
-
-    def get_reply_to_email_addresses(self):
-        elements = self.wait_for_element(EmailReplyToLocators.REPLY_TO_ADDRESSES)
-        return elements
-
-    def go_to_edit_email_reply_to_address(self, service_id, email_reply_to_id):
-        url = "{}/services/{}/service-settings/email-reply-to/{}/edit".format(
-            self.base_url, service_id, email_reply_to_id
-        )
-        self.driver.get(url)
-
-    def check_is_default_check_box(self):
-        radio = self.wait_for_invisible_element(
-            EmailReplyToLocators.IS_DEFAULT_CHECKBOX
-        )
-        radio.click()
-
-
-class SmsSenderPage(BasePage):
-    def go_to_text_message_senders(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def go_to_add_text_message_sender(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender/add".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def insert_sms_sender(self, sender):
-        element = self.wait_for_element(SmsSenderLocators.SMS_SENDER_FIELD)
-        element.clear()
-        element.send_keys(sender)
-
-    def click_save_sms_sender(self):
-        element = self.wait_for_element(SmsSenderLocators.SAVE_SMS_SENDER_BUTTON)
-        element.click()
-
-    def get_sms_senders(self):
-        elements = self.wait_for_element(SmsSenderLocators.ALL_SMS_SENDERS)
-        return elements
-
-    def click_change_link_for_first_sms_sender(self):
-        change_link = self.wait_for_element(SmsSenderLocators.FIRST_CHANGE_LINK)
-        change_link.click()
-
-    def get_sms_sender(self):
-        return self.wait_for_element(SmsSenderLocators.SMS_SENDER)
-
-    def get_sms_recipient(self):
-        return self.wait_for_element(SmsSenderLocators.SMS_RECIPIENT)
 
 
 class OrganisationDashboardPage(BasePage):
