@@ -96,6 +96,7 @@ def broadcast_client():
     client = BroadcastClient(
         api_key=config["broadcast_service"]["api_key_live"],
         base_url=config["eas_api_url"],
+        timeout=60,
     )
     return client
 
