@@ -18,6 +18,7 @@ from tests.pages import (
 from tests.pages.pages import (
     ChooseCoordinateArea,
     ChooseCoordinatesType,
+    RejectionForm,
     SearchPostcodePage,
 )
 from tests.pages.rollups import sign_in
@@ -527,3 +528,101 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_reject_alert_with_reason(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.text_is_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = f"test broadcast{test_uuid}"
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = f"This is a test broadcast {test_uuid}"
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.click_continue()
+
+    prepare_alert_pages.click_element_by_link_text(
+        "Preview alert"
+    )  # Remove once alert duration added back in
+    # here check if selected areas displayed
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("Eastbrook")
+
+    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    assert prepare_alert_pages.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    prepare_alert_pages.sign_out()
+
+    # reject the alert
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    landing_page = BasePage(driver)
+    if not landing_page.text_is_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
+
+    alert_page_with_rejection = RejectionForm(driver)
+    assert alert_page_with_rejection.rejection_details_is_closed()
+    alert_page_with_rejection.click_open_reject_detail()
+    assert alert_page_with_rejection.rejection_details_is_open()
+
+    # Without rejection reason
+    rejection_reason = ""
+    alert_page_with_rejection.click_reject_alert()
+
+    # Assert errors appear
+    assert (
+        alert_page_with_rejection.get_rejection_form_errors()
+        == "Error:\nEnter the reason for rejecting the alert"
+    )
+
+    # With rejection reason
+    rejection_reason = "This is a test rejection reason."
+    alert_page_with_rejection.create_rejection_reason_input(rejection_reason)
+    alert_page_with_rejection.click_reject_alert()
+
+    assert landing_page.text_is_on_page("Current alerts")
+    landing_page.click_element_by_link_text("Rejected alerts")
+
+    rejected_alerts_page = BasePage(driver)
+
+    assert rejected_alerts_page.text_is_on_page(broadcast_title)
+    assert rejected_alerts_page.text_is_on_page(rejection_reason)
+    assert rejected_alerts_page.text_is_on_page(rejection_reason)
