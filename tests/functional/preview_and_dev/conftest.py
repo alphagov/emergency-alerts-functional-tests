@@ -26,7 +26,11 @@ def preview_dev_config():
     """
     Setup
     """
-    print("*************\nSetting up preview_dev_config\n*************")
+    print(
+        "*************\n"
+        + time.time()
+        + " Setting up preview_dev_config\n*************"
+    )
     setup_preview_dev_config()
     test_api_client = create_test_client()
     purge_functional_test_alerts(test_api_client)
@@ -35,7 +39,11 @@ def preview_dev_config():
     purge_users_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
-    print("*************\nTearing down preview_dev_config\n*************")
+    print(
+        "*************\n"
+        + time.time()
+        + " Tearing down preview_dev_config\n*************"
+    )
 
 
 @pytest.fixture(scope="module")
