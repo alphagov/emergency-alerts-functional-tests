@@ -28,7 +28,7 @@ def preview_dev_config():
     """
     print(
         "*************\n"
-        + time.time()
+        + str(time.time())
         + " Setting up preview_dev_config\n*************"
     )
     setup_preview_dev_config()
@@ -41,7 +41,7 @@ def preview_dev_config():
     yield
     print(
         "*************\n"
-        + time.time()
+        + str(time.time())
         + " Tearing down preview_dev_config\n*************"
     )
 
