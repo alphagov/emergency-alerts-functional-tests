@@ -108,5 +108,6 @@ def api_client():
         client_id=config["service"]["internal_api_client_id"],
         api_key=config["service"]["internal_api_client_secret"],
         base_url=config["eas_api_url"],
+        timeout=60,
     )
     return client
