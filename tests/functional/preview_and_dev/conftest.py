@@ -1,3 +1,4 @@
+import logging
 import time
 
 import pytest
@@ -26,7 +27,7 @@ def preview_dev_config():
     """
     Setup
     """
-    print(
+    logging.info(
         "*************\n"
         + str(time.time())
         + " Setting up preview_dev_config\n*************"
@@ -39,7 +40,7 @@ def preview_dev_config():
     purge_users_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
-    print(
+    logging.info(
         "*************\n"
         + str(time.time())
         + " Tearing down preview_dev_config\n*************"
