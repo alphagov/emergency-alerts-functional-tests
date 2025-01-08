@@ -15,7 +15,6 @@ from tests.pages.locators import (
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
-    UploadCsvLocators,
     VerifyPageLocators,
 )
 
@@ -90,10 +89,6 @@ class MobileInputElement(BasePageElement):
 
 class TemplateContentElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_CONTENT_INPUT[1]
-
-
-class FileInputElement(BasePageElement):
-    name = UploadCsvLocators.FILE_INPUT[1]
 
 
 class SubjectInputElement(BasePageElement):
