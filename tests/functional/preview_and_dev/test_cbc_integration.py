@@ -165,7 +165,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 2
+        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 5
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
