@@ -261,11 +261,6 @@ class BasePage(object):
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
-    def is_text_present_on_page(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-
-        return search_text in normalized_page_source
-
     def get_template_id(self):
         # e.g.
         # http://localhost:6012/services/237dd966-b092-42ab-b406-0a00187d007f/templates/4808eb34-5225-492b-8af2-14b232f05b8e/edit

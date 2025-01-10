@@ -335,7 +335,7 @@ def get_loopback_request_items(ddbc, request_id, retry_if=None):
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. Retrying...)'
+            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. {db_response} Retrying...)'
         )
 
     return db_response["Items"]

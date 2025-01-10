@@ -46,7 +46,7 @@ def test_create_and_delete_template(driver):
     edit_template.click_delete()
 
     assert page.is_page_title("Templates")
-    assert not page.is_text_present_on_page(alert_name)
+    assert not page.text_is_on_page(alert_name)
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -91,7 +91,7 @@ def test_create_edit_and_delete_template(driver):
     edit_template.click_delete()
 
     assert page.is_page_title("Templates")
-    assert not page.is_text_present_on_page(alert_name)
+    assert not page.text_is_on_page(alert_name)
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -123,7 +123,7 @@ def test_create_prep_to_send_and_delete_template(driver):
     edit_template.click_delete()
 
     assert page.is_page_title("Templates")
-    assert not page.is_text_present_on_page(alert_name)
+    assert not page.text_is_on_page(alert_name)
 
 
 @pytest.mark.xdist_group(name=test_group_name)
