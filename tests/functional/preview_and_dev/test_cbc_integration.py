@@ -163,9 +163,17 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
+    def _check_for_responses_from_both_azs(resp):
+        az1 = dynamo_item_for_key_value(resp, "MnoName", primary_cbc, "ResponseCode")
+        az2 = dynamo_item_for_key_value(resp, "MnoName", secondary_cbc, "ResponseCode")
+        return az1 is not None and az2 is not None
+
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 5
+        # ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 5
+        ddbc=ddbc,
+        request_id=request_id,
+        retry_if=_check_for_responses_from_both_azs,
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
@@ -214,11 +222,14 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
+    def _check_for_responses_from_both_azs(resp):
+        az1 = dynamo_item_for_key_value(resp, "MnoName", primary_cbc, "ResponseCode")
+        az2 = dynamo_item_for_key_value(resp, "MnoName", secondary_cbc, "ResponseCode")
+        return az1 is not None and az2 is not None
+
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
     responses = get_loopback_request_items(
-        ddbc=ddbc,
-        request_id=request_id,
-        retry_if=lambda resp: len(resp["Items"]) < 4,
+        ddbc=ddbc, request_id=request_id, retry_if=_check_for_responses_from_both_azs
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
