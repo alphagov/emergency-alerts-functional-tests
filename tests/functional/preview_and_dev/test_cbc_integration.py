@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from random import choice
@@ -49,6 +50,8 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     assert response is not None
 
     provider_messages = response["messages"]
+    logging.info(f"Provider messages: {provider_messages}")
+
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
@@ -61,6 +64,8 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
         if len(responses):
             distinct_request_ids += 1
+
+    logging.info(f"Distinct request ids: {distinct_request_ids}")
 
     assert distinct_request_ids == 4
 
