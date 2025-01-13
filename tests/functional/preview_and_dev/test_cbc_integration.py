@@ -145,7 +145,7 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     broadcast_id = str(uuid.uuid4())
 
     mno = choice(PROVIDERS)
-    mno = "ee"
+    mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
@@ -208,7 +208,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     broadcast_id = str(uuid.uuid4())
 
     mno = choice(PROVIDERS)
-    mno = "o2"
+    mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
@@ -274,7 +274,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     broadcast_id = str(uuid.uuid4())
 
     mno = choice(PROVIDERS)
-    mno = "three"
+    mno = "vodafone"
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
