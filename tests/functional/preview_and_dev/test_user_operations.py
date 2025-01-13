@@ -85,4 +85,4 @@ def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
     assert dashboard_page.text_is_on_page("Functional Tests - Broadcast User Approve")
 
     # verify that invitation button is not available
-    assert not dashboard_page.text_is_on_page("Invite a team member")
+    assert dashboard_page.text_is_not_on_page("Invite a team member")

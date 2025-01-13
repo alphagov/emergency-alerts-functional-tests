@@ -1,5 +1,6 @@
 import os
 import shutil
+from time import sleep
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -259,6 +260,17 @@ class BasePage(object):
         if search_text not in normalized_page_source:
             self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
+        return True
+
+    def text_is_not_on_page(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        tries = 0
+        while tries < 3:
+            if search_text in normalized_page_source:
+                return False
+            tries += 1
+            self.driver.refresh()
+            sleep(1)
         return True
 
     def get_template_id(self):

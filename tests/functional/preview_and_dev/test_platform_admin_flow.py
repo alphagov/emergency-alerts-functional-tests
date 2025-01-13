@@ -28,7 +28,7 @@ def test_add_rename_and_delete_service(driver):
 
     landing_page = BasePage(driver)
 
-    if not landing_page.text_is_on_page("Add a new service"):
+    if landing_page.text_is_not_on_page("Add a new service"):
         landing_page.click_element_by_link_text("Switch service")
         landing_page = BasePage(driver)
     landing_page.click_element_by_link_text("Add a new service")
@@ -130,7 +130,7 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     team_members_page.click_yes_remove()
 
     team_members_page.wait_until_url_ends_with("/users")
-    assert not team_members_page.text_is_on_page(invited_user_email)
+    assert team_members_page.text_is_not_on_page(invited_user_email)
 
     team_members_page.sign_out()
 
