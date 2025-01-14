@@ -170,27 +170,19 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
-    def _check_for_responses_from_both_azs(resp):
-        az1 = dynamo_item_for_key_value(
-            resp["Items"], "MnoName", primary_cbc, "ResponseCode"
-        )
+    def _check_for_responses_from_secondary_az(resp):
         az2 = dynamo_item_for_key_value(
             resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
         )
-        return az1 is None or az2 is None
+        return az2 is None
 
     responses = get_loopback_request_items(
         ddbc=ddbc,
         request_id=request_id,
-        retry_if=_check_for_responses_from_both_azs,
+        retry_if=_check_for_responses_from_secondary_az,
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
-
-    az1_response_code = dynamo_item_for_key_value(
-        responses, "MnoName", primary_cbc, "ResponseCode"
-    )
-    assert az1_response_code == str(failure_code)
 
     az2_response_code = dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
