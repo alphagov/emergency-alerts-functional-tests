@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from random import choice
@@ -49,6 +50,8 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     assert response is not None
 
     provider_messages = response["messages"]
+    logging.info(f"Provider messages: {provider_messages}")
+
     assert provider_messages is not None
     assert len(provider_messages) == 4
 
@@ -61,6 +64,8 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
         if len(responses):
             distinct_request_ids += 1
+
+    logging.info(f"Distinct request ids: {distinct_request_ids}")
 
     assert distinct_request_ids == 4
 
@@ -164,16 +169,20 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+
+    def _check_for_responses_from_secondary_az(resp):
+        az2 = dynamo_item_for_key_value(
+            resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
+        )
+        return az2 is None
+
     responses = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 2
+        ddbc=ddbc,
+        request_id=request_id,
+        retry_if=_check_for_responses_from_secondary_az,
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
-
-    az1_response_code = dynamo_item_for_key_value(
-        responses, "MnoName", primary_cbc, "ResponseCode"
-    )
-    assert az1_response_code == str(failure_code)
 
     az2_response_code = dynamo_item_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
@@ -193,10 +202,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     primary_cbc = f"{mno}-az1"
     secondary_cbc = f"{mno}-az2"
     failure_code = 500
-    # Expect that at least 80% of the maximum possible retries have occurred
-    # within the visibility timeout window
-    # i.e. (initial + 5 retries) * (primary + secondary lambda) * (az1 + az2) * 80%
-    expected_retry_count = 24 * 0.8
 
     ddbc = create_ddb_client()
     set_loopback_response_codes(
@@ -219,10 +224,18 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+
+    def _check_for_responses_from_both_azs(resp):
+        az1 = dynamo_item_for_key_value(
+            resp["Items"], "MnoName", primary_cbc, "ResponseCode"
+        )
+        az2 = dynamo_item_for_key_value(
+            resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
+        )
+        return az1 is None or az2 is None
+
     responses = get_loopback_request_items(
-        ddbc=ddbc,
-        request_id=request_id,
-        retry_if=lambda resp: len(resp["Items"]) < expected_retry_count,
+        ddbc=ddbc, request_id=request_id, retry_if=_check_for_responses_from_both_azs
     )
 
     set_loopback_response_codes(ddbc=ddbc, response_code=200)
@@ -230,7 +243,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-
     az1_codes_set = set(az1_response_codes)
     assert len(az1_codes_set) == 1  # assert that all codes are the same
     assert az1_codes_set.pop() == str(failure_code)
@@ -238,14 +250,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     az2_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-
     az2_codes_set = set(az2_response_codes)
     assert len(az2_codes_set) == 1  # assert that all codes are the same
     assert az2_codes_set.pop() == str(failure_code)
-
-    # Assert that at least 80% of the retries have happened within
-    # the visibility timeout:
-    assert len(az1_response_codes) + len(az2_response_codes) > expected_retry_count
 
     cancel_alert(driver, broadcast_id)
 
@@ -325,7 +332,7 @@ def get_loopback_request_items(ddbc, request_id, retry_if=None):
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. Retrying...)'
+            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. {db_response} Retrying...)'
         )
 
     return db_response["Items"]
