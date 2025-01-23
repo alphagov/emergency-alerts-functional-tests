@@ -25,7 +25,6 @@ def sign_in(driver, account_type="normal"):
 
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
-    assert identifier == ""
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
