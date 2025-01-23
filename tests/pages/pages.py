@@ -431,7 +431,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_continue()
+        self.click_continue_to_signin()
 
 
 class VerifyPage(BasePage):
