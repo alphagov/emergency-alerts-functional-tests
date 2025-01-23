@@ -20,12 +20,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.click_change_setting("name")
     profile_page.wait_until_url_ends_with("/name")
     profile_page.save_name("Functional Tests - Broadcast User Create - NEW")
-
-    profile_page.wait_until_url_ends_with("/authenticate")
-    assert profile_page.text_is_on_page("Change your name")
-
     profile_page.enter_password("Password1234")
-    profile_page.wait_until_url_ends_with("/confirm")
 
     dashboard_page.wait_until_url_ends_with("/user-profile")
     assert dashboard_page.text_is_on_page(
@@ -35,10 +30,9 @@ def test_user_can_change_profile_fields(driver):
     # Change mobile number
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
-    profile_page.save_mobile_number("+447700900000")
-    profile_page.wait_until_url_ends_with("/authenticate")
     assert profile_page.text_is_on_page("Change your mobile number")
 
+    profile_page.save_mobile_number("+447700900000")
     profile_page.enter_password("Password1234")
     profile_page.wait_until_url_ends_with("/confirm")
 
@@ -54,23 +48,17 @@ def test_user_can_change_profile_fields(driver):
 
     profile_page.click_change_setting("name")
     profile_page.wait_until_url_ends_with("/name")
-    profile_page.save_name("Functional Tests - Broadcast User Create")
-
-    profile_page.wait_until_url_ends_with("/authenticate")
     assert profile_page.text_is_on_page("Change your name")
-
+    profile_page.save_name("Functional Tests - Broadcast User Create")
     profile_page.enter_password("Password1234")
-    profile_page.wait_until_url_ends_with("/confirm")
 
     profile_page.wait_until_url_ends_with("/user-profile")
     assert profile_page.text_is_on_page("Functional Tests - Broadcast User Create")
 
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
-    profile_page.save_mobile_number("+447700900111")
-    profile_page.wait_until_url_ends_with("/authenticate")
     assert profile_page.text_is_on_page("Change your mobile number")
-
+    profile_page.save_mobile_number("+447700900111")
     profile_page.enter_password("Password1234")
     profile_page.wait_until_url_ends_with("/confirm")
 

@@ -984,11 +984,9 @@ class ProfileSettingsPage(BasePage):
 
     def save_name(self, new_name):
         self.name_input = new_name
-        self.click_save()
 
     def save_mobile_number(self, new_number):
         self.mobile_input = new_number
-        self.click_save()
 
     def enter_password(self, password):
         self.password_input = password
