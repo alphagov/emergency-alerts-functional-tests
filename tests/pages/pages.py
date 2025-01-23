@@ -238,6 +238,10 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
         element.click()
 
+    def click_continue_to_submit(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
+        element.click()
+
     def is_page_title(self, expected_page_title):
         element = self.wait_for_element(CommonPageLocators.H1)
         return element.text == expected_page_title
@@ -431,7 +435,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_continue()
+        self.click_continue_to_signin()
 
 
 class VerifyPage(BasePage):
@@ -984,15 +988,13 @@ class ProfileSettingsPage(BasePage):
 
     def save_name(self, new_name):
         self.name_input = new_name
-        self.click_save()
 
     def save_mobile_number(self, new_number):
         self.mobile_input = new_number
-        self.click_save()
 
     def enter_password(self, password):
         self.password_input = password
-        self.click_save()
+        self.click_continue_to_submit()
 
     def enter_verification_code(self, code):
         self.verification_code_input = code
