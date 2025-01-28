@@ -1,6 +1,6 @@
 import time
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -196,9 +196,11 @@ def test_prepare_broadcast_with_template(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.utcnow() - timedelta(hours=1)
+        datetime.now(timezone.utc) - timedelta(hours=1)
     )
-    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(
+        datetime.now(timezone.utc)
+    )
     identifier = uuid.uuid4()
     event = f"test broadcast {identifier}"
     broadcast_content = f"Flood warning {identifier} has been issued"
@@ -237,9 +239,11 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 @pytest.mark.xdist_group(name=test_group_name)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.utcnow() - timedelta(hours=1)
+        datetime.now(timezone.utc) - timedelta(hours=1)
     )
-    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(
+        datetime.now(timezone.utc)
+    )
     identifier = uuid.uuid4()
     event = f"test broadcast {identifier}"
     broadcast_content = f"Flood warning {identifier} has been issued"
