@@ -83,6 +83,14 @@ class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 
+class HoursInputElement(BasePageElement):
+    name = CommonPageLocators.HOURS_INPUT[1]
+
+
+class MinutesInputElement(BasePageElement):
+    name = CommonPageLocators.MINUTES_INPUT[1]
+
+
 class MobileInputElement(BasePageElement):
     name = SignUpPageLocators.MOBILE_INPUT[1]
 

@@ -24,9 +24,11 @@ from tests.pages.element import (
     ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
+    HoursInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
+    MinutesInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -1172,6 +1174,15 @@ class GovUkAlertsPage(BasePage):
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
             )
+
+
+class BroadcastDurationPage(BasePage):
+    hours_input = HoursInputElement()
+    minutes_input = MinutesInputElement()
+
+    def set_alert_duration(self, hours, minutes):
+        self.hours_input = hours
+        self.minutes_input = minutes
 
 
 class SupportFeedbackPage(BasePage):

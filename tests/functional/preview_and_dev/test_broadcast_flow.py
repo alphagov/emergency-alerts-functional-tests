@@ -11,6 +11,7 @@ from tests.functional.preview_and_dev.sample_cap_xml import (
 )
 from tests.pages import (
     BasePage,
+    BroadcastDurationPage,
     BroadcastFreeformPage,
     DashboardPage,
     ShowTemplatesPage,
@@ -71,22 +72,22 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
 
-    prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
-    )  # Remove once alert duration added back in
-    # here check if selected areas displayed
-    assert prepare_alert_pages.text_is_on_page("Cokeham")
-    assert prepare_alert_pages.text_is_on_page("Eastbrook")
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
 
-    # prepare_alert_pages.click_element_by_link_text("Continue")
-    # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-    # prepare_alert_pages.click_continue()  # click "Preview alert"
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.text_is_on_page(
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_continue()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
@@ -167,16 +168,17 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
-    )  # Remove once alert duration added back in
-    # here check if selected areas displayed
+
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
     assert prepare_alert_pages.text_is_on_page("Cokeham")
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # prepare_alert_pages.click_element_by_link_text("Continue")
-    # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
-    # prepare_alert_pages.click_continue()  # click "Preview alert"
     prepare_alert_pages.click_continue()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
@@ -334,19 +336,25 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     search_postcode_page.click_search()
     # assert areas appear here
 
-    search_postcode_page.click_preview()
+    search_postcode_page.click_continue()
+
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
 
     # here check if selected areas displayed
-    assert prepare_alert_pages.text_is_on_page(
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(
         "5km around the postcode BD1 1EE in Bradford"
     )
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.text_is_on_page(
+    preview_alert_page.click_continue()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
@@ -473,17 +481,23 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
         post_data["radius"],
     )
     choose_coordinate_area_page.click_search()
-    choose_coordinate_area_page.click_preview()
+    choose_coordinate_area_page.click_continue()
+
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
 
     # here check if selected areas displayed
-    assert prepare_alert_pages.text_is_on_page(expected_area_description)
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(expected_area_description)
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.text_is_on_page(
+    preview_alert_page.click_continue()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
@@ -568,19 +582,22 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
 
-    prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
-    )  # Remove once alert duration added back in
-    # here check if selected areas displayed
-    assert prepare_alert_pages.text_is_on_page("Cokeham")
-    assert prepare_alert_pages.text_is_on_page("Eastbrook")
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
-    assert prepare_alert_pages.text_is_on_page(
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_continue()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
     # reject the alert
     sign_in(driver, account_type="broadcast_approve_user")

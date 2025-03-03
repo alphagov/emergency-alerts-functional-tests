@@ -1,6 +1,7 @@
 from config import config
 from tests.pages import (
     BasePage,
+    BroadcastDurationPage,
     BroadcastFreeformPage,
     CommonPageLocators,
     HomePage,
@@ -134,15 +135,21 @@ def create_alert(driver, id):
     prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
     prepare_alert_pages.click_continue()
 
-    prepare_alert_pages.click_element_by_link_text("Preview alert")
-    assert prepare_alert_pages.text_is_on_page("England")
+    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.click_element_by_link_text("Preview alert")
 
-    prepare_alert_pages.click_continue()
-    assert prepare_alert_pages.text_is_on_page(
+    preview_alert_page = BasePage(driver)
+    preview_alert_page.click_element_by_link_text("Preview alert")
+    assert preview_alert_page.text_is_on_page("England")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_continue()
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
 
 def approve_alert(driver, id):
