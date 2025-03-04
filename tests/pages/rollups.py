@@ -136,7 +136,7 @@ def create_alert(driver, id):
     prepare_alert_pages.click_continue()
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.set_alert_duration("8", "30")
+    broadcast_duration_page.set_alert_duration(hours="8", miinutes="30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
     preview_alert_page = BasePage(driver)
