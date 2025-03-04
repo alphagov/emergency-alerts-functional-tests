@@ -72,7 +72,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
 
-    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration("8", "30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
@@ -169,7 +169,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
 
-    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration("8", "30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
@@ -338,7 +338,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     search_postcode_page.click_continue()
 
-    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration("8", "30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
@@ -483,7 +483,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     choose_coordinate_area_page.click_search()
     choose_coordinate_area_page.click_continue()
 
-    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration("8", "30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
@@ -582,7 +582,7 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
 
-    broadcast_duration_page = BroadcastDurationPage()
+    broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration("8", "30")
     broadcast_duration_page.click_element_by_link_text("Preview alert")
 
