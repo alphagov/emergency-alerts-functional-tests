@@ -81,7 +81,7 @@ def test_prepare_broadcast_with_new_content(driver):
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_element_by_link_text("Preview alert")
+    broadcast_duration_page.click_continue()  # Preview alert
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
