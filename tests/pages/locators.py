@@ -19,7 +19,7 @@ class CommonPageLocators(object):
 
 
 class DurationPageLocators(object):
-    CHANGE_DURATION_LINK = (By.CLASS_NAME, "govuk-details")
+    CHANGE_DURATION_LINK = (By.CLASS_NAME, "govuk-details__summary")
     HOURS_INPUT = (By.ID, "hours")
     MINUTES_INPUT = (By.ID, "minutes")
 
