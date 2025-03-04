@@ -7,6 +7,7 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     CommonPageLocators,
     DashboardWithDialogPageLocators,
+    DurationPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
@@ -83,12 +84,16 @@ class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 
+class ChangeDurationLink(BasePageElement):
+    name = DurationPageLocators.CHANGE_DURATION_LINK[1]
+
+
 class HoursInputElement(BasePageElement):
-    name = CommonPageLocators.HOURS_INPUT[1]
+    name = DurationPageLocators.HOURS_INPUT[1]
 
 
 class MinutesInputElement(BasePageElement):
-    name = CommonPageLocators.MINUTES_INPUT[1]
+    name = DurationPageLocators.MINUTES_INPUT[1]
 
 
 class MobileInputElement(BasePageElement):

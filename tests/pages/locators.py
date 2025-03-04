@@ -18,6 +18,12 @@ class CommonPageLocators(object):
     )
 
 
+class DurationPageLocators(object):
+    CHANGE_DURATION_LINK = (By.CLASS_NAME, "govuk-details")
+    HOURS_INPUT = (By.ID, "hours")
+    MINUTES_INPUT = (By.ID, "minutes")
+
+
 class MainPageLocators(object):
     SETUP_ACCOUNT_BUTTON = (By.CSS_SELECTOR, "a.govuk-button.product-page-button")
 

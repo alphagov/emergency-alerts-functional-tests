@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from config import config
 from tests.pages.element import (
     BasePageElement,
+    ChangeDurationLink,
     ClearableInputElement,
     CoordinatePreviewButton,
     CoordinateRadiusInputElement,
@@ -55,6 +56,7 @@ from tests.pages.locators import (
     ChangeNameLocators,
     CommonPageLocators,
     DashboardWithDialogPageLocators,
+    DurationPageLocators,
     EditTemplatePageLocators,
     InviteUserPageLocators,
     MainPageLocators,
@@ -1177,8 +1179,13 @@ class GovUkAlertsPage(BasePage):
 
 
 class BroadcastDurationPage(BasePage):
+    change_duration = ChangeDurationLink()
     hours_input = HoursInputElement()
     minutes_input = MinutesInputElement()
+
+    def click_change_duration(self):
+        element = self.wait_for_element(DurationPageLocators.CHANGE_DURATION_LINK)
+        element.click()
 
     def set_alert_duration(self, hours, minutes):
         self.hours_input = hours
