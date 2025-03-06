@@ -74,7 +74,6 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.click_element_by_link_text("Continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_continue()  # Preview alert
 
@@ -173,7 +172,6 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.click_element_by_link_text("Continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_continue()  # Preview alert
 
@@ -341,10 +339,9 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     # assert areas appear here
 
     search_postcode_page.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    # prepare_alert_pages.click_element_by_link_text("Continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_continue()  # Preview alert
 
@@ -491,7 +488,6 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     prepare_alert_pages.click_element_by_link_text("Continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_continue()  # Preview alert
 
@@ -592,7 +588,6 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.click_element_by_link_text("Continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    broadcast_duration_page.click_change_duration()
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_continue()  # Preview alert
 

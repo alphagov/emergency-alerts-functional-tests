@@ -84,10 +84,6 @@ class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 
-class ChangeDurationLink(BasePageElement):
-    name = DurationPageLocators.CHANGE_DURATION_LINK[1]
-
-
 class HoursInputElement(BasePageElement):
     name = DurationPageLocators.HOURS_INPUT[1]
 
