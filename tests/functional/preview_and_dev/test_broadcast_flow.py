@@ -4,13 +4,16 @@ from datetime import datetime, timedelta
 
 import pytest
 
-# from config import config
+from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
 )
-from tests.pages import (  # BroadcastDurationPage,; BroadcastFreeformPage,; DashboardPage,; ShowTemplatesPage,
+from tests.pages import (  # ; DashboardPage,; ShowTemplatesPage,
     BasePage,
+    BroadcastDurationPage,
+    BroadcastFreeformPage,
+    DashboardPage,
 )
 
 # from tests.pages.pages import (
@@ -28,105 +31,105 @@ from tests.test_utils import (  # create_broadcast_template,; delete_template,; 
 test_group_name = "broadcast-flow"
 
 
-# @pytest.mark.xdist_group(name=test_group_name)
-# def test_prepare_broadcast_with_new_content(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
+@pytest.mark.xdist_group(name=test_group_name)
+def test_prepare_broadcast_with_new_content(driver):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     landing_page = BasePage(driver)
-#     if not landing_page.text_is_on_page("Current alerts"):
-#         landing_page.click_element_by_link_text("Switch service")
-#         choose_service_page = BasePage(driver)
-#         choose_service_page.click_element_by_link_text(
-#             config["broadcast_service"]["service_name"]
-#         )
-#     else:
-#         dashboard_page = DashboardPage(driver)
-#         dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.text_is_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
 
-#     # prepare alert
-#     current_alerts_page = BasePage(driver)
-#     test_uuid = str(uuid.uuid4())
-#     broadcast_title = "test broadcast" + test_uuid
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast" + test_uuid
 
-#     current_alerts_page.click_element_by_link_text("Create new alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
-#     new_alert_page = BasePage(driver)
-#     new_alert_page.select_checkbox_or_radio(value="freeform")
-#     new_alert_page.click_continue()
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
 
-#     broadcast_freeform_page = BroadcastFreeformPage(driver)
-#     broadcast_content = "This is a test broadcast " + test_uuid
-#     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
-#     broadcast_freeform_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
 
-#     prepare_alert_pages = BasePage(driver)
-#     prepare_alert_pages.click_element_by_link_text("Local authorities")
-#     prepare_alert_pages.click_element_by_link_text("Adur")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
-#     prepare_alert_pages.click_continue()
-#     prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Continue")
 
-#     broadcast_duration_page = BroadcastDurationPage(driver)
-#     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-#     broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_continue()  # Preview alert
 
-#     # check for selected areas and duration
-#     preview_alert_page = BasePage(driver)
-#     assert preview_alert_page.text_is_on_page("Cokeham")
-#     assert preview_alert_page.text_is_on_page("Eastbrook")
-#     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-#     preview_alert_page.click_continue()  # click "Submit for approval"
-#     assert preview_alert_page.text_is_on_page(
-#         f"{broadcast_title} is waiting for approval"
-#     )
+    preview_alert_page.click_continue()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
 
-#     preview_alert_page.sign_out()
+    preview_alert_page.sign_out()
 
-#     # approve the alert
-#     sign_in(driver, account_type="broadcast_approve_user")
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
 
-#     landing_page = BasePage(driver)
-#     if not landing_page.text_is_on_page("Current alerts"):
-#         landing_page.click_element_by_link_text("Switch service")
-#         choose_service_page = BasePage(driver)
-#         choose_service_page.click_element_by_link_text(
-#             config["broadcast_service"]["service_name"]
-#         )
-#     else:
-#         dashboard_page = DashboardPage(driver)
-#         dashboard_page.click_element_by_link_text("Current alerts")
+    landing_page = BasePage(driver)
+    if not landing_page.text_is_on_page("Current alerts"):
+        landing_page.click_element_by_link_text("Switch service")
+        choose_service_page = BasePage(driver)
+        choose_service_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
+    else:
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.click_element_by_link_text("Current alerts")
 
-#     current_alerts_page.click_element_by_link_text(broadcast_title)
-#     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-#     current_alerts_page.click_continue()
-#     assert current_alerts_page.text_is_on_page("since today at")
-#     alert_page_url = current_alerts_page.current_url
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_continue()
+    assert current_alerts_page.text_is_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
 
-#     time.sleep(10)
-#     check_alert_is_published_on_govuk_alerts(
-#         driver, "Current alerts", broadcast_content
-#     )
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
 
-#     # get back to the alert page
-#     current_alerts_page.get(alert_page_url)
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
 
-#     # stop sending the alert
-#     current_alerts_page.click_element_by_link_text("Stop sending")
-#     current_alerts_page.click_continue()  # stop broadcasting
-#     assert current_alerts_page.text_is_on_page(
-#         "Stopped by Functional Tests - Broadcast User Approve"
-#     )
-#     current_alerts_page.click_element_by_link_text("Past alerts")
-#     past_alerts_page = BasePage(driver)
-#     assert past_alerts_page.text_is_on_page(broadcast_title)
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_continue()  # stop broadcasting
+    assert current_alerts_page.text_is_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
 
-#     time.sleep(10)
-#     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-#     current_alerts_page.get()
-#     current_alerts_page.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
 # @pytest.mark.xdist_group(name=test_group_name)
