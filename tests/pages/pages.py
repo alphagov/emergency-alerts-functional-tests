@@ -1177,8 +1177,8 @@ class GovUkAlertsPage(BasePage):
 
 
 class BroadcastDurationPage(BasePage):
-    hours_input = HoursInputElement()
-    minutes_input = MinutesInputElement()
+    hours_input = HoursInputElement(name="hours")
+    minutes_input = MinutesInputElement(name="minutes")
 
     def set_alert_duration(self, hours, minutes):
         self.hours_input = hours
