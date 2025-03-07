@@ -194,45 +194,45 @@ def test_prepare_broadcast_with_new_content(driver):
 #     current_alerts_page.sign_out()
 
 
-# @pytest.mark.xdist_group(name=test_group_name)
-# def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
-#     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-#         datetime.utcnow() - timedelta(hours=1)
-#     )
-#     cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
-#     identifier = uuid.uuid4()
-#     event = f"test broadcast {identifier}"
-#     broadcast_content = f"Flood warning {identifier} has been issued"
+@pytest.mark.xdist_group(name=test_group_name)
+def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
+    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
+        datetime.utcnow() - timedelta(hours=1)
+    )
+    cancel_time = convert_naive_utc_datetime_to_cap_standard_string(datetime.utcnow())
+    identifier = uuid.uuid4()
+    event = f"test broadcast {identifier}"
+    broadcast_content = f"Flood warning {identifier} has been issued"
 
-#     new_alert_xml = ALERT_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         event=event,
-#         broadcast_content=broadcast_content,
-#     )
-#     broadcast_client.post_broadcast_data(new_alert_xml)
+    new_alert_xml = ALERT_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        event=event,
+        broadcast_content=broadcast_content,
+    )
+    broadcast_client.post_broadcast_data(new_alert_xml)
 
-#     sign_in(driver, account_type="broadcast_approve_user")
-#     page = BasePage(driver)
-#     page.click_element_by_link_text("Current alerts")
-#     page.click_element_by_link_text(event)
+    sign_in(driver, account_type="broadcast_approve_user")
+    page = BasePage(driver)
+    page.click_element_by_link_text("Current alerts")
+    page.click_element_by_link_text(event)
 
-#     assert page.text_is_on_page(f"An API call wants to broadcast {event}")
+    assert page.text_is_on_page(f"An API call wants to broadcast {event}")
 
-#     reject_broadcast_xml = CANCEL_XML.format(
-#         identifier=identifier,
-#         alert_sent=sent_time,
-#         cancel_sent=cancel_time,
-#         event=event,
-#     )
-#     broadcast_client.post_broadcast_data(reject_broadcast_xml)
+    reject_broadcast_xml = CANCEL_XML.format(
+        identifier=identifier,
+        alert_sent=sent_time,
+        cancel_sent=cancel_time,
+        event=event,
+    )
+    broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
-#     time.sleep(10)
-#     page.click_element_by_link_text("Rejected alerts")
-#     assert page.text_is_on_page(event)
+    time.sleep(10)
+    page.click_element_by_link_text("Rejected alerts")
+    assert page.text_is_on_page(event)
 
-#     page.get()
-#     page.sign_out()
+    page.get()
+    page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
