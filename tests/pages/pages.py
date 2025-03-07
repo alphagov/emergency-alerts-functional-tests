@@ -434,6 +434,8 @@ class SignInPage(BasePage):
         element.click()
 
     def login(self, email, password):
+        print("Filling in login form")
+        print(self)
         self.fill_login_form(email, password)
         self.click_continue_to_signin()
 

@@ -22,6 +22,7 @@ def sign_in(driver, account_type="normal"):
     home_page = HomePage(driver)
     home_page.get()
     home_page.accept_cookie_warning()
+    print("Signing in")
 
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
