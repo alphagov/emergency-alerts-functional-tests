@@ -38,6 +38,8 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
+    print(landing_page)
+    print(landing_page.base_url)
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)

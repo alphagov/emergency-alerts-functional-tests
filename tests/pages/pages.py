@@ -435,7 +435,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         print("Filling in login form")
-        print(self)
+        print(self.__dict__)
         self.fill_login_form(email, password)
         self.click_continue_to_signin()
 
