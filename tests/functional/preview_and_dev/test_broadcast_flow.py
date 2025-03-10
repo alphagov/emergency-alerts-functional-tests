@@ -4,16 +4,15 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from config import config
+# from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
 )
-from tests.pages import (  # ; DashboardPage,; ShowTemplatesPage,
+from tests.pages import (  # ; DashboardPage,; ShowTemplatesPage,; DashboardPage,
     BasePage,
     BroadcastDurationPage,
     BroadcastFreeformPage,
-    DashboardPage,
 )
 
 # from tests.pages.pages import (
@@ -35,16 +34,16 @@ test_group_name = "broadcast-flow"
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    landing_page = BasePage(driver)
-    if landing_page.text_is_not_on_page("Current alerts"):
-        landing_page.click_element_by_link_text("Switch service")
-        choose_service_page = BasePage(driver)
-        choose_service_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
-    else:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.click_element_by_link_text("Current alerts")
+    # landing_page = BasePage(driver)
+    # if landing_page.text_is_not_on_page("Current alerts"):
+    #     landing_page.click_element_by_link_text("Switch service")
+    #     choose_service_page = BasePage(driver)
+    #     choose_service_page.click_element_by_link_text(
+    #         config["broadcast_service"]["service_name"]
+    #     )
+    # else:
+    #     # dashboard_page = DashboardPage(driver)
+    #     landing_page.click_element_by_link_text("Current alerts")
 
     # prepare alert
     current_alerts_page = BasePage(driver)
@@ -90,16 +89,16 @@ def test_prepare_broadcast_with_new_content(driver):
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
-    landing_page = BasePage(driver)
-    if landing_page.text_is_not_on_page("Current alerts"):
-        landing_page.click_element_by_link_text("Switch service")
-        choose_service_page = BasePage(driver)
-        choose_service_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
-    else:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.click_element_by_link_text("Current alerts")
+    # landing_page = BasePage(driver)
+    # if landing_page.text_is_not_on_page("Current alerts"):
+    #     landing_page.click_element_by_link_text("Switch service")
+    #     choose_service_page = BasePage(driver)
+    #     choose_service_page.click_element_by_link_text(
+    #         config["broadcast_service"]["service_name"]
+    #     )
+    # else:
+    #     # dashboard_page = DashboardPage(driver)
+    #     landing_page.click_element_by_link_text("Current alerts")
 
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
@@ -214,7 +213,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 
     sign_in(driver, account_type="broadcast_approve_user")
     page = BasePage(driver)
-    page.click_element_by_link_text("Current alerts")
+    # page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
 
     assert page.text_is_on_page(f"An API call wants to broadcast {event}")
@@ -256,7 +255,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sign_in(driver, account_type="broadcast_approve_user")
 
     page = BasePage(driver)
-    page.click_element_by_link_text("Current alerts")
+    # page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
     page.click_continue()
