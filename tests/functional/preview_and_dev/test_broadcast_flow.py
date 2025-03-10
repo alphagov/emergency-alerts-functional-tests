@@ -74,7 +74,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.click_continue()
 
     prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
+        "Save and preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
     assert prepare_alert_pages.text_is_on_page("Cokeham")
@@ -161,7 +161,7 @@ def test_prepare_broadcast_with_template(driver):
     templates_page = ShowTemplatesPage(driver)
     templates_page.click_template_by_link_text(template_name)
 
-    templates_page.click_element_by_link_text("Get ready to send")
+    templates_page.click_element_by_link_text("Save and get ready to send")
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")

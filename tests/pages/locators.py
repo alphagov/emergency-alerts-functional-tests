@@ -141,7 +141,7 @@ class ChangeNameLocators(object):
 
 
 class ViewTemplatePageLocators(object):
-    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Get ready to send")
+    SEND_BUTTON = (By.PARTIAL_LINK_TEXT, "Save and get ready to send")
 
 
 class SupportPageLocators(object):
