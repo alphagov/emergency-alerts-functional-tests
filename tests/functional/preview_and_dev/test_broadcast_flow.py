@@ -36,7 +36,7 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.text_is_on_page("Current alerts"):
+    if landing_page.text_is_not_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
@@ -91,7 +91,7 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    if not landing_page.text_is_on_page("Current alerts"):
+    if landing_page.text_is_not_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
         choose_service_page.click_element_by_link_text(
