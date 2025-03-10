@@ -170,7 +170,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
+        "Save and preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
     assert prepare_alert_pages.text_is_on_page("Cokeham")
@@ -571,7 +571,7 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.click_continue()
 
     prepare_alert_pages.click_element_by_link_text(
-        "Preview alert"
+        "Save and preview alert"
     )  # Remove once alert duration added back in
     # here check if selected areas displayed
     assert prepare_alert_pages.text_is_on_page("Cokeham")
