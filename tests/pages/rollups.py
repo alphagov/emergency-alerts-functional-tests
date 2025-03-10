@@ -31,9 +31,11 @@ def sign_in(driver, account_type="normal"):
         do_verify(driver, identifier)
 
     # go_to_service_dashboard(driver, "broadcast_service")
-    home_page.get()
-    if home_page.text_is_not_on_page("Current alerts"):
-        home_page.click_element_by_link_text(
+    base_page = BasePage(driver)
+    if base_page.text_is_not_on_page("Current alerts"):
+        base_page.click_element_by_link_text("Switch service")
+        base_page.get()
+        base_page.click_element_by_link_text(
             config["broadcast_service"]["service_name"]
         )
 
