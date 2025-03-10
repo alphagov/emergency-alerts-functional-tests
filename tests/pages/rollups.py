@@ -7,13 +7,12 @@ from tests.pages import (
     HomePage,
     SignInPage,
 )
-from tests.test_utils import (
+from tests.test_utils import (  # go_to_service_dashboard,
     ACCOUNTS_REQUIRING_SMS_2FA,
     do_email_auth_verify,
     do_verify,
     do_verify_by_id,
     get_verification_code_by_id,
-    go_to_service_dashboard,
 )
 
 
@@ -31,7 +30,7 @@ def sign_in(driver, account_type="normal"):
     else:
         do_verify(driver, identifier)
 
-    go_to_service_dashboard(driver, "broadcast_service")
+    # go_to_service_dashboard(driver, "broadcast_service")
 
 
 def get_verify_code(account_identifier):
