@@ -489,6 +489,45 @@ class DashboardPage(BasePage):
         self.driver.get(url)
 
 
+class CurrentAlertsPage(BasePage):
+    h2 = (By.CLASS_NAME, "navigation-service-name")
+    team_members_link = (By.LINK_TEXT, "Team members")
+    api_keys_link = (By.LINK_TEXT, "API integration")
+    navigation = (By.CLASS_NAME, "navigation")
+
+    def _message_count_for_template_div(self, template_id):
+        return (By.ID, template_id)
+
+    def is_current(self, service_id):
+        expected = "{}/services/{}/current-alerts".format(self.base_url, service_id)
+        return self.driver.current_url == expected
+
+    def get_service_name(self):
+        element = self.wait_for_element(CurrentAlertsPage.h2)
+        return element.text
+
+    def click_team_members_link(self):
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
+        element.click()
+
+    def click_api_integration(self):
+        element = self.wait_for_element(CurrentAlertsPage.api_keys_link)
+        element.click()
+
+    def get_service_id(self):
+        return self.driver.current_url.split("/services/")[1].split("/")[0]
+
+    def get_navigation_list(self):
+        element = self.wait_for_element(CurrentAlertsPage.navigation)
+        return element.text
+
+    def go_to_service_landing_page(self, service_id=None):
+        if not service_id:
+            service_id = self.get_service_id()
+        url = "{}/services/{}/current-alerts".format(self.base_url, service_id)
+        self.driver.get(url)
+
+
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")

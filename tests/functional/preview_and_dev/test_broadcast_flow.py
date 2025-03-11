@@ -4,15 +4,17 @@ from datetime import datetime, timedelta
 
 import pytest
 
-# from config import config
+from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
 )
-from tests.pages import (  # ; DashboardPage,; ShowTemplatesPage,; DashboardPage,
+from tests.pages import (
     BasePage,
     BroadcastDurationPage,
     BroadcastFreeformPage,
+    CurrentAlertsPage,
+    ShowTemplatesPage,
 )
 
 # from tests.pages.pages import (
@@ -22,9 +24,12 @@ from tests.pages import (  # ; DashboardPage,; ShowTemplatesPage,; DashboardPage
 #     SearchPostcodePage,
 # )
 from tests.pages.rollups import sign_in
-from tests.test_utils import (  # create_broadcast_template,; delete_template,; go_to_templates_page,
+from tests.test_utils import (
     check_alert_is_published_on_govuk_alerts,
     convert_naive_utc_datetime_to_cap_standard_string,
+    create_broadcast_template,
+    delete_template,
+    go_to_templates_page,
 )
 
 test_group_name = "broadcast-flow"
@@ -131,66 +136,63 @@ def test_prepare_broadcast_with_new_content(driver):
     current_alerts_page.sign_out()
 
 
-# @pytest.mark.xdist_group(name=test_group_name)
-# def test_prepare_broadcast_with_template(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
+@pytest.mark.xdist_group(name=test_group_name)
+def test_prepare_broadcast_with_template(driver):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     go_to_templates_page(driver, service="broadcast_service")
-#     template_name = "test broadcast" + str(uuid.uuid4())
-#     content = "This is a test only."
-#     create_broadcast_template(driver, name=template_name, content=content)
+    go_to_templates_page(driver, service="broadcast_service")
+    template_name = "test broadcast" + str(uuid.uuid4())
+    content = "This is a test only."
+    create_broadcast_template(driver, name=template_name, content=content)
 
-#     dashboard_page = DashboardPage(driver)
-#     dashboard_page.go_to_dashboard_for_service(
-#         service_id=config["broadcast_service"]["id"]
-#     )
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.go_to_service_landing_page(
+        service_id=config["broadcast_service"]["id"]
+    )
+    current_alerts_page.click_element_by_link_text("Current alerts")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
-#     dashboard_page.click_element_by_link_text("Current alerts")
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="template")
+    new_alert_page.click_continue()
 
-#     current_alerts_page = BasePage(driver)
-#     current_alerts_page.click_element_by_link_text("Create new alert")
+    templates_page = ShowTemplatesPage(driver)
+    templates_page.click_template_by_link_text(template_name)
 
-#     new_alert_page = BasePage(driver)
-#     new_alert_page.select_checkbox_or_radio(value="template")
-#     new_alert_page.click_continue()
+    templates_page.click_element_by_link_text("Get ready to send")
 
-#     templates_page = ShowTemplatesPage(driver)
-#     templates_page.click_template_by_link_text(template_name)
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Continue")
 
-#     templates_page.click_element_by_link_text("Get ready to send")
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_continue()  # Preview alert
 
-#     prepare_alert_pages = BasePage(driver)
-#     prepare_alert_pages.click_element_by_link_text("Local authorities")
-#     prepare_alert_pages.click_element_by_link_text("Adur")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
-#     prepare_alert_pages.click_continue()
-#     prepare_alert_pages.click_element_by_link_text("Continue")
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-#     broadcast_duration_page = BroadcastDurationPage(driver)
-#     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-#     broadcast_duration_page.click_continue()  # Preview alert
+    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    assert prepare_alert_pages.text_is_on_page(
+        f"{template_name} is waiting for approval"
+    )
 
-#     # check for selected areas and duration
-#     preview_alert_page = BasePage(driver)
-#     assert prepare_alert_pages.text_is_on_page("Cokeham")
-#     assert prepare_alert_pages.text_is_on_page("Eastbrook")
-#     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+    prepare_alert_pages.click_element_by_link_text("Discard this alert")
+    prepare_alert_pages.click_element_by_link_text("Rejected alerts")
+    rejected_alerts_page = BasePage(driver)
+    assert rejected_alerts_page.text_is_on_page(template_name)
 
-#     prepare_alert_pages.click_continue()  # click "Submit for approval"
-#     assert prepare_alert_pages.text_is_on_page(
-#         f"{template_name} is waiting for approval"
-#     )
+    delete_template(driver, template_name, service="broadcast_service")
 
-#     prepare_alert_pages.click_element_by_link_text("Discard this alert")
-#     prepare_alert_pages.click_element_by_link_text("Rejected alerts")
-#     rejected_alerts_page = BasePage(driver)
-#     assert rejected_alerts_page.text_is_on_page(template_name)
-
-#     delete_template(driver, template_name, service="broadcast_service")
-
-#     current_alerts_page.get()
-#     current_alerts_page.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
