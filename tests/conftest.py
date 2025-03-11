@@ -74,7 +74,7 @@ def _driver(request, download_directory):
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
     yield _driver
-    HomePage(_driver).sign_out()
+    HomePage(_driver).sign_out_if_required()
     if prev_failed_tests != request.session.testsfailed:
         print("URL at time of failure:", _driver.current_url)
         filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")

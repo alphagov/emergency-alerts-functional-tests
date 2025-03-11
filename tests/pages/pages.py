@@ -189,6 +189,11 @@ class BasePage(object):
         element.click()
         self.driver.delete_all_cookies()
 
+    def sign_out_if_required(self):
+        if self.text_is_on_page("Sign out"):
+            self.sign_out()
+        self.driver.delete_all_cookies()
+
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
@@ -261,8 +266,8 @@ class BasePage(object):
         return True
 
     def text_is_on_page(self, search_text):
-        tries = 10
-        retry_interval = 5
+        tries = 5
+        retry_interval = 2
         while tries > 0:
             normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
