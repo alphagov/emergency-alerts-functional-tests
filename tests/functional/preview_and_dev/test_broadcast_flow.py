@@ -342,8 +342,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     assert prepare_alert_pages.text_is_on_page(
         "5km around the postcode BD1 1EE in Bradford"
     )
-
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -480,7 +479,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     # here check if selected areas displayed
     assert prepare_alert_pages.text_is_on_page(expected_area_description)
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
