@@ -30,7 +30,6 @@ def sign_in(driver, account_type="normal"):
     else:
         do_verify(driver, identifier)
 
-    # go_to_service_dashboard(driver, "broadcast_service")
     base_page = BasePage(driver)
     if base_page.text_is_not_on_page("Current alerts"):
         if base_page.text_is_on_page("Switch service"):
@@ -46,10 +45,10 @@ def get_verify_code(account_identifier):
 
 
 def clean_session(driver):
-    driver.delete_all_cookies()
     page = BasePage(driver)
     if page.text_is_on_page("Sign out"):
         page.sign_out()
+    driver.delete_all_cookies()
 
 
 def sign_in_email_auth(driver):

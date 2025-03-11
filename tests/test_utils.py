@@ -15,7 +15,7 @@ from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
-    DashboardPage,
+    CurrentAlertsPage,
     EditBroadcastTemplatePage,
     GovUkAlertsPage,
     RetryException,
@@ -140,14 +140,14 @@ def create_broadcast_template(driver, name="test template", content=None):
 
 
 def go_to_service_dashboard(driver, service="service"):
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config[service]["id"])
+    page = CurrentAlertsPage(driver)
+    page.go_to_service_landing_page(config[service]["id"])
 
 
 def go_to_templates_page(driver, service="service"):
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.go_to_dashboard_for_service(config[service]["id"])
-    dashboard_page.click_templates()
+    page = CurrentAlertsPage(driver)
+    page.go_to_service_landing_page(config[service]["id"])
+    page.click_templates()
 
 
 def delete_template(driver, template_name, service="service"):
@@ -155,9 +155,9 @@ def delete_template(driver, template_name, service="service"):
     try:
         show_templates_page.click_template_by_link_text(template_name)
     except TimeoutException:
-        dashboard_page = DashboardPage(driver)
-        dashboard_page.go_to_dashboard_for_service(config[service]["id"])
-        dashboard_page.click_templates()
+        page = CurrentAlertsPage(driver)
+        page.go_to_service_landing_page(config[service]["id"])
+        page.click_templates()
         show_templates_page.click_template_by_link_text(template_name)
     template_page = EditBroadcastTemplatePage(driver)
     template_page.click_delete()

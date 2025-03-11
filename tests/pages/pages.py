@@ -261,27 +261,27 @@ class BasePage(object):
         return True
 
     def text_is_on_page(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
         tries = 10
         retry_interval = 5
         while tries > 0:
+            normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
                 return True
             tries -= 1
-            self.driver.refresh()
             sleep(retry_interval)
+            self.driver.refresh()
         return False
 
     def text_is_not_on_page(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
         tries = 3
         retry_interval = 1
         while tries > 0:
+            normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
                 return False
             tries -= 1
-            self.driver.refresh()
             sleep(retry_interval)
+            self.driver.refresh()
         return True
 
     def get_template_id(self):
@@ -463,43 +463,43 @@ class VerifyPage(BasePage):
         self.click_continue()
 
 
-class DashboardPage(BasePage):
-    h2 = (By.CLASS_NAME, "navigation-service-name")
-    team_members_link = (By.LINK_TEXT, "Team members")
-    api_keys_link = (By.LINK_TEXT, "API integration")
-    navigation = (By.CLASS_NAME, "navigation")
+# class DashboardPage(BasePage):
+#     h2 = (By.CLASS_NAME, "navigation-service-name")
+#     team_members_link = (By.LINK_TEXT, "Team members")
+#     api_keys_link = (By.LINK_TEXT, "API integration")
+#     navigation = (By.CLASS_NAME, "navigation")
 
-    def _message_count_for_template_div(self, template_id):
-        return (By.ID, template_id)
+#     def _message_count_for_template_div(self, template_id):
+#         return (By.ID, template_id)
 
-    def is_current(self, service_id):
-        expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
-        return self.driver.current_url == expected
+#     def is_current(self, service_id):
+#         expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
+#         return self.driver.current_url == expected
 
-    def get_service_name(self):
-        element = self.wait_for_element(DashboardPage.h2)
-        return element.text
+#     def get_service_name(self):
+#         element = self.wait_for_element(DashboardPage.h2)
+#         return element.text
 
-    def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
-        element.click()
+#     def click_team_members_link(self):
+#         element = self.wait_for_element(DashboardPage.team_members_link)
+#         element.click()
 
-    def click_api_integration(self):
-        element = self.wait_for_element(DashboardPage.api_keys_link)
-        element.click()
+#     def click_api_integration(self):
+#         element = self.wait_for_element(DashboardPage.api_keys_link)
+#         element.click()
 
-    def get_service_id(self):
-        return self.driver.current_url.split("/services/")[1].split("/")[0]
+#     def get_service_id(self):
+#         return self.driver.current_url.split("/services/")[1].split("/")[0]
 
-    def get_navigation_list(self):
-        element = self.wait_for_element(DashboardPage.navigation)
-        return element.text
+#     def get_navigation_list(self):
+#         element = self.wait_for_element(DashboardPage.navigation)
+#         return element.text
 
-    def go_to_dashboard_for_service(self, service_id=None):
-        if not service_id:
-            service_id = self.get_service_id()
-        url = "{}/services/{}/dashboard".format(self.base_url, service_id)
-        self.driver.get(url)
+#     def go_to_dashboard_for_service(self, service_id=None):
+#         if not service_id:
+#             service_id = self.get_service_id()
+#         url = "{}/services/{}/dashboard".format(self.base_url, service_id)
+#         self.driver.get(url)
 
 
 class CurrentAlertsPage(BasePage):
@@ -1076,7 +1076,7 @@ class OrganisationDashboardPage(BasePage):
         return self.driver.current_url == expected
 
     def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
         element.click()
 
     def go_to_dashboard_for_org(self, org_id):
