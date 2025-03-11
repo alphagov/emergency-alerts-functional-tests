@@ -83,7 +83,7 @@ def test_prepare_broadcast_with_new_content(driver):
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
     # prepare_alert_pages.click_continue()  # click "Preview alert"
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -179,7 +179,7 @@ def test_prepare_broadcast_with_template(driver):
     # prepare_alert_pages.click_element_by_link_text("Continue")
     # prepare_alert_pages.select_checkbox_or_radio(value="PT30M")
     # prepare_alert_pages.click_continue()  # click "Preview alert"
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -576,7 +576,7 @@ def test_reject_alert_with_reason(driver):
     assert prepare_alert_pages.text_is_on_page("Cokeham")
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
