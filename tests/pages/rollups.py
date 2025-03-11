@@ -34,7 +34,6 @@ def sign_in(driver, account_type="normal"):
     base_page = BasePage(driver)
     if base_page.text_is_not_on_page("Current alerts"):
         base_page.click_element_by_link_text("Switch service")
-        base_page.get()
         base_page.click_element_by_link_text(
             config["broadcast_service"]["service_name"]
         )
