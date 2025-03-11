@@ -468,45 +468,6 @@ class VerifyPage(BasePage):
         self.click_continue()
 
 
-# class DashboardPage(BasePage):
-#     h2 = (By.CLASS_NAME, "navigation-service-name")
-#     team_members_link = (By.LINK_TEXT, "Team members")
-#     api_keys_link = (By.LINK_TEXT, "API integration")
-#     navigation = (By.CLASS_NAME, "navigation")
-
-#     def _message_count_for_template_div(self, template_id):
-#         return (By.ID, template_id)
-
-#     def is_current(self, service_id):
-#         expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
-#         return self.driver.current_url == expected
-
-#     def get_service_name(self):
-#         element = self.wait_for_element(DashboardPage.h2)
-#         return element.text
-
-#     def click_team_members_link(self):
-#         element = self.wait_for_element(DashboardPage.team_members_link)
-#         element.click()
-
-#     def click_api_integration(self):
-#         element = self.wait_for_element(DashboardPage.api_keys_link)
-#         element.click()
-
-#     def get_service_id(self):
-#         return self.driver.current_url.split("/services/")[1].split("/")[0]
-
-#     def get_navigation_list(self):
-#         element = self.wait_for_element(DashboardPage.navigation)
-#         return element.text
-
-#     def go_to_dashboard_for_service(self, service_id=None):
-#         if not service_id:
-#             service_id = self.get_service_id()
-#         url = "{}/services/{}/dashboard".format(self.base_url, service_id)
-#         self.driver.get(url)
-
-
 class CurrentAlertsPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     team_members_link = (By.LINK_TEXT, "Team members")
