@@ -253,22 +253,35 @@ class BasePage(object):
         tries=config["ui_element_retry_times"],
         delay=config["ui_element_retry_interval"],
     )
-    def text_is_on_page(self, search_text):
+    def text_is_on_page_with_exception(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
         if search_text not in normalized_page_source:
             self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
+    def text_is_on_page(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        tries = 10
+        retry_interval = 5
+        while tries > 0:
+            if search_text in normalized_page_source:
+                return True
+            tries -= 1
+            self.driver.refresh()
+            sleep(retry_interval)
+        return False
+
     def text_is_not_on_page(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
-        tries = 0
-        while tries < 3:
+        tries = 3
+        retry_interval = 1
+        while tries > 0:
             if search_text in normalized_page_source:
                 return False
-            tries += 1
+            tries -= 1
             self.driver.refresh()
-            sleep(1)
+            sleep(retry_interval)
         return True
 
     def get_template_id(self):

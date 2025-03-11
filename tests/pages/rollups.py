@@ -47,6 +47,8 @@ def get_verify_code(account_identifier):
 
 def clean_session(driver):
     driver.delete_all_cookies()
+    page = BasePage(driver)
+    page.sign_out()
 
 
 def sign_in_email_auth(driver):
