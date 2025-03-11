@@ -18,7 +18,7 @@ config = {
     "govuk_alerts_wait_retry_interval": 10,
     "ui_element_retry_times": 20,
     "ui_element_retry_interval": 5,
-    "dynamo_query_retry_times": 30,
+    "dynamo_query_retry_times": 1,
     "dynamo_query_retry_interval": 10,
     "notify_templates": {
         "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
