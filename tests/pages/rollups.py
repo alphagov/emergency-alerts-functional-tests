@@ -30,7 +30,7 @@ def sign_in(driver, account_type="normal"):
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
-
+    print("Signed in as", identifier)
     go_to_service_dashboard(driver, "broadcast_service")
 
 
