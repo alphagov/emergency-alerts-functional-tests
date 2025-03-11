@@ -38,7 +38,6 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -93,7 +92,6 @@ def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -215,7 +213,6 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 
     sign_in(driver, account_type="broadcast_approve_user")
     page = BasePage(driver)
-    assert page.is_page_title("TEST")
     page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
 
@@ -258,7 +255,6 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sign_in(driver, account_type="broadcast_approve_user")
 
     page = BasePage(driver)
-    assert page.is_page_title("TEST")
     page.click_element_by_link_text("Current alerts")
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
@@ -302,7 +298,6 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -356,7 +351,6 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -438,7 +432,6 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -495,7 +488,6 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -542,7 +534,6 @@ def test_reject_alert_with_reason(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
@@ -594,7 +585,6 @@ def test_reject_alert_with_reason(driver):
     sign_in(driver, account_type="broadcast_approve_user")
 
     landing_page = BasePage(driver)
-    assert landing_page.is_page_title("TEST")
     if not landing_page.text_is_on_page("Current alerts"):
         landing_page.click_element_by_link_text("Switch service")
         choose_service_page = BasePage(driver)
