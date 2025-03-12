@@ -16,14 +16,12 @@ from tests.pages import (
     CurrentAlertsPage,
     ShowTemplatesPage,
 )
-
-# from tests.pages.pages import (
-#     ChooseCoordinateArea,
-#     ChooseCoordinatesType,
-#     RejectionForm,
-#     SearchPostcodePage,
-# )
-from tests.pages.pages import SearchPostcodePage
+from tests.pages.pages import (
+    ChooseCoordinateArea,
+    ChooseCoordinatesType,
+    RejectionForm,
+    SearchPostcodePage,
+)
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
     check_alert_is_published_on_govuk_alerts,
@@ -357,205 +355,204 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     current_alerts_page.sign_out()
 
 
-# @pytest.mark.xdist_group(name=test_group_name)
-# @pytest.mark.parametrize(
-#     "coordinate_type, post_data, expected_area_description",
-#     (
-#         (
-#             "easting_northing",
-#             {
-#                 "first_coordinate": "416567",
-#                 "second_coordinate": "432994",
-#                 "radius": "3",
-#             },
-#             "3km around the easting of 416567 and the northing of 432994 in Bradford",
-#         ),
-#         (
-#             "easting_northing",
-#             {
-#                 "first_coordinate": "419763",
-#                 "second_coordinate": "456038",
-#                 "radius": "5",
-#             },
-#             "5km around the easting of 419763 and the northing of 456038 in North Yorkshire",
-#         ),
-#         (
-#             "latitude_longitude",
-#             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
-#             "3km around 53.793 latitude, -1.75 longitude in Bradford",
-#         ),
-#         (
-#             "latitude_longitude",
-#             {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-#             "5km around 54.0 latitude, -1.7 longitude in North Yorkshire",
-#         ),
-#     ),
-# )
-# def test_prepare_broadcast_with_new_content_for_coordinate_area(
-#     driver, coordinate_type, post_data, expected_area_description
-# ):
-#     sign_in(driver, account_type="broadcast_create_user")
+@pytest.mark.xdist_group(name=test_group_name)
+@pytest.mark.parametrize(
+    "coordinate_type, post_data, expected_area_description",
+    (
+        (
+            "easting_northing",
+            {
+                "first_coordinate": "416567",
+                "second_coordinate": "432994",
+                "radius": "3",
+            },
+            "3km around the easting of 416567 and the northing of 432994 in Bradford",
+        ),
+        (
+            "easting_northing",
+            {
+                "first_coordinate": "419763",
+                "second_coordinate": "456038",
+                "radius": "5",
+            },
+            "5km around the easting of 419763 and the northing of 456038 in North Yorkshire",
+        ),
+        (
+            "latitude_longitude",
+            {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
+            "3km around 53.793 latitude, -1.75 longitude in Bradford",
+        ),
+        (
+            "latitude_longitude",
+            {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
+            "5km around 54.0 latitude, -1.7 longitude in North Yorkshire",
+        ),
+    ),
+)
+def test_prepare_broadcast_with_new_content_for_coordinate_area(
+    driver, coordinate_type, post_data, expected_area_description
+):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     # prepare alert
-#     current_alerts_page = BasePage(driver)
-#     test_uuid = str(uuid.uuid4())
-#     broadcast_title = f"test broadcast{test_uuid}"
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = f"test broadcast{test_uuid}"
 
-#     current_alerts_page.click_element_by_link_text("Create new alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
-#     new_alert_page = BasePage(driver)
-#     new_alert_page.select_checkbox_or_radio(value="freeform")
-#     new_alert_page.click_continue()
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
 
-#     broadcast_freeform_page = BroadcastFreeformPage(driver)
-#     broadcast_content = f"This is a test broadcast {test_uuid}"
-#     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
-#     broadcast_freeform_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = f"This is a test broadcast {test_uuid}"
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
 
-#     prepare_alert_pages = BasePage(driver)
-#     prepare_alert_pages.click_element_by_link_text("Coordinates")
-#     # This is where it varies
-#     choose_type_page = ChooseCoordinatesType(driver)
-#     choose_type_page.select_checkbox_or_radio(value=coordinate_type)
-#     choose_type_page.click_continue()
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Coordinates")
+    # This is where it varies
+    choose_type_page = ChooseCoordinatesType(driver)
+    choose_type_page.select_checkbox_or_radio(value=coordinate_type)
+    choose_type_page.click_continue()
 
-#     choose_coordinate_area_page = ChooseCoordinateArea(driver)
-#     choose_coordinate_area_page.create_coordinate_area(
-#         post_data["first_coordinate"],
-#         post_data["second_coordinate"],
-#         post_data["radius"],
-#     )
-#     choose_coordinate_area_page.click_search()
-#     choose_coordinate_area_page.click_continue()
-#     prepare_alert_pages.click_element_by_link_text("Continue")
+    choose_coordinate_area_page = ChooseCoordinateArea(driver)
+    choose_coordinate_area_page.create_coordinate_area(
+        post_data["first_coordinate"],
+        post_data["second_coordinate"],
+        post_data["radius"],
+    )
+    choose_coordinate_area_page.click_search()
+    choose_coordinate_area_page.click_continue()
 
-#     broadcast_duration_page = BroadcastDurationPage(driver)
-#     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-#     broadcast_duration_page.click_preview()  # Preview alert
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
 
-#     # here check if selected areas displayed
-#     preview_alert_page = BasePage(driver)
-#     assert preview_alert_page.text_is_on_page(expected_area_description)
-#     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+    # here check if selected areas displayed
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(expected_area_description)
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-#     preview_alert_page.click_continue()  # click "Submit for approval"
-#     assert preview_alert_page.text_is_on_page(
-#         f"{broadcast_title} is waiting for approval"
-#     )
+    preview_alert_page.click_submit()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
 
-#     preview_alert_page.sign_out()
+    preview_alert_page.sign_out()
 
-#     # approve the alert
-#     sign_in(driver, account_type="broadcast_approve_user")
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
 
-#     current_alerts_page.get()
-#     current_alerts_page.click_element_by_link_text(broadcast_title)
-#     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-#     current_alerts_page.click_continue()
-#     assert current_alerts_page.text_is_on_page("since today at")
-#     alert_page_url = current_alerts_page.current_url
+    current_alerts_page.get()
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_submit()
+    assert current_alerts_page.text_is_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
 
-#     time.sleep(10)
-#     check_alert_is_published_on_govuk_alerts(
-#         driver, "Current alerts", broadcast_content
-#     )
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
 
-#     # get back to the alert page
-#     current_alerts_page.get(alert_page_url)
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
 
-#     # stop sending the alert
-#     current_alerts_page.click_element_by_link_text("Stop sending")
-#     current_alerts_page.click_continue()  # stop broadcasting
-#     assert current_alerts_page.text_is_on_page(
-#         "Stopped by Functional Tests - Broadcast User Approve"
-#     )
-#     current_alerts_page.click_element_by_link_text("Past alerts")
-#     past_alerts_page = BasePage(driver)
-#     assert past_alerts_page.text_is_on_page(broadcast_title)
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_submit()  # stop broadcasting
+    assert current_alerts_page.text_is_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
 
-#     time.sleep(10)
-#     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
-#     current_alerts_page.get()
-#     current_alerts_page.sign_out()
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
 
 
-# @pytest.mark.xdist_group(name=test_group_name)
-# def test_reject_alert_with_reason(driver):
-#     sign_in(driver, account_type="broadcast_create_user")
+@pytest.mark.xdist_group(name=test_group_name)
+def test_reject_alert_with_reason(driver):
+    sign_in(driver, account_type="broadcast_create_user")
 
-#     # prepare alert
-#     current_alerts_page = BasePage(driver)
-#     test_uuid = str(uuid.uuid4())
-#     broadcast_title = f"test broadcast{test_uuid}"
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = f"test broadcast {test_uuid}"
 
-#     current_alerts_page.click_element_by_link_text("Create new alert")
+    current_alerts_page.click_element_by_link_text("Create new alert")
 
-#     new_alert_page = BasePage(driver)
-#     new_alert_page.select_checkbox_or_radio(value="freeform")
-#     new_alert_page.click_continue()
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
 
-#     broadcast_freeform_page = BroadcastFreeformPage(driver)
-#     broadcast_content = f"This is a test broadcast {test_uuid}"
-#     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
-#     broadcast_freeform_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = f"This is a test broadcast {test_uuid}"
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
 
-#     prepare_alert_pages = BasePage(driver)
-#     prepare_alert_pages.click_element_by_link_text("Local authorities")
-#     prepare_alert_pages.click_element_by_link_text("Adur")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-#     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
-#     prepare_alert_pages.click_continue()
-#     prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Continue")
 
-#     broadcast_duration_page = BroadcastDurationPage(driver)
-#     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-#     broadcast_duration_page.click_preview()  # Preview alert
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
 
-#     # check for selected areas and duration
-#     preview_alert_page = BasePage(driver)
-#     assert preview_alert_page.text_is_on_page("Cokeham")
-#     assert preview_alert_page.text_is_on_page("Eastbrook")
-#     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-#     preview_alert_page.click_continue()  # click "Submit for approval"
-#     assert preview_alert_page.text_is_on_page(
-#         f"{broadcast_title} is waiting for approval"
-#     )
+    preview_alert_page.click_submit()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
 
-#     preview_alert_page.sign_out()
+    preview_alert_page.sign_out()
 
-#     # reject the alert
-#     sign_in(driver, account_type="broadcast_approve_user")
+    # reject the alert
+    sign_in(driver, account_type="broadcast_approve_user")
 
-#     current_alerts_page.get()
-#     current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
+    current_alerts_page.get()
+    current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
 
-#     alert_page_with_rejection = RejectionForm(driver)
-#     assert alert_page_with_rejection.rejection_details_is_closed()
-#     alert_page_with_rejection.click_open_reject_detail()
-#     assert alert_page_with_rejection.rejection_details_is_open()
+    alert_page_with_rejection = RejectionForm(driver)
+    assert alert_page_with_rejection.rejection_details_is_closed()
+    alert_page_with_rejection.click_open_reject_detail()
+    assert alert_page_with_rejection.rejection_details_is_open()
 
-#     # Without rejection reason
-#     rejection_reason = ""
-#     alert_page_with_rejection.click_reject_alert()
+    # Without rejection reason
+    rejection_reason = ""
+    alert_page_with_rejection.click_reject_alert()
 
-#     # Assert errors appear
-#     assert (
-#         alert_page_with_rejection.get_rejection_form_errors()
-#         == "Error:\nEnter the reason for rejecting the alert"
-#     )
+    # Assert errors appear
+    assert (
+        alert_page_with_rejection.get_rejection_form_errors()
+        == "Error:\nEnter the reason for rejecting the alert"
+    )
 
-#     # With rejection reason
-#     rejection_reason = "This is a test rejection reason."
-#     alert_page_with_rejection.create_rejection_reason_input(rejection_reason)
-#     alert_page_with_rejection.click_reject_alert()
+    # With rejection reason
+    rejection_reason = "This is a test rejection reason."
+    alert_page_with_rejection.create_rejection_reason_input(rejection_reason)
+    alert_page_with_rejection.click_reject_alert()
 
-#     current_alerts_page.get()
-#     assert current_alerts_page.text_is_on_page("Current alerts")
-#     current_alerts_page.click_element_by_link_text("Rejected alerts")
+    current_alerts_page.get()
+    assert current_alerts_page.text_is_on_page("Current alerts")
+    current_alerts_page.click_element_by_link_text("Rejected alerts")
 
-#     rejected_alerts_page = BasePage(driver)
-#     assert rejected_alerts_page.text_is_on_page(broadcast_title)
-#     assert rejected_alerts_page.text_is_on_page(rejection_reason)
-#     assert rejected_alerts_page.text_is_on_page(rejection_reason)
+    rejected_alerts_page = BasePage(driver)
+    assert rejected_alerts_page.text_is_on_page(broadcast_title)
+    assert rejected_alerts_page.text_is_on_page(rejection_reason)
+    assert rejected_alerts_page.text_is_on_page(rejection_reason)
