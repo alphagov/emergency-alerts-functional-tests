@@ -245,6 +245,10 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.PREVIEW_BUTTON)
         element.click()
 
+    def click_submit(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON)
+        element.click()
+
     def click_continue_to_signin(self):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
         element.click()

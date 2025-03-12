@@ -74,7 +74,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue()  # click "Submit for approval"
+    preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -86,7 +86,7 @@ def test_prepare_broadcast_with_new_content(driver):
 
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    current_alerts_page.click_continue()
+    current_alerts_page.click_submit()
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
@@ -100,7 +100,7 @@ def test_prepare_broadcast_with_new_content(driver):
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
-    current_alerts_page.click_continue()  # stop broadcasting
+    current_alerts_page.click_submit()  # stop broadcasting
     assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
@@ -158,7 +158,7 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_continue()  # click "Submit for approval"
+    prepare_alert_pages.click_submit()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -237,7 +237,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page = BasePage(driver)
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    page.click_continue()
+    page.click_submit()
 
     assert page.text_is_on_page("since today at")
 
@@ -315,7 +315,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue()  # click "Submit for approval"
+    preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -328,7 +328,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     current_alerts_page.get()
     current_alerts_page.click_element_by_link_text(broadcast_title)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    current_alerts_page.click_continue()
+    current_alerts_page.click_submit()
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
@@ -342,7 +342,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     # stop sending the alert
     current_alerts_page.click_element_by_link_text("Stop sending")
-    current_alerts_page.click_continue()  # stop broadcasting
+    current_alerts_page.click_submit()  # stop broadcasting
     assert current_alerts_page.text_is_on_page(
         "Stopped by Functional Tests - Broadcast User Approve"
     )
