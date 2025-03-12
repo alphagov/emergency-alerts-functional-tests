@@ -41,7 +41,7 @@ def test_prepare_broadcast_with_new_content(driver):
     # prepare alert
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title = "test broadcast" + test_uuid
+    broadcast_title = "test broadcast " + test_uuid
 
     current_alerts_page.click_element_by_link_text("Create new alert")
 

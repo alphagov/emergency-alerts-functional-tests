@@ -130,7 +130,7 @@ def create_alert(driver, id):
 
     # prepare alert
     current_alerts_page = BasePage(driver)
-    broadcast_title = "test broadcast" + id
+    broadcast_title = "test broadcast " + id
 
     current_alerts_page.click_element_by_link_text("Create new alert")
 
@@ -151,14 +151,14 @@ def create_alert(driver, id):
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     preview_alert_page = BasePage(driver)
     preview_alert_page.click_element_by_link_text("Preview alert")
     assert preview_alert_page.text_is_on_page("England")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue()
+    preview_alert_page.click_submit()
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -170,11 +170,13 @@ def approve_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.click_element_by_link_text("test broadcast " + id)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    current_alerts_page.click_continue()
+    current_alerts_page.click_submit()
     current_alerts_page.wait_for_element(CommonPageLocators.LIVE_BROADCAST)
     assert current_alerts_page.text_is_on_page("since today at")
+
+    current_alerts_page.sign_out()
 
 
 def broadcast_alert(driver, id):
@@ -186,8 +188,8 @@ def cancel_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.click_element_by_link_text("test broadcast " + id)
     current_alerts_page.click_element_by_link_text("Stop sending")
-    current_alerts_page.click_continue()  # stop broadcasting
+    current_alerts_page.click_submit()  # stop broadcasting
 
     current_alerts_page.sign_out()
