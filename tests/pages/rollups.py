@@ -1,3 +1,5 @@
+import time
+
 from config import config
 from tests.pages import (
     BasePage,
@@ -25,6 +27,9 @@ def sign_in(driver, account_type="normal"):
 
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
+    # wait before requesting verification code - this pause may not
+    # be necessary when the aggressive throttling issue is fixed
+    time.sleep(10)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
