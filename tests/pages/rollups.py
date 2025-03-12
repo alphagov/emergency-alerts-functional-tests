@@ -154,7 +154,6 @@ def create_alert(driver, id):
     broadcast_duration_page.click_preview()  # Preview alert
 
     preview_alert_page = BasePage(driver)
-    preview_alert_page.click_element_by_link_text("Preview alert")
     assert preview_alert_page.text_is_on_page("England")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 

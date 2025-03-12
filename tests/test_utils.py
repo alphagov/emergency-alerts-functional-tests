@@ -360,7 +360,7 @@ def clear_proxy_error_alarm():
         for mno in PROVIDERS:
             for az in ["1", "2"]:
                 cwc.set_alarm_state(
-                    AlarmName=f"{mno}-{az}-proxy-error",
+                    AlarmName=f"{mno}-az{az}-proxy-error",
                     StateValue="OK",
                     StateReason="Functional test alarm reset",
                 )
