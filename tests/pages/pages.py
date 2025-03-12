@@ -266,8 +266,8 @@ class BasePage(object):
         return True
 
     def text_is_on_page(self, search_text):
-        tries = 5
-        retry_interval = 2
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
             normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
@@ -278,8 +278,8 @@ class BasePage(object):
         return False
 
     def text_is_not_on_page(self, search_text):
-        tries = 3
-        retry_interval = 1
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
             normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
