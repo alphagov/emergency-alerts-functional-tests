@@ -175,8 +175,6 @@ def approve_alert(driver, id):
     current_alerts_page.wait_for_element(CommonPageLocators.LIVE_BROADCAST)
     assert current_alerts_page.text_is_on_page("since today at")
 
-    current_alerts_page.sign_out()
-
 
 def broadcast_alert(driver, id):
     create_alert(driver, id)
