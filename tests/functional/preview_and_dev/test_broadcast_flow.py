@@ -64,7 +64,7 @@ def test_prepare_broadcast_with_new_content(driver):
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
@@ -148,7 +148,7 @@ def test_prepare_broadcast_with_template(driver):
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
@@ -304,7 +304,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     # here check if selected areas displayed
     preview_alert_page = BasePage(driver)
@@ -429,7 +429,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     # here check if selected areas displayed
     preview_alert_page = BasePage(driver)
@@ -508,7 +508,7 @@ def test_reject_alert_with_reason(driver):
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
-    broadcast_duration_page.click_continue()  # Preview alert
+    broadcast_duration_page.click_preview()  # Preview alert
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
