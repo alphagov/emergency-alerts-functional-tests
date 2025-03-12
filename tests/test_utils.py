@@ -2,6 +2,7 @@ import functools
 import json
 import logging
 import re
+import time
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 
@@ -86,7 +87,10 @@ def do_verify(driver, mobile_number):
     delay=config["verify_code_retry_interval"],
 )
 def do_verify_by_id(driver, user_id):
+    failed_attempts = 0
+    wait_for_throttle = 0
     try:
+        time.sleep(wait_for_throttle)
         verify_code = get_verify_code_from_api_by_id(user_id)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
@@ -97,6 +101,8 @@ def do_verify_by_id(driver, user_id):
         return True
     else:
         #  There was an error message so let's retry
+        failed_attempts += 1
+        wait_for_throttle = 10 * (2 ** (failed_attempts - 1))
         raise RetryException
 
 

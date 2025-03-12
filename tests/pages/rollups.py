@@ -1,5 +1,3 @@
-import time
-
 from config import config
 from tests.pages import (
     BasePage,
@@ -28,7 +26,6 @@ def sign_in(driver, account_type="normal"):
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
-        time.sleep(10)
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
