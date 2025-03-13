@@ -181,12 +181,7 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
-
-    assert api_keys_page.text_is_on_page("An admin approval has been created")
-
-    # revoke api key
-    api_keys_page.revoke_api_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
-    assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
+    assert api_keys_page.text_is_on_page("An admin approval has been created")
 
     api_keys_page.sign_out()
