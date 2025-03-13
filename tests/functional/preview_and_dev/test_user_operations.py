@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from tests.pages import CurrentAlertsPage, ProfileSettingsPage
@@ -19,13 +21,13 @@ def test_user_can_change_profile_fields(driver):
     # Change username
     profile_page.click_change_setting("name")
     profile_page.wait_until_url_ends_with("/name")
-    profile_page.save_name("Functional Tests - Broadcast User Create - NEW")
+    base_name = "Functional Tests - Broadcast User Create"
+    new_name = f"{base_name} {str(int(time.time()))}"
+    profile_page.save_name(new_name)
     profile_page.enter_password("Password1234")
 
     current_alerts_page.wait_until_url_ends_with("/user-profile")
-    assert current_alerts_page.text_is_on_page(
-        "Functional Tests - Broadcast User Create - NEW"
-    )
+    assert current_alerts_page.text_is_on_page(new_name)
 
     # Change mobile number
     profile_page.click_change_setting("mobile")
@@ -49,11 +51,11 @@ def test_user_can_change_profile_fields(driver):
     profile_page.click_change_setting("name")
     profile_page.wait_until_url_ends_with("/name")
     assert profile_page.text_is_on_page("Change your name")
-    profile_page.save_name("Functional Tests - Broadcast User Create")
+    profile_page.save_name(base_name)
     profile_page.enter_password("Password1234")
 
     profile_page.wait_until_url_ends_with("/user-profile")
-    assert profile_page.text_is_on_page("Functional Tests - Broadcast User Create")
+    assert profile_page.text_is_on_page(base_name)
 
     profile_page.click_change_setting("mobile")
     profile_page.wait_until_url_ends_with("/mobile-number")
