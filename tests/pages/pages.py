@@ -473,7 +473,7 @@ class VerifyPage(BasePage):
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
-        self.click_continue()
+        self.click_submit()
 
 
 class CurrentAlertsPage(BasePage):
@@ -581,8 +581,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # we've seen issues
         radio_element = self.wait_for_invisible_element(type)
         self.select_checkbox_or_radio(radio_element)
-
-        self.click_continue()
+        self.click_submit()
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
@@ -610,9 +609,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
         radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
-
         self.select_checkbox_or_radio(radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def move_template_to_folder(self, folder_name):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
@@ -621,7 +619,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             self.input_element_by_label_text(text=folder_name, input_type="radio")
         )
         self.select_checkbox_or_radio(element=radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def get_folder_by_name(self, folder_name):
         try:
@@ -935,7 +933,7 @@ class ApiKeysPage(BasePage):
     def create_key(self, key_name):
         self.key_name_input = key_name
         self.select_checkbox_or_radio(value="normal")
-        self.click_continue()
+        self.click_submit()
 
     def get_key_name(self):
         element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
@@ -1251,7 +1249,7 @@ class PlatformAdminPage(BasePage):
 
     def search_for(self, text):
         self.search_input = text
-        self.click_continue()
+        self.click_submit()
 
 
 class ChooseCoordinatesType(BasePage):
