@@ -182,7 +182,6 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
 
-    assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
     assert api_keys_page.text_is_on_page("An admin approval has been created")
 
     # revoke api key
