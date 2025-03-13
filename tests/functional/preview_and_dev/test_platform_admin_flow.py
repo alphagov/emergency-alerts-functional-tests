@@ -107,7 +107,6 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     verify_page = VerifyPage(driver)
     verify_page.verify(code=code)
 
-    # go_to_service_dashboard(driver, "broadcast_service")
     current_alerts_page = CurrentAlertsPage(driver)
     assert current_alerts_page.is_page_title("Current alerts")
     current_alerts_page.sign_out()

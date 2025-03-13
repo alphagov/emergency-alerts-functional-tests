@@ -234,7 +234,7 @@ class BasePage(object):
         element.click()
 
     def click_save(self, time=10):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON, time=time)
         element.click()
 
     def click_continue(self):
@@ -403,7 +403,7 @@ class AddServicePage(BasePage):
 
     def confirm_settings(self):
         self.wait_until_url_ends_with("confirm")
-        self.click_continue()
+        self.click_submit()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
