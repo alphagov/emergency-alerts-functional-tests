@@ -1,6 +1,6 @@
 import pytest
 
-from tests.pages import DashboardPage, ProfileSettingsPage
+from tests.pages import CurrentAlertsPage, ProfileSettingsPage
 from tests.pages.rollups import get_verify_code, sign_in
 
 test_group_name = "user-operations"
@@ -10,8 +10,8 @@ test_group_name = "user-operations"
 def test_user_can_change_profile_fields(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_element_by_link_text("Profile")
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_element_by_link_text("Profile")
 
     profile_page = ProfileSettingsPage(driver)
     assert profile_page.text_is_on_page("Your profile")
@@ -22,8 +22,8 @@ def test_user_can_change_profile_fields(driver):
     profile_page.save_name("Functional Tests - Broadcast User Create - NEW")
     profile_page.enter_password("Password1234")
 
-    dashboard_page.wait_until_url_ends_with("/user-profile")
-    assert dashboard_page.text_is_on_page(
+    current_alerts_page.wait_until_url_ends_with("/user-profile")
+    assert current_alerts_page.text_is_on_page(
         "Functional Tests - Broadcast User Create - NEW"
     )
 
@@ -74,15 +74,17 @@ def test_user_can_change_profile_fields(driver):
 def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_team_members_link()
 
-    dashboard_page.wait_until_url_ends_with("users")
-    assert dashboard_page.is_page_title("Team members")
+    current_alerts_page.wait_until_url_ends_with("users")
+    assert current_alerts_page.is_page_title("Team members")
 
     # verify presence of other users
-    assert dashboard_page.text_is_on_page("Functional Tests - Platform Admin")
-    assert dashboard_page.text_is_on_page("Functional Tests - Broadcast User Approve")
+    assert current_alerts_page.text_is_on_page("Functional Tests - Platform Admin")
+    assert current_alerts_page.text_is_on_page(
+        "Functional Tests - Broadcast User Approve"
+    )
 
     # verify that invitation button is not available
-    assert dashboard_page.text_is_not_on_page("Invite a team member")
+    assert current_alerts_page.text_is_not_on_page("Invite a team member")

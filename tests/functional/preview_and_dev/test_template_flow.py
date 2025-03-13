@@ -8,7 +8,7 @@ from config import config
 
 # from config import config
 from tests.pages import (
-    DashboardPage,
+    CurrentAlertsPage,
     EditBroadcastTemplatePage,
     InviteUserPage,
     ManageFolderPage,
@@ -239,8 +239,8 @@ def test_template_folder_permissions(driver):
 
     # go to Team members page
     sign_in(driver, account_type="platform_admin")
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_team_members_link()
     team_members_page = TeamMembersPage(driver)
 
     # edit colleague's permissions so child folder is invisible
@@ -252,13 +252,13 @@ def test_template_folder_permissions(driver):
     edit_team_member_page.click_save()
 
     # check if permissions saved correctly
-    dashboard_page.click_team_members_link()
+    current_alerts_page.click_team_members_link()
     team_members_page.click_edit_team_member(
         config["broadcast_service"]["broadcast_user_2"]["email"]
     )
     assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
 
-    dashboard_page.sign_out()
+    current_alerts_page.sign_out()
 
     # log in as that colleague
     sign_in(driver, account_type="broadcast_approve_user")
@@ -277,7 +277,7 @@ def test_template_folder_permissions(driver):
 
     # click grandchild folder template to see that it's there
     show_templates_page.click_template_by_link_text(folder_names[2] + "-template")
-    dashboard_page.sign_out()
+    show_templates_page.sign_out()
 
     # delete everything
     sign_in(driver, account_type="broadcast_create_user")
