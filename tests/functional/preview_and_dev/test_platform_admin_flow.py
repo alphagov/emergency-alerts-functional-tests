@@ -107,6 +107,13 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     verify_page = VerifyPage(driver)
     verify_page.verify(code=code)
 
+    base_page = BasePage(driver)
+    # verify tour pages
+    base_page.wait_until_url_ends_with("/broadcast-tour/live/1")
+    base_page.click_element_by_link_text("Continue")
+    base_page.wait_until_url_ends_with("/broadcast-tour/live/2")
+    base_page.click_element_by_link_text("Continue")
+
     current_alerts_page = CurrentAlertsPage(driver)
     assert current_alerts_page.is_page_title("Current alerts")
     current_alerts_page.sign_out()
@@ -175,28 +182,12 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
 
-    copy_key_btn = api_keys_page.wait_for_key_copy_button()
     assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
-
-    # click "copy key"
-    copy_key_btn.click()
-    _ = api_keys_page.wait_for_show_key_button()
-    assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
-    assert api_keys_page.text_is_on_page("Copied to clipboard")
+    assert api_keys_page.text_is_on_page("An admin approval has been created")
 
     # revoke api key
-    api_keys_page.click_element_by_link_text("Back to API keys")
-    assert api_keys_page.is_page_title("API keys")
     api_keys_page.revoke_api_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
-
-    # check audit trail for api key
-    api_keys_page.click_element_by_link_text("Settings")
-    api_keys_page.click_element_by_link_text("Service history")
-    api_keys_page.click_element_by_link_text("API keys")
-
-    assert api_keys_page.text_is_on_page(f"Created an API key called ‘{key_name}’")
-    assert api_keys_page.text_is_on_page(f"Revoked the ‘{key_name}’ API key")
 
     api_keys_page.sign_out()

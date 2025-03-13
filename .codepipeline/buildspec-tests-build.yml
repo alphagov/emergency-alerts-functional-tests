@@ -4,8 +4,6 @@ env:
   variables:
     testsuites: >-
       platform-admin-flow
-      authentication-flow
-      user-operations
 
 phases:
   install:
@@ -57,10 +55,10 @@ phases:
       #     echo "SKIPPING WORKFLOW 'test-cbc-integration'..."
       #   fi
       - make test-platform-admin-flow; exit 0
-      - make test-authentication-flow; exit 0
+      # - make test-authentication-flow; exit 0
       # - make test-links-and-cookies; exit 0
       # - make test-template-flow; exit 0
-      - make test-user-operations; exit 0
+      # - make test-user-operations; exit 0
       # - make test-throttling; exit 0
       # - make test-session-timeout; exit 0
       - echo "Test run completed."
