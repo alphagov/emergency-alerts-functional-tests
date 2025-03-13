@@ -32,7 +32,7 @@ def preview_dev_config():
     test_api_client = create_test_client()
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
-    purge_user_created_services(test_api_client)
+    # purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
