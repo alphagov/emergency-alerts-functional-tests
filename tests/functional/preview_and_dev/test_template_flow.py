@@ -48,6 +48,8 @@ def test_create_and_delete_template(driver):
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
 
+    page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_create_edit_and_delete_template(driver):
@@ -93,6 +95,8 @@ def test_create_edit_and_delete_template(driver):
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
 
+    page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_create_prep_to_send_and_delete_template(driver):
@@ -124,6 +128,8 @@ def test_create_prep_to_send_and_delete_template(driver):
 
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
+
+    page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -199,6 +205,8 @@ def test_creating_moving_and_deleting_template_folders(driver):
     assert template_name not in [
         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
     ]
+
+    show_templates_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -298,3 +306,5 @@ def test_template_folder_permissions(driver):
         manage_folder_page = ManageFolderPage(driver)
         manage_folder_page.delete_folder()
         manage_folder_page.confirm_delete_folder()
+
+    show_templates_page.sign_out()
