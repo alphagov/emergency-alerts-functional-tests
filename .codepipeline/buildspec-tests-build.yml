@@ -3,6 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
+      template-flow
       user-operations
 
 phases:
@@ -57,7 +58,7 @@ phases:
       # - make test-platform-admin-flow; exit 0
       # - make test-authentication-flow; exit 0
       # - make test-links-and-cookies; exit 0
-      # - make test-template-flow; exit 0
+      - make test-template-flow; exit 0
       - make test-user-operations; exit 0
       # - make test-throttling; exit 0
       # - make test-session-timeout; exit 0
