@@ -70,6 +70,7 @@ def test_user_can_change_profile_fields(driver):
     profile_page.wait_until_url_ends_with("/user-profile")
     profile_page.get(relative_url="/user-profile")
     assert profile_page.text_is_on_page("+447700900111")
+    profile_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
