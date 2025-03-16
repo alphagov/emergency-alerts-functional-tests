@@ -71,6 +71,8 @@ def test_user_can_change_profile_fields(driver):
     profile_page.get(relative_url="/user-profile")
     assert profile_page.text_is_on_page("+447700900111")
 
+    profile_page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
