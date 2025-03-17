@@ -20,10 +20,11 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     login_pw = "incorrect password"
 
     sign_in_page = SignInPage(driver)
-    sign_in_page.get()
+    print(" ".join(driver.page_source.split()))
     assert sign_in_page.is_current()
+    print(" ".join(driver.page_source.split()))
     sign_in_page.login(login_email, login_pw)
-
+    print(" ".join(driver.page_source.split()))
     # Assert here that error text appears
     assert sign_in_page.text_is_on_page(
         "The email address or password you entered is incorrect."
