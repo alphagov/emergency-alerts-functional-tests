@@ -91,3 +91,5 @@ def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
 
     # verify that invitation button is not available
     assert current_alerts_page.text_is_not_on_page("Invite a team member")
+
+    current_alerts_page.sign_out()

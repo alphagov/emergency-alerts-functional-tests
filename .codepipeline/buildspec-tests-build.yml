@@ -5,6 +5,7 @@ env:
     testsuites: >-
       template-flow
       user-operations
+      test-throttling
 
 phases:
   install:
@@ -60,7 +61,7 @@ phases:
       # - make test-links-and-cookies; exit 0
       - make test-template-flow; exit 0
       - make test-user-operations; exit 0
-      # - make test-throttling; exit 0
+      - make test-throttling; exit 0
       # - make test-session-timeout; exit 0
       - echo "Test run completed."
       # - |
