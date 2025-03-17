@@ -66,8 +66,7 @@ def test_sign_in_with_email_mfa(driver):
     assert sign_in_page.is_current()
     sign_in_page.login(login_email, login_pw)
 
-    print(" ".join(driver.page_source.split()))
-
+    sign_in_page.wait_until_url_ends_with("/two-factor-email-sent")
     assert sign_in_page.text_is_on_page("a link to sign in")
 
     sign_in_url = create_sign_in_url(login_email, "email-auth")
