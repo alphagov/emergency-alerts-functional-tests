@@ -9,7 +9,7 @@ from tests.pages import (
     HomePage,
     SignInPage,
 )
-from tests.test_utils import (  # go_to_service_dashboard,
+from tests.test_utils import (
     ACCOUNTS_REQUIRING_SMS_2FA,
     do_email_auth_verify,
     do_verify,

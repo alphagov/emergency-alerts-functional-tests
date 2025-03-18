@@ -181,7 +181,6 @@ def test_creating_moving_and_deleting_template_folders(driver):
     )
 
     # move template out of folder
-    # view_folder_page.select_template_checkbox(template_id)
     view_folder_page.check_input_with_label_text(
         text=template_name, input_type="checkbox"
     )
