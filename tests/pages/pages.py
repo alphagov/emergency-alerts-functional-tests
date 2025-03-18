@@ -463,7 +463,6 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        # self.click_continue_to_signin()
         self.click_continue()
 
 
