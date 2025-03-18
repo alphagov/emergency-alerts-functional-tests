@@ -67,3 +67,5 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
 
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
+
+    landing_page.sign_out()
