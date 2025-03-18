@@ -5,8 +5,6 @@ import pytest
 from selenium.webdriver.common.by import By
 
 from config import config
-
-# from config import config
 from tests.pages import (
     CurrentAlertsPage,
     EditBroadcastTemplatePage,
@@ -147,11 +145,9 @@ def test_creating_moving_and_deleting_template_folders(driver):
 
     edit_template_page = EditBroadcastTemplatePage(driver)
     edit_template_page.create_template(name=template_name)
-    # template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
     # create folder using add to new folder
-    # show_templates_page.select_template_checkbox(template_id)
     show_templates_page.check_input_with_label_text(
         text=template_name, input_type="checkbox"
     )
