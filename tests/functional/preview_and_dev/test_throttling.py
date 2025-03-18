@@ -13,7 +13,7 @@ test_group_name = "throttling"
 
 @recordtime
 @pytest.mark.xdist_group(name=test_group_name)
-def test_login_attempt_throttled_after_failed_login(driver):
+def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     clean_session(driver)
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
