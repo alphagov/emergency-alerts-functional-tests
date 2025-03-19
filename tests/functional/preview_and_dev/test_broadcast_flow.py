@@ -70,10 +70,9 @@ def test_prepare_broadcast_with_new_content(driver):
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("Cokeham")
     assert preview_alert_page.text_is_on_page("Eastbrook")
-    assert 2 == 1
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -155,10 +154,9 @@ def test_prepare_broadcast_with_template(driver):
     preview_alert_page = BasePage(driver)
     assert prepare_alert_pages.text_is_on_page("Cokeham")
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
-    assert 2 == 1
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_submit()  # click "Submit for approval"
+    prepare_alert_pages.click_continue_to_signin()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -305,7 +303,6 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     search_postcode_page.click_continue()
 
     broadcast_duration_page = BroadcastDurationPage(driver)
-    assert 2 == 1
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_preview()  # Preview alert
 
@@ -316,7 +313,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -435,10 +432,9 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     # here check if selected areas displayed
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page(expected_area_description)
-    assert 2 == 1
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -515,10 +511,9 @@ def test_reject_alert_with_reason(driver):
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("Cokeham")
     assert preview_alert_page.text_is_on_page("Eastbrook")
-    assert 2 == 1
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
