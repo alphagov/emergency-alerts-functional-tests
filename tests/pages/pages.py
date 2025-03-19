@@ -50,6 +50,7 @@ from tests.pages.element import (
 )
 from tests.pages.locators import (
     AddServicePageLocators,
+    AdminApprovalPageLocators,
     ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     ChangeNameLocators,
@@ -940,21 +941,6 @@ class ApiKeysPage(BasePage):
         self.select_checkbox_or_radio(value="normal")
         self.click_submit()
 
-    def get_key_name(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
-        return element.text
-
-    def wait_for_key_copy_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
-        return element
-
-    def wait_for_show_key_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
-        return element
-
-    def check_new_key_name(self, starts_with):
-        return self.get_key_name().startswith(starts_with)
-
     def get_revoke_link_for_api_key(self, key_name):
         return self.wait_for_element(
             (
@@ -1355,3 +1341,25 @@ class RejectionForm(BasePage):
         error_message = (By.CSS_SELECTOR, ".govuk-error-message")
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
+
+
+class AdminApprovalsPage(BasePage):
+    def approve_action(self):
+        approve = self.wait_for_element(AdminApprovalPageLocators.APPROVE_BUTTON)
+        approve.click()
+
+    # Only relevant for approved API key actions:
+    def get_key_name(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
+        return element.text
+
+    def wait_for_key_copy_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
+        return element
+
+    def wait_for_show_key_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
+        return element
+
+    def check_new_key_name(self, starts_with):
+        return self.get_key_name().startswith(starts_with)
