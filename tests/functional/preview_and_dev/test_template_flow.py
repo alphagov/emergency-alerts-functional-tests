@@ -5,10 +5,8 @@ import pytest
 from selenium.webdriver.common.by import By
 
 from config import config
-
-# from config import config
 from tests.pages import (
-    DashboardPage,
+    CurrentAlertsPage,
     EditBroadcastTemplatePage,
     InviteUserPage,
     ManageFolderPage,
@@ -47,6 +45,8 @@ def test_create_and_delete_template(driver):
 
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
+
+    page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -93,6 +93,8 @@ def test_create_edit_and_delete_template(driver):
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
 
+    page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_create_prep_to_send_and_delete_template(driver):
@@ -125,6 +127,8 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
 
+    page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_creating_moving_and_deleting_template_folders(driver):
@@ -141,11 +145,12 @@ def test_creating_moving_and_deleting_template_folders(driver):
 
     edit_template_page = EditBroadcastTemplatePage(driver)
     edit_template_page.create_template(name=template_name)
-    template_id = edit_template_page.get_template_id()
     edit_template_page.click_templates()
 
     # create folder using add to new folder
-    show_templates_page.select_template_checkbox(template_id)
+    show_templates_page.check_input_with_label_text(
+        text=template_name, input_type="checkbox"
+    )
     show_templates_page.add_to_new_folder(folder_name)
 
     # navigate into folder
@@ -172,7 +177,9 @@ def test_creating_moving_and_deleting_template_folders(driver):
     )
 
     # move template out of folder
-    view_folder_page.select_template_checkbox(template_id)
+    view_folder_page.check_input_with_label_text(
+        text=template_name, input_type="checkbox"
+    )
     view_folder_page.move_to_root_template_folder()
 
     # delete folder
@@ -199,6 +206,8 @@ def test_creating_moving_and_deleting_template_folders(driver):
     assert template_name not in [
         x.text for x in driver.find_elements(By.CLASS_NAME, "message-name")
     ]
+
+    show_templates_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -239,8 +248,8 @@ def test_template_folder_permissions(driver):
 
     # go to Team members page
     sign_in(driver, account_type="platform_admin")
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_team_members_link()
     team_members_page = TeamMembersPage(driver)
 
     # edit colleague's permissions so child folder is invisible
@@ -252,13 +261,13 @@ def test_template_folder_permissions(driver):
     edit_team_member_page.click_save()
 
     # check if permissions saved correctly
-    dashboard_page.click_team_members_link()
+    current_alerts_page.click_team_members_link()
     team_members_page.click_edit_team_member(
         config["broadcast_service"]["broadcast_user_2"]["email"]
     )
     assert not edit_team_member_page.is_checkbox_checked(folder_names[1])
 
-    dashboard_page.sign_out()
+    current_alerts_page.sign_out()
 
     # log in as that colleague
     sign_in(driver, account_type="broadcast_approve_user")
@@ -277,7 +286,7 @@ def test_template_folder_permissions(driver):
 
     # click grandchild folder template to see that it's there
     show_templates_page.click_template_by_link_text(folder_names[2] + "-template")
-    dashboard_page.sign_out()
+    show_templates_page.sign_out()
 
     # delete everything
     sign_in(driver, account_type="broadcast_create_user")
@@ -298,3 +307,5 @@ def test_template_folder_permissions(driver):
         manage_folder_page = ManageFolderPage(driver)
         manage_folder_page.delete_folder()
         manage_folder_page.confirm_delete_folder()
+
+    show_templates_page.sign_out()

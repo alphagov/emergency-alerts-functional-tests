@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from tests.pages import AddServicePage, DashboardPage, ServiceSettingsPage
+from tests.pages import AddServicePage, CurrentAlertsPage, ServiceSettingsPage
 from tests.pages.pages import (
     ApiKeysPage,
     BasePage,
@@ -13,7 +13,7 @@ from tests.pages.pages import (
     TeamMembersPage,
     VerifyPage,
 )
-from tests.pages.rollups import go_to_service_dashboard, sign_in
+from tests.pages.rollups import sign_in
 from tests.test_utils import create_invitation_url, get_verification_code_by_id
 
 test_group_name = "platform-admin"
@@ -63,15 +63,15 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
 
     sign_in(driver, account_type="platform_admin")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_team_members_link()
 
     team_members_page = TeamMembersPage(driver)
     assert team_members_page.h1_is_team_members()
     team_members_page.click_invite_user()
 
     invited_user_email = (
-        f"emergency-alerts-fake-{timestamp}@digital.cabinet-office.gov.uk"
+        f"emergency-alerts-tests+fake-{timestamp}@digital.cabinet-office.gov.uk"
     )
     invite_user_page = InviteUserPage(driver)
     invite_user_page.send_invitation_without_permissions(invited_user_email)
@@ -107,16 +107,22 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     verify_page = VerifyPage(driver)
     verify_page.verify(code=code)
 
-    go_to_service_dashboard(driver, "broadcast_service")
-    dashboard_page = DashboardPage(driver)
-    assert dashboard_page.is_page_title("Current alerts")
-    dashboard_page.sign_out()
+    base_page = BasePage(driver)
+    # verify tour pages
+    base_page.wait_until_url_ends_with("/broadcast-tour/live/1")
+    base_page.click_element_by_link_text("Continue")
+    base_page.wait_until_url_ends_with("/broadcast-tour/live/2")
+    base_page.click_element_by_link_text("Continue")
+
+    current_alerts_page = CurrentAlertsPage(driver)
+    assert current_alerts_page.is_page_title("Current alerts")
+    current_alerts_page.sign_out()
 
     # delete new user
     sign_in(driver, account_type="platform_admin")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_team_members_link()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_team_members_link()
 
     team_members_page = TeamMembersPage(driver)
     assert team_members_page.h1_is_team_members()
@@ -140,8 +146,8 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
     time.sleep(20)
     sign_in(driver, account_type="platform_admin")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_element_by_link_text("Platform admin")
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_element_by_link_text("Platform admin")
 
     admin_page = PlatformAdminPage(driver)
 
@@ -162,8 +168,8 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
 def test_service_can_create_revoke_and_audit_api_keys(driver):
     sign_in(driver, account_type="platform_admin")
 
-    dashboard_page = DashboardPage(driver)
-    dashboard_page.click_api_integration()
+    current_alerts_page = CurrentAlertsPage(driver)
+    current_alerts_page.click_api_integration()
 
     api_keys_page = ApiKeysPage(driver)
     assert api_keys_page.is_page_title("API keys")
@@ -175,29 +181,7 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     timestamp = str(int(time.time()))
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
-
-    copy_key_btn = api_keys_page.wait_for_key_copy_button()
-    assert api_keys_page.check_new_key_name(starts_with="key" + timestamp)
-
-    # click "copy key"
-    copy_key_btn.click()
-    _ = api_keys_page.wait_for_show_key_button()
-    assert api_keys_page.text_is_on_page("Copy your key to somewhere safe")
-    assert api_keys_page.text_is_on_page("Copied to clipboard")
-
-    # revoke api key
-    api_keys_page.click_element_by_link_text("Back to API keys")
-    assert api_keys_page.is_page_title("API keys")
-    api_keys_page.revoke_api_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
-    assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
-
-    # check audit trail for api key
-    api_keys_page.click_element_by_link_text("Settings")
-    api_keys_page.click_element_by_link_text("Service history")
-    api_keys_page.click_element_by_link_text("API keys")
-
-    assert api_keys_page.text_is_on_page(f"Created an API key called ‘{key_name}’")
-    assert api_keys_page.text_is_on_page(f"Revoked the ‘{key_name}’ API key")
+    assert api_keys_page.text_is_on_page("An admin approval has been created")
 
     api_keys_page.sign_out()

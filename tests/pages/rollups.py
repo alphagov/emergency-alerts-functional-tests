@@ -1,6 +1,9 @@
+import time
+
 from config import config
 from tests.pages import (
     BasePage,
+    BroadcastDurationPage,
     BroadcastFreeformPage,
     CommonPageLocators,
     HomePage,
@@ -12,7 +15,6 @@ from tests.test_utils import (
     do_verify,
     do_verify_by_id,
     get_verification_code_by_id,
-    go_to_service_dashboard,
 )
 
 
@@ -25,12 +27,21 @@ def sign_in(driver, account_type="normal"):
 
     _sign_in(driver, account_type)
     identifier = get_identifier(account_type=account_type)
+    # wait before requesting verification code - this pause may not
+    # be necessary when the aggressive throttling issue is fixed
+    time.sleep(10)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
         do_verify(driver, identifier)
 
-    go_to_service_dashboard(driver, "broadcast_service")
+    base_page = BasePage(driver)
+    if base_page.text_is_not_on_page("Current alerts"):
+        if base_page.text_is_on_page("Switch service"):
+            base_page.click_element_by_link_text("Switch service")
+        base_page.click_element_by_link_text(
+            config["broadcast_service"]["service_name"]
+        )
 
 
 def get_verify_code(account_identifier):
@@ -39,6 +50,9 @@ def get_verify_code(account_identifier):
 
 
 def clean_session(driver):
+    page = BasePage(driver)
+    if page.text_is_on_page("Sign out"):
+        page.sign_out()
     driver.delete_all_cookies()
 
 
@@ -116,7 +130,7 @@ def create_alert(driver, id):
 
     # prepare alert
     current_alerts_page = BasePage(driver)
-    broadcast_title = "test broadcast" + id
+    broadcast_title = "test broadcast " + id
 
     current_alerts_page.click_element_by_link_text("Create new alert")
 
@@ -133,25 +147,31 @@ def create_alert(driver, id):
     prepare_alert_pages.click_element_by_link_text("Countries")
     prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
     prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Continue")
 
-    prepare_alert_pages.click_element_by_link_text("Preview alert")
-    assert prepare_alert_pages.text_is_on_page("England")
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
 
-    prepare_alert_pages.click_continue()
-    assert prepare_alert_pages.text_is_on_page(
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("England")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_submit()
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
-    prepare_alert_pages.sign_out()
+    preview_alert_page.sign_out()
 
 
 def approve_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.click_element_by_link_text("test broadcast " + id)
     current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
-    current_alerts_page.click_continue()
+    current_alerts_page.click_submit()
     current_alerts_page.wait_for_element(CommonPageLocators.LIVE_BROADCAST)
     assert current_alerts_page.text_is_on_page("since today at")
 
@@ -165,8 +185,8 @@ def cancel_alert(driver, id):
     sign_in(driver, account_type="broadcast_approve_user")
 
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_element_by_link_text("test broadcast" + id)
+    current_alerts_page.click_element_by_link_text("test broadcast " + id)
     current_alerts_page.click_element_by_link_text("Stop sending")
-    current_alerts_page.click_continue()  # stop broadcasting
+    current_alerts_page.click_submit()  # stop broadcasting
 
     current_alerts_page.sign_out()

@@ -6,7 +6,9 @@ class CommonPageLocators(object):
     EMAIL_INPUT = (By.NAME, "email_address")
     PASSWORD_INPUT = (By.NAME, "password")
     MOBILE_NUMBER = (By.NAME, "mobile_number")
-    CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+    SUBMIT_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+    CONTINUE_BUTTON = (By.NAME, "continue")
+    PREVIEW_BUTTON = (By.NAME, "preview")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
     H1 = (By.TAG_NAME, "H1")
@@ -14,6 +16,11 @@ class CommonPageLocators(object):
         By.CSS_SELECTOR,
         "main button.govuk-button.page-footer__button",
     )
+
+
+class DurationPageLocators(object):
+    HOURS_INPUT = (By.ID, "hours")
+    MINUTES_INPUT = (By.ID, "minutes")
 
 
 class MainPageLocators(object):
@@ -151,7 +158,7 @@ class SupportPageLocators(object):
 class SearchPostcodePageLocators(object):
     POSTCODE_TEXTAREA = (By.ID, "postcode")
     RADIUS_TEXTAREA = (By.ID, "radius")
-    SEARCH_BUTTON = (By.NAME, "radius_btn")
+    SEARCH_BUTTON = (By.NAME, "search_btn")
     PREVIEW_BUTTON = (By.NAME, "preview")
 
 

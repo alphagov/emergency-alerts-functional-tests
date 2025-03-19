@@ -24,9 +24,11 @@ from tests.pages.element import (
     ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
+    HoursInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
+    MinutesInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -187,6 +189,11 @@ class BasePage(object):
         element.click()
         self.driver.delete_all_cookies()
 
+    def sign_out_if_required(self):
+        if self.text_is_on_page("Sign out"):
+            self.sign_out()
+        self.driver.delete_all_cookies()
+
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
@@ -227,11 +234,19 @@ class BasePage(object):
         element.click()
 
     def click_save(self, time=10):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON, time=time)
         element.click()
 
     def click_continue(self):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
+        element.click()
+
+    def click_preview(self):
+        element = self.wait_for_element(CommonPageLocators.PREVIEW_BUTTON)
+        element.click()
+
+    def click_submit(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON)
         element.click()
 
     def click_continue_to_signin(self):
@@ -251,22 +266,35 @@ class BasePage(object):
         tries=config["ui_element_retry_times"],
         delay=config["ui_element_retry_interval"],
     )
-    def text_is_on_page(self, search_text):
+    def text_is_on_page_with_exception(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
         if search_text not in normalized_page_source:
             self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
+    def text_is_on_page(self, search_text):
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            normalized_page_source = " ".join(self.driver.page_source.split())
+            if search_text in normalized_page_source:
+                return True
+            tries -= 1
+            sleep(retry_interval)
+            self.driver.refresh()
+        return False
+
     def text_is_not_on_page(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-        tries = 0
-        while tries < 3:
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            normalized_page_source = " ".join(self.driver.page_source.split())
             if search_text in normalized_page_source:
                 return False
-            tries += 1
+            tries -= 1
+            sleep(retry_interval)
             self.driver.refresh()
-            sleep(1)
         return True
 
     def get_template_id(self):
@@ -375,7 +403,7 @@ class AddServicePage(BasePage):
 
     def confirm_settings(self):
         self.wait_until_url_ends_with("confirm")
-        self.click_continue()
+        self.click_submit()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
@@ -435,7 +463,7 @@ class SignInPage(BasePage):
 
     def login(self, email, password):
         self.fill_login_form(email, password)
-        self.click_continue_to_signin()
+        self.click_continue()
 
 
 class VerifyPage(BasePage):
@@ -445,10 +473,10 @@ class VerifyPage(BasePage):
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
-        self.click_continue()
+        self.click_submit()
 
 
-class DashboardPage(BasePage):
+class CurrentAlertsPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
@@ -458,32 +486,32 @@ class DashboardPage(BasePage):
         return (By.ID, template_id)
 
     def is_current(self, service_id):
-        expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        expected = "{}/services/{}/current-alerts".format(self.base_url, service_id)
         return self.driver.current_url == expected
 
     def get_service_name(self):
-        element = self.wait_for_element(DashboardPage.h2)
+        element = self.wait_for_element(CurrentAlertsPage.h2)
         return element.text
 
     def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
         element.click()
 
     def click_api_integration(self):
-        element = self.wait_for_element(DashboardPage.api_keys_link)
+        element = self.wait_for_element(CurrentAlertsPage.api_keys_link)
         element.click()
 
     def get_service_id(self):
         return self.driver.current_url.split("/services/")[1].split("/")[0]
 
     def get_navigation_list(self):
-        element = self.wait_for_element(DashboardPage.navigation)
+        element = self.wait_for_element(CurrentAlertsPage.navigation)
         return element.text
 
-    def go_to_dashboard_for_service(self, service_id=None):
+    def go_to_service_landing_page(self, service_id=None):
         if not service_id:
             service_id = self.get_service_id()
-        url = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        url = "{}/services/{}/current-alerts".format(self.base_url, service_id)
         self.driver.get(url)
 
 
@@ -553,8 +581,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # we've seen issues
         radio_element = self.wait_for_invisible_element(type)
         self.select_checkbox_or_radio(radio_element)
-
-        self.click_continue()
+        self.click_submit()
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
@@ -582,9 +609,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
         radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
-
         self.select_checkbox_or_radio(radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def move_template_to_folder(self, folder_name):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
@@ -593,7 +619,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             self.input_element_by_label_text(text=folder_name, input_type="radio")
         )
         self.select_checkbox_or_radio(element=radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def get_folder_by_name(self, folder_name):
         try:
@@ -907,7 +933,7 @@ class ApiKeysPage(BasePage):
     def create_key(self, key_name):
         self.key_name_input = key_name
         self.select_checkbox_or_radio(value="normal")
-        self.click_continue()
+        self.click_submit()
 
     def get_key_name(self):
         element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
@@ -1022,7 +1048,7 @@ class OrganisationDashboardPage(BasePage):
         return self.driver.current_url == expected
 
     def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
         element.click()
 
     def go_to_dashboard_for_org(self, org_id):
@@ -1174,6 +1200,15 @@ class GovUkAlertsPage(BasePage):
             )
 
 
+class BroadcastDurationPage(BasePage):
+    hours_input = HoursInputElement(name="hours")
+    minutes_input = MinutesInputElement(name="minutes")
+
+    def set_alert_duration(self, hours, minutes):
+        self.hours_input = hours
+        self.minutes_input = minutes
+
+
 class SupportFeedbackPage(BasePage):
     text_input = FeedbackTextAreaElement()
 
@@ -1214,7 +1249,7 @@ class PlatformAdminPage(BasePage):
 
     def search_for(self, text):
         self.search_input = text
-        self.click_continue()
+        self.click_submit()
 
 
 class ChooseCoordinatesType(BasePage):
