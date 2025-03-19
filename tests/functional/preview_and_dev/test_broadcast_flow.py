@@ -60,7 +60,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -144,7 +144,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -501,7 +501,7 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
