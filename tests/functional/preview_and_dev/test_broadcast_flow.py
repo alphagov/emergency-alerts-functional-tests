@@ -72,7 +72,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -156,7 +156,7 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_continue_to_signin()  # click "Submit for approval"
+    prepare_alert_pages.click_submit_for_approval()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -313,7 +313,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -434,7 +434,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert preview_alert_page.text_is_on_page(expected_area_description)
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -513,7 +513,7 @@ def test_reject_alert_with_reason(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_continue_to_signin()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
