@@ -4,6 +4,7 @@ env:
   variables:
     testsuites: >-
       broadcast-flow
+      template-flow
 
 phases:
   install:
@@ -48,6 +49,7 @@ phases:
       # Need to add CBC integration into the list of test reports, in the proper place, if it is executed - hence the below
       # The if below doesn't check for truthiness, but instead "true", because CodePipeline *requires* a value - therefore it will *always* be truthy.
       - make test-broadcast-flow; exit 0
+      - make test-template-flow; exit 0
         python3.9 ./scripts/report-test-results.py $(pwd) $testsuites
 
   post_build:
