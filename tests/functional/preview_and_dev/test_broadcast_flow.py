@@ -71,6 +71,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert preview_alert_page.text_is_on_page("Cokeham")
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+    assert 2 == 1
 
     preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
@@ -312,7 +313,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
         "5km around the postcode BD1 1EE in Bradford"
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
-
+    assert 2 == 1
     preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -433,7 +434,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page(expected_area_description)
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
-
+    assert 2 == 1
     preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -512,7 +513,7 @@ def test_reject_alert_with_reason(driver):
     assert preview_alert_page.text_is_on_page("Cokeham")
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
-
+    assert 2 == 1
     preview_alert_page.click_submit()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
