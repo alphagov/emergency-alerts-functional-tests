@@ -70,7 +70,7 @@ def _sign_in(driver, account_type):
     sign_in_page.login(email, password)
 
 
-def get_email_and_password(account_type):
+def get_email_and_password(account_type):  # noqa: C901
     if account_type == "normal":
         return config["user"]["email"], config["user"]["password"]
     elif account_type == "seeded":
@@ -99,6 +99,11 @@ def get_email_and_password(account_type):
             config["broadcast_service"]["platform_admin"]["email"],
             config["broadcast_service"]["platform_admin"]["password"],
         )
+    elif account_type == "platform_admin_2":
+        return (
+            config["broadcast_service"]["platform_admin_2"]["email"],
+            config["broadcast_service"]["platform_admin_2"]["password"],
+        )
     elif account_type == "session_timeout":
         return (
             config["broadcast_service"]["session_timeout"]["email"],
@@ -107,7 +112,7 @@ def get_email_and_password(account_type):
     raise Exception("unknown account_type {}".format(account_type))
 
 
-def get_identifier(account_type):
+def get_identifier(account_type):  # noqa: C901
     if account_type == "broadcast_approve_user":
         return config["broadcast_service"]["broadcast_user_2"]["id"]
     elif account_type == "broadcast_auth_test_user":
@@ -118,6 +123,8 @@ def get_identifier(account_type):
         return config["user"]["mobile"]
     elif account_type == "platform_admin":
         return config["broadcast_service"]["platform_admin"]["id"]
+    elif account_type == "platform_admin_2":
+        return config["broadcast_service"]["platform_admin_2"]["id"]
     elif account_type == "seeded":
         return config["service"]["seeded_user"]["mobile"]
     elif account_type == "session_timeout":
