@@ -16,7 +16,7 @@ config = {
     "verify_code_retry_interval": 5,
     "govuk_alerts_wait_retry_times": 24,
     "govuk_alerts_wait_retry_interval": 10,
-    "ui_element_retry_times": 5,
+    "ui_element_retry_times": 2,
     "ui_element_retry_interval": 2,
     "dynamo_query_retry_times": 30,
     "dynamo_query_retry_interval": 10,
