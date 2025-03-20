@@ -253,11 +253,6 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
         element.click()
 
-    def click_submit_for_approval(self):
-        # CONTINUE_SIGNIN_BUTTON has same classes and thus can use same locator
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
-        element.click()
-
     def click_continue_to_submit(self):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
         element.click()
