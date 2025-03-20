@@ -5,8 +5,7 @@ import pytest
 from config import config
 from tests.pages import BasePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
-
-# from tests.pages.rollups import clean_session
+from tests.pages.rollups import clean_session
 from tests.test_utils import get_verification_code_by_id, recordtime
 
 test_group_name = "throttling"
@@ -15,7 +14,7 @@ test_group_name = "throttling"
 @recordtime
 @pytest.mark.xdist_group(name=test_group_name)
 def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
-    # clean_session(driver)
+    clean_session(driver)
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"
@@ -23,7 +22,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.login(login_email, login_pw)
+    sign_in_page.fill_login_form(login_email, login_pw)
+    sign_in_page.click_continue()
 
     # Assert here that error text appears
     assert sign_in_page.text_is_on_page(
@@ -37,7 +37,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.login(login_email, login_pw)
+    sign_in_page.fill_login_form(login_email, login_pw)
+    sign_in_page.click_continue()
 
     throttled_page = ThrottledPage(driver)
     assert throttled_page.text_is_on_page("Too many requests")
@@ -57,7 +58,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.login(login_email, login_pw)
+    sign_in_page.fill_login_form(login_email, login_pw)
+    sign_in_page.click_continue()
 
     # Successful login renders MFA page
 
