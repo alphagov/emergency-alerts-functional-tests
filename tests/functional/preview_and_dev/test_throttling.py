@@ -23,6 +23,8 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page.get()
     assert sign_in_page.is_current()
     sign_in_page.fill_login_form(login_email, login_pw)
+    assert sign_in_page.text_is_on_page(login_email)
+    assert sign_in_page.text_is_on_page(login_pw)
     sign_in_page.click_continue()
 
     # Assert here that error text appears
