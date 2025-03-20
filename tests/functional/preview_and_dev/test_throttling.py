@@ -3,7 +3,7 @@ import time
 import pytest
 
 from config import config
-from tests.pages import BasePage, SignInPage, ThrottledPage
+from tests.pages import BasePage, HomePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
 from tests.pages.rollups import clean_session
 from tests.test_utils import get_verification_code_by_id, recordtime
@@ -16,6 +16,10 @@ test_group_name = "throttling"
 def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     clean_session(driver)
 
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
+
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"
 
@@ -23,9 +27,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page.get()
     assert sign_in_page.is_current()
     sign_in_page.fill_login_form(login_email, login_pw)
-    assert sign_in_page.text_is_on_page(login_email)
-    assert sign_in_page.text_is_on_page(login_pw)
-    sign_in_page.click_continue()
+    sign_in_page.login(login_email, login_pw)
 
     # Assert here that error text appears
     assert sign_in_page.text_is_on_page(
