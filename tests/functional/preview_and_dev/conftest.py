@@ -34,6 +34,7 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
+    purge_admin_actions_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
     logging.info(str(time.time()) + " Tearing down preview_dev_config")
@@ -83,6 +84,13 @@ def purge_user_created_services(test_api_client):
 
 def purge_users_created_by_functional_tests(test_api_client):
     url = "/service/purge-users-created-by-tests"
+    test_api_client.delete(url)
+
+
+def purge_admin_actions_created_by_functional_tests(test_api_client):
+    admin_user = config["broadcast_service"]["platform_admin"]["id"]
+
+    url = f"/admin-action/purge/{admin_user}"
     test_api_client.delete(url)
 
 

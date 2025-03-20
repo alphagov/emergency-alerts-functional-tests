@@ -120,6 +120,12 @@ def setup_preview_dev_config():
                     "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
                 },
+                "platform_admin_2": {
+                    "id": os.environ["PLATFORM_ADMIN_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
                 "throttled_user": {
                     "id": os.environ["THROTTLED_USER_ID"],
                     "email": os.environ["THROTTLED_USER_EMAIL"],

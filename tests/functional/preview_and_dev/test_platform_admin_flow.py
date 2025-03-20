@@ -4,6 +4,7 @@ import pytest
 
 from tests.pages import AddServicePage, CurrentAlertsPage, ServiceSettingsPage
 from tests.pages.pages import (
+    AdminApprovalsPage,
     ApiKeysPage,
     BasePage,
     HomePage,
@@ -165,7 +166,7 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_can_create_revoke_and_audit_api_keys(driver):
+def test_service_can_create_and_approve_and_revoke_api_keys(driver):
     sign_in(driver, account_type="platform_admin")
 
     current_alerts_page = CurrentAlertsPage(driver)
@@ -174,7 +175,7 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     api_keys_page = ApiKeysPage(driver)
     assert api_keys_page.is_page_title("API keys")
 
-    # create api key
+    # Create api key
     api_keys_page.click_element_by_link_text("Create an API key")
     assert api_keys_page.is_page_title("Create an API key")
 
@@ -183,5 +184,40 @@ def test_service_can_create_revoke_and_audit_api_keys(driver):
     api_keys_page.create_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
     assert api_keys_page.text_is_on_page("An admin approval has been created")
+
+    # Login again as a different platform admin to approve
+    api_keys_page.sign_out()
+    sign_in(driver, account_type="platform_admin_2")
+
+    # Approve/create it
+    admin_approvals_page = AdminApprovalsPage(driver)
+    admin_approvals_page.get(relative_url="/platform-admin/admin-actions")
+    admin_approvals_page.approve_action()
+
+    copy_key_btn = admin_approvals_page.wait_for_key_copy_button()
+    # Key value gets normalized (no spaces, lowercase, etc)
+    key_value = admin_approvals_page.get_key_name()
+    assert key_value.startswith("key" + timestamp)
+
+    # click "copy key"
+    copy_key_btn.click()
+    admin_approvals_page.wait_for_show_key_button()
+    assert admin_approvals_page.text_is_on_page("Copy your key to somewhere safe")
+    assert admin_approvals_page.text_is_on_page("Copied to clipboard")
+
+    # revoke api key
+    api_keys_page.click_element_by_link_text("Back to API keys")
+    assert api_keys_page.is_page_title("API keys")
+    api_keys_page.revoke_api_key(key_name=key_name)
+    api_keys_page.wait_until_url_ends_with("/keys")
+    assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
+
+    # check audit trail for api key
+    api_keys_page.click_element_by_link_text("Settings")
+    api_keys_page.click_element_by_link_text("Service history")
+    api_keys_page.click_element_by_link_text("API keys")
+
+    assert api_keys_page.text_is_on_page(f"Created an API key called ‘{key_name}’")
+    assert api_keys_page.text_is_on_page(f"Revoked the ‘{key_name}’ API key")
 
     api_keys_page.sign_out()
