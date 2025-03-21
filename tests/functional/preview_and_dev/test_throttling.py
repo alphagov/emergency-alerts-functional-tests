@@ -40,8 +40,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.fill_login_form(login_email, login_pw)
-    sign_in_page.click_continue()
+    sign_in_page.login(login_email, login_pw)
 
     throttled_page = ThrottledPage(driver)
     assert throttled_page.text_is_on_page("Too many requests")
@@ -61,8 +60,7 @@ def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
-    sign_in_page.fill_login_form(login_email, login_pw)
-    sign_in_page.click_continue()
+    sign_in_page.login(login_email, login_pw)
 
     # Successful login renders MFA page
 
