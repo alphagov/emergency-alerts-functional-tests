@@ -551,4 +551,3 @@ def test_reject_alert_with_reason(driver):
     rejected_alerts_page = BasePage(driver)
     assert rejected_alerts_page.text_is_on_page(broadcast_title)
     assert rejected_alerts_page.text_is_on_page(rejection_reason)
-    assert rejected_alerts_page.text_is_on_page(rejection_reason)

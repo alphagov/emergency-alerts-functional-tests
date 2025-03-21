@@ -10,7 +10,6 @@ from clients.broadcast_client import BroadcastClient
 from clients.test_api_client import TestApiClient
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
-from tests.pages.rollups import sign_in
 
 
 def pytest_addoption(parser):
@@ -85,11 +84,6 @@ def driver(_driver, request):
         )
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)
-
-
-@pytest.fixture(scope="module")
-def login_seeded_user(_driver):
-    sign_in(_driver, account_type="seeded")
 
 
 @pytest.fixture(scope="module")
