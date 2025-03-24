@@ -12,7 +12,11 @@ class CommonPageLocators(object):
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
     H1 = (By.TAG_NAME, "H1")
-    CONTINUE_SIGNIN_BUTTON = (
+    CONTINUE_FOOTER_BUTTON = (
+        By.CSS_SELECTOR,
+        "main button.govuk-button.page-footer__button",
+    )
+    SUBMIT_FOOTER_BUTTON = (
         By.CSS_SELECTOR,
         "main button.govuk-button.page-footer__button",
     )
