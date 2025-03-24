@@ -3,7 +3,7 @@ import time
 import pytest
 
 from config import config
-from tests.pages import BasePage, SignInPage, ThrottledPage
+from tests.pages import BasePage, HomePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
 from tests.pages.rollups import clean_session
 from tests.test_utils import get_verification_code_by_id, recordtime
@@ -15,6 +15,10 @@ test_group_name = "throttling"
 @pytest.mark.xdist_group(name=test_group_name)
 def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
     clean_session(driver)
+
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"

@@ -7,6 +7,7 @@ from config import config
 from tests.pages import (
     BasePage,
     ForgotPasswordPage,
+    HomePage,
     NewPasswordPage,
     SignInPage,
     VerifyPage,
@@ -21,9 +22,14 @@ test_group_name = "auth-flow"
 def test_reset_forgotten_password(driver):
     clean_session(driver)
 
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
+
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
 
     sign_in_page = SignInPage(driver)
+    sign_in_page.get()
     sign_in_page.click_forgot_password_link()
 
     forgot_password_page = ForgotPasswordPage(driver)
@@ -57,6 +63,10 @@ def test_reset_forgotten_password(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 def test_sign_in_with_email_mfa(driver):
     clean_session(driver)
+
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
 
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]

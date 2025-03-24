@@ -165,7 +165,7 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_can_create_revoke_and_audit_api_keys(driver):
+def test_service_admin_can_request_an_api_key(driver):
     sign_in(driver, account_type="platform_admin")
 
     current_alerts_page = CurrentAlertsPage(driver)
