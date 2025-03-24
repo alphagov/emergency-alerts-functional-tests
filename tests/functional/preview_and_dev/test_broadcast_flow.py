@@ -60,7 +60,7 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -72,7 +72,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -136,7 +136,7 @@ def test_prepare_broadcast_with_template(driver):
     templates_page = ShowTemplatesPage(driver)
     templates_page.click_template_by_link_text(template_name)
 
-    templates_page.click_element_by_link_text("Get ready to send")
+    templates_page.click_element_by_link_text("Save and get ready to send")
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
@@ -144,7 +144,7 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -156,7 +156,7 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_submit()  # click "Submit for approval"
+    prepare_alert_pages.click_submit_for_approval()  # click "Submit for approval"
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -313,7 +313,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -434,7 +434,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert preview_alert_page.text_is_on_page(expected_area_description)
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -501,7 +501,7 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
     prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -513,7 +513,7 @@ def test_reject_alert_with_reason(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()  # click "Submit for approval"
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )

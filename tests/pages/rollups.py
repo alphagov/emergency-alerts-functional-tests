@@ -147,7 +147,7 @@ def create_alert(driver, id):
     prepare_alert_pages.click_element_by_link_text("Countries")
     prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
     prepare_alert_pages.click_continue()
-    prepare_alert_pages.click_element_by_link_text("Continue")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")

@@ -250,11 +250,15 @@ class BasePage(object):
         element.click()
 
     def click_continue_to_signin(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
+        element.click()
+
+    def click_submit_for_approval(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_FOOTER_BUTTON)
         element.click()
 
     def click_continue_to_submit(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
     def is_page_title(self, expected_page_title):
