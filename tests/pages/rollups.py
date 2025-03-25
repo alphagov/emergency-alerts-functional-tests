@@ -157,7 +157,7 @@ def create_alert(driver, id):
     assert preview_alert_page.text_is_on_page("England")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()
+    preview_alert_page.click_submit_for_approval()
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
