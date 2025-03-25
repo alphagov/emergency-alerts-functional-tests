@@ -13,13 +13,13 @@ def generate_unique_email(email, uuid):
 config = {
     # static
     "verify_code_retry_times": 5,
-    "verify_code_retry_interval": 5,
-    "govuk_alerts_wait_retry_times": 24,
-    "govuk_alerts_wait_retry_interval": 10,
+    "verify_code_retry_interval": 1,
+    "govuk_alerts_wait_retry_times": 20,
+    "govuk_alerts_wait_retry_interval": 5,
     "ui_element_retry_times": 5,
-    "ui_element_retry_interval": 2,
-    "dynamo_query_retry_times": 30,
-    "dynamo_query_retry_interval": 10,
+    "ui_element_retry_interval": 1,
+    "dynamo_query_retry_times": 20,
+    "dynamo_query_retry_interval": 5,
     "notify_templates": {
         "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
         "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
