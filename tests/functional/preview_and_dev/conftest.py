@@ -97,3 +97,9 @@ def purge_admin_actions_created_by_functional_tests(test_api_client):
 def purge_failed_logins_created_by_functional_tests(test_api_client):
     url = "/service/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
+
+
+# A fixture that can be called ad-hoc in tests known to trigger throttling
+@pytest.fixture
+def purge_failed_logins():
+    return lambda: purge_failed_logins_created_by_functional_tests(create_test_client())
