@@ -103,6 +103,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
         admin_approvals_page = AdminApprovalsPage(driver)
         admin_approvals_page.get(relative_url="/platform-admin/admin-actions")
         admin_approvals_page.approve_action()
+        time.sleep(1)
 
         assert invite_user_page.text_is_on_page(
             "Sent invite to user " + invited_user_email
@@ -176,7 +177,6 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_service_admin_search_for_user_by_name_and_email(driver):
-    time.sleep(20)
     sign_in(driver, account_type="platform_admin")
 
     current_alerts_page = CurrentAlertsPage(driver)
