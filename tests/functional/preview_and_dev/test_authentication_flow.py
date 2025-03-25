@@ -57,6 +57,7 @@ def test_reset_forgotten_password(driver):
     verify_page.verify(verify_code)
 
     password_reset_sign_in_page = SignInPage(driver)
+    # Redirects to sign in page so user must sign in again after verifying password reset
     assert password_reset_sign_in_page.text_is_on_page(
         "You've just changed your password. Sign in with your new password."
     )
