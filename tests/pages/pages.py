@@ -794,6 +794,7 @@ class InviteUserPage(BasePage):
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
     choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
+    create_broadcasts_checkbox = InviteUserPageLocators.CREATE_BROADCASTS_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
@@ -839,7 +840,13 @@ class InviteUserPage(BasePage):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
-    def send_invitation_without_permissions(self, email):
+    def check_create_broadcasts_checkbox(self):
+        element = self.wait_for_invisible_element(
+            InviteUserPage.create_broadcasts_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def send_invitation_to_email(self, email):
         self.email_input = email
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()

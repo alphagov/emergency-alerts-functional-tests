@@ -93,6 +93,10 @@ class TeamMembersPageLocators(object):
 
 
 class InviteUserPageLocators(object):
+    CREATE_BROADCASTS_CHECKBOX = (
+        By.CSS_SELECTOR,
+        "[value=create_broadcasts], [name=create_broadcasts]",
+    )
     SEND_MESSAGES_CHECKBOX = (
         By.CSS_SELECTOR,
         "[value=send_messages], [name=send_messages]",

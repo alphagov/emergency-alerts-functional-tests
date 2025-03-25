@@ -58,9 +58,18 @@ def test_add_rename_and_delete_service(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
+@pytest.mark.parametrize(
+    "user_requires_admin_approval",
+    ((True), (False)),
+)
+def test_platform_admin_can_invite_new_user_and_delete_user(
+    driver, api_client, purge_failed_logins, user_requires_admin_approval
+):
+    """
+    This refers to the unprivileged user flow - i.e. a user without a permission that would
+    require approval from another admin.
+    """
     timestamp = str(int(time.time()))
-    time.sleep(30)  # To avoid throttle
 
     sign_in(driver, account_type="platform_admin")
 
@@ -75,12 +84,35 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
         f"emergency-alerts-tests+fake-{timestamp}@digital.cabinet-office.gov.uk"
     )
     invite_user_page = InviteUserPage(driver)
-    invite_user_page.send_invitation_without_permissions(invited_user_email)
+    if user_requires_admin_approval:
+        invite_user_page.check_create_broadcasts_checkbox()
+    invite_user_page.send_invitation_to_email(invited_user_email)
+    # There is no wait condition as all pages have an H1 - so wait for the browser to have done loading
+    time.sleep(1)
     assert invite_user_page.is_page_title("Team members")
-    assert invite_user_page.text_is_on_page("Invite sent to " + invited_user_email)
+
+    if user_requires_admin_approval:
+        assert invite_user_page.text_is_on_page("An admin approval has been created")
+
+        # Login again as a different platform admin to approve
+        invite_user_page.sign_out()
+        purge_failed_logins()  # To avoid throttle - email lookups trigger throttle logic
+        sign_in(driver, account_type="platform_admin_2")
+
+        # Approve/create it
+        admin_approvals_page = AdminApprovalsPage(driver)
+        admin_approvals_page.get(relative_url="/platform-admin/admin-actions")
+        admin_approvals_page.approve_action()
+
+        assert invite_user_page.text_is_on_page(
+            "Sent invite to user " + invited_user_email
+        )
+
+    else:
+        assert invite_user_page.text_is_on_page("Invite sent to " + invited_user_email)
 
     invite_user_page.sign_out()
-    time.sleep(30)  # To avoid throttle
+    purge_failed_logins()  # To avoid throttle - email lookups trigger throttle logic
 
     # get user's invitation id from db using their email
     response = api_client.post(url="/user/invited", data={"email": invited_user_email})
@@ -93,13 +125,13 @@ def test_service_admin_can_invite_new_user_and_delete_user(driver, api_client):
     home_page.get(invitation_url)
     home_page.accept_cookie_warning()
 
-    time.sleep(30)  # To avoid throttle
+    purge_failed_logins()  # To avoid throttle - email lookups trigger throttle logic
 
     registration_page = RegisterFromInvite(driver)
     assert registration_page.is_page_title("Create an account")
     registration_page.fill_registration_form(name="User " + timestamp)
     registration_page.click_continue_to_signin()
-    time.sleep(30)
+    time.sleep(1)
     # get user_id of invited user by their email
     response = api_client.post(url="/user/email", data={"email": invited_user_email})
     user_id = response["data"]["id"]
