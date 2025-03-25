@@ -56,6 +56,16 @@ def test_reset_forgotten_password(driver):
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
 
+    password_reset_sign_in_page = SignInPage(driver)
+    assert password_reset_sign_in_page.text_is_on_page(
+        "You've just changed your password. Sign in with your new password."
+    )
+    password_reset_sign_in_page.login(login_email, new_password)
+    verify_code = get_verify_code_from_api_by_id(
+        config["broadcast_service"]["broadcast_user_3"]["id"]
+    )
+    verify_page = VerifyPage(driver)
+    verify_page.verify(verify_code)
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 
