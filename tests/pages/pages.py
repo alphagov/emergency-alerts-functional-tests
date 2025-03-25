@@ -191,7 +191,7 @@ class BasePage(object):
         self.driver.delete_all_cookies()
 
     def sign_out_if_required(self):
-        if self.text_is_on_page("Sign out"):
+        if self.text_is_on_page_no_wait("Sign out"):
             self.sign_out()
         self.driver.delete_all_cookies()
 
@@ -278,12 +278,16 @@ class BasePage(object):
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
+    def text_is_on_page_no_wait(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        if search_text in normalized_page_source:
+            return True
+
     def text_is_on_page(self, search_text):
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
-            normalized_page_source = " ".join(self.driver.page_source.split())
-            if search_text in normalized_page_source:
+            if self.text_is_on_page_no_wait(search_text):
                 return True
             tries -= 1
             sleep(retry_interval)

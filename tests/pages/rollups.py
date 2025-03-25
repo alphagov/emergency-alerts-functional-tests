@@ -51,7 +51,7 @@ def get_verify_code(account_identifier):
 
 def clean_session(driver):
     page = BasePage(driver)
-    if page.text_is_on_page("Sign out"):
+    if page.text_is_on_page_no_wait("Sign out"):
         page.sign_out()
     driver.delete_all_cookies()
 
