@@ -26,10 +26,8 @@ def sign_in(driver, account_type="normal"):
     home_page.accept_cookie_warning()
 
     _sign_in(driver, account_type)
+    time.sleep(1)  # Wait for the code in the DB to not be in the same second
     identifier = get_identifier(account_type=account_type)
-    # wait before requesting verification code - this pause may not
-    # be necessary when the aggressive throttling issue is fixed
-    time.sleep(10)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:

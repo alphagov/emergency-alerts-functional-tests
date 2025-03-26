@@ -49,7 +49,7 @@ def test_add_rename_and_delete_service(driver):
     assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
     service_settings_page.delete_service()
-    time.sleep(10)
+    time.sleep(1)
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
 
     # sign out

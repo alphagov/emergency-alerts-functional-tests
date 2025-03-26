@@ -263,8 +263,17 @@ class BasePage(object):
         element.click()
 
     def is_page_title(self, expected_page_title):
-        element = self.wait_for_element(CommonPageLocators.H1)
-        return element.text == expected_page_title
+        # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            element = self.wait_for_element(CommonPageLocators.H1)
+            if element.text == expected_page_title:
+                return True
+            tries -= 1
+            sleep(retry_interval)
+
+        return False
 
     @retry(
         RetryException,
