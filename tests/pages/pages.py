@@ -283,6 +283,7 @@ class BasePage(object):
     def text_is_on_page_with_exception(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
         if search_text not in normalized_page_source:
+            self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
@@ -299,6 +300,7 @@ class BasePage(object):
                 return True
             tries -= 1
             sleep(retry_interval)
+            self.driver.refresh()
         return False
 
     def text_is_not_on_page(self, search_text):
@@ -310,6 +312,7 @@ class BasePage(object):
                 return False
             tries -= 1
             sleep(retry_interval)
+            self.driver.refresh()
         return True
 
     def get_template_id(self):
@@ -1201,6 +1204,7 @@ class GovUkAlertsPage(BasePage):
     )
     def check_alert_is_published(self, broadcast_content):
         if not self.text_is_on_page(broadcast_content):
+            self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
             )
