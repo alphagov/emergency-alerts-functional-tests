@@ -30,7 +30,7 @@ config = {
 }
 
 tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL").removeprefix("https://")
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "").removeprefix("https://")
 urls = {
     "local": {
         "api": "http://localhost:6011",
@@ -121,10 +121,10 @@ def setup_preview_dev_config():
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
                 },
                 "platform_admin_2": {
-                    "id": os.environ["PLATFORM_ADMIN_ID"],
-                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
-                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
-                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                    "id": os.environ["PLATFORM_ADMIN_2_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_2_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_2_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_2_NUMBER"],
                 },
                 "throttled_user": {
                     "id": os.environ["THROTTLED_USER_ID"],
