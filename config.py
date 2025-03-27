@@ -16,8 +16,8 @@ config = {
     "verify_code_retry_interval": 1,
     "govuk_alerts_wait_retry_times": 20,
     "govuk_alerts_wait_retry_interval": 5,
-    "ui_element_retry_times": 5,
-    "ui_element_retry_interval": 1,
+    "ui_element_retry_times": 3,
+    "ui_element_retry_interval": 0.5,
     "dynamo_query_retry_times": 20,
     "dynamo_query_retry_interval": 5,
     "notify_templates": {
@@ -115,6 +115,12 @@ def setup_preview_dev_config():
                     "mobile": os.environ["BROADCAST_USER_4_NUMBER"],
                 },
                 "platform_admin": {
+                    "id": os.environ["PLATFORM_ADMIN_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
+                "platform_admin_2": {
                     "id": os.environ["PLATFORM_ADMIN_ID"],
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],
                     "password": os.environ["PLATFORM_ADMIN_PASSWORD"],

@@ -93,6 +93,10 @@ class TeamMembersPageLocators(object):
 
 
 class InviteUserPageLocators(object):
+    CREATE_BROADCASTS_CHECKBOX = (
+        By.CSS_SELECTOR,
+        "[value=create_broadcasts], [name=create_broadcasts]",
+    )
     SEND_MESSAGES_CHECKBOX = (
         By.CSS_SELECTOR,
         "[value=send_messages], [name=send_messages]",
@@ -197,3 +201,8 @@ class RejectionFormLocators(object):
     REJECTION_DETAIL_ELEMENT = (By.ID, "rejection_reason_details")
     REJECTION_REASON_TEXTAREA = (By.ID, "rejection_reason")
     REJECT_ALERT_BUTTON = (By.CLASS_NAME, "govuk-button--warning")
+
+
+class AdminApprovalPageLocators(object):
+    APPROVE_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='approve']")
+    REJECT_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='reject']")

@@ -34,6 +34,7 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
+    purge_admin_actions_created_by_functional_tests(test_api_client)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     yield
     logging.info(str(time.time()) + " Tearing down preview_dev_config")
@@ -86,6 +87,19 @@ def purge_users_created_by_functional_tests(test_api_client):
     test_api_client.delete(url)
 
 
+def purge_admin_actions_created_by_functional_tests(test_api_client):
+    admin_user = config["broadcast_service"]["platform_admin"]["id"]
+
+    url = f"/admin-action/purge/{admin_user}"
+    test_api_client.delete(url)
+
+
 def purge_failed_logins_created_by_functional_tests(test_api_client):
     url = "/service/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
+
+
+# A fixture that can be called ad-hoc in tests known to trigger throttling
+@pytest.fixture
+def purge_failed_logins():
+    return lambda: purge_failed_logins_created_by_functional_tests(create_test_client())
