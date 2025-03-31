@@ -26,10 +26,8 @@ def sign_in(driver, account_type="normal"):
     home_page.accept_cookie_warning()
 
     _sign_in(driver, account_type)
+    time.sleep(1)  # Wait for the code in the DB to not be in the same second
     identifier = get_identifier(account_type=account_type)
-    # wait before requesting verification code - this pause may not
-    # be necessary when the aggressive throttling issue is fixed
-    time.sleep(10)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
     else:
@@ -51,7 +49,7 @@ def get_verify_code(account_identifier):
 
 def clean_session(driver):
     page = BasePage(driver)
-    if page.text_is_on_page("Sign out"):
+    if page.text_is_on_page_no_wait("Sign out"):
         page.sign_out()
     driver.delete_all_cookies()
 
@@ -70,7 +68,7 @@ def _sign_in(driver, account_type):
     sign_in_page.login(email, password)
 
 
-def get_email_and_password(account_type):
+def get_email_and_password(account_type):  # noqa: C901
     if account_type == "normal":
         return config["user"]["email"], config["user"]["password"]
     elif account_type == "seeded":
@@ -99,6 +97,11 @@ def get_email_and_password(account_type):
             config["broadcast_service"]["platform_admin"]["email"],
             config["broadcast_service"]["platform_admin"]["password"],
         )
+    elif account_type == "platform_admin_2":
+        return (
+            config["broadcast_service"]["platform_admin_2"]["email"],
+            config["broadcast_service"]["platform_admin_2"]["password"],
+        )
     elif account_type == "session_timeout":
         return (
             config["broadcast_service"]["session_timeout"]["email"],
@@ -107,7 +110,7 @@ def get_email_and_password(account_type):
     raise Exception("unknown account_type {}".format(account_type))
 
 
-def get_identifier(account_type):
+def get_identifier(account_type):  # noqa: C901
     if account_type == "broadcast_approve_user":
         return config["broadcast_service"]["broadcast_user_2"]["id"]
     elif account_type == "broadcast_auth_test_user":
@@ -118,6 +121,8 @@ def get_identifier(account_type):
         return config["user"]["mobile"]
     elif account_type == "platform_admin":
         return config["broadcast_service"]["platform_admin"]["id"]
+    elif account_type == "platform_admin_2":
+        return config["broadcast_service"]["platform_admin_2"]["id"]
     elif account_type == "seeded":
         return config["service"]["seeded_user"]["mobile"]
     elif account_type == "session_timeout":
@@ -157,7 +162,7 @@ def create_alert(driver, id):
     assert preview_alert_page.text_is_on_page("England")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit()
+    preview_alert_page.click_submit_for_approval()
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )

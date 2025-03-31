@@ -16,8 +16,8 @@ config = {
     "verify_code_retry_interval": 1,
     "govuk_alerts_wait_retry_times": 20,
     "govuk_alerts_wait_retry_interval": 5,
-    "ui_element_retry_times": 5,
-    "ui_element_retry_interval": 1,
+    "ui_element_retry_times": 3,
+    "ui_element_retry_interval": 0.5,
     "dynamo_query_retry_times": 20,
     "dynamo_query_retry_interval": 5,
     "notify_templates": {
@@ -30,7 +30,7 @@ config = {
 }
 
 tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL").removeprefix("https://")
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "").removeprefix("https://")
 urls = {
     "local": {
         "api": "http://localhost:6011",
@@ -119,6 +119,12 @@ def setup_preview_dev_config():
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],
                     "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
+                "platform_admin_2": {
+                    "id": os.environ["PLATFORM_ADMIN_2_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_2_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_2_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_2_NUMBER"],
                 },
                 "throttled_user": {
                     "id": os.environ["THROTTLED_USER_ID"],

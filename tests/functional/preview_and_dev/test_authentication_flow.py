@@ -72,7 +72,7 @@ def test_reset_forgotten_password(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_sign_in_with_email_mfa(driver):
+def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     clean_session(driver)
 
     home_page = HomePage(driver)
@@ -82,6 +82,7 @@ def test_sign_in_with_email_mfa(driver):
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
+    purge_failed_logins()
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
@@ -90,6 +91,7 @@ def test_sign_in_with_email_mfa(driver):
     sign_in_page.wait_until_url_ends_with("/two-factor-email-sent")
     assert sign_in_page.text_is_on_page("a link to sign in")
 
+    purge_failed_logins()
     sign_in_url = create_sign_in_url(login_email, "email-auth")
 
     landing_page = BasePage(driver)

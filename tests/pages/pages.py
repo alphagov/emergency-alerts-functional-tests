@@ -50,6 +50,7 @@ from tests.pages.element import (
 )
 from tests.pages.locators import (
     AddServicePageLocators,
+    AdminApprovalPageLocators,
     ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     ChangeNameLocators,
@@ -190,7 +191,7 @@ class BasePage(object):
         self.driver.delete_all_cookies()
 
     def sign_out_if_required(self):
-        if self.text_is_on_page("Sign out"):
+        if self.text_is_on_page_no_wait("Sign out"):
             self.sign_out()
         self.driver.delete_all_cookies()
 
@@ -262,8 +263,17 @@ class BasePage(object):
         element.click()
 
     def is_page_title(self, expected_page_title):
-        element = self.wait_for_element(CommonPageLocators.H1)
-        return element.text == expected_page_title
+        # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            element = self.wait_for_element(CommonPageLocators.H1)
+            if element.text == expected_page_title:
+                return True
+            tries -= 1
+            sleep(retry_interval)
+
+        return False
 
     @retry(
         RetryException,
@@ -277,12 +287,16 @@ class BasePage(object):
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
+    def text_is_on_page_no_wait(self, search_text):
+        normalized_page_source = " ".join(self.driver.page_source.split())
+        if search_text in normalized_page_source:
+            return True
+
     def text_is_on_page(self, search_text):
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
-            normalized_page_source = " ".join(self.driver.page_source.split())
-            if search_text in normalized_page_source:
+            if self.text_is_on_page_no_wait(search_text):
                 return True
             tries -= 1
             sleep(retry_interval)
@@ -793,6 +807,7 @@ class InviteUserPage(BasePage):
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
     choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
+    create_broadcasts_checkbox = InviteUserPageLocators.CREATE_BROADCASTS_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
@@ -838,7 +853,13 @@ class InviteUserPage(BasePage):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
-    def send_invitation_without_permissions(self, email):
+    def check_create_broadcasts_checkbox(self):
+        element = self.wait_for_invisible_element(
+            InviteUserPage.create_broadcasts_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def send_invitation_to_email(self, email):
         self.email_input = email
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
@@ -938,21 +959,6 @@ class ApiKeysPage(BasePage):
         self.key_name_input = key_name
         self.select_checkbox_or_radio(value="normal")
         self.click_submit()
-
-    def get_key_name(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
-        return element.text
-
-    def wait_for_key_copy_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
-        return element
-
-    def wait_for_show_key_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
-        return element
-
-    def check_new_key_name(self, starts_with):
-        return self.get_key_name().startswith(starts_with)
 
     def get_revoke_link_for_api_key(self, key_name):
         return self.wait_for_element(
@@ -1354,3 +1360,25 @@ class RejectionForm(BasePage):
         error_message = (By.CSS_SELECTOR, ".govuk-error-message")
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
+
+
+class AdminApprovalsPage(BasePage):
+    def approve_action(self):
+        approve = self.wait_for_element(AdminApprovalPageLocators.APPROVE_BUTTON)
+        approve.click()
+
+    # Only relevant for approved API key actions:
+    def get_key_name(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
+        return element.text
+
+    def wait_for_key_copy_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
+        return element
+
+    def wait_for_show_key_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
+        return element
+
+    def check_new_key_name(self, starts_with):
+        return self.get_key_name().startswith(starts_with)
