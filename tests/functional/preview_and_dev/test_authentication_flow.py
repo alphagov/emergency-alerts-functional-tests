@@ -13,7 +13,11 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, get_verify_code_from_api_by_id
+from tests.test_utils import (
+    create_password_reset_url,
+    create_sign_in_url,
+    get_verify_code_from_api_by_id,
+)
 
 test_group_name = "auth-flow"
 
@@ -56,7 +60,10 @@ def test_reset_forgotten_password(driver):
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
 
-    password_reset_sign_in_page = SignInPage(driver)
+    password_reset_url = create_password_reset_url(login_email, "email-auth")
+    password_reset_sign_in_page = BasePage(driver)
+    password_reset_sign_in_page.get(password_reset_url)
+
     # Redirects to sign in page so user must sign in again after verifying password reset
     assert password_reset_sign_in_page.text_is_on_page(
         "You've just changed your password. Sign in with your new password."
