@@ -239,13 +239,6 @@ def create_invitation_url(user_id):
     return _url_with_token(user_id, "/invitation/", config)
 
 
-def create_password_reset_url(email, url):
-    data = json.dumps({"email": email, "created_at": str(datetime.now(timezone.utc))})
-    full_url = _url_with_token(data, f"/{url}/", config)
-    full_url += "?reset_password=True"
-    return full_url
-
-
 def _url_with_token(data, url, config):
     token = (
         URLSafeTimedSerializer(config["broadcast_service"]["secret_key"])
