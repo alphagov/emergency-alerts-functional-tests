@@ -468,6 +468,9 @@ class SignInPage(BasePage):
     def get(self):
         self.driver.get(self.base_url + "/sign-in")
 
+    def get_password_has_been_reset_page(self):
+        self.driver.get(f"{self.base_url}/sign-in?reset_password=True")
+
     def is_current(self):
         return self.wait_until_url_is(self.base_url + "/sign-in")
 
