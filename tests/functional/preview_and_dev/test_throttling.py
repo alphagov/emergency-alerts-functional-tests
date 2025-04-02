@@ -13,8 +13,9 @@ test_group_name = "throttling"
 
 @recordtime
 @pytest.mark.xdist_group(name=test_group_name)
-def test_login_attempt_throttled_after_failed_login(driver, failed_login_purge):
+def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins):
     clean_session(driver)
+    purge_failed_logins()
 
     home_page = HomePage(driver)
     home_page.get()
