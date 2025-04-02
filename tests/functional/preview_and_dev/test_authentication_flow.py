@@ -49,6 +49,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
         ]
     )
     new_password_page.input_new_password(new_password)
+    purge_failed_logins()
     new_password_page.click_continue_to_signin()
 
     verify_code = get_verify_code_from_api_by_id(
