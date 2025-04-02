@@ -4,7 +4,6 @@ import string
 import pytest
 
 from config import config
-from tests.functional.preview_and_dev.conftest import purge_failed_logins
 from tests.pages import (
     BasePage,
     ForgotPasswordPage,
@@ -20,7 +19,7 @@ test_group_name = "auth-flow"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_reset_forgotten_password(driver):
+def test_reset_forgotten_password(driver, purge_failed_logins):
     clean_session(driver)
     purge_failed_logins()
 
