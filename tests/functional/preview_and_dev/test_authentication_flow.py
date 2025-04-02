@@ -21,7 +21,6 @@ test_group_name = "auth-flow"
 @pytest.mark.xdist_group(name=test_group_name)
 def test_reset_forgotten_password(driver, purge_failed_logins):
     clean_session(driver)
-    purge_failed_logins()
 
     home_page = HomePage(driver)
     home_page.get()
@@ -36,6 +35,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     forgot_password_page = ForgotPasswordPage(driver)
     forgot_password_page.input_email_address(login_email)
     forgot_password_page.click_submit()
+    purge_failed_logins()
     assert forgot_password_page.text_is_on_page("Check your email")
 
     password_reset_url = create_sign_in_url(login_email, "new-password")
