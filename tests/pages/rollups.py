@@ -1,11 +1,14 @@
 from config import config
 from tests.pages import (
+    AdminApprovalsPage,
     BasePage,
     BroadcastDurationPage,
     BroadcastFreeformPage,
     CommonPageLocators,
     HomePage,
+    PlatformAdminPage,
     SignInPage,
+    wait_for_page_load_completion,
 )
 from tests.test_utils import (
     ACCOUNTS_REQUIRING_SMS_2FA,
@@ -44,6 +47,49 @@ def sign_in(driver, account_type="normal"):
             base_page.click_element_by_link_text(
                 config["broadcast_service"]["service_name"]
             )
+
+
+def sign_in_elevated_platform_admin(
+    driver, purge_failed_logins, become_secondary_platform_admin=False
+):
+    # Platform admins must be elevated by another platform admin first, so this automates that process
+    account_type = (
+        "platform_admin_2" if become_secondary_platform_admin else "platform_admin"
+    )
+    opposite_account_type = (
+        "platform_admin" if become_secondary_platform_admin else "platform_admin_2"
+    )
+    sign_in(driver, account_type=account_type)
+
+    # Create the admin approval to elevate
+    platform_admin_page = PlatformAdminPage(driver)
+    platform_admin_page.get(relative_url="platform-admin")
+    platform_admin_page.click_request_elevation_link()
+    platform_admin_page.click_continue()
+    platform_admin_page.wait_until_url_ends_with("admin-actions")
+
+    platform_admin_page.sign_out()
+    purge_failed_logins()  # To avoid throttle
+    sign_in(driver, account_type=opposite_account_type)
+
+    # Approve the elevation request
+    admin_approvals_page = AdminApprovalsPage(driver)
+    admin_approvals_page.get(relative_url="platform-admin/admin-actions")
+    admin_approvals_page.approve_action()
+
+    # Sign back in as the intended admin
+    admin_approvals_page.sign_out()
+    purge_failed_logins()  # To avoid throttle
+    sign_in(driver, account_type=account_type)
+
+    assert admin_approvals_page.text_is_on_page(
+        "approved to temporarily become a platform admin"
+    )
+    admin_approvals_page.click_continue()
+    assert admin_approvals_page.text_is_on_page("elevated")
+
+    # This will take the browser to the platform admin page, but let's end up like a sign_in()
+    admin_approvals_page.get(relative_url="accounts-or-dashboard")
 
 
 def get_verify_code(account_identifier):
