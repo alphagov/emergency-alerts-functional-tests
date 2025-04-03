@@ -1,5 +1,3 @@
-import time
-
 from config import config
 from tests.pages import (
     BasePage,
@@ -26,7 +24,6 @@ def sign_in(driver, account_type="normal"):
     home_page.accept_cookie_warning()
 
     _sign_in(driver, account_type)
-    time.sleep(1)  # Wait for the code in the DB to not be in the same second
     identifier = get_identifier(account_type=account_type)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
@@ -34,12 +31,19 @@ def sign_in(driver, account_type="normal"):
         do_verify(driver, identifier)
 
     base_page = BasePage(driver)
-    if base_page.text_is_not_on_page("Current alerts"):
-        if base_page.text_is_on_page("Switch service"):
-            base_page.click_element_by_link_text("Switch service")
-        base_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
+    if base_page.text_is_on_page_no_wait("temporarily become a platform admin"):
+        # It's assumed this is expected by the calling test as part of the elevation process
+        # (i.e. let that test handle where it wants to navigate to)
+        pass
+    elif base_page.text_is_not_on_page_no_wait("Current alerts"):
+        if base_page.text_is_on_page_no_wait("Switch service"):
+            with wait_for_page_load_completion(driver):
+                base_page.click_element_by_link_text("Switch service")
+
+        with wait_for_page_load_completion(driver):
+            base_page.click_element_by_link_text(
+                config["broadcast_service"]["service_name"]
+            )
 
 
 def get_verify_code(account_identifier):
