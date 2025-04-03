@@ -1024,8 +1024,10 @@ class ServiceSettingsPage(BasePage):
             self.click_save()
 
     def delete_service(self):
+        # There's two navigations here, so we need to ensure we don't return after only the first one
         with wait_for_page_load_completion(self.driver):
             self.click_element_by_link_text("Delete this service")
+        with wait_for_page_load_completion(self.driver):
             element = self.wait_for_element(
                 ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
             )

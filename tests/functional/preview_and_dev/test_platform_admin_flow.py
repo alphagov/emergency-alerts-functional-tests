@@ -53,8 +53,6 @@ def test_add_rename_and_delete_service(driver, purge_failed_logins):
         f"‘{new_service_name}’ was deleted"
     )
 
-    # sign out
-    service_settings_page.get()
     service_settings_page.sign_out()
 
 
