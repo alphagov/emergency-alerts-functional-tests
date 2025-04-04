@@ -398,7 +398,8 @@ class RegistrationPage(BasePage):
 class AddServicePage(BasePage):
     service_input = ServiceInputElement()
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
-    service_mode_input = AddServicePageLocators.SERVICE_MODE_INPUT
+    training_mode_input = AddServicePageLocators.TRAINING_MODE_INPUT
+    operator_mode_input = AddServicePageLocators.OPERATOR_MODE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
@@ -414,7 +415,14 @@ class AddServicePage(BasePage):
 
     def select_training_mode(self):
         try:
-            self.click_service_mode_input()
+            self.click_service_mode_input(AddServicePage.training_mode_input)
+        except NoSuchElementException:
+            pass
+        self.click_continue()
+
+    def select_operator_mode(self):
+        try:
+            self.click_service_mode_input(AddServicePage.operator_mode_input)
         except NoSuchElementException:
             pass
         self.click_continue()
@@ -434,9 +442,9 @@ class AddServicePage(BasePage):
         except TimeoutException:
             pass
 
-    def click_service_mode_input(self):
+    def click_service_mode_input(self, locator):
         try:
-            element = self.wait_for_invisible_element(AddServicePage.service_mode_input)
+            element = self.wait_for_invisible_element(locator)
             element.click()
         except TimeoutException:
             pass

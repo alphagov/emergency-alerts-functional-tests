@@ -34,7 +34,7 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
     "platform_admin_2",
 ]
 
-PROVIDERS = ["ee", "o2", "vodafone", "three"]
+PROVIDERS = ["ee", "o2", "three", "vodafone"]
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
