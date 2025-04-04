@@ -58,7 +58,7 @@ def test_add_rename_and_delete_training_service(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_add_rename_and_delete_live_service(driver):
+def test_add_modify_and_delete_live_service(driver):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
