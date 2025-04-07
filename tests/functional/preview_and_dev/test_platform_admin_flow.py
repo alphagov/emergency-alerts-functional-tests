@@ -74,7 +74,6 @@ def test_add_modify_and_delete_live_service(driver):
     add_service_page = AddServicePage(driver)
     add_service_page.add_service(service_name)
     add_service_page.select_operator_mode()
-    add_service_page.confirm_settings()
 
     choose_operator_page = BasePage(driver)
     choose_operator_page.wait_until_url_ends_with("/operator")
