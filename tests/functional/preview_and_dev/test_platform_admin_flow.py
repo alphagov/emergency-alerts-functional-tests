@@ -105,7 +105,7 @@ def test_add_modify_and_delete_live_service(driver):
     service_settings_page = ServiceSettingsPage(driver)
     assert (
         service_settings_page.get_service_name()
-        == f"{service_name} Operator (Three, Vodafone)"
+        == f"{service_name} OPERATOR (THREE, VODAFONE)"
     )
 
     service_settings_page.delete_service()
