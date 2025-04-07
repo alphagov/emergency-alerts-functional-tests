@@ -220,6 +220,9 @@ class BasePage(object):
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
+        else:
+            element.click()
+            assert not element.get_attribute("checked")
 
     def unselect_checkbox(self, element):
         if element.get_attribute("checked"):
