@@ -88,7 +88,7 @@ def test_add_modify_and_delete_live_service(driver):
     confirm_settings_page.wait_until_url_ends_with("/service-settings")
 
     service_settings_page = ServiceSettingsPage(driver)
-    assert service_settings_page.get_service_name() == f"{service_name} Operator"
+    assert service_settings_page.get_service_name() == f"{service_name} OPERATOR"
     service_settings_page.click_change_setting("emergency alerts")
 
     change_service_page = AddServicePage(driver)
