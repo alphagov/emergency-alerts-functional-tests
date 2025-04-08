@@ -253,6 +253,8 @@ def create_ddb_client():
     try:
         sts_client = boto3.client("sts")
 
+        logging.info(f"Creating DDB client for account {config['cbc_account_number']}")
+
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-loopback-for-functional-test",
