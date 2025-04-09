@@ -14,18 +14,18 @@ from tests.pages.pages import (
     TeamMembersPage,
     VerifyPage,
 )
-from tests.pages.rollups import sign_in
+from tests.pages.rollups import sign_in, sign_in_elevated_platform_admin
 from tests.test_utils import create_invitation_url, get_verification_code_by_id
 
 test_group_name = "platform-admin"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_add_rename_and_delete_training_service(driver):
+def test_add_rename_and_delete_training_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
-    sign_in(driver, account_type="platform_admin")
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     landing_page = BasePage(driver)
 
@@ -49,20 +49,19 @@ def test_add_rename_and_delete_training_service(driver):
     assert service_settings_page.get_service_name() == f"{new_service_name} TRAINING"
 
     service_settings_page.delete_service()
-    time.sleep(1)
-    assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
+    assert service_settings_page.text_is_on_page_no_wait(
+        f"‘{new_service_name}’ was deleted"
+    )
 
-    # sign out
-    service_settings_page.get()
     service_settings_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_add_modify_and_delete_live_service(driver):
+def test_add_modify_and_delete_live_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
-    sign_in(driver, account_type="platform_admin")
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     landing_page = BasePage(driver)
 
@@ -109,7 +108,6 @@ def test_add_modify_and_delete_live_service(driver):
     )
 
     service_settings_page.delete_service()
-    time.sleep(1)
     assert service_settings_page.text_is_on_page(f"‘{service_name}’ was deleted")
 
     # sign out
@@ -131,7 +129,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     """
     timestamp = str(int(time.time()))
 
-    sign_in(driver, account_type="platform_admin")
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     current_alerts_page = CurrentAlertsPage(driver)
     current_alerts_page.click_team_members_link()
@@ -147,8 +145,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     if user_requires_admin_approval:
         invite_user_page.check_create_broadcasts_checkbox()
     invite_user_page.send_invitation_to_email(invited_user_email)
-    # There is no wait condition as all pages have an H1 - so wait for the browser to have done loading
-    time.sleep(1)
+
     assert invite_user_page.is_page_title("Team members")
 
     if user_requires_admin_approval:
@@ -157,13 +154,13 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
         # Login again as a different platform admin to approve
         invite_user_page.sign_out()
         purge_failed_logins()  # To avoid throttle - email lookups trigger throttle logic
+        # We do not need an elevated platform admin to approve admin actions
         sign_in(driver, account_type="platform_admin_2")
 
         # Approve/create it
         admin_approvals_page = AdminApprovalsPage(driver)
         admin_approvals_page.get(relative_url="/platform-admin/admin-actions")
         admin_approvals_page.approve_action()
-        time.sleep(1)
 
         assert invite_user_page.text_is_on_page(
             "Sent invite to user " + invited_user_email
@@ -213,7 +210,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     current_alerts_page.sign_out()
 
     # delete new user
-    sign_in(driver, account_type="platform_admin")
+    sign_in_elevated_platform_admin(driver, purge_failed_logins, False)
 
     current_alerts_page = CurrentAlertsPage(driver)
     current_alerts_page.click_team_members_link()
@@ -236,11 +233,12 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_admin_search_for_user_by_name_and_email(driver):
-    sign_in(driver, account_type="platform_admin")
+def test_service_admin_search_for_user_by_name_and_email(driver, purge_failed_logins):
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     current_alerts_page = CurrentAlertsPage(driver)
-    current_alerts_page.click_element_by_link_text("Platform admin")
+    # Due to the CSS of the tag component it ends up as uppercase
+    current_alerts_page.click_element_by_link_text("Platform admin ELEVATED")
 
     admin_page = PlatformAdminPage(driver)
 
@@ -258,8 +256,10 @@ def test_service_admin_search_for_user_by_name_and_email(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_service_can_create_and_approve_and_revoke_api_keys(driver):
-    sign_in(driver, account_type="platform_admin")
+def test_service_can_create_and_approve_and_revoke_api_keys(
+    driver, purge_failed_logins
+):
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     current_alerts_page = CurrentAlertsPage(driver)
     current_alerts_page.click_api_integration()
@@ -278,6 +278,7 @@ def test_service_can_create_and_approve_and_revoke_api_keys(driver):
     assert api_keys_page.text_is_on_page("An admin approval has been created")
 
     # Login again as a different platform admin to approve
+    # Approving does not need elevation
     api_keys_page.sign_out()
     sign_in(driver, account_type="platform_admin_2")
 
@@ -305,6 +306,10 @@ def test_service_can_create_and_approve_and_revoke_api_keys(driver):
     assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key
+    # We need to be an elevated admin to see the service history section
+    api_keys_page.sign_out()
+    sign_in_elevated_platform_admin(driver, purge_failed_logins, True)
+
     api_keys_page.click_element_by_link_text("Settings")
     api_keys_page.click_element_by_link_text("Service history")
     api_keys_page.click_element_by_link_text("API keys")

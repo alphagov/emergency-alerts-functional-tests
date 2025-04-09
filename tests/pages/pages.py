@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from time import sleep
 
 from retry import retry
@@ -70,6 +71,22 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
+
+
+@contextmanager
+def wait_for_page_load_completion(driver):
+    """
+    A helper (to be used in a with statement) that ensures a navigation event has completed before returning to
+    the caller. Useful if a button press causes a navigation event to a page with new content without needing sleep().
+    """
+    old_page = driver.find_element(by=By.TAG_NAME, value="html")
+    yield
+
+    def page_has_loaded(*args):
+        new_page = driver.find_element(by=By.TAG_NAME, value="html")
+        return new_page.id != old_page.id
+
+    WebDriverWait(driver, 10).until(page_has_loaded)
 
 
 class RetryException(Exception):
@@ -306,6 +323,9 @@ class BasePage(object):
             self.driver.refresh()
         return False
 
+    def text_is_not_on_page_no_wait(self, search_text):
+        return not self.text_is_on_page_no_wait(search_text)
+
     def text_is_not_on_page(self, search_text):
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
@@ -491,18 +511,20 @@ class SignInPage(BasePage):
         element.click()
 
     def login(self, email, password):
-        self.fill_login_form(email, password)
-        self.click_continue()
+        with wait_for_page_load_completion(self.driver):
+            self.fill_login_form(email, password)
+            self.click_continue()
 
 
 class VerifyPage(BasePage):
     sms_input = SmsInputElement()
 
     def verify(self, code):
-        element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
-        element.clear()
-        self.sms_input = code
-        self.click_submit()
+        with wait_for_page_load_completion(self.driver):
+            element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
+            element.clear()
+            self.sms_input = code
+            self.click_submit()
 
 
 class CurrentAlertsPage(BasePage):
@@ -871,9 +893,10 @@ class InviteUserPage(BasePage):
         self.select_checkbox_or_radio(element)
 
     def send_invitation_to_email(self, email):
-        self.email_input = email
-        element = self.wait_for_element(InviteUserPage.send_invitation_button)
-        element.click()
+        with wait_for_page_load_completion(self.driver):
+            self.email_input = email
+            element = self.wait_for_element(InviteUserPage.send_invitation_button)
+            element.click()
 
     # support variants of this page with a 'Save' button instead of 'Send invitation' (both use the same locator)
     def click_save(self):
@@ -1007,13 +1030,19 @@ class ServiceSettingsPage(BasePage):
         return element.text
 
     def save_service_name(self, new_name):
-        self.name_input = new_name
-        self.click_save()
+        with wait_for_page_load_completion(self.driver):
+            self.name_input = new_name
+            self.click_save()
 
     def delete_service(self):
-        self.click_element_by_link_text("Delete this service")
-        element = self.wait_for_element(ServiceSettingsLocators.DELETE_CONFIRM_BUTTON)
-        element.click()
+        # There's two navigations here, so we need to ensure we don't return after only the first one
+        with wait_for_page_load_completion(self.driver):
+            self.click_element_by_link_text("Delete this service")
+        with wait_for_page_load_completion(self.driver):
+            element = self.wait_for_element(
+                ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
+            )
+            element.click()
 
 
 class ProfileSettingsPage(BasePage):
@@ -1260,12 +1289,18 @@ class PlatformAdminPage(BasePage):
     search_link = (By.LINK_TEXT, "Search")
     search_input = SearchInputElement()
 
+    request_elevation_link = (By.LINK_TEXT, "Request elevation")
+
     def subheading_is(self, expected_subheading):
         element = self.wait_for_element(CommonPageLocators.H2)
         return element.text == expected_subheading
 
     def click_search_link(self):
         element = self.wait_for_element(PlatformAdminPage.search_link)
+        element.click()
+
+    def click_request_elevation_link(self):
+        element = self.wait_for_element(PlatformAdminPage.request_elevation_link)
         element.click()
 
     def search_for(self, text):
@@ -1375,8 +1410,11 @@ class RejectionForm(BasePage):
 
 class AdminApprovalsPage(BasePage):
     def approve_action(self):
-        approve = self.wait_for_element(AdminApprovalPageLocators.APPROVE_BUTTON)
-        approve.click()
+        # Actions can vary on where they direct to after approving, so just wait for the page to finish navigating
+        # somewhere before letting the test continue. This avoids having to sleep arbitrarily.
+        with wait_for_page_load_completion(self.driver):
+            approve = self.wait_for_element(AdminApprovalPageLocators.APPROVE_BUTTON)
+            approve.click()
 
     # Only relevant for approved API key actions:
     def get_key_name(self):

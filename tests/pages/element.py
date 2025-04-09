@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
@@ -52,7 +51,7 @@ class ClearableInputElement(BasePageElement):
             lambda driver: driver.find_element(By.NAME, self.name)
         )
         input = driver.find_element(By.NAME, self.name)
-        input.send_keys(Keys.CONTROL + "a")
+        input.clear()
         input.send_keys(value)
 
 

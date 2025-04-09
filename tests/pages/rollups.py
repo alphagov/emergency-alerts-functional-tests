@@ -1,13 +1,14 @@
-import time
-
 from config import config
 from tests.pages import (
+    AdminApprovalsPage,
     BasePage,
     BroadcastDurationPage,
     BroadcastFreeformPage,
     CommonPageLocators,
     HomePage,
+    PlatformAdminPage,
     SignInPage,
+    wait_for_page_load_completion,
 )
 from tests.test_utils import (
     ACCOUNTS_REQUIRING_SMS_2FA,
@@ -26,7 +27,6 @@ def sign_in(driver, account_type="normal"):
     home_page.accept_cookie_warning()
 
     _sign_in(driver, account_type)
-    time.sleep(1)  # Wait for the code in the DB to not be in the same second
     identifier = get_identifier(account_type=account_type)
     if account_type in ACCOUNTS_REQUIRING_SMS_2FA:
         do_verify_by_id(driver, identifier)
@@ -34,12 +34,63 @@ def sign_in(driver, account_type="normal"):
         do_verify(driver, identifier)
 
     base_page = BasePage(driver)
-    if base_page.text_is_not_on_page("Current alerts"):
-        if base_page.text_is_on_page("Switch service"):
-            base_page.click_element_by_link_text("Switch service")
-        base_page.click_element_by_link_text(
-            config["broadcast_service"]["service_name"]
-        )
+    if base_page.text_is_on_page_no_wait("temporarily become a platform admin"):
+        # It's assumed this is expected by the calling test as part of the elevation process
+        # (i.e. let that test handle where it wants to navigate to)
+        pass
+    elif base_page.text_is_not_on_page_no_wait("Current alerts"):
+        if base_page.text_is_on_page_no_wait("Switch service"):
+            with wait_for_page_load_completion(driver):
+                base_page.click_element_by_link_text("Switch service")
+
+        with wait_for_page_load_completion(driver):
+            base_page.click_element_by_link_text(
+                config["broadcast_service"]["service_name"]
+            )
+
+
+def sign_in_elevated_platform_admin(
+    driver, purge_failed_logins, become_secondary_platform_admin=False
+):
+    # Platform admins must be elevated by another platform admin first, so this automates that process
+    account_type = (
+        "platform_admin_2" if become_secondary_platform_admin else "platform_admin"
+    )
+    opposite_account_type = (
+        "platform_admin" if become_secondary_platform_admin else "platform_admin_2"
+    )
+    sign_in(driver, account_type=account_type)
+
+    # Create the admin approval to elevate
+    platform_admin_page = PlatformAdminPage(driver)
+    platform_admin_page.get(relative_url="platform-admin")
+    platform_admin_page.click_request_elevation_link()
+    platform_admin_page.click_continue()
+    platform_admin_page.wait_until_url_ends_with("admin-actions")
+
+    platform_admin_page.sign_out()
+    purge_failed_logins()  # To avoid throttle
+    sign_in(driver, account_type=opposite_account_type)
+
+    # Approve the elevation request
+    admin_approvals_page = AdminApprovalsPage(driver)
+    admin_approvals_page.get(relative_url="platform-admin/admin-actions")
+    admin_approvals_page.approve_action()
+
+    # Sign back in as the intended admin
+    admin_approvals_page.sign_out()
+    purge_failed_logins()  # To avoid throttle
+    sign_in(driver, account_type=account_type)
+
+    assert admin_approvals_page.text_is_on_page_no_wait(
+        "approved to temporarily become a platform admin"
+    )
+    with wait_for_page_load_completion(driver):
+        admin_approvals_page.click_continue()
+    assert admin_approvals_page.text_is_on_page_no_wait("elevated")
+
+    # This will take the browser to the platform admin page, but let's end up like a sign_in()
+    admin_approvals_page.get(relative_url="accounts-or-dashboard")
 
 
 def get_verify_code(account_identifier):
