@@ -39,7 +39,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     sign_in_page.login(login_email, login_pw)
 
     # Assert here that error text appears for second time
-    assert sign_in_page.text_is_on_page_no_wait(
+    assert sign_in_page.text_is_on_page(
         "The email address or password you entered is incorrect."
     )
 
