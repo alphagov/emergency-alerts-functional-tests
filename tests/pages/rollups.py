@@ -82,11 +82,12 @@ def sign_in_elevated_platform_admin(
     purge_failed_logins()  # To avoid throttle
     sign_in(driver, account_type=account_type)
 
-    assert admin_approvals_page.text_is_on_page(
+    assert admin_approvals_page.text_is_on_page_no_wait(
         "approved to temporarily become a platform admin"
     )
-    admin_approvals_page.click_continue()
-    assert admin_approvals_page.text_is_on_page("elevated")
+    with wait_for_page_load_completion(driver):
+        admin_approvals_page.click_continue()
+    assert admin_approvals_page.text_is_on_page_no_wait("elevated")
 
     # This will take the browser to the platform admin page, but let's end up like a sign_in()
     admin_approvals_page.get(relative_url="accounts-or-dashboard")
