@@ -32,7 +32,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     # Assert here that error text appears
     assert (
         sign_in_page.get_errors()
-        == "The email address or password you entered is incorrect."
+        == "The email address or password you entered is incorrect.·Forgotten your password?"
     )
 
     sign_in_page.get()
@@ -42,7 +42,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     # Assert here that error text appears for second time
     assert (
         sign_in_page.get_errors()
-        == "The email address or password you entered is incorrect."
+        == "The email address or password you entered is incorrect.·Forgotten your password?"
     )
 
     # Attempts again with correct credentials
