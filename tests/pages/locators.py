@@ -50,7 +50,8 @@ class VerifyPageLocators(object):
 class AddServicePageLocators(object):
     SERVICE_INPUT = (By.NAME, "name")
     ORG_TYPE_INPUT = (By.ID, "organisation_type-0")
-    SERVICE_MODE_INPUT = (By.ID, "channel-0")
+    TRAINING_MODE_INPUT = (By.ID, "channel-0")
+    OPERATOR_MODE_INPUT = (By.ID, "channel-1")
     ADD_SERVICE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
 
 

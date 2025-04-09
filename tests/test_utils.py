@@ -34,7 +34,7 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
     "platform_admin_2",
 ]
 
-PROVIDERS = ["ee", "o2", "vodafone", "three"]
+PROVIDERS = ["ee", "o2", "three", "vodafone"]
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
@@ -252,6 +252,8 @@ def _url_with_token(data, url, config):
 def create_ddb_client():
     try:
         sts_client = boto3.client("sts")
+
+        logging.info(f"Creating DDB client for account {config['cbc_account_number']}")
 
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",

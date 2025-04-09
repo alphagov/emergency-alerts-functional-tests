@@ -21,7 +21,7 @@ test_group_name = "platform-admin"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_add_rename_and_delete_service(driver):
+def test_add_rename_and_delete_training_service(driver):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
@@ -51,6 +51,66 @@ def test_add_rename_and_delete_service(driver):
     service_settings_page.delete_service()
     time.sleep(1)
     assert service_settings_page.text_is_on_page(f"‘{new_service_name}’ was deleted")
+
+    # sign out
+    service_settings_page.get()
+    service_settings_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_add_modify_and_delete_live_service(driver):
+    timestamp = str(int(time.time()))
+    service_name = f"Functional Test {timestamp}"
+
+    sign_in(driver, account_type="platform_admin")
+
+    landing_page = BasePage(driver)
+
+    if landing_page.text_is_not_on_page("Add a new service"):
+        landing_page.click_element_by_link_text("Switch service")
+        landing_page = BasePage(driver)
+    landing_page.click_element_by_link_text("Add a new service")
+
+    add_service_page = AddServicePage(driver)
+    add_service_page.add_service(service_name)
+    add_service_page.select_operator_mode()
+
+    choose_operator_page = BasePage(driver)
+    choose_operator_page.wait_until_url_ends_with("/operator")
+    assert choose_operator_page.is_page_title("Choose one or more mobile networks")
+    choose_operator_page.select_checkbox_or_radio(value="all")
+    choose_operator_page.click_continue()
+
+    confirm_settings_page = BasePage(driver)
+    confirm_settings_page.wait_until_url_ends_with("/confirm")
+    assert confirm_settings_page.is_page_title("Confirm emergency alert settings")
+    confirm_settings_page.click_continue_to_submit()
+    confirm_settings_page.wait_until_url_ends_with("/service-settings")
+
+    service_settings_page = ServiceSettingsPage(driver)
+    assert service_settings_page.get_service_name() == f"{service_name} OPERATOR"
+    service_settings_page.click_change_setting("emergency alerts")
+
+    change_service_page = AddServicePage(driver)
+    change_service_page.select_operator_mode()
+    change_service_page.select_checkbox_or_radio(value="ee")
+    change_service_page.select_checkbox_or_radio(value="o2")
+    choose_operator_page.click_continue()
+
+    confirm_settings_page = BasePage(driver)
+    confirm_settings_page.wait_until_url_ends_with("/confirm")
+    assert confirm_settings_page.is_page_title("Confirm emergency alert settings")
+    confirm_settings_page.click_continue_to_submit()
+
+    service_settings_page = ServiceSettingsPage(driver)
+    assert (
+        service_settings_page.get_service_name()
+        == f"{service_name} OPERATOR (THREE, VODAFONE)"
+    )
+
+    service_settings_page.delete_service()
+    time.sleep(1)
+    assert service_settings_page.text_is_on_page(f"‘{service_name}’ was deleted")
 
     # sign out
     service_settings_page.get()
