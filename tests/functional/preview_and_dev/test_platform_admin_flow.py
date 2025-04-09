@@ -57,11 +57,11 @@ def test_add_rename_and_delete_training_service(driver, purge_failed_logins):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_add_modify_and_delete_live_service(driver):
+def test_add_modify_and_delete_live_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
-    sign_in(driver, account_type="platform_admin")
+    sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
     landing_page = BasePage(driver)
 
@@ -108,7 +108,6 @@ def test_add_modify_and_delete_live_service(driver):
     )
 
     service_settings_page.delete_service()
-    time.sleep(1)
     assert service_settings_page.text_is_on_page(f"‘{service_name}’ was deleted")
 
     # sign out
