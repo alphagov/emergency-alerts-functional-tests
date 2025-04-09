@@ -45,6 +45,19 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
         == "The email address or password you entered is incorrect"
     )
 
+    # Wait out the throttle period
+    time.sleep(5)
+
+    sign_in_page.get()
+    assert sign_in_page.is_current()
+    sign_in_page.login(login_email, login_pw)
+
+    # Assert here that error text appears for third time
+    assert (
+        sign_in_page.get_errors().split(".")[0]
+        == "The email address or password you entered is incorrect"
+    )
+
     # Attempts again with correct credentials
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = config["broadcast_service"]["throttled_user"]["password"]
