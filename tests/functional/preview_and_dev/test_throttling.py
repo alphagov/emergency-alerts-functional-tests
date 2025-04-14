@@ -30,11 +30,35 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     sign_in_page.login(login_email, login_pw)
 
     # Assert here that error text appears
-    assert sign_in_page.text_is_on_page(
-        "The email address or password you entered is incorrect."
+    assert (
+        sign_in_page.get_errors().split(".")[0]
+        == "The email address or password you entered is incorrect"
     )
 
-    # Attempts again
+    sign_in_page.get()
+    assert sign_in_page.is_current()
+    sign_in_page.login(login_email, login_pw)
+
+    # Assert here that error text appears for second time
+    assert (
+        sign_in_page.get_errors().split(".")[0]
+        == "The email address or password you entered is incorrect"
+    )
+
+    # Wait out the throttle period
+    time.sleep(5)
+
+    sign_in_page.get()
+    assert sign_in_page.is_current()
+    sign_in_page.login(login_email, login_pw)
+
+    # Assert here that error text appears for third time
+    assert (
+        sign_in_page.get_errors().split(".")[0]
+        == "The email address or password you entered is incorrect"
+    )
+
+    # Attempts again with correct credentials
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = config["broadcast_service"]["throttled_user"]["password"]
 
@@ -50,7 +74,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     )
 
     # Waits some time to avoid throttle
-    time.sleep(30)
+    time.sleep(5)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")
