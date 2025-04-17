@@ -191,6 +191,10 @@ class DashboardWithDialogPageLocators(object):
         By.XPATH,
         '//*[@id="activity" and @class="hmrc-timeout-dialog"]',
     )
+    INACTIVITY_WARNING_DIALOG = (
+        By.XPATH,
+        '//*[@id="activity-warning" and @class="hmrc-timeout-dialog"]',
+    )
     CONTINUE_BUTTON = (By.NAME, "continue-btn")
 
 
