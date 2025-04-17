@@ -1360,6 +1360,12 @@ class DashboardWithDialogs(BasePage):
         )
         return element.get_attribute("open")
 
+    def is_inactivity_warning_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+        )
+        return element.get_attribute("open")
+
     def is_expiry_dialog_visible(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
         return element.get_attribute("open")
