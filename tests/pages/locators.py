@@ -37,6 +37,7 @@ class SignUpPageLocators(object):
 
 class SignInPageLocators(object):
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, "Forgotten your password?")
+    H1 = (By.TAG_NAME, "h1")
 
 
 class NewPasswordPageLocators(object):
