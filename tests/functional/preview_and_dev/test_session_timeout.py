@@ -93,7 +93,7 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     assert dashboard_with_dialogs_page.is_expiry_dialog_hidden()
     time.sleep(6)
     sign_in_page = SignInPage(driver)
-    if sign_in_page.text_is_on_page("You’ve been signed out"):
+    if sign_in_page.h1_is_youve_been_signed_out():
         assert sign_in_page.text_is_on_page(
             "We do this every 6 hours to keep your information secure. Sign back in to start a new session"
         )
