@@ -37,6 +37,7 @@ class SignUpPageLocators(object):
 
 class SignInPageLocators(object):
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, "Forgotten your password?")
+    H1 = (By.TAG_NAME, "h1")
 
 
 class NewPasswordPageLocators(object):
@@ -190,6 +191,10 @@ class DashboardWithDialogPageLocators(object):
     INACTIVITY_DIALOG = (
         By.XPATH,
         '//*[@id="activity" and @class="hmrc-timeout-dialog"]',
+    )
+    INACTIVITY_WARNING_DIALOG = (
+        By.XPATH,
+        '//*[@id="activity-warning" and @class="hmrc-timeout-dialog"]',
     )
     CONTINUE_BUTTON = (By.NAME, "continue-btn")
 

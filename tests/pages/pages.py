@@ -495,6 +495,7 @@ class SignInPage(BasePage):
     email_input = EmailInputElement()
     password_input = PasswordInputElement()
     forgot_password_link = SignInPageLocators.FORGOT_PASSWORD_LINK
+    h1 = SignInPageLocators.H1
 
     def get(self):
         self.driver.get(self.base_url + "/sign-in")
@@ -514,6 +515,10 @@ class SignInPage(BasePage):
         with wait_for_page_load_completion(self.driver):
             self.fill_login_form(email, password)
             self.click_continue()
+
+    def h1_is_youve_been_signed_out(self):
+        element = self.wait_for_element(SignInPage.h1)
+        return element.text == "You’ve been signed out"
 
 
 class VerifyPage(BasePage):
@@ -1357,6 +1362,12 @@ class DashboardWithDialogs(BasePage):
     def is_inactivity_dialog_visible(self):
         element = self.wait_for_element(
             DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        return element.get_attribute("open")
+
+    def is_inactivity_warning_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
         )
         return element.get_attribute("open")
 
