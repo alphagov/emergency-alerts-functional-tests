@@ -34,7 +34,7 @@ phases:
       - unzip -j /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /usr/local/bin/
 
       # upgrade pip
-      - pip install --upgrade pip
+      - pip install --upgrade pip==25.0.1
 
       - apt-get install -f -y
 
