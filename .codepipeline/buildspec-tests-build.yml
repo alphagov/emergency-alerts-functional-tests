@@ -46,7 +46,7 @@ phases:
       - . $VENV_TESTS/bin/activate
       - chmod +x environment.sh
       - . ./environment.sh
-      - python3.9 -m pip install --upgrade pip wheel setuptools
+      - python3.9 -m pip install --upgrade pip wheel setuptools==79
       - make bootstrap
 
   build:
