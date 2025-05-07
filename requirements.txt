@@ -1,5 +1,5 @@
 beautifulsoup4>=4.5.1
-boto3>=1.28.0
+boto3>=1.38.10
 black==24.3.0
 Flask>=0.11.1
 Flask-Cache==0.13.1
