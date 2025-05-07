@@ -99,6 +99,10 @@ lint:
 	flake8 .
 	black --check .
 
+.PHONY: uninstall-packages
+uninstall-packages:
+	python -m pip freeze | xargs python -m pip uninstall -y
+
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
 	pytest -v -n auto --dist=loadgroup \
