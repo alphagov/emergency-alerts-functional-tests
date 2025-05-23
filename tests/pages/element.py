@@ -11,6 +11,7 @@ from tests.pages.locators import (
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
     RejectionFormLocators,
+    ReturnForEditFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
@@ -185,3 +186,7 @@ class RejectAlertButton(BasePageElement):
 
 class RejectionDetailLink:
     name = RejectionFormLocators.REJECTION_DETAIL_LINK[1]
+
+
+class ReturnForEditReasonTextArea(BasePageElement):
+    name = ReturnForEditFormLocators.RETURN_FOR_EDIT_REASON_TEXTAREA[1]

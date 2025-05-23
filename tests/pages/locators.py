@@ -206,7 +206,18 @@ class RejectionFormLocators(object):
     )
     REJECTION_DETAIL_ELEMENT = (By.ID, "rejection_reason_details")
     REJECTION_REASON_TEXTAREA = (By.ID, "rejection_reason")
-    REJECT_ALERT_BUTTON = (By.CLASS_NAME, "govuk-button--warning")
+    REJECT_ALERT_BUTTON = (By.NAME, "reject-alert")
+
+
+class ReturnForEditFormLocators(object):
+    RETURN_FOR_EDIT_DETAIL_LINK = (
+        By.XPATH,
+        '//*[@id="return_for_edit_reason"]/summary/span',
+    )
+    RETURN_FOR_EDIT_DETAIL_ELEMENT = (By.ID, "return_for_edit_reason")
+    RETURN_FOR_EDIT_REASON_TEXTAREA = (By.ID, "return_for_edit_reason")
+    RETURN_FOR_EDIT_ALERT_BUTTON = (By.NAME, "return-alert-for-edit")
+    RETURN_FOR_EDIT_BANNER = (By.ID, "returned-reason")
 
 
 class AdminApprovalPageLocators(object):
