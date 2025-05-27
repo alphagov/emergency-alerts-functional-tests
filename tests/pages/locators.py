@@ -217,7 +217,7 @@ class ReturnForEditFormLocators(object):
     RETURN_FOR_EDIT_DETAIL_ELEMENT = (By.ID, "return_for_edit_reason")
     RETURN_FOR_EDIT_REASON_TEXTAREA = (By.ID, "return_for_edit_reason")
     RETURN_FOR_EDIT_ALERT_BUTTON = (By.NAME, "return-alert-for-edit")
-    RETURN_FOR_EDIT_BANNER = (By.ID, "returned-reason")
+    RETURN_FOR_EDIT_BANNER = (By.ID, "returned-reason-banner")
 
 
 class AdminApprovalPageLocators(object):
