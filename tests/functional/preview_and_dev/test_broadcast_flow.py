@@ -632,7 +632,7 @@ def test_return_alert_for_edit(driver):
     alert_page_with_return_for_edit.click_return_for_edit_alert()
     assert (
         alert_page_with_return_for_edit.get_returned_banner_text()
-        == f"Reason for being returned for edit: {reason_for_returning_alert}"
+        == f"Reason why alert has been returned to edit: {reason_for_returning_alert}"
     )
     assert alert_page_with_return_for_edit.text_is_on_page(
         "Submitted by Functional Tests - Broadcast User Create"
