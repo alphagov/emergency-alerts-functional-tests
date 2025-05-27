@@ -1442,7 +1442,7 @@ class ReturnAlertForEditForm(BasePage):
         )
         return not element.get_attribute("open")
 
-    def click_return_for_edit_alert(self):
+    def click_return_alert_for_edit(self):
         element = self.wait_for_element(
             ReturnForEditFormLocators.RETURN_FOR_EDIT_ALERT_BUTTON
         )

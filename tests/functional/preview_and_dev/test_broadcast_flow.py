@@ -614,7 +614,7 @@ def test_return_alert_for_edit(driver):
     alert_page_with_return_for_edit.create_return_for_edit_reason_input(
         reason_for_returning_alert
     )
-    alert_page_with_return_for_edit.click_return_for_edit_alert()
+    alert_page_with_return_for_edit.click_return_alert_for_edit()
 
     # Assert errors appear
     assert (
@@ -629,7 +629,7 @@ def test_return_alert_for_edit(driver):
     alert_page_with_return_for_edit.create_return_for_edit_reason_input(
         reason_for_returning_alert
     )
-    alert_page_with_return_for_edit.click_return_for_edit_alert()
+    alert_page_with_return_for_edit.click_return_alert_for_edit()
     assert (
         alert_page_with_return_for_edit.get_returned_banner_text()
         == f"Reason why alert has been returned to edit: {reason_for_returning_alert}"
