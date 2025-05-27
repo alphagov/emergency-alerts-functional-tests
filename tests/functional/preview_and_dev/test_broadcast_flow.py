@@ -1,7 +1,7 @@
+import logging
 import time
 import uuid
 from datetime import datetime, timedelta
-from venv import logger
 
 import pytest
 
@@ -631,7 +631,7 @@ def test_return_alert_for_edit(driver):
         reason_for_returning_alert
     )
     alert_page_with_return_for_edit.click_return_alert_for_edit()
-    logger.error(alert_page_with_return_for_edit.get_returned_banner_text())
+    logging.error(alert_page_with_return_for_edit.get_returned_banner_text())
     assert (
         alert_page_with_return_for_edit.get_returned_banner_text()
         == f"Reason why alert has been returned to edit: {reason_for_returning_alert}"
