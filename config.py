@@ -12,29 +12,17 @@ def generate_unique_email(email, uuid):
 # global variable
 config = {
     # static
-    "notification_retry_times": 15,
-    "notification_retry_interval": 5,
-    "letter_retry_times": 48,
-    "provider_retry_times": 12,
-    "provider_retry_interval": 22,
-    "verify_code_retry_times": 8,
-    "verify_code_retry_interval": 9,
-    "govuk_alerts_wait_retry_times": 24,
-    "govuk_alerts_wait_retry_interval": 10,
-    "ui_element_retry_times": 20,
-    "ui_element_retry_interval": 5,
-    "dynamo_query_retry_times": 30,
-    "dynamo_query_retry_interval": 10,
-    "functional_test_service_name": "Functional Test Service_",
-    "letter_contact_data": {
-        "address_line_1": "test",
-        "address_line_2": "London",
-        "postcode": "N1 7RA",
-    },
+    "verify_code_retry_times": 5,
+    "verify_code_retry_interval": 1,
+    "govuk_alerts_wait_retry_times": 20,
+    "govuk_alerts_wait_retry_interval": 5,
+    "ui_element_retry_times": 3,
+    "ui_element_retry_interval": 0.5,
+    "dynamo_query_retry_times": 20,
+    "dynamo_query_retry_interval": 5,
     "notify_templates": {
         "email_auth_template_id": "299726d2-dba6-42b8-8209-30e1d66ea164",
         "invitation_template_id": "4f46df42-f795-4cc4-83bb-65ca312f49cc",
-        "org_invitation_template_id": "203566f0-d835-47c5-aa06-932439c86573",
         "password_reset_template_id": "474e9242-823b-4f99-813d-ed392e7f1201",
         "registration_template_id": "ece42649-22a8-4d06-b87f-d52d5d3f0a27",
         "verify_code_template_id": "36fb0730-6259-4da1-8a80-c8de22ad4246",
@@ -42,7 +30,7 @@ config = {
 }
 
 tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL").removeprefix("https://")
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "").removeprefix("https://")
 urls = {
     "local": {
         "api": "http://localhost:6011",
@@ -131,6 +119,12 @@ def setup_preview_dev_config():
                     "email": os.environ["PLATFORM_ADMIN_EMAIL"],
                     "password": os.environ["PLATFORM_ADMIN_PASSWORD"],
                     "mobile": os.environ["PLATFORM_ADMIN_NUMBER"],
+                },
+                "platform_admin_2": {
+                    "id": os.environ["PLATFORM_ADMIN_2_ID"],
+                    "email": os.environ["PLATFORM_ADMIN_2_EMAIL"],
+                    "password": os.environ["PLATFORM_ADMIN_2_PASSWORD"],
+                    "mobile": os.environ["PLATFORM_ADMIN_2_NUMBER"],
                 },
                 "throttled_user": {
                     "id": os.environ["THROTTLED_USER_ID"],

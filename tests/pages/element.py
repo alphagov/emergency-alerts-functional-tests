@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
 from tests.pages.locators import (
@@ -7,14 +6,15 @@ from tests.pages.locators import (
     ApiKeysPageLocators,
     CommonPageLocators,
     DashboardWithDialogPageLocators,
+    DurationPageLocators,
     EditTemplatePageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
+    RejectionFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
-    UploadCsvLocators,
     VerifyPageLocators,
 )
 
@@ -51,7 +51,7 @@ class ClearableInputElement(BasePageElement):
             lambda driver: driver.find_element(By.NAME, self.name)
         )
         input = driver.find_element(By.NAME, self.name)
-        input.send_keys(Keys.CONTROL + "a")
+        input.clear()
         input.send_keys(value)
 
 
@@ -83,16 +83,20 @@ class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 
+class HoursInputElement(ClearableInputElement):
+    name = DurationPageLocators.HOURS_INPUT[1]
+
+
+class MinutesInputElement(ClearableInputElement):
+    name = DurationPageLocators.MINUTES_INPUT[1]
+
+
 class MobileInputElement(BasePageElement):
     name = SignUpPageLocators.MOBILE_INPUT[1]
 
 
 class TemplateContentElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_CONTENT_INPUT[1]
-
-
-class FileInputElement(BasePageElement):
-    name = UploadCsvLocators.FILE_INPUT[1]
 
 
 class SubjectInputElement(BasePageElement):
@@ -165,3 +169,19 @@ class ExpiryDialog(BasePageElement):
 
 class ExpiryDialogContinueButton(BasePageElement):
     name = DashboardWithDialogPageLocators.CONTINUE_BUTTON[1]
+
+
+class RejectionDetailElement(BasePageElement):
+    name = RejectionFormLocators.REJECTION_DETAIL_ELEMENT[1]
+
+
+class RejectionReasonTextArea(BasePageElement):
+    name = RejectionFormLocators.REJECTION_REASON_TEXTAREA[1]
+
+
+class RejectAlertButton(BasePageElement):
+    name = RejectionFormLocators.REJECT_ALERT_BUTTON[1]
+
+
+class RejectionDetailLink:
+    name = RejectionFormLocators.REJECTION_DETAIL_LINK[1]

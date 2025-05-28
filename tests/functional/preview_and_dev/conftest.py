@@ -1,6 +1,8 @@
+import logging
 import time
 
 import pytest
+from notifications_python_client.errors import HTTPError
 
 from clients.test_api_client import TestApiClient
 from config import config, setup_preview_dev_config
@@ -26,14 +28,24 @@ def preview_dev_config():
     """
     Setup
     """
+    logging.info(str(time.time()) + " Setting up preview_dev_config")
     setup_preview_dev_config()
     test_api_client = create_test_client()
     purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
+    platform_admin_ids = [
+        config["broadcast_service"]["platform_admin"]["id"],
+        config["broadcast_service"]["platform_admin_2"]["id"],
+    ]
+    for user_id in platform_admin_ids:
+        purge_admin_actions_created_by_functional_tests(test_api_client, user_id)
+        reset_platform_admin_redemption(test_api_client, user_id)
     purge_failed_logins_created_by_functional_tests(test_api_client)
     purge_historic_passwords_created_by_functional_tests(test_api_client)
+    yield
+    logging.info(str(time.time()) + " Tearing down preview_dev_config")
 
 
 @pytest.fixture(scope="module")
@@ -46,14 +58,6 @@ def cbc_blackout():
     clear_proxy_error_alarm()
     time.sleep(90)
     put_functional_test_blackout_metric(200)
-
-
-@pytest.fixture(scope="module")
-def failed_login_purge():
-    test_api_client = create_test_client()
-    purge_failed_logins_created_by_functional_tests(test_api_client)
-    yield
-    purge_failed_logins_created_by_functional_tests(test_api_client)
 
 
 @pytest.fixture(scope="module")
@@ -91,6 +95,11 @@ def purge_users_created_by_functional_tests(test_api_client):
     test_api_client.delete(url)
 
 
+def purge_admin_actions_created_by_functional_tests(test_api_client, user_id):
+    url = f"/admin-action/purge/{user_id}"
+    test_api_client.delete(url)
+
+
 def purge_failed_logins_created_by_functional_tests(test_api_client):
     url = "/service/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
@@ -103,3 +112,17 @@ def purge_historic_passwords_created_by_functional_tests(test_api_client):
                 f'/service/purge-historic-passwords-created-by-tests/{str(user["id"])}'
             )
             test_api_client.delete(url)
+
+
+def reset_platform_admin_redemption(test_api_client, user_id):
+    url = f"/user/{user_id}/redeem-elevation"
+    try:
+        test_api_client.post(url, data={})
+    except HTTPError:
+        pass  # May return an error if there's no redemption, but that's ok
+
+
+# A fixture that can be called ad-hoc in tests known to trigger throttling
+@pytest.fixture
+def purge_failed_logins():
+    return lambda: purge_failed_logins_created_by_functional_tests(create_test_client())

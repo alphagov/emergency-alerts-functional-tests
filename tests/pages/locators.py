@@ -6,14 +6,25 @@ class CommonPageLocators(object):
     EMAIL_INPUT = (By.NAME, "email_address")
     PASSWORD_INPUT = (By.NAME, "password")
     MOBILE_NUMBER = (By.NAME, "mobile_number")
-    CONTINUE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+    SUBMIT_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+    CONTINUE_BUTTON = (By.NAME, "continue")
+    PREVIEW_BUTTON = (By.NAME, "preview")
     ACCEPT_COOKIE_BUTTON = (By.CLASS_NAME, "notify-cookie-banner__button-accept")
     LIVE_BROADCAST = (By.CLASS_NAME, "live-broadcast")
     H1 = (By.TAG_NAME, "H1")
-    CONTINUE_SIGNIN_BUTTON = (
+    CONTINUE_FOOTER_BUTTON = (
         By.CSS_SELECTOR,
         "main button.govuk-button.page-footer__button",
     )
+    SUBMIT_FOOTER_BUTTON = (
+        By.CSS_SELECTOR,
+        "main button.govuk-button.page-footer__button",
+    )
+
+
+class DurationPageLocators(object):
+    HOURS_INPUT = (By.ID, "hours")
+    MINUTES_INPUT = (By.ID, "minutes")
 
 
 class MainPageLocators(object):
@@ -26,6 +37,7 @@ class SignUpPageLocators(object):
 
 class SignInPageLocators(object):
     FORGOT_PASSWORD_LINK = (By.LINK_TEXT, "Forgotten your password?")
+    H1 = (By.TAG_NAME, "h1")
 
 
 class NewPasswordPageLocators(object):
@@ -39,7 +51,8 @@ class VerifyPageLocators(object):
 class AddServicePageLocators(object):
     SERVICE_INPUT = (By.NAME, "name")
     ORG_TYPE_INPUT = (By.ID, "organisation_type-0")
-    SERVICE_MODE_INPUT = (By.ID, "channel-0")
+    TRAINING_MODE_INPUT = (By.ID, "channel-0")
+    OPERATOR_MODE_INPUT = (By.ID, "channel-1")
     ADD_SERVICE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
 
 
@@ -68,19 +81,10 @@ class EditTemplatePageLocators(object):
     )
     PREP_TO_SEND_BUTTON = (
         By.XPATH,
-        "//a[contains(@class, 'govuk-link') and contains(text(),'Get ready to send')]",
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Save and get ready to send')]",
     )
     DELETE_BUTTON = (By.LINK_TEXT, "Delete this template")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
-
-
-class UploadCsvLocators(object):
-    FILE_INPUT = (By.ID, "file")
-    SEND_BUTTON = (
-        By.CSS_SELECTOR,
-        "form button.govuk-button:not(.govuk-button--secondary)",
-    )
-    FIRST_NOTIFICATION_AFTER_UPLOAD = (By.CLASS_NAME, "table-row")
 
 
 class TeamMembersPageLocators(object):
@@ -91,6 +95,10 @@ class TeamMembersPageLocators(object):
 
 
 class InviteUserPageLocators(object):
+    CREATE_BROADCASTS_CHECKBOX = (
+        By.CSS_SELECTOR,
+        "[value=create_broadcasts], [name=create_broadcasts]",
+    )
     SEND_MESSAGES_CHECKBOX = (
         By.CSS_SELECTOR,
         "[value=send_messages], [name=send_messages]",
@@ -139,41 +147,6 @@ class ApiKeysPageLocators(object):
     CONFIRM_REVOKE_BUTTON = (By.NAME, "delete")
 
 
-class LetterPreviewPageLocators(object):
-    DOWNLOAD_PDF_LINK = (By.LINK_TEXT, "Download as a PDF")
-    PDF_IMAGE = (By.CSS_SELECTOR, ".letter img")
-
-
-class SingleRecipientLocators(object):
-    USE_MY_EMAIL = (By.LINK_TEXT, "Use my email address")
-    USE_MY_NUMBER = (By.LINK_TEXT, "Use my phone number")
-    PLACEHOLDER_NAME = (By.XPATH, "(//label[@for='placeholder_value'])")
-    PLACEHOLDER_VALUE_INPUT = (By.NAME, "placeholder_value")
-    PREVIEW_TABLE = (By.CLASS_NAME, "email-message-meta")
-    ALTERNATIVE_SENDER_RADIO = (By.CSS_SELECTOR, "input[type='radio'][id='sender-1']")
-
-
-class EmailReplyToLocators(object):
-    ADD_EMAIL_REPLY_TO_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
-    CONTINUE_BUTTON = (
-        By.XPATH,
-        "//a[@class = 'govuk-button' and contains(text(),'Continue')]",
-    )
-    EMAIL_ADDRESS_FIELD = (By.ID, "email_address")
-    REPLY_TO_ADDRESSES = (By.TAG_NAME, "body")
-    IS_DEFAULT_CHECKBOX = (By.ID, "is_default")
-
-
-class SmsSenderLocators(object):
-    SMS_SENDER_FIELD = (By.ID, "sms_sender")
-    SAVE_SMS_SENDER_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
-    ALL_SMS_SENDERS = (By.TAG_NAME, "main")
-    FIRST_CHANGE_LINK = (By.PARTIAL_LINK_TEXT, "Change")
-    SMS_SENDER = (By.CLASS_NAME, "sms-message-sender")
-    SMS_RECIPIENT = (By.CLASS_NAME, "sms-message-recipient")
-    SMS_CONTENT = (By.CLASS_NAME, "sms-message-wrapper")
-
-
 class ServiceSettingsLocators(object):
     SERVICE_NAME = (By.CSS_SELECTOR, ".navigation-service-name")
     DELETE_CONFIRM_BUTTON = (By.NAME, "delete")
@@ -195,7 +168,7 @@ class SupportPageLocators(object):
 class SearchPostcodePageLocators(object):
     POSTCODE_TEXTAREA = (By.ID, "postcode")
     RADIUS_TEXTAREA = (By.ID, "radius")
-    SEARCH_BUTTON = (By.NAME, "radius_btn")
+    SEARCH_BUTTON = (By.NAME, "search_btn")
     PREVIEW_BUTTON = (By.NAME, "preview")
 
 
@@ -219,4 +192,23 @@ class DashboardWithDialogPageLocators(object):
         By.XPATH,
         '//*[@id="activity" and @class="hmrc-timeout-dialog"]',
     )
+    INACTIVITY_WARNING_DIALOG = (
+        By.XPATH,
+        '//*[@id="activity-warning" and @class="hmrc-timeout-dialog"]',
+    )
     CONTINUE_BUTTON = (By.NAME, "continue-btn")
+
+
+class RejectionFormLocators(object):
+    REJECTION_DETAIL_LINK = (
+        By.XPATH,
+        '//*[@id="rejection_reason_details"]/summary/span',
+    )
+    REJECTION_DETAIL_ELEMENT = (By.ID, "rejection_reason_details")
+    REJECTION_REASON_TEXTAREA = (By.ID, "rejection_reason")
+    REJECT_ALERT_BUTTON = (By.CLASS_NAME, "govuk-button--warning")
+
+
+class AdminApprovalPageLocators(object):
+    APPROVE_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='approve']")
+    REJECT_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='reject']")

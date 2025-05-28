@@ -7,6 +7,7 @@ from config import config
 from tests.pages import (
     BasePage,
     ForgotPasswordPage,
+    HomePage,
     NewPasswordPage,
     SignInPage,
     VerifyPage,
@@ -20,15 +21,21 @@ test_group_name = "auth-flow"
 @pytest.mark.xdist_group(name=test_group_name)
 def test_reset_forgotten_password(driver, historic_password_purge):
     clean_session(driver)
+    historic_password_purge()
+
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
 
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
 
     sign_in_page = SignInPage(driver)
+    sign_in_page.get()
     sign_in_page.click_forgot_password_link()
 
     forgot_password_page = ForgotPasswordPage(driver)
     forgot_password_page.input_email_address(login_email)
-    forgot_password_page.click_continue()
+    forgot_password_page.click_submit()
     assert forgot_password_page.text_is_on_page("Check your email")
 
     password_reset_url = create_sign_in_url(login_email, "new-password")
@@ -50,24 +57,43 @@ def test_reset_forgotten_password(driver, historic_password_purge):
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
 
+    password_reset_sign_in_page = SignInPage(driver)
+
+    # Redirects to sign in page so user must sign in again after verifying password reset
+    assert password_reset_sign_in_page.text_is_on_page(
+        "You've just changed your password. Sign in with your new password."
+    )
+    password_reset_sign_in_page.login(login_email, new_password)
+    verify_code = get_verify_code_from_api_by_id(
+        config["broadcast_service"]["broadcast_user_3"]["id"]
+    )
+    verify_page = VerifyPage(driver)
+    verify_page.verify(verify_code)
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_sign_in_with_email_mfa(driver):
+def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     clean_session(driver)
+
+    home_page = HomePage(driver)
+    home_page.get()
+    home_page.accept_cookie_warning()
 
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
+    purge_failed_logins()
     sign_in_page = SignInPage(driver)
     sign_in_page.get()
     assert sign_in_page.is_current()
     sign_in_page.login(login_email, login_pw)
 
+    sign_in_page.wait_until_url_ends_with("/two-factor-email-sent")
     assert sign_in_page.text_is_on_page("a link to sign in")
 
+    purge_failed_logins()
     sign_in_url = create_sign_in_url(login_email, "email-auth")
 
     landing_page = BasePage(driver)

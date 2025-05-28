@@ -1,5 +1,5 @@
-import os
-import shutil
+from contextlib import contextmanager
+from time import sleep
 
 from retry import retry
 from selenium.common.exceptions import (
@@ -24,11 +24,12 @@ from tests.pages.element import (
     ExpiryDialog,
     ExpiryDialogContinueButton,
     FeedbackTextAreaElement,
-    FileInputElement,
     FirstCoordinateInputElement,
+    HoursInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
     KeyNameInputElement,
+    MinutesInputElement,
     MobileInputElement,
     NameInputElement,
     NewPasswordInputElement,
@@ -36,6 +37,10 @@ from tests.pages.element import (
     PostcodeInputElement,
     PreviewButton,
     RadiusInputElement,
+    RejectAlertButton,
+    RejectionDetailElement,
+    RejectionDetailLink,
+    RejectionReasonTextArea,
     SearchButton,
     SearchInputElement,
     SecondCoordinateInputElement,
@@ -46,29 +51,42 @@ from tests.pages.element import (
 )
 from tests.pages.locators import (
     AddServicePageLocators,
+    AdminApprovalPageLocators,
     ApiIntegrationPageLocators,
     ApiKeysPageLocators,
     ChangeNameLocators,
     CommonPageLocators,
     DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
-    EmailReplyToLocators,
     InviteUserPageLocators,
-    LetterPreviewPageLocators,
     MainPageLocators,
     NavigationLocators,
+    RejectionFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
-    SingleRecipientLocators,
-    SmsSenderLocators,
     TeamMembersPageLocators,
     TemplatePageLocators,
-    UploadCsvLocators,
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
+
+
+@contextmanager
+def wait_for_page_load_completion(driver):
+    """
+    A helper (to be used in a with statement) that ensures a navigation event has completed before returning to
+    the caller. Useful if a button press causes a navigation event to a page with new content without needing sleep().
+    """
+    old_page = driver.find_element(by=By.TAG_NAME, value="html")
+    yield
+
+    def page_has_loaded(*args):
+        new_page = driver.find_element(by=By.TAG_NAME, value="html")
+        return new_page.id != old_page.id
+
+    WebDriverWait(driver, 10).until(page_has_loaded)
 
 
 class RetryException(Exception):
@@ -189,6 +207,11 @@ class BasePage(object):
         element.click()
         self.driver.delete_all_cookies()
 
+    def sign_out_if_required(self):
+        if self.text_is_on_page_no_wait("Sign out"):
+            self.sign_out()
+        self.driver.delete_all_cookies()
+
     def wait_until_url_is(self, url):
         return WebDriverWait(self.driver, 10).until(self.url_contains(url))
 
@@ -214,6 +237,9 @@ class BasePage(object):
         if not element.get_attribute("checked"):
             element.click()
             assert element.get_attribute("checked")
+        else:
+            element.click()
+            assert not element.get_attribute("checked")
 
     def unselect_checkbox(self, element):
         if element.get_attribute("checked"):
@@ -229,37 +255,88 @@ class BasePage(object):
         element.click()
 
     def click_save(self, time=10):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON, time=time)
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON, time=time)
         element.click()
 
     def click_continue(self):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_BUTTON)
         element.click()
 
+    def click_preview(self):
+        element = self.wait_for_element(CommonPageLocators.PREVIEW_BUTTON)
+        element.click()
+
+    def click_submit(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON)
+        element.click()
+
     def click_continue_to_signin(self):
-        element = self.wait_for_element(CommonPageLocators.CONTINUE_SIGNIN_BUTTON)
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
+        element.click()
+
+    def click_submit_for_approval(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_FOOTER_BUTTON)
+        element.click()
+
+    def click_continue_to_submit(self):
+        element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
     def is_page_title(self, expected_page_title):
-        element = self.wait_for_element(CommonPageLocators.H1)
-        return element.text == expected_page_title
+        # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            element = self.wait_for_element(CommonPageLocators.H1)
+            if element.text == expected_page_title:
+                return True
+            tries -= 1
+            sleep(retry_interval)
+
+        return False
 
     @retry(
         RetryException,
         tries=config["ui_element_retry_times"],
         delay=config["ui_element_retry_interval"],
     )
-    def text_is_on_page(self, search_text):
+    def text_is_on_page_with_exception(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
         if search_text not in normalized_page_source:
             self.driver.refresh()
             raise RetryException(f'Could not find text "{search_text}"')
         return True
 
-    def is_text_present_on_page(self, search_text):
+    def text_is_on_page_no_wait(self, search_text):
         normalized_page_source = " ".join(self.driver.page_source.split())
+        if search_text in normalized_page_source:
+            return True
 
-        return search_text in normalized_page_source
+    def text_is_on_page(self, search_text):
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            if self.text_is_on_page_no_wait(search_text):
+                return True
+            tries -= 1
+            sleep(retry_interval)
+            self.driver.refresh()
+        return False
+
+    def text_is_not_on_page_no_wait(self, search_text):
+        return not self.text_is_on_page_no_wait(search_text)
+
+    def text_is_not_on_page(self, search_text):
+        tries = config["ui_element_retry_times"]
+        retry_interval = config["ui_element_retry_interval"]
+        while tries > 0:
+            normalized_page_source = " ".join(self.driver.page_source.split())
+            if search_text in normalized_page_source:
+                return False
+            tries -= 1
+            sleep(retry_interval)
+            self.driver.refresh()
+        return True
 
     def get_template_id(self):
         # e.g.
@@ -344,7 +421,8 @@ class RegistrationPage(BasePage):
 class AddServicePage(BasePage):
     service_input = ServiceInputElement()
     org_type_input = AddServicePageLocators.ORG_TYPE_INPUT
-    service_mode_input = AddServicePageLocators.SERVICE_MODE_INPUT
+    training_mode_input = AddServicePageLocators.TRAINING_MODE_INPUT
+    operator_mode_input = AddServicePageLocators.OPERATOR_MODE_INPUT
     add_service_button = AddServicePageLocators.ADD_SERVICE_BUTTON
 
     def is_current(self):
@@ -360,14 +438,21 @@ class AddServicePage(BasePage):
 
     def select_training_mode(self):
         try:
-            self.click_service_mode_input()
+            self.click_service_mode_input(AddServicePage.training_mode_input)
+        except NoSuchElementException:
+            pass
+        self.click_continue()
+
+    def select_operator_mode(self):
+        try:
+            self.click_service_mode_input(AddServicePage.operator_mode_input)
         except NoSuchElementException:
             pass
         self.click_continue()
 
     def confirm_settings(self):
         self.wait_until_url_ends_with("confirm")
-        self.click_continue()
+        self.click_submit()
 
     def click_add_service_button(self):
         element = self.wait_for_element(AddServicePage.add_service_button)
@@ -380,9 +465,9 @@ class AddServicePage(BasePage):
         except TimeoutException:
             pass
 
-    def click_service_mode_input(self):
+    def click_service_mode_input(self, locator):
         try:
-            element = self.wait_for_invisible_element(AddServicePage.service_mode_input)
+            element = self.wait_for_invisible_element(locator)
             element.click()
         except TimeoutException:
             pass
@@ -410,6 +495,7 @@ class SignInPage(BasePage):
     email_input = EmailInputElement()
     password_input = PasswordInputElement()
     forgot_password_link = SignInPageLocators.FORGOT_PASSWORD_LINK
+    h1 = SignInPageLocators.H1
 
     def get(self):
         self.driver.get(self.base_url + "/sign-in")
@@ -426,97 +512,63 @@ class SignInPage(BasePage):
         element.click()
 
     def login(self, email, password):
-        self.fill_login_form(email, password)
-        self.click_continue()
+        with wait_for_page_load_completion(self.driver):
+            self.fill_login_form(email, password)
+            self.click_continue()
+
+    def h1_is_youve_been_signed_out(self):
+        element = self.wait_for_element(SignInPage.h1)
+        return element.text == "You’ve been signed out"
 
 
 class VerifyPage(BasePage):
     sms_input = SmsInputElement()
 
     def verify(self, code):
-        element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
-        element.clear()
-        self.sms_input = code
-        self.click_continue()
+        with wait_for_page_load_completion(self.driver):
+            element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
+            element.clear()
+            self.sms_input = code
+            self.click_submit()
 
 
-class DashboardPage(BasePage):
+class CurrentAlertsPage(BasePage):
     h2 = (By.CLASS_NAME, "navigation-service-name")
-    sms_templates_link = (By.LINK_TEXT, "Text message templates")
-    email_templates_link = (By.LINK_TEXT, "Email templates")
     team_members_link = (By.LINK_TEXT, "Team members")
     api_keys_link = (By.LINK_TEXT, "API integration")
-    total_email_div = (By.CSS_SELECTOR, "#total-email .big-number-number")
-    total_sms_div = (By.CSS_SELECTOR, "#total-sms .big-number-number")
-    total_letter_div = (By.CSS_SELECTOR, "#total-letters .big-number-number")
-    inbox_link = (By.CSS_SELECTOR, "#total-received")
     navigation = (By.CLASS_NAME, "navigation")
 
     def _message_count_for_template_div(self, template_id):
         return (By.ID, template_id)
 
     def is_current(self, service_id):
-        expected = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        expected = "{}/services/{}/current-alerts".format(self.base_url, service_id)
         return self.driver.current_url == expected
 
     def get_service_name(self):
-        element = self.wait_for_element(DashboardPage.h2)
+        element = self.wait_for_element(CurrentAlertsPage.h2)
         return element.text
 
-    def click_sms_templates(self):
-        element = self.wait_for_element(DashboardPage.sms_templates_link)
-        element.click()
-
-    def click_email_templates(self):
-        element = self.wait_for_element(DashboardPage.email_templates_link)
-        element.click()
-
     def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
         element.click()
 
     def click_api_integration(self):
-        element = self.wait_for_element(DashboardPage.api_keys_link)
-        element.click()
-
-    def click_inbox_link(self):
-        element = self.wait_for_element(DashboardPage.inbox_link)
+        element = self.wait_for_element(CurrentAlertsPage.api_keys_link)
         element.click()
 
     def get_service_id(self):
         return self.driver.current_url.split("/services/")[1].split("/")[0]
 
     def get_navigation_list(self):
-        element = self.wait_for_element(DashboardPage.navigation)
+        element = self.wait_for_element(CurrentAlertsPage.navigation)
         return element.text
 
-    def get_notification_id(self):
-        return self.driver.current_url.split("notification/")[1].split("?")[0]
-
-    def go_to_dashboard_for_service(self, service_id=None):
+    def go_to_service_landing_page(self, service_id=None):
         if not service_id:
             service_id = self.get_service_id()
-        url = "{}/services/{}/dashboard".format(self.base_url, service_id)
+        url = "{}/services/{}/current-alerts".format(self.base_url, service_id)
         self.driver.get(url)
-
-    def get_total_message_count(self, message_type):
-        if message_type == "email":
-            target_div = DashboardPage.total_email_div
-        elif message_type == "letter":
-            target_div = DashboardPage.total_letter_div
-        else:
-            target_div = DashboardPage.total_sms_div
-        element = self.wait_for_element(target_div)
-
-        return int(element.text)
-
-    def get_template_message_count(self, template_id):
-        messages_sent_count_for_template_div = self._message_count_for_template_div(
-            template_id
-        )
-        element = self.wait_for_element(messages_sent_count_for_template_div)
-
-        return int(element.text)
 
 
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
@@ -585,14 +637,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # we've seen issues
         radio_element = self.wait_for_invisible_element(type)
         self.select_checkbox_or_radio(radio_element)
-
-        self.click_continue()
-
-    def select_email(self):
-        self._select_template_type(self.email_radio)
-
-    def select_text_message(self):
-        self._select_template_type(self.text_message_radio)
+        self.click_submit()
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
@@ -620,9 +665,8 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         # wait for continue button to be displayed - sticky nav has rendered properly
         # we've seen issues
         radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
-
         self.select_checkbox_or_radio(radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def move_template_to_folder(self, folder_name):
         move_button = self.wait_for_element(self.move_to_existing_folder_link)
@@ -631,7 +675,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             self.input_element_by_label_text(text=folder_name, input_type="radio")
         )
         self.select_checkbox_or_radio(element=radio_element)
-        self.click_continue()
+        self.click_submit()
 
     def get_folder_by_name(self, folder_name):
         try:
@@ -763,43 +807,6 @@ class EditEmailTemplatePage(BasePage):
         element.click()
 
 
-class UploadCsvPage(BasePage):
-    file_input_element = FileInputElement()
-    send_button = UploadCsvLocators.SEND_BUTTON
-    first_notification = UploadCsvLocators.FIRST_NOTIFICATION_AFTER_UPLOAD
-
-    def click_send(self):
-        element = self.wait_for_element(UploadCsvPage.send_button)
-        element.click()
-
-    def upload_csv(self, directory, path):
-        file_path = os.path.join(directory, path)
-        self.file_input_element = file_path
-        self.click_send()
-        shutil.rmtree(directory, ignore_errors=True)
-
-    # we've been having issues with celery short polling causing notifications to take a long time.
-    @retry(RetryException, tries=10, delay=10)
-    def get_notification_id_after_upload(self):
-        try:
-            element = self.wait_for_element(UploadCsvPage.first_notification)
-            notification_id = element.get_attribute("id")
-            if not notification_id:
-                raise RetryException(
-                    "No notification id yet {}".format(notification_id)
-                )
-            else:
-                return notification_id
-        except StaleElementReferenceException:
-            raise RetryException("Could not find element...")
-
-    def go_to_upload_csv_for_service_and_template(self, service_id, template_id):
-        url = "{}/services/{}/send/{}/csv".format(
-            self.base_url, service_id, template_id
-        )
-        self.driver.get(url)
-
-
 class TeamMembersPage(BasePage):
     h1 = TeamMembersPageLocators.H1
     invite_team_member_button = TeamMembersPageLocators.INVITE_TEAM_MEMBER_BUTTON
@@ -838,6 +845,7 @@ class InviteUserPage(BasePage):
     see_dashboard_check_box = InviteUserPageLocators.SEE_DASHBOARD_CHECKBOX
     choose_folders_button = InviteUserPageLocators.CHOOSE_FOLDERS_BUTTON
     send_messages_checkbox = InviteUserPageLocators.SEND_MESSAGES_CHECKBOX
+    create_broadcasts_checkbox = InviteUserPageLocators.CREATE_BROADCASTS_CHECKBOX
     manage_services_checkbox = InviteUserPageLocators.MANAGE_SERVICES_CHECKBOX
     manage_templates_checkbox = InviteUserPageLocators.MANAGE_TEMPLATES_CHECKBOX
     manage_api_keys_checkbox = InviteUserPageLocators.MANAGE_API_KEYS_CHECKBOX
@@ -883,10 +891,17 @@ class InviteUserPage(BasePage):
         element = self.wait_for_element(InviteUserPage.send_invitation_button)
         element.click()
 
-    def send_invitation_without_permissions(self, email):
-        self.email_input = email
-        element = self.wait_for_element(InviteUserPage.send_invitation_button)
-        element.click()
+    def check_create_broadcasts_checkbox(self):
+        element = self.wait_for_invisible_element(
+            InviteUserPage.create_broadcasts_checkbox
+        )
+        self.select_checkbox_or_radio(element)
+
+    def send_invitation_to_email(self, email):
+        with wait_for_page_load_completion(self.driver):
+            self.email_input = email
+            element = self.wait_for_element(InviteUserPage.send_invitation_button)
+            element.click()
 
     # support variants of this page with a 'Save' button instead of 'Send invitation' (both use the same locator)
     def click_save(self):
@@ -982,22 +997,7 @@ class ApiKeysPage(BasePage):
     def create_key(self, key_name):
         self.key_name_input = key_name
         self.select_checkbox_or_radio(value="normal")
-        self.click_continue()
-
-    def get_key_name(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
-        return element.text
-
-    def wait_for_key_copy_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
-        return element
-
-    def wait_for_show_key_button(self):
-        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
-        return element
-
-    def check_new_key_name(self, starts_with):
-        return self.get_key_name().startswith(starts_with)
+        self.click_submit()
 
     def get_revoke_link_for_api_key(self, key_name):
         return self.wait_for_element(
@@ -1012,56 +1012,6 @@ class ApiKeysPage(BasePage):
         element.click()
 
         element = self.wait_for_element(ApiKeysPage.confirm_revoke_button)
-        element.click()
-
-
-class PreviewLetterPage(BasePage):
-    download_pdf_link = LetterPreviewPageLocators.DOWNLOAD_PDF_LINK
-    pdf_image = LetterPreviewPageLocators.PDF_IMAGE
-
-    def get_download_pdf_link(self):
-        link = self.wait_for_element(PreviewLetterPage.download_pdf_link)
-        return link.get_attribute("href")
-
-    def get_image_src(self):
-        link = self.wait_for_element(PreviewLetterPage.pdf_image)
-        return link.get_attribute("src")
-
-
-class SendOneRecipient(BasePage):
-    def is_placeholder_a_recipient_field(self, message_type):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
-        if message_type == "email":
-            return element.text.strip() == "email address"
-        else:
-            return element.text.strip() == "phone number"
-
-    def get_placeholder_name(self):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_NAME)
-        return element.text.strip()
-
-    def enter_placeholder_value(self, placeholder_value):
-        element = self.wait_for_element(SingleRecipientLocators.PLACEHOLDER_VALUE_INPUT)
-        element.send_keys(placeholder_value)
-
-    def get_preview_contents(self):
-        table = self.wait_for_element(SingleRecipientLocators.PREVIEW_TABLE)
-        rows = table.find_elements(
-            By.TAG_NAME, "tr"
-        )  # get all of the rows in the table
-        return rows
-
-    def choose_alternative_sender(self):
-        radio = self.wait_for_invisible_element(
-            SingleRecipientLocators.ALTERNATIVE_SENDER_RADIO
-        )
-        radio.click()
-
-    def send_to_myself(self, message_type):
-        if message_type == "email":
-            element = self.wait_for_element(SingleRecipientLocators.USE_MY_EMAIL)
-        else:
-            element = self.wait_for_element(SingleRecipientLocators.USE_MY_NUMBER)
         element.click()
 
 
@@ -1085,13 +1035,19 @@ class ServiceSettingsPage(BasePage):
         return element.text
 
     def save_service_name(self, new_name):
-        self.name_input = new_name
-        self.click_save()
+        with wait_for_page_load_completion(self.driver):
+            self.name_input = new_name
+            self.click_save()
 
     def delete_service(self):
-        self.click_element_by_link_text("Delete this service")
-        element = self.wait_for_element(ServiceSettingsLocators.DELETE_CONFIRM_BUTTON)
-        element.click()
+        # There's two navigations here, so we need to ensure we don't return after only the first one
+        with wait_for_page_load_completion(self.driver):
+            self.click_element_by_link_text("Delete this service")
+        with wait_for_page_load_completion(self.driver):
+            element = self.wait_for_element(
+                ServiceSettingsLocators.DELETE_CONFIRM_BUTTON
+            )
+            element.click()
 
 
 class ProfileSettingsPage(BasePage):
@@ -1113,15 +1069,13 @@ class ProfileSettingsPage(BasePage):
 
     def save_name(self, new_name):
         self.name_input = new_name
-        self.click_save()
 
     def save_mobile_number(self, new_number):
         self.mobile_input = new_number
-        self.click_save()
 
     def enter_password(self, password):
         self.password_input = password
-        self.click_save()
+        self.click_continue_to_submit()
 
     def enter_verification_code(self, code):
         self.verification_code_input = code
@@ -1139,79 +1093,6 @@ class ChangeName(BasePage):
         element.send_keys(new_name)
 
 
-class EmailReplyTo(BasePage):
-    def go_to_add_email_reply_to_address(self, service_id):
-        url = "{}/services/{}/service-settings/email-reply-to/add".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def click_add_email_reply_to(self):
-        element = self.wait_for_element(EmailReplyToLocators.ADD_EMAIL_REPLY_TO_BUTTON)
-        element.click()
-
-    def click_continue_button(self, time=120):
-        element = self.wait_for_element(EmailReplyToLocators.CONTINUE_BUTTON, time=time)
-        element.click()
-
-    def insert_email_reply_to_address(self, email_address):
-        element = self.wait_for_element(EmailReplyToLocators.EMAIL_ADDRESS_FIELD)
-        element.send_keys(email_address)
-
-    def get_reply_to_email_addresses(self):
-        elements = self.wait_for_element(EmailReplyToLocators.REPLY_TO_ADDRESSES)
-        return elements
-
-    def go_to_edit_email_reply_to_address(self, service_id, email_reply_to_id):
-        url = "{}/services/{}/service-settings/email-reply-to/{}/edit".format(
-            self.base_url, service_id, email_reply_to_id
-        )
-        self.driver.get(url)
-
-    def check_is_default_check_box(self):
-        radio = self.wait_for_invisible_element(
-            EmailReplyToLocators.IS_DEFAULT_CHECKBOX
-        )
-        radio.click()
-
-
-class SmsSenderPage(BasePage):
-    def go_to_text_message_senders(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def go_to_add_text_message_sender(self, service_id):
-        url = "{}/services/{}/service-settings/sms-sender/add".format(
-            self.base_url, service_id
-        )
-        self.driver.get(url)
-
-    def insert_sms_sender(self, sender):
-        element = self.wait_for_element(SmsSenderLocators.SMS_SENDER_FIELD)
-        element.clear()
-        element.send_keys(sender)
-
-    def click_save_sms_sender(self):
-        element = self.wait_for_element(SmsSenderLocators.SAVE_SMS_SENDER_BUTTON)
-        element.click()
-
-    def get_sms_senders(self):
-        elements = self.wait_for_element(SmsSenderLocators.ALL_SMS_SENDERS)
-        return elements
-
-    def click_change_link_for_first_sms_sender(self):
-        change_link = self.wait_for_element(SmsSenderLocators.FIRST_CHANGE_LINK)
-        change_link.click()
-
-    def get_sms_sender(self):
-        return self.wait_for_element(SmsSenderLocators.SMS_SENDER)
-
-    def get_sms_recipient(self):
-        return self.wait_for_element(SmsSenderLocators.SMS_RECIPIENT)
-
-
 class OrganisationDashboardPage(BasePage):
     h1 = (By.CSS_SELECTOR, "h1")
     team_members_link = (By.LINK_TEXT, "Team members")
@@ -1222,7 +1103,7 @@ class OrganisationDashboardPage(BasePage):
         return self.driver.current_url == expected
 
     def click_team_members_link(self):
-        element = self.wait_for_element(DashboardPage.team_members_link)
+        element = self.wait_for_element(CurrentAlertsPage.team_members_link)
         element.click()
 
     def go_to_dashboard_for_org(self, org_id):
@@ -1374,6 +1255,15 @@ class GovUkAlertsPage(BasePage):
             )
 
 
+class BroadcastDurationPage(BasePage):
+    hours_input = HoursInputElement(name="hours")
+    minutes_input = MinutesInputElement(name="minutes")
+
+    def set_alert_duration(self, hours, minutes):
+        self.hours_input = hours
+        self.minutes_input = minutes
+
+
 class SupportFeedbackPage(BasePage):
     text_input = FeedbackTextAreaElement()
 
@@ -1404,6 +1294,8 @@ class PlatformAdminPage(BasePage):
     search_link = (By.LINK_TEXT, "Search")
     search_input = SearchInputElement()
 
+    request_elevation_link = (By.LINK_TEXT, "Request elevation")
+
     def subheading_is(self, expected_subheading):
         element = self.wait_for_element(CommonPageLocators.H2)
         return element.text == expected_subheading
@@ -1412,9 +1304,13 @@ class PlatformAdminPage(BasePage):
         element = self.wait_for_element(PlatformAdminPage.search_link)
         element.click()
 
+    def click_request_elevation_link(self):
+        element = self.wait_for_element(PlatformAdminPage.request_elevation_link)
+        element.click()
+
     def search_for(self, text):
         self.search_input = text
-        self.click_continue()
+        self.click_submit()
 
 
 class ChooseCoordinatesType(BasePage):
@@ -1469,6 +1365,12 @@ class DashboardWithDialogs(BasePage):
         )
         return element.get_attribute("open")
 
+    def is_inactivity_warning_dialog_visible(self):
+        element = self.wait_for_element(
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+        )
+        return element.get_attribute("open")
+
     def is_expiry_dialog_visible(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
         return element.get_attribute("open")
@@ -1484,3 +1386,59 @@ class DashboardWithDialogs(BasePage):
             DashboardWithDialogPageLocators.EXPIRY_DIALOG
         )
         return not element.get_attribute("open")
+
+
+class RejectionForm(BasePage):
+    rejection_detail_element = RejectionDetailElement()
+    rejection_reason_text_area = RejectionReasonTextArea()
+    reject_alert_btn = RejectAlertButton()
+    rejection_detail_link = RejectionDetailLink()
+
+    def click_open_reject_detail(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_LINK)
+        element.click()
+
+    def rejection_details_is_open(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        return element.get_attribute("open")
+
+    def rejection_details_is_closed(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
+        return not element.get_attribute("open")
+
+    def click_reject_alert(self):
+        element = self.wait_for_element(RejectionFormLocators.REJECT_ALERT_BUTTON)
+        element.click()
+
+    def create_rejection_reason_input(self, content):
+        self.rejection_reason_text_area = content
+
+    def get_rejection_form_errors(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-message")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
+
+class AdminApprovalsPage(BasePage):
+    def approve_action(self):
+        # Actions can vary on where they direct to after approving, so just wait for the page to finish navigating
+        # somewhere before letting the test continue. This avoids having to sleep arbitrarily.
+        with wait_for_page_load_completion(self.driver):
+            approve = self.wait_for_element(AdminApprovalPageLocators.APPROVE_BUTTON)
+            approve.click()
+
+    # Only relevant for approved API key actions:
+    def get_key_name(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_VALUE)
+        return element.text
+
+    def wait_for_key_copy_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_COPY_BUTTON)
+        return element
+
+    def wait_for_show_key_button(self):
+        element = self.wait_for_element(ApiKeysPageLocators.KEY_SHOW_BUTTON)
+        return element
+
+    def check_new_key_name(self, starts_with):
+        return self.get_key_name().startswith(starts_with)
