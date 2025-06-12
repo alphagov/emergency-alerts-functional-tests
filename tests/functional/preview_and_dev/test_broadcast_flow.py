@@ -20,6 +20,7 @@ from tests.pages.pages import (
     ChooseCoordinateArea,
     ChooseCoordinatesType,
     RejectionForm,
+    ReturnAlertForEditForm,
     SearchPostcodePage,
 )
 from tests.pages.rollups import sign_in
@@ -551,3 +552,94 @@ def test_reject_alert_with_reason(driver):
     rejected_alerts_page = BasePage(driver)
     assert rejected_alerts_page.text_is_on_page(broadcast_title)
     assert rejected_alerts_page.text_is_on_page(rejection_reason)
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_return_alert_for_edit(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = f"test broadcast {test_uuid}"
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = f"This is a test broadcast {test_uuid}"
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    preview_alert_page.sign_out()
+
+    # Return the alert for edit
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
+
+    alert_page_with_return_for_edit = ReturnAlertForEditForm(driver)
+    assert alert_page_with_return_for_edit.return_for_edit_details_is_closed()
+    alert_page_with_return_for_edit.click_open_return_for_edit_detail()
+    assert alert_page_with_return_for_edit.return_for_edit_details_is_open()
+
+    # Without rejection reason
+    reason_for_returning_alert = ""
+    alert_page_with_return_for_edit.create_return_for_edit_reason_input(
+        reason_for_returning_alert
+    )
+    alert_page_with_return_for_edit.click_return_alert_for_edit()
+
+    # Assert errors appear
+    assert (
+        alert_page_with_return_for_edit.get_return_for_edit_form_errors()
+        == "Error:\nEnter the reason for returning the alert for edit"
+    )
+
+    # With reason for returning alert for edit
+    reason_for_returning_alert = (
+        "This is a test reason for returning the alert for edit."
+    )
+    alert_page_with_return_for_edit.create_return_for_edit_reason_input(
+        reason_for_returning_alert
+    )
+    alert_page_with_return_for_edit.click_return_alert_for_edit()
+    assert (
+        alert_page_with_return_for_edit.get_returned_banner_text()
+        == f"Reason why alert has been returned to edit: {reason_for_returning_alert}"
+    )
+    assert alert_page_with_return_for_edit.text_is_on_page(
+        "Submitted by Functional Tests - Broadcast User Create"
+    )
+    assert alert_page_with_return_for_edit.text_is_on_page(
+        "Returned by Functional Tests - Broadcast User Approve"
+    )
+
+    assert current_alerts_page.text_is_on_page("Current alerts")
+    assert current_alerts_page.text_is_on_page(broadcast_title)

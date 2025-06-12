@@ -41,6 +41,7 @@ from tests.pages.element import (
     RejectionDetailElement,
     RejectionDetailLink,
     RejectionReasonTextArea,
+    ReturnForEditReasonTextArea,
     SearchButton,
     SearchInputElement,
     SecondCoordinateInputElement,
@@ -62,6 +63,7 @@ from tests.pages.locators import (
     MainPageLocators,
     NavigationLocators,
     RejectionFormLocators,
+    ReturnForEditFormLocators,
     SearchCoordinatePageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
@@ -1417,6 +1419,48 @@ class RejectionForm(BasePage):
         error_message = (By.CSS_SELECTOR, ".govuk-error-message")
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
+
+
+class ReturnAlertForEditForm(BasePage):
+    return_for_edit_reason_text_area = ReturnForEditReasonTextArea()
+
+    def click_open_return_for_edit_detail(self):
+        element = self.wait_for_element(
+            ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_LINK
+        )
+        element.click()
+
+    def return_for_edit_details_is_open(self):
+        element = self.wait_for_element(
+            ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
+        )
+        return element.get_attribute("open")
+
+    def return_for_edit_details_is_closed(self):
+        element = self.wait_for_element(
+            ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
+        )
+        return not element.get_attribute("open")
+
+    def click_return_alert_for_edit(self):
+        element = self.wait_for_element(
+            ReturnForEditFormLocators.RETURN_FOR_EDIT_ALERT_BUTTON
+        )
+        element.click()
+
+    def create_return_for_edit_reason_input(self, content):
+        self.return_for_edit_reason_text_area = content
+
+    def get_return_for_edit_form_errors(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-message")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
+    def get_returned_banner_text(self):
+        element = self.wait_for_element(
+            ReturnForEditFormLocators.RETURN_FOR_EDIT_BANNER
+        )
+        return element.text.strip()
 
 
 class AdminApprovalsPage(BasePage):
