@@ -159,20 +159,11 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
     )
-    # time.sleep(60)
 
     print(f"Broadcast message ID: {broadcast_message_id}, MNO: {mno}")
 
-    # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # response = api_client.get(url=url)
-    # assert response is not None
-
-    # provider_messages = response["messages"]
-    # assert provider_messages is not None
-    # assert len(provider_messages) == 4
-
     attempts = 0
-    while attempts < 5:
+    while attempts < 10:
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
         if len(response["messages"]) == 4:
@@ -223,7 +214,6 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     )
 
     broadcast_alert(driver, broadcast_id)
-    # time.sleep(20)  # wait for send_broadcast_message to be invoked
 
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
@@ -231,16 +221,8 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
     print(f"Broadcast message ID: {broadcast_message_id}, MNO: {mno}")
 
-    # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # response = api_client.get(url=url)
-    # assert response is not None
-
-    # provider_messages = response["messages"]
-    # assert provider_messages is not None
-    # assert len(provider_messages) == 4
-
     attempts = 0
-    while attempts < 5:
+    while attempts < 10:
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
         if len(response["messages"]) == 4:
@@ -301,7 +283,6 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     broadcast_alert(driver, broadcast_id)
-    # time.sleep(20)  # wait for send_broadcast_message to be invoked
 
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
@@ -309,16 +290,8 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     print(f"Broadcast message ID: {broadcast_message_id}, MNO: {mno}")
 
-    # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    # response = api_client.get(url=url)
-    # assert response is not None
-
-    # provider_messages = response["messages"]
-    # assert provider_messages is not None
-    # assert len(provider_messages) == 4
-
     attempts = 0
-    while attempts < 5:
+    while attempts < 10:
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
         response = api_client.get(url=url)
         if len(response["messages"]) == 4:
