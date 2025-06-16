@@ -155,20 +155,34 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     )
 
     broadcast_alert(driver, broadcast_id)
+    
     (service_id, broadcast_message_id) = get_service_and_broadcast_id(
         driver.current_url
     )
-    time.sleep(60)
+    # time.sleep(60)
 
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
+    print(f"Broadcast message ID: {broadcast_message_id}, MNO: {mno}")
 
-    provider_messages = response["messages"]
-    assert provider_messages is not None
-    assert len(provider_messages) == 4
+    # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    # response = api_client.get(url=url)
+    # assert response is not None
 
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+    # provider_messages = response["messages"]
+    # assert provider_messages is not None
+    # assert len(provider_messages) == 4
+
+    attempts = 0
+    while attempts < 5:
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        response = api_client.get(url=url)
+        if len(response["messages"]) == 4:
+            break
+        attempts += 1
+        time.sleep(10)
+
+    assert len(response["messages"]) == 4
+
+    request_id = dict_item_for_key_value(response["messages"], "provider", mno, "id")
 
     def _check_for_responses_from_secondary_az(resp):
         az2 = dynamo_item_for_key_value(
