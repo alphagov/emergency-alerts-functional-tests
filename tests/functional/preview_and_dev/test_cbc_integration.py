@@ -40,14 +40,27 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
-    alerturl = driver.current_url.split("services/")[1]
-    service_id = alerturl.split("/current-alerts/")[0]
-    broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    # alerturl = driver.current_url.split("services/")[1]
+    # service_id = alerturl.split("/current-alerts/")[0]
+    # broadcast_message_id = alerturl.split("/current-alerts/")[1]
 
-    time.sleep(60)
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
+    # time.sleep(60)
+    # url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    # response = api_client.get(url=url)
+    # assert response is not None
+
+    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
+        driver.current_url
+    )
+
+    attempts = 0
+    while attempts < 10:
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        response = api_client.get(url=url)
+        if len(response["messages"]) == 4:
+            break
+        attempts += 1
+        time.sleep(10)
 
     provider_messages = response["messages"]
     logging.info(f"Provider messages: {provider_messages}")
