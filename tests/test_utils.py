@@ -24,7 +24,8 @@ from tests.pages import (
 )
 
 logging.basicConfig(
-    filename="./logs/test_run_{}.log".format(datetime.utcnow()), level=logging.INFO
+    filename="./logs/test_run_{}.log".format(datetime.now(timezone.utc)),
+    level=logging.INFO,
 )
 
 ACCOUNTS_REQUIRING_SMS_2FA = [
@@ -211,11 +212,11 @@ def recordtime(func):
     def wrapper(*args, **kwargs):
         try:
             logging.info("Starting Test: {}".format(func.__name__))
-            logging.info("Start Time: {}".format(str(datetime.utcnow())))
+            logging.info("Start Time: {}".format(str(datetime.now(timezone.utc))))
             result = func(*args, **kwargs)
             return result
         finally:
-            logging.info("End Time: {}".format(str(datetime.utcnow())))
+            logging.info("End Time: {}".format(str(datetime.now(timezone.utc))))
 
     return wrapper
 

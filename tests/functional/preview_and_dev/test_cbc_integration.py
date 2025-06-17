@@ -40,19 +40,9 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
-    alerturl = driver.current_url.split("services/")[1]
-    service_id = alerturl.split("/current-alerts/")[0]
-    broadcast_message_id = alerturl.split("/current-alerts/")[1]
-
-    time.sleep(60)
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
-
-    provider_messages = response["messages"]
+    provider_messages = fetch_provider_messages(driver, api_client)
     logging.info(f"Provider messages: {provider_messages}")
 
-    assert provider_messages is not None
     assert len(provider_messages) == 4
 
     distinct_request_ids = 0
@@ -155,17 +145,9 @@ def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
     )
 
     broadcast_alert(driver, broadcast_id)
-    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
-        driver.current_url
-    )
-    time.sleep(60)
 
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
+    provider_messages = fetch_provider_messages(driver, api_client)
 
-    provider_messages = response["messages"]
-    assert provider_messages is not None
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
@@ -209,18 +191,9 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     )
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(10)  # wait for send_broadcast_message to be invoked
 
-    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
-        driver.current_url
-    )
+    provider_messages = fetch_provider_messages(driver, api_client)
 
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
-
-    provider_messages = response["messages"]
-    assert provider_messages is not None
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
@@ -274,18 +247,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     broadcast_alert(driver, broadcast_id)
-    time.sleep(10)  # wait for send_broadcast_message to be invoked
 
-    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
-        driver.current_url
-    )
+    provider_messages = fetch_provider_messages(driver, api_client)
 
-    url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
-    response = api_client.get(url=url)
-    assert response is not None
-
-    provider_messages = response["messages"]
-    assert provider_messages is not None
     assert len(provider_messages) == 4
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
@@ -370,3 +334,20 @@ def dynamo_items_for_key_value(data, key, value, item):
 def set_loopback_response_codes(ddbc, response_code=200, cbc_list=None):
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
     time.sleep(10)
+
+
+def fetch_provider_messages(driver, api_client):
+    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
+        driver.current_url
+    )
+
+    attempts = 0
+    while attempts < 10:
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+        response = api_client.get(url=url)
+        if len(response["messages"]) == 4:
+            break
+        attempts += 1
+        time.sleep(10)
+
+    return response["messages"]
