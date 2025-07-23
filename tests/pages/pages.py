@@ -1276,11 +1276,6 @@ class GovUkAlertsPage(BasePage):
                 f'Could not find alert with extra content "{extra_content}"'
             )
 
-    def find_alert_page(self, extra_content):
-        return self.driver.find_elements(
-            By.XPATH, f"//div[contains(text(), '{extra_content}')]//a"
-        ).get_attribute("href")
-
 
 class BroadcastDurationPage(BasePage):
     hours_input = HoursInputElement(name="hours")
