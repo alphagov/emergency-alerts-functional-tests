@@ -666,7 +666,7 @@ def test_return_alert_for_edit(driver):
     )
     alert_page_with_return_for_edit.click_return_alert_for_edit()
     assert (
-        f"This alert has been returned to edit, because {reason_for_returning_alert}"
+        f"This alert has been returned to edit, because: {reason_for_returning_alert}"
         in alert_page_with_return_for_edit.get_returned_banner_text()
     )
     assert alert_page_with_return_for_edit.text_is_on_page(
