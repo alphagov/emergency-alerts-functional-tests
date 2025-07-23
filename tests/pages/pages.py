@@ -23,6 +23,7 @@ from tests.pages.element import (
     EmailInputElement,
     ExpiryDialog,
     ExpiryDialogContinueButton,
+    ExtraContentElement,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
     HoursInputElement,
@@ -59,6 +60,7 @@ from tests.pages.locators import (
     CommonPageLocators,
     DashboardWithDialogPageLocators,
     EditTemplatePageLocators,
+    ExtraContentPageLocators,
     InviteUserPageLocators,
     MainPageLocators,
     NavigationLocators,
@@ -1236,6 +1238,17 @@ class BroadcastFreeformPage(BasePage):
         self.content_input = content
 
 
+class ExtraContentPage(BasePage):
+    extra_content_input = ExtraContentElement()
+
+    def create_extra_content(self, extra_content):
+        self.extra_content_input = extra_content
+
+    def click_no_longer_required(self):
+        element = self.wait_for_element(ExtraContentPageLocators.DISCARD_LINK[1])
+        element.click()
+
+
 class GovUkAlertsPage(BasePage):
     def __init__(self, driver):
         self.gov_uk_alerts_url = config["govuk_alerts_url"]
@@ -1254,6 +1267,13 @@ class GovUkAlertsPage(BasePage):
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
+            )
+
+    def check_extra_content_appears(self, extra_content):
+        if not self.text_is_on_page(extra_content):
+            self.driver.refresh()
+            raise RetryException(
+                f'Could not find alert with extra content "{extra_content}"'
             )
 
 
@@ -1457,10 +1477,9 @@ class ReturnAlertForEditForm(BasePage):
         return errors.text.strip()
 
     def get_returned_banner_text(self):
-        element = self.wait_for_element(
-            ReturnForEditFormLocators.RETURN_FOR_EDIT_BANNER
-        )
-        return element.text.strip()
+        error_message = (By.CSS_SELECTOR, ".govuk-error-summary")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
 
 
 class AdminApprovalsPage(BasePage):
