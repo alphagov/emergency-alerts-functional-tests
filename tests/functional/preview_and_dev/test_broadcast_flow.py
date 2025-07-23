@@ -56,7 +56,7 @@ def test_prepare_broadcast_with_new_content(driver):
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
@@ -145,7 +145,7 @@ def test_prepare_broadcast_with_template(driver):
 
     templates_page.click_element_by_link_text("Save and get ready to send")
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
@@ -306,7 +306,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
@@ -430,7 +430,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
@@ -521,7 +521,7 @@ def test_reject_alert_with_reason(driver):
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
@@ -604,7 +604,7 @@ def test_return_alert_for_edit(driver):
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
-    # Choosing not to add exra_content
+    # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)
     choose_extra_content_page.select_checkbox_or_radio(value="no")
     choose_extra_content_page.click_continue()
