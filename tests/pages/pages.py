@@ -1269,12 +1269,17 @@ class GovUkAlertsPage(BasePage):
                 f'Could not find alert with content "{broadcast_content}"'
             )
 
-    def check_extra_content_is_published(self, extra_content):
+    def check_extra_content_appears(self, extra_content):
         if not self.text_is_on_page(extra_content):
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with extra content "{extra_content}"'
             )
+
+    def get_alert_url(self, text):
+        xpath = f"""//div[p[contains(text(),'{text}')]]//a[contains(text(),'More information')]"""
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
 
 
 class BroadcastDurationPage(BasePage):

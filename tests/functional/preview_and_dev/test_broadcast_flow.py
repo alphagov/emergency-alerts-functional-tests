@@ -719,7 +719,7 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content, extra_content
+        driver, "Current alerts", broadcast_content
     )
 
     # get back to the alert page
@@ -736,7 +736,9 @@ def test_prepare_broadcast_with_extra_content(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     time.sleep(10)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Past alerts", broadcast_content, extra_content
+    )
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
