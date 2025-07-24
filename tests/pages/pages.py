@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 from time import sleep
 
@@ -1263,6 +1264,7 @@ class GovUkAlertsPage(BasePage):
         delay=config["govuk_alerts_wait_retry_interval"],
     )
     def check_alert_is_published(self, driver, broadcast_content):
+        logging.info(driver.page_source)
         if broadcast_content not in driver.page_source:
             driver.refresh()
             raise RetryException(
