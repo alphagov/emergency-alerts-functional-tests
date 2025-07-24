@@ -1262,31 +1262,19 @@ class GovUkAlertsPage(BasePage):
         tries=config["govuk_alerts_wait_retry_times"],
         delay=config["govuk_alerts_wait_retry_interval"],
     )
-    def check_alert_is_published(self, driver, broadcast_content):
-        if (
-            str(broadcast_content)
-            not in driver.find_element(by=By.TAG_NAME, value="p").text
-        ):
+    def check_alert_is_published(self, broadcast_content):
+        if not self.text_is_on_page(broadcast_content):
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
             )
 
-    def check_extra_content_appears(self, driver, extra_content):
-        if (
-            str(extra_content)
-            not in driver.find_element(by=By.TAG_NAME, value="p").text
-        ):
+    def check_extra_content_is_published(self, extra_content):
+        if not self.text_is_on_page(extra_content):
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with extra content "{extra_content}"'
             )
-
-    def get_alert_url(self, text):
-        xpath = f"""//p[contains(text(),'{text}')]/following-sibling::a[contains(text(),
-        'More information about this alert')]"""
-        element = self.wait_for_element((By.XPATH, xpath))
-        element.click()
 
 
 class BroadcastDurationPage(BasePage):
