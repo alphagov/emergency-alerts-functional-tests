@@ -1276,6 +1276,12 @@ class GovUkAlertsPage(BasePage):
                 f'Could not find alert with extra content "{extra_content}"'
             )
 
+    def get_alert_url(self, text):
+        xpath = f"""//div[p[contains(text(),'{text}')]]/following-sibling::a[contains(text(),
+        'More information about this alert')]"""
+        element = self.wait_for_element((By.XPATH, xpath))
+        element.click()
+
 
 class BroadcastDurationPage(BasePage):
     hours_input = HoursInputElement(name="hours")
