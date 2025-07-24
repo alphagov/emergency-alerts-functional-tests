@@ -1264,14 +1264,14 @@ class GovUkAlertsPage(BasePage):
     )
     def check_alert_is_published(self, driver, broadcast_content):
         if broadcast_content not in driver.page_source:
-            self.driver.refresh()
+            driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
             )
 
-    def check_extra_content_appears(self, extra_content):
-        if not self.text_is_on_page(extra_content):
-            self.driver.refresh()
+    def check_extra_content_appears(self, driver, extra_content):
+        if extra_content not in driver.page_source:
+            driver.refresh()
             raise RetryException(
                 f'Could not find alert with extra content "{extra_content}"'
             )
