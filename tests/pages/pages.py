@@ -1276,10 +1276,10 @@ class GovUkAlertsPage(BasePage):
                 f'Could not find alert with extra content "{extra_content}"'
             )
 
-    def get_alert_url(self, text):
+    def get_alert_url(self, driver, text):
         xpath = f"//div[div[p[contains(text(),'{text}')]]]//a[contains(text(),'More information')]"
-        element = self.wait_for_element((xpath))
-        element.click()
+        link2 = driver.find_element(By.XPATH, value=xpath)
+        link2.click()
 
 
 class BroadcastDurationPage(BasePage):
