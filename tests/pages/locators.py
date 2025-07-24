@@ -90,10 +90,6 @@ class EditTemplatePageLocators(object):
 class ExtraContentPageLocators(object):
     EXTRA_CONTENT_INPUT = (By.NAME, "extra_content")
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
-    DISCARD_LINK = (
-        By.XPATH,
-        "//a[contains(@class, 'govuk-link') and contains(text(),'No longer required, return to alert')]",
-    )
 
 
 class TeamMembersPageLocators(object):
