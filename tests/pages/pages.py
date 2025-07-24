@@ -1277,7 +1277,7 @@ class GovUkAlertsPage(BasePage):
             )
 
     def get_alert_url(self, text):
-        xpath = f"""//div[p[contains(text(),'{text}')]]/following-sibling::a[contains(text(),
+        xpath = f"""//p[contains(text(),'{text}')]/following-sibling::a[contains(text(),
         'More information about this alert')]"""
         element = self.wait_for_element((By.XPATH, xpath))
         element.click()
