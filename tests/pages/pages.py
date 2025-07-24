@@ -1278,10 +1278,6 @@ class GovUkAlertsPage(BasePage):
 
     def get_alert_url(self, text):
         xpath = f"//div[div[p[contains(text(),'{text}')]]]//a[contains(text(),'More information')]"
-        xpath = (
-            By.XPATH,
-            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{text}')]",
-        )
         element = self.wait_for_element(xpath)
         element.click()
 
