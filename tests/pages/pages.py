@@ -1262,8 +1262,8 @@ class GovUkAlertsPage(BasePage):
         tries=config["govuk_alerts_wait_retry_times"],
         delay=config["govuk_alerts_wait_retry_interval"],
     )
-    def check_alert_is_published(self, broadcast_content):
-        if not self.text_is_on_page(broadcast_content):
+    def check_alert_is_published(self, driver, broadcast_content):
+        if broadcast_content not in driver.page_source:
             self.driver.refresh()
             raise RetryException(
                 f'Could not find alert with content "{broadcast_content}"'
