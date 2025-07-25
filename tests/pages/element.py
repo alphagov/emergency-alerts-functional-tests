@@ -8,6 +8,7 @@ from tests.pages.locators import (
     DashboardWithDialogPageLocators,
     DurationPageLocators,
     EditTemplatePageLocators,
+    ExtraContentPageLocators,
     NewPasswordPageLocators,
     PlatformAdminPageLocators,
     RejectionFormLocators,
@@ -98,6 +99,10 @@ class MobileInputElement(BasePageElement):
 
 class TemplateContentElement(BasePageElement):
     name = EditTemplatePageLocators.TEMPLATE_CONTENT_INPUT[1]
+
+
+class ExtraContentElement(BasePageElement):
+    name = ExtraContentPageLocators.EXTRA_CONTENT_INPUT[1]
 
 
 class SubjectInputElement(BasePageElement):
