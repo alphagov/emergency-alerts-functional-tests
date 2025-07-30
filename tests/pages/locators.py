@@ -87,6 +87,11 @@ class EditTemplatePageLocators(object):
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
 
 
+class ExtraContentPageLocators(object):
+    EXTRA_CONTENT_INPUT = (By.NAME, "extra_content")
+    SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
+
+
 class TeamMembersPageLocators(object):
     H1 = (By.TAG_NAME, "h1")
     INVITE_TEAM_MEMBER_BUTTON = (By.CSS_SELECTOR, "a.govuk-button")

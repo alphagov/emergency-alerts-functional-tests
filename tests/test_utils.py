@@ -221,11 +221,16 @@ def recordtime(func):
     return wrapper
 
 
-def check_alert_is_published_on_govuk_alerts(driver, page_title, broadcast_content):
+def check_alert_is_published_on_govuk_alerts(
+    driver, page_title, broadcast_content, extra_content=None
+):
     gov_uk_alerts_page = GovUkAlertsPage(driver)
     gov_uk_alerts_page.get()
     gov_uk_alerts_page.click_element_by_link_text(page_title)
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+    if extra_content:
+        gov_uk_alerts_page.get_alert_url(driver, broadcast_content)
+        gov_uk_alerts_page.check_extra_content_appears(extra_content)
 
 
 def create_sign_in_url(email, url, next_redirect=None):

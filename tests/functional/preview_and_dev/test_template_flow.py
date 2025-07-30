@@ -14,6 +14,7 @@ from tests.pages import (
     TeamMembersPage,
     ViewFolderPage,
 )
+from tests.pages.pages import BasePage
 from tests.pages.rollups import sign_in
 from tests.test_utils import go_to_templates_page
 
@@ -118,6 +119,11 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_prep_to_send()
+
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
     assert edit_template.is_page_title("Choose where to send this alert")
     edit_template.click_templates()
 

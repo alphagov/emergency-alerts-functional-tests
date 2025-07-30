@@ -199,6 +199,11 @@ def create_alert(driver, id):
     broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
     broadcast_freeform_page.click_continue()
 
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Countries")
     prepare_alert_pages.select_checkbox_or_radio(value="ctry19-E92000001")  # England
