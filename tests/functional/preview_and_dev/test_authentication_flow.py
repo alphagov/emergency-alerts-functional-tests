@@ -56,6 +56,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
+    assert verify_page.current_url == ""
 
     # Redirects to sign in page so user must sign in again after verifying password reset
     assert verify_page.text_is_on_page(
