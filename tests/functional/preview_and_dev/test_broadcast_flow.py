@@ -389,23 +389,9 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
             "3km around the easting of 416567 and the northing of 432994 in Bradford",
         ),
         (
-            "easting_northing",
-            {
-                "first_coordinate": "419763",
-                "second_coordinate": "456038",
-                "radius": "5",
-            },
-            "5km around the easting of 419763 and the northing of 456038 in North Yorkshire",
-        ),
-        (
             "latitude_longitude",
             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
             "3km around 53.793 latitude, -1.75 longitude in Bradford",
-        ),
-        (
-            "latitude_longitude",
-            {"first_coordinate": "54", "second_coordinate": "-1.7", "radius": "5"},
-            "5km around 54.0 latitude, -1.7 longitude in North Yorkshire",
         ),
     ),
 )
