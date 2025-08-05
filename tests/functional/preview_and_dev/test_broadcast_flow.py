@@ -526,7 +526,7 @@ def test_prepare_broadcast_with_REPPIR_site_content(driver):
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
-    assert preview_alert_page.text_is_on_page("	AWE Aldermaston")
+    assert preview_alert_page.text_is_on_page("AWE Aldermaston")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
