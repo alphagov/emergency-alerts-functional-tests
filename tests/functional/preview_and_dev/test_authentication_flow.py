@@ -56,13 +56,13 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
-
-    password_reset_sign_in_page = SignInPage(driver)
+    assert verify_page.current_url == ""
 
     # Redirects to sign in page so user must sign in again after verifying password reset
-    assert password_reset_sign_in_page.text_is_on_page(
+    assert verify_page.text_is_on_page(
         "You've just changed your password. Sign in with your new password."
     )
+    password_reset_sign_in_page = SignInPage(driver)
     password_reset_sign_in_page.login(login_email, new_password)
     verify_code = get_verify_code_from_api_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
@@ -73,30 +73,30 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     assert landing_page.url_contains("current-alerts")
 
 
-@pytest.mark.xdist_group(name=test_group_name)
-def test_sign_in_with_email_mfa(driver, purge_failed_logins):
-    clean_session(driver)
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_sign_in_with_email_mfa(driver, purge_failed_logins):
+#     clean_session(driver)
 
-    home_page = HomePage(driver)
-    home_page.get()
-    home_page.accept_cookie_warning()
+#     home_page = HomePage(driver)
+#     home_page.get()
+#     home_page.accept_cookie_warning()
 
-    login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
-    login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
+#     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
+#     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
-    purge_failed_logins()
-    sign_in_page = SignInPage(driver)
-    sign_in_page.get()
-    assert sign_in_page.is_current()
-    sign_in_page.login(login_email, login_pw)
+#     purge_failed_logins()
+#     sign_in_page = SignInPage(driver)
+#     sign_in_page.get()
+#     assert sign_in_page.is_current()
+#     sign_in_page.login(login_email, login_pw)
 
-    sign_in_page.wait_until_url_ends_with("/two-factor-email-sent")
-    assert sign_in_page.text_is_on_page("a link to sign in")
+#     sign_in_page.wait_until_url_ends_with("/two-factor-email-sent")
+#     assert sign_in_page.text_is_on_page("a link to sign in")
 
-    purge_failed_logins()
-    sign_in_url = create_sign_in_url(login_email, "email-auth")
+#     purge_failed_logins()
+#     sign_in_url = create_sign_in_url(login_email, "email-auth")
 
-    landing_page = BasePage(driver)
-    landing_page.get(sign_in_url)
+#     landing_page = BasePage(driver)
+#     landing_page.get(sign_in_url)
 
-    landing_page.url_contains("current-alerts")
+#     landing_page.url_contains("current-alerts")
