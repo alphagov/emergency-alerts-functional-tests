@@ -43,6 +43,7 @@ def preview_dev_config():
         purge_admin_actions_created_by_functional_tests(test_api_client, user_id)
         reset_platform_admin_redemption(test_api_client, user_id)
     purge_failed_logins_created_by_functional_tests(test_api_client)
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
     yield
     logging.info(str(time.time()) + " Tearing down preview_dev_config")
 
@@ -57,6 +58,14 @@ def cbc_blackout():
     clear_proxy_error_alarm()
     time.sleep(90)
     put_functional_test_blackout_metric(200)
+
+
+@pytest.fixture(scope="module")
+def historic_password_purge():
+    test_api_client = create_test_client()
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
+    yield
+    purge_historic_passwords_created_by_functional_tests(test_api_client)
 
 
 def purge_functional_test_alerts(test_api_client):
@@ -94,6 +103,15 @@ def purge_admin_actions_created_by_functional_tests(test_api_client, user_id):
 def purge_failed_logins_created_by_functional_tests(test_api_client):
     url = "/service/purge-failed-logins-created-by-tests"
     test_api_client.delete(url)
+
+
+def purge_historic_passwords_created_by_functional_tests(test_api_client):
+    for _, user in config["broadcast_service"].items():
+        if isinstance(user, dict):
+            url = (
+                f'/service/purge-historic-passwords-created-by-tests/{str(user["id"])}'
+            )
+            test_api_client.delete(url)
 
 
 def reset_platform_admin_redemption(test_api_client, user_id):
