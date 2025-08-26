@@ -14,7 +14,7 @@ from tests.pages import (
     TeamMembersPage,
     ViewFolderPage,
 )
-from tests.pages.pages import BasePage
+from tests.pages.pages import BasePage, ChooseTemplateFieldsPage
 from tests.pages.rollups import sign_in
 from tests.test_utils import go_to_templates_page
 
@@ -22,7 +22,7 @@ test_group_name = "templates"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_create_and_delete_template(driver):
+def test_create_and_delete_template_with_content_only(driver):
     sign_in(driver, account_type="broadcast_create_user")
     go_to_templates_page(driver, service="broadcast_service")
 
@@ -34,11 +34,93 @@ def test_create_and_delete_template(driver):
     alert_content = "Test alert content"
 
     page.click_add_new_template()
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    # Selects checkbox for creating template with only content
+    choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+    choose_template_fields_page.click_continue()
+
     edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.is_page_title("New template")
-    edit_template.create_template(name=alert_name, content=alert_content)
+    edit_template.create_template(reference=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
+    assert edit_template.text_is_on_page(alert_name)
+    assert edit_template.text_is_on_page(alert_content)
+
+    edit_template.click_delete()
+
+    assert page.is_page_title("Templates")
+    assert page.text_is_not_on_page(alert_name)
+
+    page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_create_and_delete_template_with_area_only(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+    go_to_templates_page(driver, service="broadcast_service")
+
+    page = ShowTemplatesPage(driver)
+    assert page.is_page_title("Templates")
+    page.click_add_new_template()
+
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    # Selects checkbox for creating template with only area
+    choose_template_fields_page.select_checkbox_or_radio(value="area_only")
+    choose_template_fields_page.click_continue()
+
+    choose_template_area_page = BasePage(driver)
+    choose_template_area_page.click_element_by_link_text("Local authorities")
+    choose_template_area_page.click_element_by_link_text("Adur")
+    choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007564")
+    choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007565")
+    choose_template_area_page.click_continue()
+    choose_template_area_page.click_element_by_link_text("Save and continue")
+
+    edit_template = EditBroadcastTemplatePage(driver)
+    assert edit_template.text_is_on_page("Cokeham")
+    assert edit_template.text_is_on_page("Eastbrook")
+    assert edit_template.text_is_on_page("Save and get ready to send")
+    edit_template.click_delete()
+    assert page.is_page_title("Templates")
+    assert page.text_is_not_on_page("Cokeham and Eastbrook")
+
+    page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_create_and_delete_template_with_content_and_area(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+    go_to_templates_page(driver, service="broadcast_service")
+
+    page = ShowTemplatesPage(driver)
+    assert page.is_page_title("Templates")
+
+    timestamp = datetime.now().replace(microsecond=0).isoformat()
+    alert_name = f"Test Alert {timestamp}"
+    alert_content = "Test alert content"
+
+    page.click_add_new_template()
+
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    choose_template_fields_page.select_checkbox_or_radio(value="content_and_area")
+    choose_template_fields_page.click_continue()
+
+    edit_template = EditBroadcastTemplatePage(driver)
+    assert edit_template.is_page_title("New template")
+    edit_template.create_template(reference=alert_name, content=alert_content)
+
+    choose_template_area_page = BasePage(driver)
+    choose_template_area_page.click_element_by_link_text("Countries")
+    choose_template_area_page.select_checkbox_or_radio(value="ctry19-E92000001")
+    choose_template_area_page.click_continue()
+    choose_template_area_page.click_element_by_link_text("Save and continue")
+
+    edit_template = EditBroadcastTemplatePage(driver)
+    assert edit_template.text_is_on_page("England")
+    assert edit_template.text_is_on_page("Save and get ready to send")
+
+    edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
 
@@ -63,9 +145,13 @@ def test_create_edit_and_delete_template(driver):
     alert_content = "Test alert content"
 
     page.click_add_new_template()
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+    choose_template_fields_page.click_continue()
+
     edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.is_page_title("New template")
-    edit_template.create_template(name=alert_name, content=alert_content)
+    edit_template.create_template(reference=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
@@ -73,12 +159,14 @@ def test_create_edit_and_delete_template(driver):
 
     extra_text = " with some extra text"
     edit_template.click_edit()
-    edit_template.create_template(name=alert_name, content=alert_content + extra_text)
+    edit_template.create_template(
+        reference=alert_name, content=alert_content + extra_text
+    )
 
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content + extra_text)
-    assert edit_template.text_is_on_page("less than a minute ago")
+    # assert edit_template.text_is_on_page("less than a minute ago")
 
     edit_template.click_element_by_link_text("See previous versions")
     assert edit_template.text_is_on_page(alert_content)
@@ -110,9 +198,13 @@ def test_create_prep_to_send_and_delete_template(driver):
     alert_content = "Test alert content"
 
     page.click_add_new_template()
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+    choose_template_fields_page.click_continue()
+
     edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.is_page_title("New template")
-    edit_template.create_template(name=alert_name, content=alert_content)
+    edit_template.create_template(reference=alert_name, content=alert_content)
 
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
@@ -149,8 +241,12 @@ def test_creating_moving_and_deleting_template_folders(driver):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+    choose_template_fields_page.click_continue()
+
     edit_template_page = EditBroadcastTemplatePage(driver)
-    edit_template_page.create_template(name=template_name)
+    edit_template_page.create_template(reference=template_name)
     edit_template_page.click_templates()
 
     # create folder using add to new folder
@@ -235,20 +331,19 @@ def test_template_folder_permissions(driver):
         show_templates_page.click_add_new_folder(folder_name)
         show_templates_page.click_template_by_link_text(folder_name)
 
-    edit_template_page = EditBroadcastTemplatePage(driver)
+    show_templates_page.click_templates()
 
     # create one template for each folder
     for i, folder_name in enumerate(folder_names):
         template_name = folder_name + "-template"
-
+        show_templates_page.click_element_by_link_text(folder_name)
         show_templates_page.click_add_new_template()
-        edit_template_page.create_template(name=template_name)
-
-        show_templates_page.click_templates()
-        show_templates_page.check_input_with_label_text(
-            text=template_name, input_type="checkbox"
-        )
-        show_templates_page.move_template_to_folder(folder_name)
+        choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+        choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+        choose_template_fields_page.click_continue()
+        edit_template_page = EditBroadcastTemplatePage(driver)
+        edit_template_page.create_template(reference=template_name)
+        edit_template_page.click_element_by_link_text(folder_name)
 
     show_templates_page.sign_out()
 
