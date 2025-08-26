@@ -26,6 +26,7 @@ from tests.pages.element import (
     ExtraContentElement,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
+    FolderNameInputElement,
     HoursInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
@@ -688,6 +689,10 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             return None
 
 
+class ChooseTemplateFieldsPage(BasePage):
+    pass
+
+
 class SendSmsTemplatePage(BasePage):
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
@@ -715,8 +720,8 @@ class EditBroadcastTemplatePage(BasePage):
             ),
         )
 
-    def create_template(self, name="Template Name", content=None):
-        self.name_input = name
+    def create_template(self, reference="Template Name", content=None):
+        self.name_input = reference
         if content:
             self.template_content_input = content
         else:
@@ -1209,6 +1214,7 @@ class ViewFolderPage(ShowTemplatesPage):
 class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, "Delete this folder")
     name_input = NameInputElement()
+    folder_name_input = FolderNameInputElement()
     delete_button = (By.NAME, "delete")
     save_button = (
         By.CSS_SELECTOR,
@@ -1216,7 +1222,7 @@ class ManageFolderPage(BasePage):
     )
 
     def set_name(self, new_name):
-        self.name_input = new_name
+        self.folder_name_input = new_name
         button = self.wait_for_element(self.save_button)
         button.click()
 
