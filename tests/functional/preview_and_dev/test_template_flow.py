@@ -166,11 +166,23 @@ def test_create_edit_and_delete_template(driver):
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content + extra_text)
-    # assert edit_template.text_is_on_page("less than a minute ago")
+    assert edit_template.text_is_on_page("less than a minute ago")
+
+    # Area added to template
+    edit_template.click_element_by_link_text("Add area")
+    choose_template_area_page = BasePage(driver)
+    choose_template_area_page.click_element_by_link_text("Local authorities")
+    choose_template_area_page.click_element_by_link_text("Adur")
+    choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007564")
+    choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007565")
+    choose_template_area_page.click_continue()
+    choose_template_area_page.click_element_by_link_text("Save and continue")
 
     edit_template.click_element_by_link_text("See previous versions")
     assert edit_template.text_is_on_page(alert_content)
     assert edit_template.text_is_on_page(alert_content + extra_text)
+    assert edit_template.text_is_on_page("Cokeham")
+    assert edit_template.text_is_on_page("Eastbrook")
 
     edit_template.click_element_by_link_text("Back to current templates")
 
