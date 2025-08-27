@@ -39,6 +39,7 @@ from tests.pages.element import (
     PostcodeInputElement,
     PreviewButton,
     RadiusInputElement,
+    ReferenceInputElement,
     RejectAlertButton,
     RejectionDetailElement,
     RejectionDetailLink,
@@ -703,7 +704,7 @@ class SendSmsTemplatePage(BasePage):
 
 
 class EditBroadcastTemplatePage(BasePage):
-    name_input = NameInputElement()
+    reference_input = ReferenceInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
     edit_button = EditTemplatePageLocators.EDIT_BUTTON
@@ -721,7 +722,7 @@ class EditBroadcastTemplatePage(BasePage):
         )
 
     def create_template(self, reference="Template Name", content=None):
-        self.name_input = reference
+        self.reference_input = reference
         if content:
             self.template_content_input = content
         else:
@@ -776,7 +777,7 @@ class ViewTemplatePage(BasePage):
 
 
 class EditEmailTemplatePage(BasePage):
-    name_input = NameInputElement()
+    reference_input = ReferenceInputElement()
     subject_input = SubjectInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
@@ -803,7 +804,7 @@ class EditEmailTemplatePage(BasePage):
         element.click()
 
     def create_template(self, name="Test email template", content=None):
-        self.name_input = name
+        self.reference_input = name
         self.subject_input = "Test email from functional tests"
         if content:
             self.template_content_input = content

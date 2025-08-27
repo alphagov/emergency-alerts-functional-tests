@@ -2,7 +2,8 @@ from selenium.webdriver.common.by import By
 
 
 class CommonPageLocators(object):
-    NAME_INPUT = (By.NAME, "reference")
+    NAME_INPUT = (By.NAME, "name")
+    REFERENCE_INPUT = (By.NAME, "reference")
     FOLDER_NAME_INPUT = (By.NAME, "name")
     EMAIL_INPUT = (By.NAME, "email_address")
     PASSWORD_INPUT = (By.NAME, "password")

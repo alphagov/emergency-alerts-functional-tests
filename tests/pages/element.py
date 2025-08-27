@@ -85,6 +85,10 @@ class NameInputElement(ClearableInputElement):
     name = CommonPageLocators.NAME_INPUT[1]
 
 
+class ReferenceInputElement(ClearableInputElement):
+    name = CommonPageLocators.REFERENCE_INPUT[1]
+
+
 class FolderNameInputElement(ClearableInputElement):
     name = CommonPageLocators.FOLDER_NAME_INPUT[1]
 
