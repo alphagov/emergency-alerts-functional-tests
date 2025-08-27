@@ -137,7 +137,7 @@ def create_broadcast_template(driver, name="test template", content=None):
     show_templates_page.click_add_new_template()
 
     template_page = EditBroadcastTemplatePage(driver)
-    template_page.create_template(name=name, content=content)
+    template_page.create_template(reference=name, content=content)
     return template_page.get_template_id()
 
 
