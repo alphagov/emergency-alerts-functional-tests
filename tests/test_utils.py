@@ -22,6 +22,7 @@ from tests.pages import (
     ShowTemplatesPage,
     VerifyPage,
 )
+from tests.pages.pages import ChooseTemplateFieldsPage
 
 logging.basicConfig(
     filename="./logs/test_run_{}.log".format(datetime.now(timezone.utc)),
@@ -132,12 +133,17 @@ def do_email_verification(driver, template_id, email_address):
         return True
 
 
-def create_broadcast_template(driver, name="test template", content=None):
+def create_broadcast_template(driver, reference="test template", content=None):
     show_templates_page = ShowTemplatesPage(driver)
     show_templates_page.click_add_new_template()
 
+    choose_template_fields_page = ChooseTemplateFieldsPage(driver)
+    # Selects checkbox for creating template with only content
+    choose_template_fields_page.select_checkbox_or_radio(value="content_only")
+    choose_template_fields_page.click_continue()
+
     template_page = EditBroadcastTemplatePage(driver)
-    template_page.create_template(reference=name, content=content)
+    template_page.create_template(reference=reference, content=content)
     return template_page.get_template_id()
 
 
