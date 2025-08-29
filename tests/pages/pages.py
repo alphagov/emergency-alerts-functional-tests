@@ -1237,7 +1237,7 @@ class ManageFolderPage(BasePage):
 
 
 class BroadcastFreeformPage(BasePage):
-    title_input = NameInputElement()
+    title_input = ReferenceInputElement()
     content_input = TemplateContentElement()
 
     def create_broadcast_content(self, title, content):
