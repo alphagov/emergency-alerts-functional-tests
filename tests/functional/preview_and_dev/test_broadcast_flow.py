@@ -127,7 +127,7 @@ def test_prepare_broadcast_with_template(driver):
     go_to_templates_page(driver, service="broadcast_service")
     template_name = "test broadcast" + str(uuid.uuid4())
     content = "This is a test only."
-    create_broadcast_template(driver, name=template_name, content=content)
+    create_broadcast_template(driver, reference=template_name, content=content)
 
     current_alerts_page = CurrentAlertsPage(driver)
     current_alerts_page.go_to_service_landing_page(

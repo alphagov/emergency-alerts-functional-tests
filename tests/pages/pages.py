@@ -26,6 +26,7 @@ from tests.pages.element import (
     ExtraContentElement,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
+    FolderNameInputElement,
     HoursInputElement,
     InactivityDialog,
     InactivityDialogStaySignedInButton,
@@ -38,6 +39,7 @@ from tests.pages.element import (
     PostcodeInputElement,
     PreviewButton,
     RadiusInputElement,
+    ReferenceInputElement,
     RejectAlertButton,
     RejectionDetailElement,
     RejectionDetailLink,
@@ -688,6 +690,10 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
             return None
 
 
+class ChooseTemplateFieldsPage(BasePage):
+    pass
+
+
 class SendSmsTemplatePage(BasePage):
     new_sms_template_link = TemplatePageLocators.ADD_NEW_TEMPLATE_LINK
     edit_sms_template_link = TemplatePageLocators.EDIT_TEMPLATE_LINK
@@ -698,7 +704,7 @@ class SendSmsTemplatePage(BasePage):
 
 
 class EditBroadcastTemplatePage(BasePage):
-    name_input = NameInputElement()
+    reference_input = ReferenceInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
     edit_button = EditTemplatePageLocators.EDIT_BUTTON
@@ -715,8 +721,8 @@ class EditBroadcastTemplatePage(BasePage):
             ),
         )
 
-    def create_template(self, name="Template Name", content=None):
-        self.name_input = name
+    def create_template(self, reference="Template Name", content=None):
+        self.reference_input = reference
         if content:
             self.template_content_input = content
         else:
@@ -771,7 +777,7 @@ class ViewTemplatePage(BasePage):
 
 
 class EditEmailTemplatePage(BasePage):
-    name_input = NameInputElement()
+    reference_input = ReferenceInputElement()
     subject_input = SubjectInputElement()
     template_content_input = TemplateContentElement()
     save_button = EditTemplatePageLocators.SAVE_BUTTON
@@ -798,7 +804,7 @@ class EditEmailTemplatePage(BasePage):
         element.click()
 
     def create_template(self, name="Test email template", content=None):
-        self.name_input = name
+        self.reference_input = name
         self.subject_input = "Test email from functional tests"
         if content:
             self.template_content_input = content
@@ -1209,6 +1215,7 @@ class ViewFolderPage(ShowTemplatesPage):
 class ManageFolderPage(BasePage):
     delete_link = (By.LINK_TEXT, "Delete this folder")
     name_input = NameInputElement()
+    folder_name_input = FolderNameInputElement()
     delete_button = (By.NAME, "delete")
     save_button = (
         By.CSS_SELECTOR,
@@ -1216,7 +1223,7 @@ class ManageFolderPage(BasePage):
     )
 
     def set_name(self, new_name):
-        self.name_input = new_name
+        self.folder_name_input = new_name
         button = self.wait_for_element(self.save_button)
         button.click()
 
@@ -1230,7 +1237,7 @@ class ManageFolderPage(BasePage):
 
 
 class BroadcastFreeformPage(BasePage):
-    title_input = NameInputElement()
+    title_input = ReferenceInputElement()
     content_input = TemplateContentElement()
 
     def create_broadcast_content(self, title, content):

@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 
 class CommonPageLocators(object):
     NAME_INPUT = (By.NAME, "name")
+    REFERENCE_INPUT = (By.NAME, "reference")
+    FOLDER_NAME_INPUT = (By.NAME, "name")
     EMAIL_INPUT = (By.NAME, "email_address")
     PASSWORD_INPUT = (By.NAME, "password")
     MOBILE_NUMBER = (By.NAME, "mobile_number")
@@ -73,11 +75,11 @@ class TemplatePageLocators(object):
 
 class EditTemplatePageLocators(object):
     TEMPLATE_SUBJECT_INPUT = (By.NAME, "subject")
-    TEMPLATE_CONTENT_INPUT = (By.NAME, "template_content")
+    TEMPLATE_CONTENT_INPUT = (By.NAME, "content")
     SAVE_BUTTON = (By.CSS_SELECTOR, "main button.govuk-button")
     EDIT_BUTTON = (
         By.XPATH,
-        "//a[contains(@class, 'govuk-link') and contains(text(),'Edit')]",
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Change')]",
     )
     PREP_TO_SEND_BUTTON = (
         By.XPATH,
