@@ -531,11 +531,11 @@ class VerifyPage(BasePage):
     sms_input = SmsInputElement()
 
     def verify(self, code):
-        with wait_for_page_load_completion(self.driver):
-            element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
-            element.clear()
-            self.sms_input = code
-            self.click_submit()
+        # with wait_for_page_load_completion(self.driver):
+        element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
+        element.clear()
+        self.sms_input = code
+        self.click_submit()
 
 
 class CurrentAlertsPage(BasePage):
