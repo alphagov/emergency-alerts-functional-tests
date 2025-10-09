@@ -63,7 +63,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     print("URL on verify_page:", driver.current_url)
     filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     filename = str(
-        Path.cwd().parent
+        Path.cwd()
         / "screenshots"
         / "{}_{}.png".format(filename_datetime, "verify_page")
     )
