@@ -69,18 +69,36 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     driver.save_screenshot(str(filename))
 
+    verify_page.wait_until_url_ends_with("/sign-in?reset_password=True")
+
+    print("URL on verify_page:", driver.current_url)
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd()
+        / "screenshots"
+        / "{}_{}.png".format(filename_datetime, "sign_in_page")
+    )
+    driver.save_screenshot(str(filename))
+
+    assert verify_page.text_is_on_page(
+        "You’ve just changed your password. Sign in with your new password."
+    )
+
     # # Redirects to sign in page so user must sign in again after verifying password reset
     # assert password_reset_sign_in_page.text_is_on_page(
     #     "You've just changed your password. Sign in with your new password."
     # )
 
-    password_reset_sign_in_page = SignInPage(driver)
-    password_reset_sign_in_page.login(login_email, new_password)
+    # password_reset_sign_in_page = SignInPage(driver)
+    # password_reset_sign_in_page.login(login_email, new_password)
+
+    verify_page.login(login_email, new_password)
     verify_code = get_verify_code_from_api_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
     )
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
+
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 
