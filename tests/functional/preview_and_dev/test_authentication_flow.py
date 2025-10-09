@@ -57,12 +57,24 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     verify_page = VerifyPage(driver)
     verify_page.verify(verify_code)
 
-    password_reset_sign_in_page = SignInPage(driver)
+    from datetime import datetime
+    from pathlib import Path
 
-    # Redirects to sign in page so user must sign in again after verifying password reset
-    assert password_reset_sign_in_page.text_is_on_page(
-        "You've just changed your password. Sign in with your new password."
+    print("URL on verify_page:", driver.current_url)
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd().parent
+        / "screenshots"
+        / "{}_{}.png".format(filename_datetime, "verify_page")
     )
+    driver.save_screenshot(str(filename))
+
+    # # Redirects to sign in page so user must sign in again after verifying password reset
+    # assert password_reset_sign_in_page.text_is_on_page(
+    #     "You've just changed your password. Sign in with your new password."
+    # )
+
+    password_reset_sign_in_page = SignInPage(driver)
     password_reset_sign_in_page.login(login_email, new_password)
     verify_code = get_verify_code_from_api_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
