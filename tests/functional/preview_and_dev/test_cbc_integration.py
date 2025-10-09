@@ -51,7 +51,11 @@ def test_broadcast_generates_four_provider_messages(driver, api_client):
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
-        responses = get_loopback_request_items(ddbc=ddbc, request_id=request_id)
+        responses = get_loopback_request_items(
+            ddbc=ddbc,
+            request_id=request_id,
+            retry_if=lambda resp: len(resp["Items"]) < 1,
+        )
         if len(responses):
             distinct_request_ids += 1
 
