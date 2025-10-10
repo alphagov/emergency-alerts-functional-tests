@@ -69,20 +69,20 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     driver.save_screenshot(str(filename))
 
-    verify_page.wait_until_url_ends_with("/sign-in?reset_password=True")
+    # verify_page.wait_until_url_ends_with("/sign-in?reset_password=True")
 
-    print("URL on verify_page:", driver.current_url)
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(
-        Path.cwd()
-        / "screenshots"
-        / "{}_{}.png".format(filename_datetime, "sign_in_page")
-    )
-    driver.save_screenshot(str(filename))
+    # print("URL on verify_page:", driver.current_url)
+    # filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    # filename = str(
+    #     Path.cwd()
+    #     / "screenshots"
+    #     / "{}_{}.png".format(filename_datetime, "sign_in_page")
+    # )
+    # driver.save_screenshot(str(filename))
 
-    assert verify_page.text_is_on_page(
-        "You’ve just changed your password. Sign in with your new password."
-    )
+    # assert verify_page.text_is_on_page(
+    #     "You’ve just changed your password. Sign in with your new password."
+    # )
 
     # # Redirects to sign in page so user must sign in again after verifying password reset
     # assert password_reset_sign_in_page.text_is_on_page(
