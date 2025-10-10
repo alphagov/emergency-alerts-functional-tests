@@ -13,10 +13,7 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import (  # get_verify_code_from_api_by_id,
-    create_sign_in_url,
-    do_verify_by_id,
-)
+from tests.test_utils import create_sign_in_url, do_verify_by_id
 
 test_group_name = "auth-flow"
 
@@ -54,58 +51,10 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     purge_failed_logins()
     new_password_page.click_continue_to_signin()
 
-    # verify_code = get_verify_code_from_api_by_id(
-    #     config["broadcast_service"]["broadcast_user_3"]["id"]
-    # )
-    # verify_page = VerifyPage(driver)
-    # verify_page.verify(verify_code)
-
     do_verify_by_id(driver, config["broadcast_service"]["broadcast_user_3"]["id"])
 
-    from datetime import datetime
-    from pathlib import Path
-
-    print("URL on verify_page:", driver.current_url)
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(
-        Path.cwd()
-        / "screenshots"
-        / "{}_{}.png".format(filename_datetime, "verify_page")
-    )
-    driver.save_screenshot(str(filename))
-
-    # verify_page.wait_until_url_ends_with("/sign-in?reset_password=True")
-
-    # print("URL on verify_page:", driver.current_url)
-    # filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    # filename = str(
-    #     Path.cwd()
-    #     / "screenshots"
-    #     / "{}_{}.png".format(filename_datetime, "sign_in_page")
-    # )
-    # driver.save_screenshot(str(filename))
-
-    # assert verify_page.text_is_on_page(
-    #     "You’ve just changed your password. Sign in with your new password."
-    # )
-
-    # # Redirects to sign in page so user must sign in again after verifying password reset
-    # assert password_reset_sign_in_page.text_is_on_page(
-    #     "You've just changed your password. Sign in with your new password."
-    # )
-
-    # password_reset_sign_in_page = SignInPage(driver)
-    # password_reset_sign_in_page.login(login_email, new_password)
-
-    verify_page = VerifyPage(driver)  # added
-
+    verify_page = VerifyPage(driver)
     verify_page.login(login_email, new_password)
-
-    # verify_code = get_verify_code_from_api_by_id(
-    #     config["broadcast_service"]["broadcast_user_3"]["id"]
-    # )
-    # verify_page = VerifyPage(driver)
-    # verify_page.verify(verify_code)
 
     do_verify_by_id(driver, config["broadcast_service"]["broadcast_user_3"]["id"])
 
