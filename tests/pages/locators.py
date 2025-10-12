@@ -187,6 +187,11 @@ class SearchCoordinatePageLocators(object):
     PREVIEW_BUTTON = (By.NAME, "preview")
 
 
+class SearchFloodWarningAreaPageLocators(object):
+    TA_CODE_INPUT = (By.ID, "second_coordinate")
+    ADD_AREA_BUTTON = (By.NAME, "add_area_button")
+
+
 class PlatformAdminPageLocators(object):
     SEARCH_INPUT = (By.NAME, "search")
 
