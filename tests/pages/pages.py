@@ -26,6 +26,7 @@ from tests.pages.element import (
     ExtraContentElement,
     FeedbackTextAreaElement,
     FirstCoordinateInputElement,
+    FloodWarningAreaCodeInputElement,
     FolderNameInputElement,
     HoursInputElement,
     InactivityDialog,
@@ -69,6 +70,7 @@ from tests.pages.locators import (
     RejectionFormLocators,
     ReturnForEditFormLocators,
     SearchCoordinatePageLocators,
+    SearchFloodWarningAreaPageLocators,
     SearchPostcodePageLocators,
     ServiceSettingsLocators,
     SignInPageLocators,
@@ -1369,6 +1371,19 @@ class ChooseCoordinateArea(BasePage):
 
     def click_preview(self):
         element = self.wait_for_element(SearchCoordinatePageLocators.PREVIEW_BUTTON)
+        element.click()
+
+
+class SearchFloodWarningAreaPage(BasePage):
+    ta_code_input = FloodWarningAreaCodeInputElement()
+
+    def create_ta_code_input(self, ta_code):
+        self.ta_code_input = ta_code
+
+    def click_add_area(self):
+        element = self.wait_for_element(
+            SearchFloodWarningAreaPageLocators.ADD_AREA_BUTTON
+        )
         element.click()
 
 
