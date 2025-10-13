@@ -35,6 +35,7 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
     "platform_admin",
     "platform_admin_2",
     "broadcast_user_3",
+    "broadcast_auth_test_user",
 ]
 
 PROVIDERS = ["ee", "o2", "three", "vodafone"]
