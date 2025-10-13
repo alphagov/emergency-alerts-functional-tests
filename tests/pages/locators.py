@@ -188,7 +188,7 @@ class SearchCoordinatePageLocators(object):
 
 
 class SearchFloodWarningAreaPageLocators(object):
-    TA_CODE_INPUT = (By.ID, "second_coordinate")
+    TA_CODE_INPUT = (By.NAME, "flood_warning_area")
     ADD_AREA_BUTTON = (By.NAME, "add_area_button")
 
 
