@@ -288,14 +288,14 @@ def test_create_broadcast_with_invalid_area_then_discard(driver, broadcast_clien
 
     # Asserts that error message appears on page
     assert page.get_errors_from_error_summary() == (
-        "The area used is invalid and the alert cannot be sent. "
+        "There is a problem\nThe area used is invalid and the alert cannot be sent. "
         "If the alert was created through the API, report it to the alert creator. "
         "Otherwise report it to the Emergency Alerts team."
     )
 
     page.click_element_by_link_text("Discard this alert")
 
-    time.sleep(10)
+    time.sleep(5)
     page.click_element_by_link_text("Rejected alerts")
     assert page.text_is_on_page(event)
 
