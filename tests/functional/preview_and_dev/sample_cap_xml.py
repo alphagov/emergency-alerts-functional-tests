@@ -59,3 +59,36 @@ CANCEL_XML = """
         </info>
     </alert>
 """
+
+INVALID_AREA_ALERT_XML = """
+    <alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+        <identifier>{identifier}</identifier>
+        <sender>www.gov.uk/environment-agency</sender>
+        <sent>{alert_sent}</sent>
+        <status>Actual</status>
+        <msgType>Alert</msgType>
+        <scope>Public</scope>
+        <info>
+            <language>en-GB</language>
+            <category>Met</category>
+            <event>{event}</event>
+            <urgency>Immediate</urgency>
+            <severity>Severe</severity>
+            <certainty>Likely</certainty>
+            <expires>2022-06-15T12:12:13-00:00</expires>
+            <senderName>Environment Agency</senderName>
+            <description>{broadcast_content}</description>
+            <instruction>Check the latest information for your area. </instruction>
+            <area>
+                <areaDesc>Invalid Area</areaDesc>
+                <polygon>55.730267,-4.908142 55.730267,-4.567566 55.609448,-4.562073 55.257272,-4.858704 55.01864,-5.270691 54.987135,-4.858704 55.360445,-4.858704 55.347953,-4.864197 55.347953,-4.908142 55.730267,-4.908142</polygon>
+                <geocode>
+                <valueName>TargetAreaCode</valueName>
+                <value>
+                    <![CDATA[InvalidArea]]>
+                </value>
+            </geocode>
+            </area>
+        </info>
+    </alert>
+"""
