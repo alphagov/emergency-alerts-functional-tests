@@ -66,11 +66,11 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     driver.save_screenshot(str(filename))
 
+    verify_page = VerifyPage(driver)
+    verify_page.get(relative_url="two-factor-sms")
     verify_code = get_verification_code_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
     )
-    verify_page = VerifyPage(driver)
-    verify_page.get(relative_url="two-factor-sms")
     verify_page.verify(verify_code)
 
     sleep(10)
@@ -83,14 +83,13 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     driver.save_screenshot(str(filename))
 
-    verify_page = VerifyPage(driver)
-    verify_page.login(login_email, new_password)
+    sign_in_page.get()
+    sign_in_page.login(login_email, new_password)
 
+    verify_page.get(relative_url="two-factor-sms")
     verify_code = get_verification_code_by_id(
         config["broadcast_service"]["broadcast_user_3"]["id"]
     )
-    verify_page = VerifyPage(driver)
-    verify_page.get(relative_url="two-factor-sms")
     verify_page.verify(verify_code)
 
     landing_page = BasePage(driver)
