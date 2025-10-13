@@ -13,7 +13,11 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, do_verify_by_id
+from tests.test_utils import (
+    create_sign_in_url,
+    do_verify_by_id,
+    get_verification_code_by_id,
+)
 
 test_group_name = "auth-flow"
 
@@ -66,7 +70,13 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     )
     driver.save_screenshot(str(filename))
 
-    do_verify_by_id(driver, config["broadcast_service"]["broadcast_user_3"]["id"])
+    # do_verify_by_id(driver, config["broadcast_service"]["broadcast_user_3"]["id"])
+    verify_code = get_verification_code_by_id(
+        config["broadcast_service"]["broadcast_user_3"]["id"]
+    )
+    verify_page = VerifyPage(driver)
+    verify_page.get(relative_url="two-factor-sms")
+    verify_page.verify(verify_code)
 
     sleep(10)
     print("URL after clicking new_password_verify:", driver.current_url)
