@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
-      platform-admin-flow
+      authentication-flow
 
 phases:
   install:
@@ -44,7 +44,7 @@ phases:
     commands:
       # Need to add CBC integration into the list of test reports, in the proper place, if it is executed - hence the below
       # The if below doesn't check for truthiness, but instead "true", because CodePipeline *requires* a value - therefore it will *always* be truthy.
-      - make test-platform-admin-flow; exit 0
+      - make test-authentication-flow; exit 0
       - echo "Test run completed."
       - python3.12 ./scripts/report-test-results.py $(pwd) $testsuites
 
