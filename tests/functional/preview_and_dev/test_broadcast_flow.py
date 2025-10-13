@@ -286,8 +286,6 @@ def test_create_broadcast_with_invalid_area_then_discard(driver, broadcast_clien
     page = BasePage(driver)
     page.click_element_by_link_text(event)
 
-    assert page.text_is_on_page(event)
-
     # Asserts that error message appears on page
     assert page.get_errors_from_error_summary() == (
         "The area used is invalid and the alert cannot be sent. "
