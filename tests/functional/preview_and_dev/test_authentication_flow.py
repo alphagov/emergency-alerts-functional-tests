@@ -51,7 +51,32 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     purge_failed_logins()
     new_password_page.click_continue_to_signin()
 
+    from time import sleep
+
+    sleep(10)
+    print("URL after clicking new_password_continue:", driver.current_url)
+    from datetime import datetime
+    from pathlib import Path
+
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd()
+        / "screenshots"
+        / "{}_{}.png".format(filename_datetime, "new_password_entered")
+    )
+    driver.save_screenshot(str(filename))
+
     do_verify_by_id(driver, config["broadcast_service"]["broadcast_user_3"]["id"])
+
+    sleep(10)
+    print("URL after clicking new_password_verify:", driver.current_url)
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd()
+        / "screenshots"
+        / "{}_{}.png".format(filename_datetime, "password_verify_entered")
+    )
+    driver.save_screenshot(str(filename))
 
     verify_page = VerifyPage(driver)
     verify_page.login(login_email, new_password)
