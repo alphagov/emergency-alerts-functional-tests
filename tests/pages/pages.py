@@ -77,6 +77,7 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
+from tests.test_utils import save_screenshot
 
 
 @contextmanager
@@ -535,6 +536,7 @@ class VerifyPage(BasePage):
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
+        save_screenshot(self.driver, "verify_code_entered")
         self.click_submit()
 
     def fill_login_form(self, email, password):

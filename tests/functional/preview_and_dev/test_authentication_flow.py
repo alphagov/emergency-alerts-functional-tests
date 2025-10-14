@@ -13,7 +13,11 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, get_verification_code_by_id
+from tests.test_utils import (
+    create_sign_in_url,
+    get_verification_code_by_id,
+    save_screenshot,
+)
 
 test_group_name = "auth-flow"
 
@@ -54,17 +58,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     from time import sleep
 
     sleep(10)
-    print("URL after clicking new_password_continue:", driver.current_url)
-    from datetime import datetime
-    from pathlib import Path
-
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(
-        Path.cwd()
-        / "screenshots"
-        / "{}_{}.png".format(filename_datetime, "new_password_entered")
-    )
-    driver.save_screenshot(str(filename))
+    save_screenshot(driver, "new_password_entered")
 
     verify_page = VerifyPage(driver)
     verify_page.get(relative_url="two-factor-sms")
@@ -74,14 +68,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     verify_page.verify(verify_code)
 
     sleep(10)
-    print("URL after clicking new_password_verify:", driver.current_url)
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(
-        Path.cwd()
-        / "screenshots"
-        / "{}_{}.png".format(filename_datetime, "password_verify_entered")
-    )
-    driver.save_screenshot(str(filename))
+    save_screenshot(driver, "password_verify_submitted")
 
     sign_in_page.get()
     sign_in_page.login(login_email, new_password)
