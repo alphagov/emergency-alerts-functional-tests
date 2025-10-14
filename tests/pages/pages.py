@@ -365,6 +365,11 @@ class BasePage(object):
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
 
+    def get_errors_from_error_summary(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-summary")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
 
 class PageWithStickyNavMixin:
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
