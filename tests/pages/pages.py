@@ -1,4 +1,6 @@
 from contextlib import contextmanager
+from datetime import datetime
+from pathlib import Path
 from time import sleep
 
 from retry import retry
@@ -77,7 +79,6 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
-from tests.test_utils import save_screenshot
 
 
 @contextmanager
@@ -1528,3 +1529,12 @@ class AdminApprovalsPage(BasePage):
 
     def check_new_key_name(self, starts_with):
         return self.get_key_name().startswith(starts_with)
+
+
+def save_screenshot(driver, name):
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd() / "screenshots" / "{}_{}.png".format(filename_datetime, name)
+    )
+    print(f"URL for screenshot ({filename}):", driver.current_url)
+    driver.save_screenshot(str(filename))

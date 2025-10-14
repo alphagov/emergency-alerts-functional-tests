@@ -11,13 +11,10 @@ from tests.pages import (
     NewPasswordPage,
     SignInPage,
     VerifyPage,
-)
-from tests.pages.rollups import clean_session
-from tests.test_utils import (
-    create_sign_in_url,
-    get_verification_code_by_id,
     save_screenshot,
 )
+from tests.pages.rollups import clean_session
+from tests.test_utils import create_sign_in_url, get_verification_code_by_id
 
 test_group_name = "auth-flow"
 

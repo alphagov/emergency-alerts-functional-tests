@@ -3,7 +3,6 @@ import json
 import logging
 import re
 from datetime import datetime, timezone
-from pathlib import Path
 from urllib.parse import urlencode
 
 import boto3
@@ -384,12 +383,3 @@ def clear_proxy_error_alarm():
                 )
     except BaseException as e:
         raise Exception("Error writing proxy count metric to CW") from e
-
-
-def save_screenshot(driver, name):
-    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    filename = str(
-        Path.cwd() / "screenshots" / "{}_{}.png".format(filename_datetime, name)
-    )
-    print(f"URL for screenshot ({filename}):", driver.current_url)
-    driver.save_screenshot(str(filename))
