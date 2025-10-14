@@ -533,12 +533,9 @@ class VerifyPage(BasePage):
     sms_input = SmsInputElement()
 
     def verify(self, code):
-        # with wait_for_page_load_completion(self.driver):
-        save_screenshot(self.driver, "waiting_for_sms_input")
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
-        save_screenshot(self.driver, "verify_code_entered")
         self.click_submit()
 
     def fill_login_form(self, email, password):
@@ -546,7 +543,6 @@ class VerifyPage(BasePage):
         self.password_input = password
 
     def login(self, email, password):
-        # with wait_for_page_load_completion(self.driver):
         self.fill_login_form(email, password)
         self.click_continue()
 

@@ -11,7 +11,6 @@ from tests.pages import (
     NewPasswordPage,
     SignInPage,
     VerifyPage,
-    save_screenshot,
 )
 from tests.pages.rollups import clean_session
 from tests.test_utils import create_sign_in_url, get_verification_code_by_id
@@ -27,6 +26,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     home_page.get()
     home_page.accept_cookie_warning()
 
+    user3 = config["broadcast_service"]["broadcast_user_3"]["id"]
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
 
     sign_in_page = SignInPage(driver)
@@ -52,28 +52,16 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     purge_failed_logins()
     new_password_page.click_continue_to_signin()
 
-    from time import sleep
-
-    sleep(10)
-    save_screenshot(driver, "new_password_entered")
-
     verify_page = VerifyPage(driver)
     verify_page.get(relative_url="two-factor-sms")
-    verify_code = get_verification_code_by_id(
-        config["broadcast_service"]["broadcast_user_3"]["id"]
-    )
+    verify_code = get_verification_code_by_id(user3)
     verify_page.verify(verify_code)
-
-    sleep(10)
-    save_screenshot(driver, "password_verify_submitted")
 
     sign_in_page.get()
     sign_in_page.login(login_email, new_password)
 
     verify_page.get(relative_url="two-factor-sms")
-    verify_code = get_verification_code_by_id(
-        config["broadcast_service"]["broadcast_user_3"]["id"]
-    )
+    verify_code = get_verification_code_by_id(user3)
     verify_page.verify(verify_code)
 
     landing_page = BasePage(driver)
