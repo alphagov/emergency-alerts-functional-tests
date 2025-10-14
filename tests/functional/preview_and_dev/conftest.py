@@ -35,7 +35,9 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
-    # purge_password_history(test_api_client, config["broadcast_service"]["broadcast_user_3"]["id"])
+    purge_password_history(
+        test_api_client, config["broadcast_service"]["broadcast_user_3"]["id"]
+    )
     platform_admin_ids = [
         config["broadcast_service"]["platform_admin"]["id"],
         config["broadcast_service"]["platform_admin_2"]["id"],
