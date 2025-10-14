@@ -534,6 +534,7 @@ class VerifyPage(BasePage):
 
     def verify(self, code):
         # with wait_for_page_load_completion(self.driver):
+        save_screenshot(self.driver, "waiting_for_sms_input")
         element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
         element.clear()
         self.sms_input = code
