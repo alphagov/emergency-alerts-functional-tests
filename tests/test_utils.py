@@ -188,11 +188,6 @@ def get_verify_code_from_api(mobile_number):
     return m.group(0)
 
 
-# def get_verify_code_from_api_by_id(user_id):
-#     verify_code = get_verification_code_by_id(user_id)
-#     return verify_code
-
-
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
     client = NotificationsAPIClient(base_url=config["eas_api_url"], api_key=api_key)
     resp = client.get("v2/notifications")
