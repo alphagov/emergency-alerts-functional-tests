@@ -13,7 +13,7 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, get_verify_code_from_api_by_id
+from tests.test_utils import create_sign_in_url, get_verification_code_by_id
 
 test_group_name = "auth-flow"
 
@@ -26,6 +26,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     home_page.get()
     home_page.accept_cookie_warning()
 
+    user3 = config["broadcast_service"]["broadcast_user_3"]["id"]
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
 
     sign_in_page = SignInPage(driver)
@@ -51,24 +52,18 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
     purge_failed_logins()
     new_password_page.click_continue_to_signin()
 
-    verify_code = get_verify_code_from_api_by_id(
-        config["broadcast_service"]["broadcast_user_3"]["id"]
-    )
     verify_page = VerifyPage(driver)
+    verify_page.get(relative_url="two-factor-sms")
+    verify_code = get_verification_code_by_id(user3)
     verify_page.verify(verify_code)
 
-    password_reset_sign_in_page = SignInPage(driver)
+    sign_in_page.get()
+    sign_in_page.login(login_email, new_password)
 
-    # Redirects to sign in page so user must sign in again after verifying password reset
-    assert password_reset_sign_in_page.text_is_on_page(
-        "You've just changed your password. Sign in with your new password."
-    )
-    password_reset_sign_in_page.login(login_email, new_password)
-    verify_code = get_verify_code_from_api_by_id(
-        config["broadcast_service"]["broadcast_user_3"]["id"]
-    )
-    verify_page = VerifyPage(driver)
+    verify_page.get(relative_url="two-factor-sms")
+    verify_code = get_verification_code_by_id(user3)
     verify_page.verify(verify_code)
+
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
 

@@ -1,4 +1,6 @@
 from contextlib import contextmanager
+from datetime import datetime
+from pathlib import Path
 from time import sleep
 
 from retry import retry
@@ -365,6 +367,11 @@ class BasePage(object):
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
 
+    def get_errors_from_error_summary(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-summary")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
 
 class PageWithStickyNavMixin:
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
@@ -533,11 +540,18 @@ class VerifyPage(BasePage):
     sms_input = SmsInputElement()
 
     def verify(self, code):
-        with wait_for_page_load_completion(self.driver):
-            element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
-            element.clear()
-            self.sms_input = code
-            self.click_submit()
+        element = self.wait_for_element(VerifyPageLocators.SMS_INPUT)
+        element.clear()
+        self.sms_input = code
+        self.click_submit()
+
+    def fill_login_form(self, email, password):
+        self.email_input = email
+        self.password_input = password
+
+    def login(self, email, password):
+        self.fill_login_form(email, password)
+        self.click_continue()
 
 
 class CurrentAlertsPage(BasePage):
@@ -1532,3 +1546,12 @@ class AdminApprovalsPage(BasePage):
 
     def check_new_key_name(self, starts_with):
         return self.get_key_name().startswith(starts_with)
+
+
+def save_screenshot(driver, name):
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    filename = str(
+        Path.cwd() / "screenshots" / "{}_{}.png".format(filename_datetime, name)
+    )
+    print(f"URL for screenshot ({filename}):", driver.current_url)
+    driver.save_screenshot(str(filename))

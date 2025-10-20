@@ -34,6 +34,7 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
     "broadcast_approve_user",
     "platform_admin",
     "platform_admin_2",
+    "broadcast_auth_test_user",
 ]
 
 PROVIDERS = ["ee", "o2", "three", "vodafone"]
@@ -90,7 +91,7 @@ def do_verify(driver, mobile_number):
 )
 def do_verify_by_id(driver, user_id):
     try:
-        verify_code = get_verify_code_from_api_by_id(user_id)
+        verify_code = get_verification_code_by_id(user_id)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
         driver.find_element(By.CLASS_NAME, "error-message")
@@ -185,11 +186,6 @@ def get_verify_code_from_api(mobile_number):
             )
         )
     return m.group(0)
-
-
-def get_verify_code_from_api_by_id(user_id):
-    verify_code = get_verification_code_by_id(user_id)
-    return verify_code
 
 
 def get_notification_by_to_field(template_id, api_key, sent_to, statuses=None):
