@@ -10,8 +10,6 @@ import requests
 from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
 from retry import retry
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
@@ -23,6 +21,11 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.pages import ChooseTemplateFieldsPage
+from tests.playwright_adapter import (
+    By,
+    NoSuchElementException,
+    TimeoutException,
+)
 
 logging.basicConfig(
     filename="./logs/test_run_{}.log".format(datetime.now(timezone.utc)),

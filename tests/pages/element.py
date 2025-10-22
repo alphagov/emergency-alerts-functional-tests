@@ -1,6 +1,3 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-
 from tests.pages.locators import (
     AddServicePageLocators,
     ApiKeysPageLocators,
@@ -19,6 +16,7 @@ from tests.pages.locators import (
     SupportPageLocators,
     VerifyPageLocators,
 )
+from tests.playwright_adapter import By, WebDriverWait
 
 
 class BasePageElement(object):

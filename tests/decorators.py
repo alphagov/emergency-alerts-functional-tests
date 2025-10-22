@@ -1,4 +1,4 @@
-from selenium.common.exceptions import StaleElementReferenceException
+from tests.playwright_adapter import StaleElementReferenceException
 
 
 def retry_on_stale_element_exception(func):

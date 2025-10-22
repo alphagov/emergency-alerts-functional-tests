@@ -4,15 +4,6 @@ from pathlib import Path
 from time import sleep
 
 from retry import retry
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    TimeoutException,
-    WebDriverException,
-)
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from config import config
 from tests.pages.element import (
@@ -78,6 +69,15 @@ from tests.pages.locators import (
     TemplatePageLocators,
     VerifyPageLocators,
     ViewTemplatePageLocators,
+)
+from tests.playwright_adapter import (
+    EC,
+    By,
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+    WebDriverException,
+    WebDriverWait,
 )
 
 

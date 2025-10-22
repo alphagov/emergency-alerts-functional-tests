@@ -3,13 +3,12 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 
 from clients.broadcast_client import BroadcastClient
 from clients.test_api_client import TestApiClient
 from config import config, setup_shared_config
 from tests.pages.pages import HomePage
+from tests.playwright_adapter import PlaywrightDriver
 
 
 def pytest_addoption(parser):
@@ -32,31 +31,11 @@ def download_directory(tmp_path_factory):
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
     http_proxy = os.getenv("HTTP_PROXY")
+    headless = not request.config.getoption("--no-headless")
 
-    options = webdriver.chrome.options.Options()
-    options.add_argument("--no-sandbox")
-    options.add_argument("user-agent=Selenium")
-    options.add_experimental_option(
-        "prefs",
-        {
-            "download.default_directory": str(download_directory),
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": False,
-        },
+    driver = PlaywrightDriver(
+        headless=headless, proxy=http_proxy, download_dir=str(download_directory)
     )
-
-    if not request.config.getoption("--no-headless"):
-        options.add_argument("--headless")
-
-    if http_proxy is not None and http_proxy != "":
-        options.add_argument("--proxy-server={}".format(http_proxy))
-
-    service = ChromeService(
-        log_path="./logs/chrome_browser.log", service_args=["--verbose"]
-    )
-
-    driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1280, 720)
 
     driver.delete_all_cookies()
@@ -64,8 +43,15 @@ def _driver(request, download_directory):
     # go to root page and accept analytics cookies to hide banner in all pages
     driver.get(config["eas_admin_url"])
     HomePage(driver).accept_cookie_warning()
+    # start tracing for the session (helps debugging flaky tests)
+    trace_dir = Path.cwd() / "functional-traces"
+    trace_dir.mkdir(parents=True, exist_ok=True)
+    driver.start_tracing()
     yield driver
     driver.delete_all_cookies()
+    # stop tracing and write to a file with timestamp
+    filename = str(trace_dir / f"trace_{int(__import__('time').time())}.zip")
+    driver.stop_tracing(filename)
     driver.close()
 
 
