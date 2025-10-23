@@ -6,9 +6,10 @@ help:
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: bootstrap
-bootstrap: install-node ## Install build dependencies
+bootstrap:
 	mkdir -p logs screenshots functional-test-reports
 	pip install -r requirements.txt
+	playwright install chromium
 
 .PHONY: lint
 lint:
