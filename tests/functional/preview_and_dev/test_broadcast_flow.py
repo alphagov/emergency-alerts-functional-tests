@@ -787,6 +787,7 @@ def test_reject_alert_with_reason(driver):
     rejected_alerts_page = BasePage(driver)
     assert rejected_alerts_page.text_is_on_page(broadcast_title)
     assert rejected_alerts_page.text_is_on_page(rejection_reason)
+    rejected_alerts_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -883,6 +884,7 @@ def test_return_alert_for_edit(driver):
 
     assert current_alerts_page.text_is_on_page("Current alerts")
     assert current_alerts_page.text_is_on_page(broadcast_title)
+    current_alerts_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)

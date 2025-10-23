@@ -66,6 +66,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
 
     landing_page = BasePage(driver)
     assert landing_page.url_contains("current-alerts")
+    landing_page.sign_out()
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -95,3 +96,4 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     landing_page.get(sign_in_url)
 
     landing_page.url_contains("current-alerts")
+    landing_page.sign_out()

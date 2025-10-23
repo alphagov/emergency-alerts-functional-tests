@@ -61,6 +61,8 @@ def test_footer_links(driver):
     assert landing_page.url_contains("security")
     assert landing_page.is_page_title("Security")
 
+    landing_page.sign_out()
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_reject_analytics_cookies(driver):
@@ -77,3 +79,5 @@ def test_reject_analytics_cookies(driver):
 
     print(driver.get_cookie("cookies_policy"))
     assert driver.get_cookie("cookies_policy")["value"] == '{"analytics":false}'
+
+    landing_page.sign_out()
