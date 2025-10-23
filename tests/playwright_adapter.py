@@ -258,7 +258,4 @@ class PlaywrightDriver:
 
     def stop_tracing(self, path):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        try:
-            self.context.tracing.stop(path=path)
-        except Exception:
-            pass
+        self.context.tracing.stop(path=path)

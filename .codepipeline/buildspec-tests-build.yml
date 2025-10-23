@@ -84,4 +84,4 @@ artifacts:
   files:
     - screenshots/*
     - functional-test-reports/*
-    - functional-traces/*
+    - functional-test-traces/*

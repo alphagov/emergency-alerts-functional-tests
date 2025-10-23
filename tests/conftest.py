@@ -40,26 +40,26 @@ def _driver(request, download_directory):
     # go to root page and accept analytics cookies to hide banner in all pages
     driver.get(config["eas_admin_url"])
     HomePage(driver).accept_cookie_warning()
-    # start tracing for the session (helps debugging flaky tests)
-    trace_dir = Path.cwd() / "functional-traces"
-    trace_dir.mkdir(parents=True, exist_ok=True)
-    driver.start_tracing()
+
     yield driver
-    driver.delete_all_cookies()
-    # stop tracing and write to a file with timestamp
-    filename = str(trace_dir / f"trace_{int(__import__('time').time())}.zip")
-    driver.stop_tracing(filename)
     driver.close()
 
 
 @pytest.fixture(scope="function")
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
+
+    trace_dir = Path.cwd() / "functional-test-traces"
+    trace_dir.mkdir(parents=True, exist_ok=True)
+    _driver.start_tracing()
+
     yield _driver
-    HomePage(_driver).sign_out_if_required()
+
+    filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    test_status = "passed"
     if prev_failed_tests != request.session.testsfailed:
+        test_status = "failed"
         print("URL at time of failure:", _driver.current_url)
-        filename_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = str(
             Path.cwd()
             / "screenshots"
@@ -67,6 +67,14 @@ def driver(_driver, request):
         )
         _driver.save_screenshot(str(filename))
         print("Error screenshot saved to " + filename)
+
+    # stop tracing and write to a file with timestamp
+    filename = str(
+        trace_dir / f"{filename_datetime}-{test_status}-{request.function.__name__}.zip"
+    )
+    _driver.stop_tracing(filename)
+
+    # HomePage(_driver).sign_out_if_required()
 
 
 @pytest.fixture(scope="module")
