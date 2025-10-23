@@ -100,7 +100,7 @@ def get_verify_code(account_identifier):
 
 def clean_session(driver):
     page = BasePage(driver)
-    if page.text_is_on_page_no_wait("Sign out"):
+    if page.text_is_on_page("Sign out"):
         page.sign_out()
     driver.delete_all_cookies()
 
@@ -235,8 +235,6 @@ def approve_alert(driver, id):
     current_alerts_page.click_submit()
     current_alerts_page.wait_for_element(CommonPageLocators.LIVE_BROADCAST)
     assert current_alerts_page.text_is_on_page("since today at")
-
-    current_alerts_page.sign_out()
 
 
 def broadcast_alert(driver, id):
