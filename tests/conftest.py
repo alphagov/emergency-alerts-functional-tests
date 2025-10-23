@@ -11,10 +11,6 @@ from tests.pages.pages import HomePage
 from tests.playwright_adapter import PlaywrightDriver
 
 
-def pytest_addoption(parser):
-    parser.addoption("--no-headless", action="store_true", default=False)
-
-
 @pytest.fixture(scope="session", autouse=True)
 def shared_config():
     """
@@ -31,7 +27,8 @@ def download_directory(tmp_path_factory):
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
     http_proxy = os.getenv("HTTP_PROXY")
-    headless = not request.config.getoption("--no-headless")
+    # option added by pytest Playwright plugin
+    headless = not request.config.getoption("--headed")
 
     driver = PlaywrightDriver(
         headless=headless, proxy=http_proxy, download_dir=str(download_directory)
