@@ -74,6 +74,7 @@ from tests.playwright_adapter import (
     EC,
     By,
     NoSuchElementException,
+    PlaywrightDriver,
     StaleElementReferenceException,
     TimeoutException,
     WebDriverException,
@@ -82,19 +83,17 @@ from tests.playwright_adapter import (
 
 
 @contextmanager
-def wait_for_page_load_completion(driver):
+def wait_for_page_load_completion(driver: PlaywrightDriver):
+    # TOOD: You should probably avoid using this and use Playwright's native (auto-)waiting
     """
     A helper (to be used in a with statement) that ensures a navigation event has completed before returning to
     the caller. Useful if a button press causes a navigation event to a page with new content without needing sleep().
     """
-    old_page = driver.find_element(by=By.TAG_NAME, value="html")
+
     yield
 
-    def page_has_loaded(*args):
-        new_page = driver.find_element(by=By.TAG_NAME, value="html")
-        return new_page.id != old_page.id
-
-    WebDriverWait(driver, 10).until(page_has_loaded)
+    with driver.page.expect_event("load"):
+        return
 
 
 class RetryException(Exception):
