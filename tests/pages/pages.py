@@ -164,7 +164,7 @@ class AntiStaleElementList(AntiStale):
 class BasePage(object):
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
 
-    def __init__(self, driver):
+    def __init__(self, driver: PlaywrightDriver):
         self.base_url = config["eas_admin_url"]
         self.driver = driver
 
@@ -290,24 +290,14 @@ class BasePage(object):
 
         return False
 
-    @retry(
-        RetryException,
-        tries=config["ui_element_retry_times"],
-        delay=config["ui_element_retry_interval"],
-    )
-    def text_is_on_page_with_exception(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-        if search_text not in normalized_page_source:
-            self.driver.refresh()
-            raise RetryException(f'Could not find text "{search_text}"')
-        return True
-
     def text_is_on_page_no_wait(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-        if search_text in normalized_page_source:
-            return True
+        # TODO: Remove this function and replace with expect(...).to_be_visible()
+        #   expect(self.driver.page.get_by_text(search_text).first).to_be_visible()
+        locator = self.driver.page.get_by_text(search_text).first
+        return locator.is_visible()
 
     def text_is_on_page(self, search_text):
+        # TODO: Remove this function and replace with expect(...).to_be_visible() with a timeout
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
