@@ -190,25 +190,13 @@ class BasePage(object):
             ),
         )
 
-    def wait_for_element(self, locator, time=10):
-        return AntiStaleElement(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, time).until(
-                EC.visibility_of_element_located(locator),
-                EC.presence_of_element_located(locator),
-            ),
-        )
+    def wait_for_element(self, locator: tuple[By, str], time=10):
+        # TODO: Refactor/remove
+        return self.driver.find_element(locator)
 
     def wait_for_elements(self, locator):
-        return AntiStaleElementList(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_all_elements_located(locator),
-                EC.presence_of_all_elements_located(locator),
-            ),
-        )
+        # TODO: Refactor/remove
+        return self.driver.find_elements(locator)
 
     def sign_out(self):
         element = self.wait_for_element(BasePage.sign_out_link)
