@@ -181,18 +181,22 @@ class PlaywrightDriver:
     def page_source(self):
         return self.page.content()
 
-    def find_element(self, by=None, value=None, **kwargs):
-        # support being called as find_element(By.TAG_NAME, 'html') or find_element(by=..., value=...)
-        if "by" in kwargs and "value" in kwargs:
-            by = kwargs.get("by")
-            value = kwargs.get("value")
-        selector = _locator_to_selector(by, value)
+    def find_element(self, locator: tuple[By, str], timeout=3000):
+        locator_obj = None
+        if locator[0] == By.LINK_TEXT:
+            locator_obj = self.page.get_by_role("link", name=locator[1])
+        # Vibecoded
+        else:
+            selector = _locator_to_selector(locator[0], locator[1])
+            locator_obj = self.page.locator(selector).first
+
         try:
-            locator = self.page.locator(selector).first
-            locator.wait_for(state="attached", timeout=3000)
-            return ElementWrapper(locator)
+            locator_obj.wait_for(state="attached", timeout=timeout)
+            return ElementWrapper(locator_obj)
         except PlaywrightTimeoutError:
-            raise NoSuchElementException(f"Could not find element {by} {value}")
+            raise NoSuchElementException(
+                f"Could not find element {locator[0]} {locator[1]}"
+            )
 
     def find_elements(self, by=None, value=None):
         selector = _locator_to_selector(by, value)

@@ -24,6 +24,7 @@ from tests.pages.pages import ChooseTemplateFieldsPage
 from tests.playwright_adapter import (
     By,
     NoSuchElementException,
+    PlaywrightDriver,
     TimeoutException,
 )
 
@@ -72,12 +73,12 @@ def get_link(template_id, email):
     tries=config["verify_code_retry_times"],
     delay=config["verify_code_retry_interval"],
 )
-def do_verify(driver, mobile_number):
+def do_verify(driver: PlaywrightDriver, mobile_number):
     try:
         verify_code = get_verify_code_from_api(mobile_number)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
-        driver.find_element(By.CLASS_NAME, "error-message")
+        driver.find_element((By.CLASS_NAME, "error-message"), timeout=100)
     except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
@@ -97,7 +98,7 @@ def do_verify_by_id(driver, user_id):
         verify_code = get_verification_code_by_id(user_id)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
-        driver.find_element(By.CLASS_NAME, "error-message")
+        driver.find_element((By.CLASS_NAME, "error-message"))
     except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
@@ -126,7 +127,7 @@ def do_email_verification(driver, template_id, email_address):
         driver.get(email_link)
 
         if (
-            driver.find_element(By.CLASS_NAME, "heading-large").text
+            driver.find_element((By.CLASS_NAME, "heading-large")).text
             == "The link has expired"
         ):
             #  There was an error message (presumably we tried to use an email token that was already used/expired)

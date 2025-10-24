@@ -27,16 +27,16 @@ class BasePageElement(object):
     def __set__(self, obj, value):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element(By.NAME, self.name)
+            lambda driver: driver.find_element((By.NAME, self.name))
         )
-        driver.find_element(By.NAME, self.name).send_keys(value)
+        driver.find_element((By.NAME, self.name)).send_keys(value)
 
     def __get__(self, obj, owner):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element(By.NAME, self.name)
+            lambda driver: driver.find_element((By.NAME, self.name))
         )
-        element = driver.find_element(By.NAME, self.name)
+        element = driver.find_element((By.NAME, self.name))
         return element.get_attribute("value")
 
 
@@ -48,9 +48,9 @@ class ClearableInputElement(BasePageElement):
     def __set__(self, obj, value, clear=True):
         driver = obj.driver
         WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element(By.NAME, self.name)
+            lambda driver: driver.find_element((By.NAME, self.name))
         )
-        input = driver.find_element(By.NAME, self.name)
+        input = driver.find_element((By.NAME, self.name))
         input.clear()
         input.send_keys(value)
 

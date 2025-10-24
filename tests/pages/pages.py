@@ -1287,7 +1287,7 @@ class GovUkAlertsPage(BasePage):
 
     def get_alert_url(self, driver, text):
         xpath = f"//div[div[p[contains(text(),'{text}')]]]//a[contains(text(),'More information')]"
-        link2 = driver.find_element(By.XPATH, value=xpath)
+        link2 = driver.find_element((By.XPATH, xpath))
         link2.click()
 
 
