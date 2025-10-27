@@ -71,7 +71,6 @@ from tests.pages.locators import (
     ViewTemplatePageLocators,
 )
 from tests.playwright_adapter import (
-    EC,
     By,
     NoSuchElementException,
     PlaywrightDriver,
@@ -182,13 +181,7 @@ class BasePage(object):
         return self.driver.current_url
 
     def wait_for_invisible_element(self, locator):
-        return AntiStaleElement(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(locator)
-            ),
-        )
+        return self.driver.find_element(locator, must_be_visible=False)
 
     def wait_for_element(self, locator: tuple[By, str], time=10):
         # TODO: Refactor/remove

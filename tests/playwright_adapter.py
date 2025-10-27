@@ -4,6 +4,16 @@ from pathlib import Path
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
+###########
+# Functional tests used to be based upon Pytest and Selenium's WebDriver.
+# It had ...some personality, let's say. And after a long slog of maintenance
+# and quirks (including near untraceable failures and debugging) it was decided
+# to migrate over to Playwright.
+# Of course Playwright works differently, so this is a simple-ish shim so that
+# existing test code by and large works without much refactoring.
+# New tests should try to use Playwright's native API and locator mechanism(s).
+###########
+
 
 class By:
     NAME = "name"
@@ -181,7 +191,7 @@ class PlaywrightDriver:
     def page_source(self):
         return self.page.content()
 
-    def find_element(self, locator: tuple[By, str], timeout=3000):
+    def find_element(self, locator: tuple[By, str], timeout=3000, must_be_visible=True):
         locator_obj = None
         if locator[0] == By.LINK_TEXT:
             locator_obj = self.page.get_by_role("link", name=locator[1])
@@ -191,7 +201,9 @@ class PlaywrightDriver:
             locator_obj = self.page.locator(selector).first
 
         try:
-            locator_obj.wait_for(state="attached", timeout=timeout)
+            locator_obj.wait_for(
+                state="visible" if must_be_visible else "attached", timeout=timeout
+            )
             return ElementWrapper(locator_obj)
         except PlaywrightTimeoutError:
             raise NoSuchElementException(
