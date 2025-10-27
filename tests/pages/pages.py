@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
-from playwright.sync_api import TimeoutError
+from playwright.sync_api import TimeoutError, expect
 from retry import retry
 
 from config import config
@@ -1418,13 +1418,13 @@ class RejectionForm(BasePage):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_LINK)
         element.click()
 
-    def rejection_details_is_open(self):
+    def assert_rejection_details_is_open(self):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
-        return element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "")
 
-    def rejection_details_is_closed(self):
+    def assert_rejection_details_is_closed(self):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
-        return not element.get_attribute("open")
+        expect(element.locator).not_to_have_attribute("open", "")
 
     def click_reject_alert(self):
         element = self.wait_for_element(RejectionFormLocators.REJECT_ALERT_BUTTON)
@@ -1448,17 +1448,17 @@ class ReturnAlertForEditForm(BasePage):
         )
         element.click()
 
-    def return_for_edit_details_is_open(self):
+    def assert_return_for_edit_details_is_open(self):
         element = self.wait_for_element(
             ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
         )
-        return element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "")
 
-    def return_for_edit_details_is_closed(self):
+    def assert_return_for_edit_details_is_closed(self):
         element = self.wait_for_element(
             ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
         )
-        return not element.get_attribute("open")
+        expect(element.locator).not_to_have_attribute("open", "")
 
     def click_return_alert_for_edit(self):
         element = self.wait_for_element(
