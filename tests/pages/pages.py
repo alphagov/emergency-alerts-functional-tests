@@ -289,6 +289,9 @@ class BasePage(object):
         locator = self.driver.page.get_by_text(search_text).first
         return locator.is_visible()
 
+    def assert_text_is_on_page(self, search_text):
+        expect(self.page.get_by_text(search_text).first).to_be_visible()
+
     def text_is_on_page(self, search_text):
         # TODO: Remove this function and replace with expect(...).to_be_visible() with a timeout
         tries = config["ui_element_retry_times"]
