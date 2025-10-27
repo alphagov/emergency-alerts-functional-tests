@@ -19,6 +19,7 @@ from tests.pages import (
     RetryException,
     ShowTemplatesPage,
     VerifyPage,
+    wait_for_page_load_completion,
 )
 from tests.pages.pages import ChooseTemplateFieldsPage
 from tests.playwright_adapter import (
@@ -93,12 +94,13 @@ def do_verify(driver: PlaywrightDriver, mobile_number):
     tries=config["verify_code_retry_times"],
     delay=config["verify_code_retry_interval"],
 )
-def do_verify_by_id(driver, user_id):
+def do_verify_by_id(driver: PlaywrightDriver, user_id):
     try:
         verify_code = get_verification_code_by_id(user_id)
         verify_page = VerifyPage(driver)
-        verify_page.verify(verify_code)
-        driver.find_element((By.CLASS_NAME, "error-message"))
+        with wait_for_page_load_completion(driver):
+            verify_page.verify(verify_code)
+        driver.find_element((By.CLASS_NAME, "error-message"), timeout=10)
     except (NoSuchElementException, TimeoutException):
         #  In some cases a TimeoutException is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
