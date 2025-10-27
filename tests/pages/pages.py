@@ -167,6 +167,7 @@ class BasePage(object):
     def __init__(self, driver: PlaywrightDriver):
         self.base_url = config["eas_admin_url"]
         self.driver = driver
+        self.page = driver.page
 
     def get(self, url=None, relative_url=None):
         if url:
@@ -332,6 +333,10 @@ class BasePage(object):
     def click_element_by_link_text(self, link_text):
         element = self.wait_for_element((By.LINK_TEXT, link_text))
         element.click()
+
+    def click_button_by_text(self, button_text):
+        locator = self.page.get_by_role("button", name=button_text)
+        locator.click()
 
     def click_element_by_id(self, id):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
