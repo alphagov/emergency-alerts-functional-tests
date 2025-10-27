@@ -26,7 +26,7 @@ def test_report_a_problem(driver):
     email, _ = get_email_and_password(account_type="broadcast_create_user")
     assert report_problem_page.text_is_on_page(f"reply to {email}")
 
-    report_problem_page.click_continue()
+    report_problem_page.click_submit()
 
     assert report_problem_page.url_contains("thanks")
     assert report_problem_page.is_page_title("Thanks for contacting us")
@@ -52,7 +52,7 @@ def test_question_or_feedback(driver):
     email, _ = get_email_and_password(account_type="broadcast_create_user")
     assert feedback_page.text_is_on_page(f"reply to {email}")
 
-    feedback_page.click_continue()
+    feedback_page.click_submit()
 
     assert feedback_page.url_contains("thanks")
     assert feedback_page.is_page_title("Thanks for contacting us")
