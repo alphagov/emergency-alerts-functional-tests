@@ -322,10 +322,10 @@ class BasePage(object):
         # circle back and do better
         return self.driver.current_url.split("/templates/")[1].split("/")[0]
 
-    def click_element_by_link_text(self, link_text, exact=False):
+    def click_element_by_link_text(self, link_text, exact=False, timeout=3000):
         """Note: for compatibility (from Selenium tests), this will accept either links or buttons."""
         element = self.page.locator("a,button").get_by_text(link_text, exact=exact)
-        element.click()
+        element.click(timeout=timeout)
 
     def click_element_by_id(self, id):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
