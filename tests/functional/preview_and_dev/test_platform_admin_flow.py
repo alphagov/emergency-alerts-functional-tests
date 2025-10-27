@@ -229,8 +229,6 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     team_members_page.wait_until_url_ends_with("/users")
     assert team_members_page.text_is_not_on_page(invited_user_email)
 
-    team_members_page.sign_out()
-
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_service_admin_search_for_user_by_name_and_email(driver, purge_failed_logins):
@@ -310,9 +308,7 @@ def test_service_can_create_and_approve_and_revoke_api_keys(
     api_keys_page.sign_out()
     sign_in_elevated_platform_admin(driver, purge_failed_logins, True)
 
-    api_keys_page.click_element_by_link_text(
-        "Settings", exact=True
-    )  # non-exact matches cookie settings
+    api_keys_page.click_element_by_link_text("Settings")
     api_keys_page.click_element_by_link_text("Service history")
     api_keys_page.click_element_by_link_text("API keys")
 

@@ -327,7 +327,11 @@ class BasePage(object):
 
     def click_element_by_link_text(self, link_text, exact=False, timeout=3000):
         """Note: for compatibility (from Selenium tests), this will accept either links or buttons."""
-        element = self.page.locator("a,button").get_by_text(link_text, exact=exact)
+        element = (
+            self.page.locator("a,button")
+            .get_by_text(link_text, exact=exact)
+            .filter(visible=True)
+        )
         element.click(timeout=timeout)
 
     def click_element_by_id(self, id):
