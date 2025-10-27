@@ -235,8 +235,11 @@ class BasePage(object):
             assert not element.get_attribute("checked")
 
     def click_templates(self):
-        element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
-        element.click()
+        # We have to use the service's menu - and not confuse it with the breadcrumbs which also has a "Templates" link
+        locator = self.page.get_by_label("Service").get_by_role(
+            "link", name="Templates"
+        )
+        locator.click()
 
     def click_settings(self):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
