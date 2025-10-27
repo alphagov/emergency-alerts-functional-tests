@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
+from playwright.sync_api import TimeoutError
 from retry import retry
 
 from config import config
@@ -72,10 +73,8 @@ from tests.pages.locators import (
 )
 from tests.playwright_adapter import (
     By,
-    NoSuchElementException,
     PlaywrightDriver,
     StaleElementReferenceException,
-    TimeoutException,
     WebDriverException,
     WebDriverWait,
 )
@@ -378,7 +377,7 @@ class HomePage(BasePage):
             self.wait_for_element(
                 CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1
             ).click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             return
 
 
@@ -421,21 +420,21 @@ class AddServicePage(BasePage):
         self.service_input = name
         try:
             self.click_org_type_input()
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_add_service_button()
 
     def select_training_mode(self):
         try:
             self.click_service_mode_input(AddServicePage.training_mode_input)
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_continue()
 
     def select_operator_mode(self):
         try:
             self.click_service_mode_input(AddServicePage.operator_mode_input)
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_continue()
 
@@ -451,14 +450,14 @@ class AddServicePage(BasePage):
         try:
             element = self.wait_for_invisible_element(AddServicePage.org_type_input)
             element.click()
-        except TimeoutException:
+        except TimeoutError:
             pass
 
     def click_service_mode_input(self, locator):
         try:
             element = self.wait_for_invisible_element(locator)
             element.click()
-        except TimeoutException:
+        except TimeoutError:
             pass
 
 
@@ -676,7 +675,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def get_folder_by_name(self, folder_name):
         try:
             return self.wait_for_invisible_element(self.template_link_text(folder_name))
-        except TimeoutException:
+        except TimeoutError:
             return None
 
 
@@ -913,7 +912,7 @@ class InviteUserPage(BasePage):
                 InviteUserPage.choose_folders_button
             )
             choose_folders_button.click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             pass
 
         checkbox = self.wait_for_invisible_element(
@@ -927,7 +926,7 @@ class InviteUserPage(BasePage):
                 InviteUserPage.choose_folders_button
             )
             choose_folders_button.click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             pass
 
         checkbox = self.wait_for_invisible_element(

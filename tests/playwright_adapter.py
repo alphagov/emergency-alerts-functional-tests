@@ -1,9 +1,7 @@
 import time
 from pathlib import Path
 
-from playwright.sync_api import Locator
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Locator, TimeoutError, sync_playwright
 
 ###########
 # Functional tests used to be based upon Pytest and Selenium's WebDriver.
@@ -25,14 +23,6 @@ class By:
     LINK_TEXT = "link_text"
     PARTIAL_LINK_TEXT = "partial_link_text"
     XPATH = "xpath"
-
-
-class NoSuchElementException(Exception):
-    pass
-
-
-class TimeoutException(Exception):
-    pass
 
 
 class StaleElementReferenceException(Exception):
@@ -86,14 +76,14 @@ class ElementWrapper:
         # fill with empty string
         try:
             self.locator.fill("")
-        except PlaywrightTimeoutError:
+        except TimeoutError:
             pass
 
     def send_keys(self, value):
         # use fill to replace, then type to simulate slower entry
         try:
             self.locator.fill(value)
-        except PlaywrightTimeoutError:
+        except TimeoutError:
             self.locator.type(value)
 
     def __getattr__(self, item):
@@ -117,7 +107,7 @@ class WebDriverWait:
             except Exception as e:
                 last_exc = e
             if time.time() > end_time:
-                raise TimeoutException(
+                raise TimeoutError(
                     message or "Timed out waiting for condition", last_exc
                 )
             time.sleep(0.1)
@@ -201,15 +191,10 @@ class PlaywrightDriver:
             selector = _locator_to_selector(locator[0], locator[1])
             locator_obj = self.page.locator(selector).first
 
-        try:
-            locator_obj.wait_for(
-                state="visible" if must_be_visible else "attached", timeout=timeout
-            )
-            return ElementWrapper(locator_obj)
-        except PlaywrightTimeoutError:
-            raise NoSuchElementException(
-                f"Could not find element {locator[0]} {locator[1]}"
-            )
+        locator_obj.wait_for(
+            state="visible" if must_be_visible else "attached", timeout=timeout
+        )
+        return ElementWrapper(locator_obj)
 
     def find_elements(self, by=None, value=None):
         selector = _locator_to_selector(by, value)
