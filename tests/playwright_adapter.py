@@ -1,6 +1,7 @@
 import time
 from pathlib import Path
 
+from playwright.sync_api import Locator
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
@@ -64,40 +65,40 @@ def _locator_to_selector(by, value):  # noqa: C901
 
 
 class ElementWrapper:
-    def __init__(self, locator):
-        self._locator = locator
+    def __init__(self, locator: Locator):
+        self.locator = locator
 
     @property
     def element(self):
-        return self._locator
+        return self.locator
 
     def click(self):
-        self._locator.click()
+        self.locator.click()
 
     def get_attribute(self, name):
-        return self._locator.get_attribute(name)
+        return self.locator.get_attribute(name)
 
     @property
     def text(self):
-        return self._locator.inner_text()
+        return self.locator.inner_text()
 
     def clear(self):
         # fill with empty string
         try:
-            self._locator.fill("")
+            self.locator.fill("")
         except PlaywrightTimeoutError:
             pass
 
     def send_keys(self, value):
         # use fill to replace, then type to simulate slower entry
         try:
-            self._locator.fill(value)
+            self.locator.fill(value)
         except PlaywrightTimeoutError:
-            self._locator.type(value)
+            self.locator.type(value)
 
     def __getattr__(self, item):
         # delegate to locator where possible
-        return getattr(self._locator, item)
+        return getattr(self.locator, item)
 
 
 class WebDriverWait:
@@ -220,7 +221,7 @@ class PlaywrightDriver:
         handles = []
         for a in args:
             if isinstance(a, ElementWrapper):
-                h = a._locator.element_handle()
+                h = a.locator.element_handle()
                 handles.append(h)
             else:
                 handles.append(a)
