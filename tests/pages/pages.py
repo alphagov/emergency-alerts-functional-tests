@@ -223,12 +223,12 @@ class BasePage(object):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
             element = self.wait_for_invisible_element(locator)
-        if not element.get_attribute("checked"):
+        if not element.locator.is_checked():
             element.click()
-            assert element.get_attribute("checked")
+            assert element.locator.is_checked()
         else:
             element.click()
-            assert not element.get_attribute("checked")
+            assert not element.locator.is_checked()
 
     def unselect_checkbox(self, element):
         if element.get_attribute("checked"):
@@ -932,7 +932,7 @@ class InviteUserPage(BasePage):
         checkbox = self.wait_for_invisible_element(
             self.get_folder_checkbox(folder_name)
         )
-        return checkbox.get_attribute("checked")
+        return checkbox.locator.is_checked()
 
 
 class RegisterFromInvite(BasePage):
