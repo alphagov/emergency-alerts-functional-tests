@@ -230,9 +230,9 @@ class BasePage(object):
             assert not element.locator.is_checked()
 
     def unselect_checkbox(self, element):
-        if element.get_attribute("checked"):
+        if element.locator.is_checked():
             element.click()
-            assert not element.get_attribute("checked")
+            assert not element.locator.is_checked()
 
     def click_templates(self):
         # We have to use the service's menu - and not confuse it with the breadcrumbs which also has a "Templates" link
