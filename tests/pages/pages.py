@@ -324,7 +324,8 @@ class BasePage(object):
         return self.driver.current_url.split("/templates/")[1].split("/")[0]
 
     def click_element_by_link_text(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
+        """Note: for compatibility (from Selenium tests), this will accept either links or buttons."""
+        element = self.page.locator("a,button").get_by_text(link_text)
         element.click()
 
     def click_button_by_text(self, button_text):
