@@ -1243,6 +1243,7 @@ class ExtraContentPage(BasePage):
 
 class GovUkAlertsPage(BasePage):
     def __init__(self, driver):
+        super().__init__(driver)
         self.gov_uk_alerts_url = config["govuk_alerts_url"]
         self.driver = driver
 
