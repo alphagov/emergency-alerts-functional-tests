@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Bootstrap Python app and run tests
+      - name: Bootstrap Python app and run lint
         run: |
           set -eu
           make bootstrap

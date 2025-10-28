@@ -83,7 +83,6 @@ phases:
 
 artifacts:
   files:
-    - screenshots/*
     - functional-test-reports/*
     - functional-test-traces/*
 

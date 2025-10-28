@@ -63,21 +63,12 @@ def driver(_driver, request):
     if prev_failed_tests != request.session.testsfailed:
         test_status = "failed"
         print("URL at time of failure:", _driver.current_url)
-        filename = str(
-            Path.cwd()
-            / "screenshots"
-            / "{}_{}.png".format(filename_datetime, request.function.__name__)
-        )
-        _driver.save_screenshot(str(filename))
-        print("Error screenshot saved to " + filename)
 
     # stop tracing and write to a file with timestamp
     filename = str(
         trace_dir / f"{filename_datetime}-{test_status}-{request.function.__name__}.zip"
     )
     _driver.stop_tracing(filename)
-
-    # HomePage(_driver).sign_out_if_required()
 
 
 @pytest.fixture(scope="module")

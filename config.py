@@ -38,9 +38,9 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "development": {
-        "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
-        "admin": f"https://{tenant}admin.dev.emergency-alerts.service.gov.uk",
-        "govuk_alerts": f"https://{govuk_alerts_url}",
+        "api": "http://localhost:6011",
+        "admin": "http://localhost:6012",
+        "govuk_alerts": "http://localhost:6017/alerts",
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk",
@@ -55,7 +55,7 @@ def setup_shared_config():
     """
     Used by all tests
     """
-    env = os.environ["ENVIRONMENT"].lower()
+    env = os.environ.get("ENVIRONMENT", "development").lower()
 
     if env not in {"local", "development", "preview"}:
         pytest.fail(f'env "{env}" not local, development or preview')
