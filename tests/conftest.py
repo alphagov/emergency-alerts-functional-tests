@@ -52,8 +52,6 @@ def _driver(request, download_directory):
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
 
-    trace_dir = Path.cwd() / "functional-test-traces"
-    trace_dir.mkdir(parents=True, exist_ok=True)
     _driver.start_tracing()
 
     yield _driver
@@ -65,9 +63,11 @@ def driver(_driver, request):
         print("URL at time of failure:", _driver.current_url)
 
     # stop tracing and write to a file with timestamp
-    filename = str(
-        trace_dir / f"{filename_datetime}-{test_status}-{request.function.__name__}.zip"
-    )
+    trace_dir = Path.cwd() / "functional-test-traces"
+    trace_dir = trace_dir / test_status
+    trace_dir.mkdir(parents=True, exist_ok=True)
+
+    filename = str(trace_dir / f"{filename_datetime}-{request.function.__name__}.zip")
     _driver.stop_tracing(filename)
 
 
