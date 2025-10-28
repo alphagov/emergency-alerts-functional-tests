@@ -84,7 +84,7 @@ phases:
 artifacts:
   files:
     - functional-test-reports/*
-    - functional-test-traces/*
+    - functional-test-traces/**/*
 
 reports:
   functional-test-reports:
