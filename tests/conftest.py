@@ -27,8 +27,11 @@ def download_directory(tmp_path_factory):
 @pytest.fixture(scope="module")
 def _driver(request, download_directory):
     http_proxy = os.getenv("HTTP_PROXY")
-    # option added by pytest Playwright plugin
+    # option added by pytest Playwright plugin, autoset by pytest.ini
     headless = not request.config.getoption("--headed")
+
+    if os.environ.get("CI", "false") != "false":
+        headless = True
 
     driver = PlaywrightDriver(
         headless=headless, proxy=http_proxy, download_dir=str(download_directory)
