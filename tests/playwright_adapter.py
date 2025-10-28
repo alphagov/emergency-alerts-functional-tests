@@ -13,6 +13,8 @@ from playwright.sync_api import Locator, TimeoutError, sync_playwright
 # New tests should try to use Playwright's native API and locator mechanism(s).
 ###########
 
+DEFAULT_TIMEOUT = 5000
+
 
 class By:
     NAME = "name"
@@ -182,7 +184,9 @@ class PlaywrightDriver:
     def page_source(self):
         return self.page.content()
 
-    def find_element(self, locator: tuple[By, str], timeout=3000, must_be_visible=True):
+    def find_element(
+        self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT, must_be_visible=True
+    ):
         locator_obj = None
         if locator[0] == By.LINK_TEXT:
             locator_obj = self.page.get_by_role("link", name=locator[1])

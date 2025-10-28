@@ -72,6 +72,7 @@ from tests.pages.locators import (
     ViewTemplatePageLocators,
 )
 from tests.playwright_adapter import (
+    DEFAULT_TIMEOUT,
     By,
     PlaywrightDriver,
     StaleElementReferenceException,
@@ -181,7 +182,7 @@ class BasePage(object):
     def wait_for_invisible_element(self, locator):
         return self.driver.find_element(locator, must_be_visible=False)
 
-    def wait_for_element(self, locator: tuple[By, str], timeout=3000):
+    def wait_for_element(self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT):
         # TODO: Refactor/remove
         return self.driver.find_element(locator, timeout=timeout)
 
@@ -322,7 +323,9 @@ class BasePage(object):
         # circle back and do better
         return self.driver.current_url.split("/templates/")[1].split("/")[0]
 
-    def click_element_by_link_text(self, link_text, exact=False, timeout=3000):
+    def click_element_by_link_text(
+        self, link_text, exact=False, timeout=DEFAULT_TIMEOUT
+    ):
         """Note: for compatibility (from Selenium tests), this will accept either links or buttons."""
         element = (
             self.page.locator("a,button")
