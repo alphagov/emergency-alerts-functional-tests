@@ -87,7 +87,7 @@ artifacts:
     - functional-test-traces/*
 
 reports:
-  functional-test-reports:
+  platform-admin-flow:
     files:
-      - functional-test-reports/*
+      - functional-test-reports/platform-admin-flow
     file-format: JUNITXML
