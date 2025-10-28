@@ -1389,33 +1389,39 @@ class DashboardWithDialogs(BasePage):
         element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()
 
-    def is_inactivity_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
-        )
-        return element.get_attribute("open") is not None
+    # These dialogs are highly timing dependent.
+    # As such they can be quite hard to track - so we set a high timeout to really
+    # try and catch them appropriately.
 
-    def is_inactivity_warning_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
-        )
-        return element.get_attribute("open") is not None
-
-    def is_expiry_dialog_visible(self):
-        element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
-        return element.get_attribute("open") is not None
-
-    def is_inactivity_dialog_hidden(self):
+    def assert_inactivity_dialog_visible(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.INACTIVITY_DIALOG
         )
-        return element.get_attribute("open") is None
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
-    def is_expiry_dialog_hidden(self):
+    def assert_inactivity_warning_dialog_visible(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+        )
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
+
+    def assert_expiry_dialog_visible(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.EXPIRY_DIALOG
         )
-        return element.get_attribute("open") is None
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
+
+    def assert_inactivity_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
+
+    def assert_expiry_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+        )
+        expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 
 
 class RejectionForm(BasePage):
