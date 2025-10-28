@@ -38,9 +38,9 @@ urls = {
         "govuk_alerts": "http://localhost:6017/alerts",
     },
     "development": {
-        "api": "http://localhost:6011",
-        "admin": "http://localhost:6012",
-        "govuk_alerts": "http://localhost:6017/alerts",
+        "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
+        "admin": f"https://{tenant}admin.dev.emergency-alerts.service.gov.uk",
+        "govuk_alerts": f"https://{govuk_alerts_url}",
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk",
