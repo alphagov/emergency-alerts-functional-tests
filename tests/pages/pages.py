@@ -298,7 +298,7 @@ class BasePage(object):
                 return True
             tries -= 1
             sleep(retry_interval)
-            # self.driver.refresh()
+            self.driver.refresh()
         return False
 
     def text_is_not_on_page_no_wait(self, search_text):
@@ -313,7 +313,7 @@ class BasePage(object):
                 return False
             tries -= 1
             sleep(retry_interval)
-            # self.driver.refresh()
+            self.driver.refresh()
         return True
 
     def get_template_id(self):
