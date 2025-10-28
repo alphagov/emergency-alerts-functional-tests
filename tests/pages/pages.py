@@ -1393,29 +1393,29 @@ class DashboardWithDialogs(BasePage):
         element = self.wait_for_element(
             DashboardWithDialogPageLocators.INACTIVITY_DIALOG
         )
-        return element.get_attribute("open")
+        return element.get_attribute("open") is not None
 
     def is_inactivity_warning_dialog_visible(self):
         element = self.wait_for_element(
             DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
         )
-        return element.get_attribute("open")
+        return element.get_attribute("open") is not None
 
     def is_expiry_dialog_visible(self):
         element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
-        return element.get_attribute("open")
+        return element.get_attribute("open") is not None
 
     def is_inactivity_dialog_hidden(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.INACTIVITY_DIALOG
         )
-        return not element.get_attribute("open")
+        return element.get_attribute("open") is None
 
     def is_expiry_dialog_hidden(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.EXPIRY_DIALOG
         )
-        return not element.get_attribute("open")
+        return element.get_attribute("open") is None
 
 
 class RejectionForm(BasePage):
