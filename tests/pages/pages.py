@@ -375,7 +375,7 @@ class HomePage(BasePage):
         # if the cookie warning isn't present, this does nothing
         try:
             self.wait_for_element(
-                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=10
+                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=100
             ).click()
         except TimeoutError:
             return
