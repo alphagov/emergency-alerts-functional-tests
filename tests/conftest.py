@@ -63,8 +63,7 @@ def driver(_driver, request):
         print("URL at time of failure:", _driver.current_url)
 
     # stop tracing and write to a file with timestamp
-    trace_dir = Path.cwd() / "functional-test-traces"
-    trace_dir = trace_dir / test_status
+    trace_dir = Path.cwd() / "functional-test-traces" / test_status
     trace_dir.mkdir(parents=True, exist_ok=True)
 
     filename = str(trace_dir / f"{filename_datetime}-{request.function.__name__}.zip")
