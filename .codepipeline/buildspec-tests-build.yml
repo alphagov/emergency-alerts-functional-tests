@@ -73,4 +73,5 @@ reports:
     files:
       - "**/*"
     base-directory: functional-test-reports
+    discard-paths: yes
     file-format: JUNITXML
