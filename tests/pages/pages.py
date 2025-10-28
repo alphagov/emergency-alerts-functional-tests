@@ -82,7 +82,6 @@ from tests.playwright_adapter import (
 
 @contextmanager
 def wait_for_page_load_completion(driver: PlaywrightDriver):
-    # TOOD: You should probably avoid using this and use Playwright's native (auto-)waiting
     """
     A helper (to be used in a with statement) that ensures a navigation event has completed before returning to
     the caller. Useful if a button press causes a navigation event to a page with new content without needing sleep().
@@ -376,7 +375,7 @@ class HomePage(BasePage):
         # if the cookie warning isn't present, this does nothing
         try:
             self.wait_for_element(
-                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=1
+                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=10
             ).click()
         except TimeoutError:
             return
