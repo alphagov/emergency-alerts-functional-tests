@@ -86,3 +86,9 @@ artifacts:
     - screenshots/*
     - functional-test-reports/*
     - functional-test-traces/*
+
+reports:
+  functional-test-reports:
+    files:
+      - functional-test-reports/*.xml
+    file-format: JUNITXML
