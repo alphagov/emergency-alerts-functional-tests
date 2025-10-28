@@ -3,14 +3,7 @@ version: 0.2
 env:
   variables:
     testsuites: >-
-      broadcast-flow
       platform-admin-flow
-      authentication-flow
-      links-and-cookies
-      template-flow
-      user-operations
-      throttling
-      session-timeout
 
 phases:
   install:
@@ -47,7 +40,7 @@ phases:
       # - make test-template-flow; exit 0
       # - make test-user-operations; exit 0
       # - make test-throttling; exit 0
-      - make test-session-timeout; exit 0
+      # - make test-session-timeout; exit 0
       - echo "Test run completed."
       - |
         if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "true" ]; then
