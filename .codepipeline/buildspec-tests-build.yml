@@ -48,7 +48,7 @@ phases:
       # CodeBuild doesn't like that the reports don't have a .xml extension
       # ...and silently fails to report any test contents. Just an empty report.
       - |
-        for file in functional=test-reports/*; do
+        for file in functional-test-reports/*; do
           cp "$file" "${file}.xml"
         done
 
