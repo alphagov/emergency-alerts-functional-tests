@@ -182,9 +182,9 @@ class BasePage(object):
     def wait_for_invisible_element(self, locator):
         return self.driver.find_element(locator, must_be_visible=False)
 
-    def wait_for_element(self, locator: tuple[By, str], time=10):
+    def wait_for_element(self, locator: tuple[By, str], timeout=3000):
         # TODO: Refactor/remove
-        return self.driver.find_element(locator)
+        return self.driver.find_element(locator, timeout=timeout)
 
     def wait_for_elements(self, locator):
         # TODO: Refactor/remove
@@ -193,11 +193,6 @@ class BasePage(object):
     def sign_out(self):
         element = self.wait_for_element(BasePage.sign_out_link)
         element.click()
-        self.driver.delete_all_cookies()
-
-    def sign_out_if_required(self):
-        if self.text_is_on_page_no_wait("Sign out"):
-            self.sign_out()
         self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
@@ -245,8 +240,8 @@ class BasePage(object):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()
 
-    def click_save(self, time=10):
-        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON, time=time)
+    def click_save(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON)
         element.click()
 
     def click_continue(self):
@@ -304,7 +299,7 @@ class BasePage(object):
                 return True
             tries -= 1
             sleep(retry_interval)
-            self.driver.refresh()
+            # self.driver.refresh()
         return False
 
     def text_is_not_on_page_no_wait(self, search_text):
@@ -319,7 +314,7 @@ class BasePage(object):
                 return False
             tries -= 1
             sleep(retry_interval)
-            self.driver.refresh()
+            # self.driver.refresh()
         return True
 
     def get_template_id(self):
@@ -381,7 +376,7 @@ class HomePage(BasePage):
         # if the cookie warning isn't present, this does nothing
         try:
             self.wait_for_element(
-                CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1
+                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=1
             ).click()
         except TimeoutError:
             return

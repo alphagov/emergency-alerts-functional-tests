@@ -1,8 +1,8 @@
 import pytest
-from playwright_adapter import By
 
 from tests.pages import BasePage
 from tests.pages.rollups import sign_in
+from tests.playwright_adapter import By
 
 test_group_name = "links-cookies"
 
