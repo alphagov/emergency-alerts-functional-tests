@@ -13,6 +13,7 @@ from tests.pages.pages import (
     RegisterFromInvite,
     TeamMembersPage,
     VerifyPage,
+    wait_for_page_load_completion,
 )
 from tests.pages.rollups import sign_in, sign_in_elevated_platform_admin
 from tests.test_utils import create_invitation_url, get_verification_code_by_id
@@ -308,9 +309,12 @@ def test_service_can_create_and_approve_and_revoke_api_keys(
     api_keys_page.sign_out()
     sign_in_elevated_platform_admin(driver, purge_failed_logins, True)
 
-    api_keys_page.click_element_by_link_text("Settings")
-    api_keys_page.click_element_by_link_text("Service history")
-    api_keys_page.click_element_by_link_text("API keys")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("Settings")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("Service history")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("API keys")
 
     api_keys_page.assert_text_is_on_page(f"Created an API key called ‘{key_name}’")
     api_keys_page.assert_text_is_on_page(f"Revoked the ‘{key_name}’ API key")
