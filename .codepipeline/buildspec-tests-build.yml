@@ -49,6 +49,11 @@ phases:
       - make test-throttling; exit 0
       - make test-session-timeout; exit 0
       - echo "Test run completed."
+      - |
+        if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "true" ]; then
+          export testsuites="$testsuites cbc-integration"
+        fi
+        python3.12 ./scripts/report-test-results.py $(pwd) $testsuites
 
   post_build:
     commands:
