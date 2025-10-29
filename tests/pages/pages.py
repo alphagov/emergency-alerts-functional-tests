@@ -293,7 +293,13 @@ class BasePage(object):
         expect(self.page.get_by_text(search_text).first).to_be_visible()
 
     def text_is_on_page(self, search_text):
-        # TODO: Remove this function and replace with expect(...).to_be_visible() with a timeout
+        # TODO: Replace this function. It's a bit of a hack - the refresh logic isn't right.
+        # For compatibility in the Playwright transition it's been kept.
+        # Many tests call this immediately after clicking something. The related page load
+        # won't have been completed yet. Fortunately the sleep and refresh logic here
+        # will eventually find it after wasting a bit of time.
+        # Tests should try to ensure the page load has completed or use expect(...).to_be_visible()
+
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
@@ -308,6 +314,7 @@ class BasePage(object):
         return not self.text_is_on_page_no_wait(search_text)
 
     def text_is_not_on_page(self, search_text):
+        # TODO: Replace this function (see text_is_on_page TODO)
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
