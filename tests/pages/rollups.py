@@ -10,6 +10,7 @@ from tests.pages import (
     SignInPage,
     wait_for_page_load_completion,
 )
+from tests.playwright_adapter import PlaywrightDriver
 from tests.test_utils import (
     ACCOUNTS_REQUIRING_SMS_2FA,
     do_email_auth_verify,
@@ -19,7 +20,8 @@ from tests.test_utils import (
 )
 
 
-def sign_in(driver, account_type="normal"):
+def sign_in(driver: PlaywrightDriver, account_type="normal"):
+    driver.context.tracing.group("sign_in - " + account_type)
     clean_session(driver)
 
     home_page = HomePage(driver)
@@ -47,6 +49,8 @@ def sign_in(driver, account_type="normal"):
             base_page.click_element_by_link_text(
                 config["broadcast_service"]["service_name"]
             )
+
+    driver.context.tracing.group_end()
 
 
 def sign_in_elevated_platform_admin(
