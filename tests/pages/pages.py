@@ -77,8 +77,6 @@ from tests.playwright_adapter import (
     DEFAULT_TIMEOUT,
     By,
     PlaywrightDriver,
-    StaleElementReferenceException,
-    WebDriverException,
     WebDriverWait,
 )
 
@@ -98,67 +96,6 @@ def wait_for_page_load_completion(driver: PlaywrightDriver):
 
 class RetryException(Exception):
     pass
-
-
-class AntiStale:
-    def __init__(self, driver, locator, webdriverwait_func):
-        """
-        webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
-        """
-        self.driver = driver
-        self.webdriverwait_func = webdriverwait_func
-        self.locator = locator
-        # kick it off
-        self.element = self.webdriverwait_func(self.locator)
-
-    @retry(RetryException, tries=5)
-    def retry_on_stale(self, callable):
-        try:
-            return callable()
-        except StaleElementReferenceException:
-            self.reset_element()
-
-    def reset_element(self):
-        self.element = self.webdriverwait_func(self.locator)
-
-        raise RetryException("StaleElement {}".format(self.locator))
-
-
-class AntiStaleElement(AntiStale):
-    def click(self):
-        def _click():
-            # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
-            # the scrollIntoView function to bring it to the top of the page
-            self.driver.execute_script(
-                "arguments[0].scrollIntoViewIfNeeded()", self.element
-            )
-            try:
-                self.element.click()
-            except WebDriverException:
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView()", self.element
-                )
-                self.element.click()
-
-        return self.retry_on_stale(_click)
-
-    def __getattr__(self, attr):
-        return self.retry_on_stale(lambda: getattr(self.element, attr))
-
-
-class AntiStaleElementList(AntiStale):
-    def __getitem__(self, index):
-        class AntiStaleListItem:
-            def click(item_self):
-                return self.retry_on_stale(lambda: self.element[index].click())
-
-            def __getattr__(item_self, attr):
-                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
-
-        return AntiStaleListItem()
-
-    def __len__(self):
-        return len(self.element)
 
 
 class BasePage(object):

@@ -27,10 +27,6 @@ class By:
     XPATH = "xpath"
 
 
-class StaleElementReferenceException(Exception):
-    pass
-
-
 class WebDriverException(Exception):
     pass
 
