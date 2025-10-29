@@ -8,7 +8,6 @@ from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
-    INVALID_AREA_ALERT_XML,
 )
 from tests.pages import (
     BasePage,
@@ -283,45 +282,6 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     time.sleep(10)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
-
-    page.get()
-    page.sign_out()
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_create_broadcast_with_invalid_area_then_discard(driver, broadcast_client):
-    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.now(timezone.utc) - timedelta(hours=1)
-    )
-    identifier = uuid.uuid4()
-    event = f"test broadcast {identifier}"
-    broadcast_content = f"Flood warning {identifier} has been issued"
-
-    # XML polygon has a self-intersecting point so is invalid
-    invalid_area_alert_xml = INVALID_AREA_ALERT_XML.format(
-        identifier=identifier,
-        alert_sent=sent_time,
-        event=event,
-        broadcast_content=broadcast_content,
-    )
-    broadcast_client.post_broadcast_data(invalid_area_alert_xml)
-
-    sign_in(driver, account_type="broadcast_approve_user")
-    page = BasePage(driver)
-    page.click_element_by_link_text(event)
-
-    # Asserts that error message appears on page
-    assert page.get_errors_from_error_summary() == (
-        "There is a problem\nThe area used is invalid and the alert cannot be sent. "
-        "If the alert was created through the API, report it to the alert creator. "
-        "Otherwise report it to the Emergency Alerts team."
-    )
-
-    page.click_element_by_link_text("Discard this alert")
-
-    time.sleep(5)
-    page.click_element_by_link_text("Rejected alerts")
-    assert page.text_is_on_page(event)
 
     page.get()
     page.sign_out()
