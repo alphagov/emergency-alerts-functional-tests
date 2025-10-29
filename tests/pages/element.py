@@ -11,6 +11,7 @@ from tests.pages.locators import (
     RejectionFormLocators,
     ReturnForEditFormLocators,
     SearchCoordinatePageLocators,
+    SearchFloodWarningAreaPageLocators,
     SearchPostcodePageLocators,
     SignUpPageLocators,
     SupportPageLocators,
@@ -201,3 +202,11 @@ class RejectionDetailLink:
 
 class ReturnForEditReasonTextArea(BasePageElement):
     name = ReturnForEditFormLocators.RETURN_FOR_EDIT_REASON_TEXTAREA[1]
+
+
+class FloodWarningAreaCodeInputElement(BasePageElement):
+    name = SearchFloodWarningAreaPageLocators.TA_CODE_INPUT[1]
+
+
+class AddAreaButton(BasePageElement):
+    name = SearchFloodWarningAreaPageLocators.ADD_AREA_BUTTON[1]

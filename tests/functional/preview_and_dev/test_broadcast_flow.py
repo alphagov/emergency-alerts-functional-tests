@@ -8,7 +8,6 @@ from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
-    INVALID_AREA_ALERT_XML,
 )
 from tests.pages import (
     BasePage,
@@ -23,6 +22,7 @@ from tests.pages.pages import (
     ExtraContentPage,
     RejectionForm,
     ReturnAlertForEditForm,
+    SearchFloodWarningAreaPage,
     SearchPostcodePage,
 )
 from tests.pages.rollups import sign_in
@@ -288,45 +288,6 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_create_broadcast_with_invalid_area_then_discard(driver, broadcast_client):
-    sent_time = convert_naive_utc_datetime_to_cap_standard_string(
-        datetime.now(timezone.utc) - timedelta(hours=1)
-    )
-    identifier = uuid.uuid4()
-    event = f"test broadcast {identifier}"
-    broadcast_content = f"Flood warning {identifier} has been issued"
-
-    # XML polygon has a self-intersecting point so is invalid
-    invalid_area_alert_xml = INVALID_AREA_ALERT_XML.format(
-        identifier=identifier,
-        alert_sent=sent_time,
-        event=event,
-        broadcast_content=broadcast_content,
-    )
-    broadcast_client.post_broadcast_data(invalid_area_alert_xml)
-
-    sign_in(driver, account_type="broadcast_approve_user")
-    page = BasePage(driver)
-    page.click_element_by_link_text(event)
-
-    # Asserts that error message appears on page
-    assert page.get_errors_from_error_summary() == (
-        "There is a problem\nThe area used is invalid and the alert cannot be sent. "
-        "If the alert was created through the API, report it to the alert creator. "
-        "Otherwise report it to the Emergency Alerts team."
-    )
-
-    page.click_element_by_link_text("Discard this alert")
-
-    time.sleep(5)
-    page.click_element_by_link_text("Rejected alerts")
-    assert page.text_is_on_page(event)
-
-    page.get()
-    page.sign_out()
-
-
-@pytest.mark.xdist_group(name=test_group_name)
 def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -528,7 +489,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_prepare_broadcast_with_REPPIR_site_content(driver):
+def test_prepare_broadcast_with_REPPIR_site(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
     # prepare alert
@@ -567,6 +528,101 @@ def test_prepare_broadcast_with_REPPIR_site_content(driver):
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("AWE Aldermaston")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    preview_alert_page.sign_out()
+
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_submit()
+    assert current_alerts_page.text_is_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
+
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
+
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
+
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_submit()  # stop broadcasting
+    assert current_alerts_page.text_is_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
+
+    time.sleep(10)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_prepare_broadcast_with_flood_warning_target_area(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text(
+        "Flood Warning Target Areas (TA code)"
+    )
+
+    # Enter TA code and click 'Add area' button to add area to alert
+    search_flood_warning_area_page = SearchFloodWarningAreaPage(driver)
+    TA_code = "122FWB112"
+
+    search_flood_warning_area_page.create_ta_code_input(TA_code)
+    search_flood_warning_area_page.click_add_area()
+
+    assert search_flood_warning_area_page.text_is_on_page(
+        "122FWB112: Hull city centre"
+    )  # Area has been returned and displayed correctly
+
+    search_flood_warning_area_page.click_element_by_link_text(
+        "Save and continue to preview"
+    )
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Hull city centre")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
