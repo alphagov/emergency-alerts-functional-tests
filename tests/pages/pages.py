@@ -1272,11 +1272,15 @@ class GovUkAlertsPage(BasePage):
         delay=config["govuk_alerts_wait_retry_interval"],
     )
     def check_alert_is_published(self, broadcast_content):
-        if not self.text_is_on_page(broadcast_content):
-            self.driver.refresh()
-            raise RetryException(
-                f'Could not find alert with content "{broadcast_content}"'
-            )
+        self.driver.context.tracing.group("Broadcast - " + broadcast_content)
+        try:
+            if not self.text_is_on_page(broadcast_content):
+                # (text_is_on_page will refresh)
+                raise RetryException(
+                    f'Could not find alert with content "{broadcast_content}"'
+                )
+        finally:
+            self.driver.context.tracing.group_end()
 
     def check_extra_content_appears(self, extra_content):
         if not self.text_is_on_page(extra_content):
