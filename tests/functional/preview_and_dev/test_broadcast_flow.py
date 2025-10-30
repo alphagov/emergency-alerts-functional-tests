@@ -722,9 +722,9 @@ def test_reject_alert_with_reason(driver):
     current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
 
     alert_page_with_rejection = RejectionForm(driver)
-    assert alert_page_with_rejection.rejection_details_is_closed()
+    alert_page_with_rejection.assert_rejection_details_is_closed()
     alert_page_with_rejection.click_open_reject_detail()
-    assert alert_page_with_rejection.rejection_details_is_open()
+    alert_page_with_rejection.assert_rejection_details_is_open()
 
     # Without rejection reason
     rejection_reason = ""
@@ -805,9 +805,9 @@ def test_return_alert_for_edit(driver):
     current_alerts_page.click_element_by_link_text(broadcast_title)  # to access alert
 
     alert_page_with_return_for_edit = ReturnAlertForEditForm(driver)
-    assert alert_page_with_return_for_edit.return_for_edit_details_is_closed()
+    alert_page_with_return_for_edit.assert_return_for_edit_details_is_closed()
     alert_page_with_return_for_edit.click_open_return_for_edit_detail()
-    assert alert_page_with_return_for_edit.return_for_edit_details_is_open()
+    alert_page_with_return_for_edit.assert_return_for_edit_details_is_open()
 
     # Without rejection reason
     reason_for_returning_alert = ""

@@ -64,7 +64,10 @@ target/
 /venv
 docker.env
 
-screenshots
+functional-test-reports/
+functional-test-traces/
+logs/
+
 settings.json
 
 # Tenant-specific Dockerfile

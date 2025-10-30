@@ -2,7 +2,6 @@ import time
 from datetime import datetime
 
 import pytest
-from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
@@ -16,6 +15,7 @@ from tests.pages import (
 )
 from tests.pages.pages import BasePage, ChooseTemplateFieldsPage
 from tests.pages.rollups import sign_in
+from tests.playwright_adapter import By
 from tests.test_utils import go_to_templates_page
 
 test_group_name = "templates"

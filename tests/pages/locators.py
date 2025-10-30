@@ -1,4 +1,4 @@
-from selenium.webdriver.common.by import By
+from tests.playwright_adapter import By
 
 
 class CommonPageLocators(object):

@@ -3,16 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
+from playwright.sync_api import TimeoutError, expect
 from retry import retry
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    TimeoutException,
-    WebDriverException,
-)
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from config import config
 from tests.pages.element import (
@@ -81,95 +73,38 @@ from tests.pages.locators import (
     VerifyPageLocators,
     ViewTemplatePageLocators,
 )
+from tests.playwright_adapter import (
+    DEFAULT_TIMEOUT,
+    By,
+    PlaywrightDriver,
+    WebDriverWait,
+)
 
 
 @contextmanager
-def wait_for_page_load_completion(driver):
+def wait_for_page_load_completion(driver: PlaywrightDriver):
     """
     A helper (to be used in a with statement) that ensures a navigation event has completed before returning to
     the caller. Useful if a button press causes a navigation event to a page with new content without needing sleep().
     """
-    old_page = driver.find_element(by=By.TAG_NAME, value="html")
+
     yield
 
-    def page_has_loaded(*args):
-        new_page = driver.find_element(by=By.TAG_NAME, value="html")
-        return new_page.id != old_page.id
-
-    WebDriverWait(driver, 10).until(page_has_loaded)
+    with driver.page.expect_event("load"):
+        return
 
 
 class RetryException(Exception):
     pass
 
 
-class AntiStale:
-    def __init__(self, driver, locator, webdriverwait_func):
-        """
-        webdriverwait_func is a function that takes in a locator and returns an element. Probably a webdriverwait.
-        """
-        self.driver = driver
-        self.webdriverwait_func = webdriverwait_func
-        self.locator = locator
-        # kick it off
-        self.element = self.webdriverwait_func(self.locator)
-
-    @retry(RetryException, tries=5)
-    def retry_on_stale(self, callable):
-        try:
-            return callable()
-        except StaleElementReferenceException:
-            self.reset_element()
-
-    def reset_element(self):
-        self.element = self.webdriverwait_func(self.locator)
-
-        raise RetryException("StaleElement {}".format(self.locator))
-
-
-class AntiStaleElement(AntiStale):
-    def click(self):
-        def _click():
-            # an element might be hidden underneath other elements (eg sticky nav items). To counter this, we can use
-            # the scrollIntoView function to bring it to the top of the page
-            self.driver.execute_script(
-                "arguments[0].scrollIntoViewIfNeeded()", self.element
-            )
-            try:
-                self.element.click()
-            except WebDriverException:
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView()", self.element
-                )
-                self.element.click()
-
-        return self.retry_on_stale(_click)
-
-    def __getattr__(self, attr):
-        return self.retry_on_stale(lambda: getattr(self.element, attr))
-
-
-class AntiStaleElementList(AntiStale):
-    def __getitem__(self, index):
-        class AntiStaleListItem:
-            def click(item_self):
-                return self.retry_on_stale(lambda: self.element[index].click())
-
-            def __getattr__(item_self, attr):
-                return self.retry_on_stale(lambda: getattr(self.element[index], attr))
-
-        return AntiStaleListItem()
-
-    def __len__(self):
-        return len(self.element)
-
-
 class BasePage(object):
     sign_out_link = NavigationLocators.SIGN_OUT_LINK
 
-    def __init__(self, driver):
+    def __init__(self, driver: PlaywrightDriver):
         self.base_url = config["eas_admin_url"]
         self.driver = driver
+        self.page = driver.page
 
     def get(self, url=None, relative_url=None):
         if url:
@@ -184,42 +119,19 @@ class BasePage(object):
         return self.driver.current_url
 
     def wait_for_invisible_element(self, locator):
-        return AntiStaleElement(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(locator)
-            ),
-        )
+        return self.driver.find_element(locator, must_be_visible=False)
 
-    def wait_for_element(self, locator, time=10):
-        return AntiStaleElement(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, time).until(
-                EC.visibility_of_element_located(locator),
-                EC.presence_of_element_located(locator),
-            ),
-        )
+    def wait_for_element(self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT):
+        # TODO: Refactor/remove
+        return self.driver.find_element(locator, timeout=timeout)
 
     def wait_for_elements(self, locator):
-        return AntiStaleElementList(
-            self.driver,
-            locator,
-            lambda locator: WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_all_elements_located(locator),
-                EC.presence_of_all_elements_located(locator),
-            ),
-        )
+        # TODO: Refactor/remove
+        return self.driver.find_elements(locator)
 
     def sign_out(self):
         element = self.wait_for_element(BasePage.sign_out_link)
         element.click()
-        self.driver.delete_all_cookies()
-
-    def sign_out_if_required(self):
-        if self.text_is_on_page_no_wait("Sign out"):
-            self.sign_out()
         self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
@@ -244,28 +156,31 @@ class BasePage(object):
         if not element and value:
             locator = (By.CSS_SELECTOR, f"[value={value}]")
             element = self.wait_for_invisible_element(locator)
-        if not element.get_attribute("checked"):
+        if not element.locator.is_checked():
             element.click()
-            assert element.get_attribute("checked")
+            assert element.locator.is_checked()
         else:
             element.click()
-            assert not element.get_attribute("checked")
+            assert not element.locator.is_checked()
 
     def unselect_checkbox(self, element):
-        if element.get_attribute("checked"):
+        if element.locator.is_checked():
             element.click()
-            assert not element.get_attribute("checked")
+            assert not element.locator.is_checked()
 
     def click_templates(self):
-        element = self.wait_for_element(NavigationLocators.TEMPLATES_LINK)
-        element.click()
+        # We have to use the service's menu - and not confuse it with the breadcrumbs which also has a "Templates" link
+        locator = self.page.get_by_label("Service").get_by_role(
+            "link", name="Templates"
+        )
+        locator.click()
 
     def click_settings(self):
         element = self.wait_for_element(NavigationLocators.SETTINGS_LINK)
         element.click()
 
-    def click_save(self, time=10):
-        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON, time=time)
+    def click_save(self):
+        element = self.wait_for_element(CommonPageLocators.SUBMIT_BUTTON)
         element.click()
 
     def click_continue(self):
@@ -305,24 +220,23 @@ class BasePage(object):
 
         return False
 
-    @retry(
-        RetryException,
-        tries=config["ui_element_retry_times"],
-        delay=config["ui_element_retry_interval"],
-    )
-    def text_is_on_page_with_exception(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-        if search_text not in normalized_page_source:
-            self.driver.refresh()
-            raise RetryException(f'Could not find text "{search_text}"')
-        return True
-
     def text_is_on_page_no_wait(self, search_text):
-        normalized_page_source = " ".join(self.driver.page_source.split())
-        if search_text in normalized_page_source:
-            return True
+        # TODO: Remove this function and replace with expect(...).to_be_visible()
+        #   expect(self.driver.page.get_by_text(search_text).first).to_be_visible()
+        locator = self.driver.page.get_by_text(search_text).first
+        return locator.is_visible()
+
+    def assert_text_is_on_page(self, search_text):
+        expect(self.page.get_by_text(search_text).first).to_be_visible()
 
     def text_is_on_page(self, search_text):
+        # TODO: Replace this function. It's a bit of a hack - the refresh logic isn't right.
+        # For compatibility in the Playwright transition it's been kept.
+        # Many tests call this immediately after clicking something. The related page load
+        # won't have been completed yet. Fortunately the sleep and refresh logic here
+        # will eventually find it after wasting a bit of time.
+        # Tests should try to ensure the page load has completed or use expect(...).to_be_visible()
+
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
@@ -337,6 +251,7 @@ class BasePage(object):
         return not self.text_is_on_page_no_wait(search_text)
 
     def text_is_not_on_page(self, search_text):
+        # TODO: Replace this function (see text_is_on_page TODO)
         tries = config["ui_element_retry_times"]
         retry_interval = config["ui_element_retry_interval"]
         while tries > 0:
@@ -354,9 +269,16 @@ class BasePage(object):
         # circle back and do better
         return self.driver.current_url.split("/templates/")[1].split("/")[0]
 
-    def click_element_by_link_text(self, link_text):
-        element = self.wait_for_element((By.LINK_TEXT, link_text))
-        element.click()
+    def click_element_by_link_text(
+        self, link_text, exact=False, timeout=DEFAULT_TIMEOUT
+    ):
+        """Note: for compatibility (from Selenium tests), this will accept either links or buttons."""
+        element = (
+            self.page.locator("a,button")
+            .get_by_text(link_text, exact=exact)
+            .filter(visible=True)
+        )
+        element.click(timeout=timeout)
 
     def click_element_by_id(self, id):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
@@ -402,9 +324,9 @@ class HomePage(BasePage):
         # if the cookie warning isn't present, this does nothing
         try:
             self.wait_for_element(
-                CommonPageLocators.ACCEPT_COOKIE_BUTTON, time=1
+                CommonPageLocators.ACCEPT_COOKIE_BUTTON, timeout=100
             ).click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             return
 
 
@@ -447,21 +369,21 @@ class AddServicePage(BasePage):
         self.service_input = name
         try:
             self.click_org_type_input()
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_add_service_button()
 
     def select_training_mode(self):
         try:
             self.click_service_mode_input(AddServicePage.training_mode_input)
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_continue()
 
     def select_operator_mode(self):
         try:
             self.click_service_mode_input(AddServicePage.operator_mode_input)
-        except NoSuchElementException:
+        except TimeoutError:
             pass
         self.click_continue()
 
@@ -477,14 +399,14 @@ class AddServicePage(BasePage):
         try:
             element = self.wait_for_invisible_element(AddServicePage.org_type_input)
             element.click()
-        except TimeoutException:
+        except TimeoutError:
             pass
 
     def click_service_mode_input(self, locator):
         try:
             element = self.wait_for_invisible_element(locator)
             element.click()
-        except TimeoutException:
+        except TimeoutError:
             pass
 
 
@@ -702,7 +624,7 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     def get_folder_by_name(self, folder_name):
         try:
             return self.wait_for_invisible_element(self.template_link_text(folder_name))
-        except TimeoutException:
+        except TimeoutError:
             return None
 
 
@@ -939,7 +861,7 @@ class InviteUserPage(BasePage):
                 InviteUserPage.choose_folders_button
             )
             choose_folders_button.click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             pass
 
         checkbox = self.wait_for_invisible_element(
@@ -953,13 +875,13 @@ class InviteUserPage(BasePage):
                 InviteUserPage.choose_folders_button
             )
             choose_folders_button.click()
-        except (NoSuchElementException, TimeoutException):
+        except TimeoutError:
             pass
 
         checkbox = self.wait_for_invisible_element(
             self.get_folder_checkbox(folder_name)
         )
-        return checkbox.get_attribute("checked")
+        return checkbox.locator.is_checked()
 
 
 class RegisterFromInvite(BasePage):
@@ -1274,6 +1196,7 @@ class ExtraContentPage(BasePage):
 
 class GovUkAlertsPage(BasePage):
     def __init__(self, driver):
+        super().__init__(driver)
         self.gov_uk_alerts_url = config["govuk_alerts_url"]
         self.driver = driver
 
@@ -1286,11 +1209,15 @@ class GovUkAlertsPage(BasePage):
         delay=config["govuk_alerts_wait_retry_interval"],
     )
     def check_alert_is_published(self, broadcast_content):
-        if not self.text_is_on_page(broadcast_content):
-            self.driver.refresh()
-            raise RetryException(
-                f'Could not find alert with content "{broadcast_content}"'
-            )
+        self.driver.context.tracing.group("Broadcast - " + broadcast_content)
+        try:
+            if not self.text_is_on_page(broadcast_content):
+                # (text_is_on_page will refresh)
+                raise RetryException(
+                    f'Could not find alert with content "{broadcast_content}"'
+                )
+        finally:
+            self.driver.context.tracing.group_end()
 
     def check_extra_content_appears(self, extra_content):
         if not self.text_is_on_page(extra_content):
@@ -1301,7 +1228,7 @@ class GovUkAlertsPage(BasePage):
 
     def get_alert_url(self, driver, text):
         xpath = f"//div[div[p[contains(text(),'{text}')]]]//a[contains(text(),'More information')]"
-        link2 = driver.find_element(By.XPATH, value=xpath)
+        link2 = driver.find_element((By.XPATH, xpath))
         link2.click()
 
 
@@ -1422,33 +1349,39 @@ class DashboardWithDialogs(BasePage):
         element = self.wait_for_element(DashboardWithDialogPageLocators.CONTINUE_BUTTON)
         element.click()
 
-    def is_inactivity_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
-        )
-        return element.get_attribute("open")
+    # These dialogs are highly timing dependent.
+    # As such they can be quite hard to track - so we set a high timeout to really
+    # try and catch them appropriately.
 
-    def is_inactivity_warning_dialog_visible(self):
-        element = self.wait_for_element(
-            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
-        )
-        return element.get_attribute("open")
-
-    def is_expiry_dialog_visible(self):
-        element = self.wait_for_element(DashboardWithDialogPageLocators.EXPIRY_DIALOG)
-        return element.get_attribute("open")
-
-    def is_inactivity_dialog_hidden(self):
+    def assert_inactivity_dialog_visible(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.INACTIVITY_DIALOG
         )
-        return not element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
-    def is_expiry_dialog_hidden(self):
+    def assert_inactivity_warning_dialog_visible(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+        )
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
+
+    def assert_expiry_dialog_visible(self):
         element = self.wait_for_invisible_element(
             DashboardWithDialogPageLocators.EXPIRY_DIALOG
         )
-        return not element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "", timeout=10000)
+
+    def assert_inactivity_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+        )
+        expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
+
+    def assert_expiry_dialog_hidden(self):
+        element = self.wait_for_invisible_element(
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+        )
+        expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 
 
 class RejectionForm(BasePage):
@@ -1461,13 +1394,13 @@ class RejectionForm(BasePage):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_LINK)
         element.click()
 
-    def rejection_details_is_open(self):
+    def assert_rejection_details_is_open(self):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
-        return element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "")
 
-    def rejection_details_is_closed(self):
+    def assert_rejection_details_is_closed(self):
         element = self.wait_for_element(RejectionFormLocators.REJECTION_DETAIL_ELEMENT)
-        return not element.get_attribute("open")
+        expect(element.locator).not_to_have_attribute("open", "")
 
     def click_reject_alert(self):
         element = self.wait_for_element(RejectionFormLocators.REJECT_ALERT_BUTTON)
@@ -1491,17 +1424,17 @@ class ReturnAlertForEditForm(BasePage):
         )
         element.click()
 
-    def return_for_edit_details_is_open(self):
+    def assert_return_for_edit_details_is_open(self):
         element = self.wait_for_element(
             ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
         )
-        return element.get_attribute("open")
+        expect(element.locator).to_have_attribute("open", "")
 
-    def return_for_edit_details_is_closed(self):
+    def assert_return_for_edit_details_is_closed(self):
         element = self.wait_for_element(
             ReturnForEditFormLocators.RETURN_FOR_EDIT_DETAIL_ELEMENT
         )
-        return not element.get_attribute("open")
+        expect(element.locator).not_to_have_attribute("open", "")
 
     def click_return_alert_for_edit(self):
         element = self.wait_for_element(

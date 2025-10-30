@@ -2,6 +2,7 @@ import pytest
 
 from tests.pages import BasePage
 from tests.pages.rollups import sign_in
+from tests.playwright_adapter import By
 
 test_group_name = "links-cookies"
 
@@ -70,10 +71,12 @@ def test_reject_analytics_cookies(driver):
     landing_page.click_element_by_link_text("Cookies")
     assert landing_page.is_page_title("Cookies")
 
-    analytics_off_radio = driver.find_element("id", "cookies-analytics-no")
+    analytics_off_radio = driver.find_element((By.ID, "cookies-analytics-no"))
     landing_page.select_checkbox_or_radio(element=analytics_off_radio)
     landing_page.click_submit()
     assert landing_page.text_is_on_page("cookie settings were saved")
 
-    print(driver.get_cookie("cookies_policy"))
-    assert driver.get_cookie("cookies_policy")["value"] == '{"analytics":false}'
+    cookies = driver.context.cookies()
+    policy_cookie = [x for x in cookies if x["name"] == "cookies_policy"]
+    assert len(policy_cookie) == 1
+    assert policy_cookie[0]["value"] == '{"analytics":false}'

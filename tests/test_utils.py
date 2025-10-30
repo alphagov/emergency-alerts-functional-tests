@@ -9,9 +9,8 @@ import boto3
 import requests
 from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
+from playwright.sync_api import TimeoutError
 from retry import retry
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.common.by import By
 
 from config import config
 from tests.pages import (
@@ -21,8 +20,10 @@ from tests.pages import (
     RetryException,
     ShowTemplatesPage,
     VerifyPage,
+    wait_for_page_load_completion,
 )
 from tests.pages.pages import ChooseTemplateFieldsPage
+from tests.playwright_adapter import By, PlaywrightDriver
 
 logging.basicConfig(
     filename="./logs/test_run_{}.log".format(datetime.now(timezone.utc)),
@@ -69,14 +70,14 @@ def get_link(template_id, email):
     tries=config["verify_code_retry_times"],
     delay=config["verify_code_retry_interval"],
 )
-def do_verify(driver, mobile_number):
+def do_verify(driver: PlaywrightDriver, mobile_number):
     try:
         verify_code = get_verify_code_from_api(mobile_number)
         verify_page = VerifyPage(driver)
         verify_page.verify(verify_code)
-        driver.find_element(By.CLASS_NAME, "error-message")
-    except (NoSuchElementException, TimeoutException):
-        #  In some cases a TimeoutException is raised even if we have managed to verify.
+        driver.find_element((By.CLASS_NAME, "error-message"), timeout=100)
+    except TimeoutError:
+        #  In some cases a TimeoutError is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
         return True
     else:
@@ -89,14 +90,15 @@ def do_verify(driver, mobile_number):
     tries=config["verify_code_retry_times"],
     delay=config["verify_code_retry_interval"],
 )
-def do_verify_by_id(driver, user_id):
+def do_verify_by_id(driver: PlaywrightDriver, user_id):
     try:
         verify_code = get_verification_code_by_id(user_id)
         verify_page = VerifyPage(driver)
-        verify_page.verify(verify_code)
-        driver.find_element(By.CLASS_NAME, "error-message")
-    except (NoSuchElementException, TimeoutException):
-        #  In some cases a TimeoutException is raised even if we have managed to verify.
+        with wait_for_page_load_completion(driver):
+            verify_page.verify(verify_code)
+        driver.find_element((By.CLASS_NAME, "error-message"), timeout=10)
+    except TimeoutError:
+        #  In some cases a TimeoutError is raised even if we have managed to verify.
         #  For now, check explicitly if we 'have verified' and if so move on.
         return True
     else:
@@ -123,13 +125,13 @@ def do_email_verification(driver, template_id, email_address):
         driver.get(email_link)
 
         if (
-            driver.find_element(By.CLASS_NAME, "heading-large").text
+            driver.find_element((By.CLASS_NAME, "heading-large")).text
             == "The link has expired"
         ):
             #  There was an error message (presumably we tried to use an email token that was already used/expired)
             raise RetryException
 
-    except (NoSuchElementException, TimeoutException):
+    except TimeoutError:
         # no error - that means we're logged in! hurray.
         return True
 
@@ -163,7 +165,7 @@ def delete_template(driver, template_name, service="service"):
     show_templates_page = ShowTemplatesPage(driver)
     try:
         show_templates_page.click_template_by_link_text(template_name)
-    except TimeoutException:
+    except TimeoutError:
         page = CurrentAlertsPage(driver)
         page.go_to_service_landing_page(config[service]["id"])
         page.click_templates()
@@ -224,11 +226,11 @@ def recordtime(func):
 
 
 def check_alert_is_published_on_govuk_alerts(
-    driver, page_title, broadcast_content, extra_content=None
+    driver: PlaywrightDriver, page_title, broadcast_content, extra_content=None
 ):
     gov_uk_alerts_page = GovUkAlertsPage(driver)
     gov_uk_alerts_page.get()
-    gov_uk_alerts_page.click_element_by_link_text(page_title)
+    gov_uk_alerts_page.click_element_by_link_text(page_title, exact=True)
     gov_uk_alerts_page.check_alert_is_published(broadcast_content)
     if extra_content:
         gov_uk_alerts_page.get_alert_url(driver, broadcast_content)

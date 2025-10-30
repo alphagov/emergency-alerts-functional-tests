@@ -13,6 +13,7 @@ from tests.pages.pages import (
     RegisterFromInvite,
     TeamMembersPage,
     VerifyPage,
+    wait_for_page_load_completion,
 )
 from tests.pages.rollups import sign_in, sign_in_elevated_platform_admin
 from tests.test_utils import create_invitation_url, get_verification_code_by_id
@@ -149,7 +150,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     assert invite_user_page.is_page_title("Team members")
 
     if user_requires_admin_approval:
-        assert invite_user_page.text_is_on_page("An admin approval has been created")
+        invite_user_page.assert_text_is_on_page("An admin approval has been created")
 
         # Login again as a different platform admin to approve
         invite_user_page.sign_out()
@@ -229,8 +230,6 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     team_members_page.wait_until_url_ends_with("/users")
     assert team_members_page.text_is_not_on_page(invited_user_email)
 
-    team_members_page.sign_out()
-
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_service_admin_search_for_user_by_name_and_email(driver, purge_failed_logins):
@@ -275,7 +274,7 @@ def test_service_can_create_and_approve_and_revoke_api_keys(
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
-    assert api_keys_page.text_is_on_page("An admin approval has been created")
+    api_keys_page.assert_text_is_on_page("An admin approval has been created")
 
     # Login again as a different platform admin to approve
     # Approving does not need elevation
@@ -295,26 +294,27 @@ def test_service_can_create_and_approve_and_revoke_api_keys(
     # click "copy key"
     copy_key_btn.click()
     admin_approvals_page.wait_for_show_key_button()
-    assert admin_approvals_page.text_is_on_page("Copy your key to somewhere safe")
-    assert admin_approvals_page.text_is_on_page("Copied to clipboard")
+    admin_approvals_page.assert_text_is_on_page("Copy your key to somewhere safe")
+    admin_approvals_page.assert_text_is_on_page("Copied to clipboard")
 
     # revoke api key
     api_keys_page.click_element_by_link_text("Back to API keys")
     assert api_keys_page.is_page_title("API keys")
     api_keys_page.revoke_api_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
-    assert api_keys_page.text_is_on_page(f"‘{key_name}’ was revoked")
+    api_keys_page.assert_text_is_on_page(f"‘{key_name}’ was revoked")
 
     # check audit trail for api key
     # We need to be an elevated admin to see the service history section
     api_keys_page.sign_out()
     sign_in_elevated_platform_admin(driver, purge_failed_logins, True)
 
-    api_keys_page.click_element_by_link_text("Settings")
-    api_keys_page.click_element_by_link_text("Service history")
-    api_keys_page.click_element_by_link_text("API keys")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("Settings")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("Service history")
+    with wait_for_page_load_completion(driver):
+        api_keys_page.click_element_by_link_text("API keys")
 
-    assert api_keys_page.text_is_on_page(f"Created an API key called ‘{key_name}’")
-    assert api_keys_page.text_is_on_page(f"Revoked the ‘{key_name}’ API key")
-
-    api_keys_page.sign_out()
+    api_keys_page.assert_text_is_on_page(f"Created an API key called ‘{key_name}’")
+    api_keys_page.assert_text_is_on_page(f"Revoked the ‘{key_name}’ API key")
