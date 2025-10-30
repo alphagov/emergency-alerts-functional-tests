@@ -1,24 +1,22 @@
+import glob
 import json
 import os
 import sys
-from xml.dom.minidom import Node, parse
+from xml.dom.minidom import Document, Node, parse
+
+# Looks at all of the test output (JUnit XML) and logs in a specific way
+# These logs are parsed and an alarm/ZenDesk is fired accordingly within AWS
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python report-test-results.py working-dir testsuite-list")
+    if len(sys.argv) < 1:
+        print("Usage: python report-test-results.py test-report-dir")
         sys.exit(1)
 
-    working_dir = sys.argv[1]
-    test_file_names = sys.argv[2:]
-    test_files = [
-        working_dir + "/functional-test-reports/" + filename
-        for filename in test_file_names
-    ]
+    test_dir = sys.argv[1]
+    test_files = glob.glob(os.path.join(test_dir, "*"))
 
-    if not len(test_files):
-        print("Please provide a list of test files")
-        sys.exit(1)
+    print("Found test report files: " + ",".join(test_files))
 
     failed_tests = aggregate_failures(test_files)
 
@@ -26,12 +24,12 @@ def main():
         log_final_results(failed_tests)
 
 
-def aggregate_failures(test_files):
+def aggregate_failures(test_files: list[str]):
     artefact_bucket = get_smoke_test_bucket_name()
     failed_tests = []
 
     for test_file in test_files:
-        test_results = extract_test_result(parse(test_file))
+        test_results = extract_test_result(test_file, parse(test_file))
         for r in test_results:
             success = "PASS" if len(r) < 4 else "FAIL"
 
@@ -71,14 +69,13 @@ def log_final_results(failed_tests):
     )
 
 
-def extract_test_result(document):
+def extract_test_result(test_group: str, document: Document):
     test_results = document.getElementsByTagName("testcase")
 
     results = []
 
     for result in test_results:
         test_identifier = result.getAttribute("name")
-        (test_name, test_group) = test_identifier.split("@")
         test_time = result.getAttribute("time")
 
         failure = result.getElementsByTagName("failure")
@@ -94,10 +91,16 @@ def extract_test_result(document):
 
         if failure_message is not None or failure_summary is not None:
             results.append(
-                (test_group, test_name, test_time, failure_summary, failure_message)
+                (
+                    test_group,
+                    test_identifier,
+                    test_time,
+                    failure_summary,
+                    failure_message,
+                )
             )
         else:
-            results.append((test_group, test_name, test_time))
+            results.append((test_group, test_identifier, test_time))
 
     return results
 
