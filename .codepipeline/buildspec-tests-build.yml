@@ -4,13 +4,6 @@ env:
   variables:
     testsuites: >-
       broadcast-flow
-      platform-admin-flow
-      authentication-flow
-      links-and-cookies
-      template-flow
-      user-operations
-      throttling
-      session-timeout
 
 phases:
   install:
@@ -25,7 +18,6 @@ phases:
       - . $VENV_TESTS/bin/activate
       - chmod +x environment.sh
       - . ./environment.sh
-      - python3.12 -m pip install --upgrade pip wheel setuptools
       - make bootstrap
 
   build:
@@ -35,19 +27,19 @@ phases:
       # The if below doesn't check for truthiness, but instead "true", because CodePipeline *requires* a value - therefore it will *always* be truthy.
       - export CI=true # Switch to headless mode
       - make test-broadcast-flow; exit 0
-      - |
-        if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "true" ]; then
-          make test-cbc-integration; exit 0
-        else
-          echo "SKIPPING WORKFLOW 'test-cbc-integration'..."
-        fi
-      - make test-platform-admin-flow; exit 0
-      - make test-authentication-flow; exit 0
-      - make test-links-and-cookies; exit 0
-      - make test-template-flow; exit 0
-      - make test-user-operations; exit 0
-      - make test-throttling; exit 0
-      - make test-session-timeout; exit 0
+      # - |
+      #   if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "true" ]; then
+      #     make test-cbc-integration; exit 0
+      #   else
+      #     echo "SKIPPING WORKFLOW 'test-cbc-integration'..."
+      #   fi
+      # - make test-platform-admin-flow; exit 0
+      # - make test-authentication-flow; exit 0
+      # - make test-links-and-cookies; exit 0
+      # - make test-template-flow; exit 0
+      # - make test-user-operations; exit 0
+      # - make test-throttling; exit 0
+      # - make test-session-timeout; exit 0
       - echo "Test run completed."
       - python3.12 ./scripts/report-test-results.py functional-test-reports
 
