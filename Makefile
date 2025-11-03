@@ -24,7 +24,7 @@ uninstall-packages:
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
 	pytest -v \
-	tests/functional/preview_and_dev/test_broadcast_flow.py \
+	tests/functional/preview_and_dev/test_broadcast_flow.py::test_prepare_broadcast_with_new_content_for_postcode_area \
 	--junitxml=functional-test-reports/broadcast-flow
 
 .PHONY: test-cbc-integration
