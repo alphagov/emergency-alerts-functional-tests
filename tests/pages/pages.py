@@ -296,17 +296,23 @@ class BasePage(object):
 
 
 class PageWithStickyNavMixin:
+
     def scrollToRevealElement(self, selector=None, xpath=None, stuckToBottom=True):
+        driver: PlaywrightDriver = self.driver
+
         namespace = "window.GOVUK.stickAtBottomWhenScrolling"
         if stuckToBottom is False:
             namespace = "window.GOVUK.stickAtTopWhenScrolling"
+
+        # We need to wait for the JS to initialise and set the relevant global before using it
+        driver.page.wait_for_function(f"() => {namespace}")
 
         if selector is not None:
             js_str = (
                 f"if ('scrollToRevealElement' in {namespace})"
                 f"{namespace}.scrollToRevealElement($('{selector}').eq(0))"
             )
-            self.driver.execute_script(js_str)
+            driver.execute_script(js_str)
         elif xpath is not None:
             js_str = f"""(function (document) {{
                              if ('scrollToRevealElement' in {namespace}) {{
@@ -316,7 +322,7 @@ class PageWithStickyNavMixin:
                                  }}
                              }}
                          }}(document));"""
-            self.driver.execute_script(js_str)
+            driver.execute_script(js_str)
 
 
 class HomePage(BasePage):
