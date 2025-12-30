@@ -7,7 +7,7 @@ from retry import retry
 from config import config
 from tests.pages import RetryException
 from tests.pages.rollups import broadcast_alert
-from tests.test_utils import PROVIDERS, create_s3_client, set_response_codes
+from tests.test_utils import create_s3_client, set_response_codes
 
 test_group_name = "cbc-integration"
 
@@ -297,16 +297,18 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    for provider_id in PROVIDERS:
+    for provider_id in ["ee", "o2", "three"]:
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
-        # get s3 object with this name
-        cap_xml_object = s3.get_object(
-            Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
-            Key=f"{request_id}.cap.xml",
-        )
-        assert cap_xml_object["Body"].read().decode("utf-8")
+        for az in ["az1", "az2"]:
+            provider_az = f"{provider_id}-{az}"
+            # get s3 object with this name
+            cap_xml_object = s3.get_object(
+                Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
+                Key=f"{provider_az}/{request_id}.cap.xml",
+            )
+            assert cap_xml_object["Body"].read().decode("utf-8")
 
 
 @retry(
