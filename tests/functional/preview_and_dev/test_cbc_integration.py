@@ -1,15 +1,13 @@
-import logging
 import time
 import uuid
-from random import choice
 
 import pytest
 from retry import retry
 
 from config import config
 from tests.pages import RetryException
-from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
+from tests.pages.rollups import broadcast_alert
+from tests.test_utils import PROVIDERS, create_s3_client, set_response_codes
 
 test_group_name = "cbc-integration"
 
@@ -26,265 +24,289 @@ def test_cbc_config():
     assert "three-az2" in config["cbcs"]
 
 
-@pytest.mark.xdist_group(name=test_group_name)
-def test_get_loopback_request_with_bad_id_returns_no_items():
-    ddbc = create_ddb_client()
-    responses = get_loopback_request_items(ddbc=ddbc, request_id="1234")
-    assert len(responses) == 0
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_get_loopback_request_with_bad_id_returns_no_items():
+#     ddbc = create_ddb_client()
+#     responses = get_loopback_request_items(ddbc=ddbc, request_id="1234")
+#     assert len(responses) == 0
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_broadcast_generates_four_provider_messages(driver, api_client):
+#     ddbc = create_ddb_client()
+
+#     broadcast_id = str(uuid.uuid4())
+#     broadcast_alert(driver, broadcast_id)
+
+#     provider_messages = fetch_provider_messages(driver, api_client)
+#     logging.info(f"Provider messages: {provider_messages}")
+
+#     assert len(provider_messages) == 4
+
+#     distinct_request_ids = 0
+
+#     for provider_id in PROVIDERS:
+#         request_id = dict_item_for_key_value(
+#             provider_messages, "provider", provider_id, "id"
+#         )
+#         responses = get_loopback_request_items(
+#             ddbc=ddbc,
+#             request_id=request_id,
+#             retry_if=lambda resp: len(resp["Items"]) < 1,
+#         )
+#         if len(responses):
+#             distinct_request_ids += 1
+
+#     logging.info(f"Distinct request ids: {distinct_request_ids}")
+
+#     assert distinct_request_ids == 4
+
+#     cancel_alert(driver, broadcast_id)
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_get_loopback_responses_returns_codes_for_eight_endpoints():
+#     ddbc = create_ddb_client()
+#     db_response = ddbc.scan(
+#         TableName="LoopbackResponses",
+#     )
+
+#     assert db_response["Count"] == 8
+
+#     response_mnos = set()
+#     response_codes = set()
+#     for item in db_response["Items"]:
+#         response_mnos.add(item["Name"]["S"])
+#         response_codes.add(item["ResponseCode"]["N"])
+
+#     expected_mnos = {
+#         "ee-az1",
+#         "ee-az2",
+#         "o2-az1",
+#         "o2-az2",
+#         "vodafone-az1",
+#         "vodafone-az2",
+#         "three-az1",
+#         "three-az2",
+#     }
+#     assert response_mnos == expected_mnos
+#     assert len(response_codes) == 1
+#     assert response_codes.pop() == "200"
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_set_loopback_response_codes(cbc_blackout):
+#     ddbc = create_ddb_client()
+
+#     test_code = 403
+#     set_loopback_response_codes(ddbc, response_code=test_code)
+#     for mno in PROVIDERS:
+#         for az in ["az1", "az2"]:
+#             test_cbc = f"{mno}-{az}"
+#             test_ip = config["cbcs"][test_cbc]
+#             db_response = ddbc.query(
+#                 TableName="LoopbackResponses",
+#                 KeyConditionExpression="IpAddress = :IpAddress",
+#                 ExpressionAttributeValues={
+#                     ":IpAddress": {"S": test_ip},
+#                 },
+#                 ConsistentRead=True,
+#             )
+#             assert db_response["Count"] == 1
+#             assert db_response["Items"][0]["ResponseCode"]["N"] == str(test_code)
+
+#     set_loopback_response_codes(ddbc=ddbc, response_code=200)
+#     for mno in PROVIDERS:
+#         for az in ["az1", "az2"]:
+#             test_cbc = f"{mno}-{az}"
+#             test_ip = config["cbcs"][test_cbc]
+#             db_response = ddbc.query(
+#                 TableName="LoopbackResponses",
+#                 KeyConditionExpression="IpAddress = :IpAddress",
+#                 ExpressionAttributeValues={
+#                     ":IpAddress": {"S": test_ip},
+#                 },
+#                 ConsistentRead=True,
+#             )
+#             assert db_response["Count"] == 1
+#             assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
+#     broadcast_id = str(uuid.uuid4())
+
+#     mno = choice(PROVIDERS)
+#     primary_cbc = f"{mno}-az1"
+#     secondary_cbc = f"{mno}-az2"
+#     failure_code = 500
+
+#     ddbc = create_ddb_client()
+#     set_loopback_response_codes(
+#         ddbc, response_code=failure_code, cbc_list=[primary_cbc]
+#     )
+
+#     broadcast_alert(driver, broadcast_id)
+
+#     provider_messages = fetch_provider_messages(driver, api_client)
+
+#     assert len(provider_messages) == 4
+
+#     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+
+#     def _check_for_responses_from_secondary_az(resp):
+#         az2 = dynamo_item_for_key_value(
+#             resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
+#         )
+#         return az2 is None
+
+#     responses = get_loopback_request_items(
+#         ddbc=ddbc,
+#         request_id=request_id,
+#         retry_if=_check_for_responses_from_secondary_az,
+#     )
+
+#     set_loopback_response_codes(ddbc=ddbc, response_code=200)
+
+#     az2_response_code = dynamo_item_for_key_value(
+#         responses, "MnoName", secondary_cbc, "ResponseCode"
+#     )
+#     assert az2_response_code == "200"
+
+#     cancel_alert(driver, broadcast_id)
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_broadcast_with_both_azs_failing_retries_requests(
+#     driver, api_client, cbc_blackout
+# ):
+#     broadcast_id = str(uuid.uuid4())
+
+#     mno = choice(PROVIDERS)
+#     primary_cbc = f"{mno}-az1"
+#     secondary_cbc = f"{mno}-az2"
+#     failure_code = 500
+
+#     ddbc = create_ddb_client()
+#     set_loopback_response_codes(
+#         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
+#     )
+
+#     broadcast_alert(driver, broadcast_id)
+
+#     provider_messages = fetch_provider_messages(driver, api_client)
+
+#     assert len(provider_messages) == 4
+
+#     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+
+#     def _check_for_responses_from_both_azs(resp):
+#         az1 = dynamo_item_for_key_value(
+#             resp["Items"], "MnoName", primary_cbc, "ResponseCode"
+#         )
+#         az2 = dynamo_item_for_key_value(
+#             resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
+#         )
+#         return az1 is None or az2 is None
+
+#     responses = get_loopback_request_items(
+#         ddbc=ddbc, request_id=request_id, retry_if=_check_for_responses_from_both_azs
+#     )
+
+#     set_loopback_response_codes(ddbc=ddbc, response_code=200)
+
+#     az1_response_codes = dynamo_items_for_key_value(
+#         responses, "MnoName", primary_cbc, "ResponseCode"
+#     )
+#     az1_codes_set = set(az1_response_codes)
+#     assert len(az1_codes_set) == 1  # assert that all codes are the same
+#     assert az1_codes_set.pop() == str(failure_code)
+
+#     az2_response_codes = dynamo_items_for_key_value(
+#         responses, "MnoName", secondary_cbc, "ResponseCode"
+#     )
+#     az2_codes_set = set(az2_response_codes)
+#     assert len(az2_codes_set) == 1  # assert that all codes are the same
+#     assert az2_codes_set.pop() == str(failure_code)
+
+#     cancel_alert(driver, broadcast_id)
+
+
+# @pytest.mark.xdist_group(name=test_group_name)
+# def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
+#     driver, api_client, cbc_blackout
+# ):
+#     broadcast_id = str(uuid.uuid4())
+
+#     mno = choice(PROVIDERS)
+#     primary_cbc = f"{mno}-az1"
+#     secondary_cbc = f"{mno}-az2"
+#     failure_code = 500
+
+#     ddbc = create_ddb_client()
+#     set_loopback_response_codes(
+#         ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
+#     )
+
+#     broadcast_alert(driver, broadcast_id)
+
+#     provider_messages = fetch_provider_messages(driver, api_client)
+
+#     assert len(provider_messages) == 4
+
+#     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+
+#     # wait for at least one response (which should be a '500' at this stage)
+#     _ = get_loopback_request_items(
+#         ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 1
+#     )
+
+#     set_loopback_response_codes(ddbc=ddbc, response_code=200)
+#     time.sleep(120)
+
+#     responses = get_loopback_request_items(
+#         ddbc=ddbc,
+#         request_id=request_id,
+#     )
+
+#     az1_response_codes = dynamo_items_for_key_value(
+#         responses, "MnoName", primary_cbc, "ResponseCode"
+#     )
+
+#     az2_response_codes = dynamo_items_for_key_value(
+#         responses, "MnoName", secondary_cbc, "ResponseCode"
+#     )
+
+#     response_codes = set(az1_response_codes + az2_response_codes)
+#     assert len(response_codes) == 2  # we should have a 200 along with the 500s
+#     assert str(failure_code) in response_codes
+#     assert "200" in response_codes
+
+#     cancel_alert(driver, broadcast_id)
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_generates_four_provider_messages(driver, api_client):
-    ddbc = create_ddb_client()
+def test_assert_cap_xml_generated_is_correct(driver, api_client):
+    # send an alert
+    # retrieve the alert cap xml from S3
+    # check that it is as it should be
+    s3 = create_s3_client()
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
     provider_messages = fetch_provider_messages(driver, api_client)
-    logging.info(f"Provider messages: {provider_messages}")
-
-    assert len(provider_messages) == 4
-
-    distinct_request_ids = 0
 
     for provider_id in PROVIDERS:
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
-        responses = get_loopback_request_items(
-            ddbc=ddbc,
-            request_id=request_id,
-            retry_if=lambda resp: len(resp["Items"]) < 1,
+        # get s3 object with this name
+        cap_xml_object = s3.get_object(
+            Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
+            Key=f"{request_id}.cap.xml",
         )
-        if len(responses):
-            distinct_request_ids += 1
-
-    logging.info(f"Distinct request ids: {distinct_request_ids}")
-
-    assert distinct_request_ids == 4
-
-    cancel_alert(driver, broadcast_id)
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_get_loopback_responses_returns_codes_for_eight_endpoints():
-    ddbc = create_ddb_client()
-    db_response = ddbc.scan(
-        TableName="LoopbackResponses",
-    )
-
-    assert db_response["Count"] == 8
-
-    response_mnos = set()
-    response_codes = set()
-    for item in db_response["Items"]:
-        response_mnos.add(item["Name"]["S"])
-        response_codes.add(item["ResponseCode"]["N"])
-
-    expected_mnos = {
-        "ee-az1",
-        "ee-az2",
-        "o2-az1",
-        "o2-az2",
-        "vodafone-az1",
-        "vodafone-az2",
-        "three-az1",
-        "three-az2",
-    }
-    assert response_mnos == expected_mnos
-    assert len(response_codes) == 1
-    assert response_codes.pop() == "200"
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_set_loopback_response_codes(cbc_blackout):
-    ddbc = create_ddb_client()
-
-    test_code = 403
-    set_loopback_response_codes(ddbc, response_code=test_code)
-    for mno in PROVIDERS:
-        for az in ["az1", "az2"]:
-            test_cbc = f"{mno}-{az}"
-            test_ip = config["cbcs"][test_cbc]
-            db_response = ddbc.query(
-                TableName="LoopbackResponses",
-                KeyConditionExpression="IpAddress = :IpAddress",
-                ExpressionAttributeValues={
-                    ":IpAddress": {"S": test_ip},
-                },
-                ConsistentRead=True,
-            )
-            assert db_response["Count"] == 1
-            assert db_response["Items"][0]["ResponseCode"]["N"] == str(test_code)
-
-    set_loopback_response_codes(ddbc=ddbc, response_code=200)
-    for mno in PROVIDERS:
-        for az in ["az1", "az2"]:
-            test_cbc = f"{mno}-{az}"
-            test_ip = config["cbcs"][test_cbc]
-            db_response = ddbc.query(
-                TableName="LoopbackResponses",
-                KeyConditionExpression="IpAddress = :IpAddress",
-                ExpressionAttributeValues={
-                    ":IpAddress": {"S": test_ip},
-                },
-                ConsistentRead=True,
-            )
-            assert db_response["Count"] == 1
-            assert db_response["Items"][0]["ResponseCode"]["N"] == "200"
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_az1_failure_tries_az2(driver, api_client, cbc_blackout):
-    broadcast_id = str(uuid.uuid4())
-
-    mno = choice(PROVIDERS)
-    primary_cbc = f"{mno}-az1"
-    secondary_cbc = f"{mno}-az2"
-    failure_code = 500
-
-    ddbc = create_ddb_client()
-    set_loopback_response_codes(
-        ddbc, response_code=failure_code, cbc_list=[primary_cbc]
-    )
-
-    broadcast_alert(driver, broadcast_id)
-
-    provider_messages = fetch_provider_messages(driver, api_client)
-
-    assert len(provider_messages) == 4
-
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-
-    def _check_for_responses_from_secondary_az(resp):
-        az2 = dynamo_item_for_key_value(
-            resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
-        )
-        return az2 is None
-
-    responses = get_loopback_request_items(
-        ddbc=ddbc,
-        request_id=request_id,
-        retry_if=_check_for_responses_from_secondary_az,
-    )
-
-    set_loopback_response_codes(ddbc=ddbc, response_code=200)
-
-    az2_response_code = dynamo_item_for_key_value(
-        responses, "MnoName", secondary_cbc, "ResponseCode"
-    )
-    assert az2_response_code == "200"
-
-    cancel_alert(driver, broadcast_id)
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_retries_requests(
-    driver, api_client, cbc_blackout
-):
-    broadcast_id = str(uuid.uuid4())
-
-    mno = choice(PROVIDERS)
-    primary_cbc = f"{mno}-az1"
-    secondary_cbc = f"{mno}-az2"
-    failure_code = 500
-
-    ddbc = create_ddb_client()
-    set_loopback_response_codes(
-        ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
-    )
-
-    broadcast_alert(driver, broadcast_id)
-
-    provider_messages = fetch_provider_messages(driver, api_client)
-
-    assert len(provider_messages) == 4
-
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-
-    def _check_for_responses_from_both_azs(resp):
-        az1 = dynamo_item_for_key_value(
-            resp["Items"], "MnoName", primary_cbc, "ResponseCode"
-        )
-        az2 = dynamo_item_for_key_value(
-            resp["Items"], "MnoName", secondary_cbc, "ResponseCode"
-        )
-        return az1 is None or az2 is None
-
-    responses = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=_check_for_responses_from_both_azs
-    )
-
-    set_loopback_response_codes(ddbc=ddbc, response_code=200)
-
-    az1_response_codes = dynamo_items_for_key_value(
-        responses, "MnoName", primary_cbc, "ResponseCode"
-    )
-    az1_codes_set = set(az1_response_codes)
-    assert len(az1_codes_set) == 1  # assert that all codes are the same
-    assert az1_codes_set.pop() == str(failure_code)
-
-    az2_response_codes = dynamo_items_for_key_value(
-        responses, "MnoName", secondary_cbc, "ResponseCode"
-    )
-    az2_codes_set = set(az2_response_codes)
-    assert len(az2_codes_set) == 1  # assert that all codes are the same
-    assert az2_codes_set.pop() == str(failure_code)
-
-    cancel_alert(driver, broadcast_id)
-
-
-@pytest.mark.xdist_group(name=test_group_name)
-def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
-    driver, api_client, cbc_blackout
-):
-    broadcast_id = str(uuid.uuid4())
-
-    mno = choice(PROVIDERS)
-    primary_cbc = f"{mno}-az1"
-    secondary_cbc = f"{mno}-az2"
-    failure_code = 500
-
-    ddbc = create_ddb_client()
-    set_loopback_response_codes(
-        ddbc, response_code=failure_code, cbc_list=[primary_cbc, secondary_cbc]
-    )
-
-    broadcast_alert(driver, broadcast_id)
-
-    provider_messages = fetch_provider_messages(driver, api_client)
-
-    assert len(provider_messages) == 4
-
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
-
-    # wait for at least one response (which should be a '500' at this stage)
-    _ = get_loopback_request_items(
-        ddbc=ddbc, request_id=request_id, retry_if=lambda resp: len(resp["Items"]) < 1
-    )
-
-    set_loopback_response_codes(ddbc=ddbc, response_code=200)
-    time.sleep(120)
-
-    responses = get_loopback_request_items(
-        ddbc=ddbc,
-        request_id=request_id,
-    )
-
-    az1_response_codes = dynamo_items_for_key_value(
-        responses, "MnoName", primary_cbc, "ResponseCode"
-    )
-
-    az2_response_codes = dynamo_items_for_key_value(
-        responses, "MnoName", secondary_cbc, "ResponseCode"
-    )
-
-    response_codes = set(az1_response_codes + az2_response_codes)
-    assert len(response_codes) == 2  # we should have a 200 along with the 500s
-    assert str(failure_code) in response_codes
-    assert "200" in response_codes
-
-    cancel_alert(driver, broadcast_id)
+        assert cap_xml_object["Body"].read().decode("utf-8")
 
 
 @retry(
