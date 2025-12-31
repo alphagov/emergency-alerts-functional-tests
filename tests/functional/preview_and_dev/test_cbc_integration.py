@@ -297,7 +297,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    for provider_id in ["ee", "o2", "three"]:
+    for provider_id in ["o2", "three"]:
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
