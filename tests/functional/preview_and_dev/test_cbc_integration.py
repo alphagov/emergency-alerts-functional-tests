@@ -320,7 +320,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
                 cap_xml = cap_xml_object["Body"].read().decode("utf-8")
                 assert cap_xml
                 logging.info(f"CAP XML: {cap_xml}")
-                schema_doc = etree.parse("cap-1.2.xsd")
+                schema_doc = etree.parse("docs/CAP-v1.2.xsd")
                 schema = etree.XMLSchema(schema_doc)
                 xml_doc = etree.fromstring(cap_xml.encode())
                 schema.assertValid(xml_doc)
