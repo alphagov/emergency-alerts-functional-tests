@@ -1,8 +1,10 @@
+import logging
 import time
 import uuid
 
 import pytest
 from botocore.exceptions import ClientError
+from lxml import etree
 from retry import retry
 
 from config import config
@@ -315,7 +317,13 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
                     Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
                     Key=f"{provider_az}/{request_id}.cap.xml",
                 )
-                assert cap_xml_object["Body"].read().decode("utf-8")
+                cap_xml = cap_xml_object["Body"].read().decode("utf-8")
+                assert cap_xml
+                logging.info(f"CAP XML: {cap_xml}")
+                schema_doc = etree.parse("cap-1.2.xsd")
+                schema = etree.XMLSchema(schema_doc)
+                xml_doc = etree.fromstring(cap_xml.encode())
+                schema.assertValid(xml_doc)
                 break
             except ClientError as e:
                 if e.response["Error"]["Code"] in ("404", "NoSuchKey"):
