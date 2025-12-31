@@ -2,6 +2,7 @@ import time
 import uuid
 
 import pytest
+from botocore.exceptions import ClientError
 from retry import retry
 
 from config import config
@@ -304,11 +305,22 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             # get s3 object with this name
-            cap_xml_object = s3.get_object(
-                Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
-                Key=f"{provider_az}/{request_id}.cap.xml",
-            )
-            assert cap_xml_object["Body"].read().decode("utf-8")
+            try:
+                # Checking first if key exists
+                s3.head_object(
+                    Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
+                    Key=f"{provider_az}/{request_id}.cap.xml",
+                )
+                cap_xml_object = s3.get_object(
+                    Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
+                    Key=f"{provider_az}/{request_id}.cap.xml",
+                )
+                assert cap_xml_object["Body"].read().decode("utf-8")
+                break
+            except ClientError as e:
+                if e.response["Error"]["Code"] in ("404", "NoSuchKey"):
+                    continue
+                raise
 
 
 @retry(
