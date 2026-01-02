@@ -414,10 +414,9 @@ def assert_cap_xml_valid(cap_xml):
 
 def assert_cap_xml_polygons_valid(cap_xml):
     ns = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
-    root = cap_xml.getroot()
 
     # Asserting polygons in CAP XML are valid, using shapely is_valid method
-    for polygon_element in root.findall("cap:info/cap:area/cap:polygon", ns):
+    for polygon_element in cap_xml.findall("cap:info/cap:area/cap:polygon", ns):
         coords_list = polygon_element.text.split()
         coords = [[float(coord) for coord in coord.split(",")] for coord in coords_list]
         polygon = Polygon(coords)
