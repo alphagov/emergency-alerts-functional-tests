@@ -1,4 +1,3 @@
-import logging
 import time
 import uuid
 
@@ -6,6 +5,7 @@ import pytest
 from botocore.exceptions import ClientError
 from lxml import etree
 from retry import retry
+from shapely import Polygon
 
 from config import config
 from tests.pages import RetryException
@@ -13,6 +13,7 @@ from tests.pages.rollups import broadcast_alert
 from tests.test_utils import create_s3_client, set_response_codes
 
 test_group_name = "cbc-integration"
+cap_xml_bucket = "test-cap-xml-bucket"  # temporary, will be an env var
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -290,9 +291,6 @@ def test_cbc_config():
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_assert_cap_xml_generated_is_correct(driver, api_client):
-    # send an alert
-    # retrieve the alert cap xml from S3
-    # check that it is as it should be
     s3 = create_s3_client()
 
     broadcast_id = str(uuid.uuid4())
@@ -300,35 +298,42 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    for provider_id in ["o2", "three"]:
+    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+
+        # Retrieving requestID from provider_messages table
         request_id = dict_item_for_key_value(
             provider_messages, "provider", provider_id, "id"
         )
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
-            # get s3 object with this name
             try:
-                # Checking first if key exists
+                cap_xml_filename = f"{provider_az}/{request_id}.cap.xml"
+                # Checking first if file exists in bucket
                 s3.head_object(
-                    Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
-                    Key=f"{provider_az}/{request_id}.cap.xml",
+                    Bucket=cap_xml_bucket,
+                    Key=cap_xml_filename,
                 )
+                # Retrieving CAP XML file for request & provider
                 cap_xml_object = s3.get_object(
-                    Bucket="test-cap-xml-bucket",  # temporary name, this will be an env var
-                    Key=f"{provider_az}/{request_id}.cap.xml",
+                    Bucket=cap_xml_bucket,
+                    Key=cap_xml_filename,
                 )
-                cap_xml = cap_xml_object["Body"].read().decode("utf-8")
-                assert cap_xml
-                logging.info(f"CAP XML: {cap_xml}")
-                schema_doc = etree.parse("docs/CAP-v1.2.xsd")
-                schema = etree.XMLSchema(schema_doc)
-                xml_doc = etree.fromstring(cap_xml.encode())
-                schema.assertValid(xml_doc)
-                break
+
+                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
+                cap_xml = etree.fromstring(cap_xml_body.encode())
+
+                assert_cap_xml_valid(cap_xml)
+                assert_cap_xml_polygons_valid(cap_xml)
+                return
             except ClientError as e:
+                # We just need to assert that one file exists and has correct body
                 if e.response["Error"]["Code"] in ("404", "NoSuchKey"):
                     continue
                 raise
+
+    pytest.fail(
+        "No CAP XML files generated that could be checked and validated against schema"
+    )
 
 
 @retry(
@@ -399,3 +404,21 @@ def fetch_provider_messages(driver, api_client):
         time.sleep(10)
 
     return response["messages"]
+
+
+def assert_cap_xml_valid(cap_xml):
+    schema_doc = etree.parse("docs/CAP-v1.2.xsd")
+    schema = etree.XMLSchema(schema_doc)
+    schema.assertValid(cap_xml)
+
+
+def assert_cap_xml_polygons_valid(cap_xml):
+    ns = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
+    root = cap_xml.getroot()
+
+    # Asserting polygons in CAP XML are valid, using shapely is_valid method
+    for polygon_element in root.findall("cap:info/cap:area/cap:polygon", ns):
+        coords_list = polygon_element.text.split()
+        coords = [[float(coord) for coord in coord.split(",")] for coord in coords_list]
+        polygon = Polygon(coords)
+        assert polygon.is_valid
