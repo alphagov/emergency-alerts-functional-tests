@@ -100,5 +100,4 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
+    assert landing_page.text_is_on_page("Sign out")
