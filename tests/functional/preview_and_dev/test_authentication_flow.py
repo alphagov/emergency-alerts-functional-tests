@@ -100,4 +100,4 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
-    assert landing_page.text_is_on_page("Sign out")
+    assert landing_page.text_is_on_page("Switch service")
