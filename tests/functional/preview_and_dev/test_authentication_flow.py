@@ -13,7 +13,11 @@ from tests.pages import (
     VerifyPage,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import create_sign_in_url, get_verification_code_by_id
+from tests.test_utils import (
+    create_email_mfa_sign_in_url,
+    create_sign_in_url,
+    get_verification_code_by_id,
+)
 
 test_group_name = "auth-flow"
 
@@ -76,6 +80,7 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     home_page.get()
     home_page.accept_cookie_warning()
 
+    login_id = config["broadcast_service"]["broadcast_user_4"]["id"]
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
 
@@ -89,9 +94,10 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     assert sign_in_page.text_is_on_page("a link to sign in")
 
     purge_failed_logins()
-    sign_in_url = create_sign_in_url(login_email, "email-auth")
+
+    verify_code = get_verification_code_by_id(login_id)
+    sign_in_url = create_email_mfa_sign_in_url(login_id, verify_code, "email-auth")
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
-
-    landing_page.url_contains("current-alerts")
+    assert landing_page.text_is_on_page("Switch service")

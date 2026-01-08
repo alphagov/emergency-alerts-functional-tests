@@ -245,6 +245,20 @@ def create_sign_in_url(email, url, next_redirect=None):
     return full_url
 
 
+def create_email_mfa_sign_in_url(userid, secret_code, url, next_redirect=None):
+    data = json.dumps(
+        {
+            "user_id": userid,
+            "secret_code": secret_code,
+            "created_at": str(datetime.now(timezone.utc)),
+        }
+    )
+    full_url = _url_with_token(data, f"/{url}/", config)
+    if next_redirect:
+        full_url += "?{}".format(urlencode({"next": next_redirect}))
+    return full_url
+
+
 def create_invitation_url(user_id):
     return _url_with_token(user_id, "/invitation/", config)
 
