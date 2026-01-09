@@ -20,7 +20,7 @@ from tests.test_utils import (
 )
 
 test_group_name = "cbc-integration"
-cap_xml_bucket = "test-cap-xml-bucket"  # temporary, will be an env var
+cap_xml_bucket = config["cap_xml_bucket_arn"]
 
 
 @pytest.mark.xdist_group(name=test_group_name)
