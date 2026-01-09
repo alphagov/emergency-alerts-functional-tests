@@ -186,9 +186,9 @@ def setup_preview_dev_config():
                 "three-az2": "192.168.1.152",
             },
             "cap_xml_bucket_arn": (
-                os.environ.get("DEV_CAP_XML_BUCKET_ARN")
-                if tenant == "dev"
-                else os.environ.get("PREVIEW_CAP_XML_BUCKET_ARN")
+                os.environ.get("PREVIEW_CAP_XML_BUCKET_ARN")
+                if config["env"] == "preview"
+                else os.environ.get("DEV_CAP_XML_BUCKET_ARN")
             ),
         }
     )
