@@ -297,8 +297,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
 @pytest.mark.xdist_group(name=test_group_name)
 def test_assert_cap_xml_generated_is_correct(driver, api_client):
-    print(config)
-    cap_xml_bucket = config["cap_xml_bucket_arn"]
+    cap_xml_bucket = config["cap_xml_bucket_name"]
     s3 = create_s3_client()
 
     broadcast_id = str(uuid.uuid4())
