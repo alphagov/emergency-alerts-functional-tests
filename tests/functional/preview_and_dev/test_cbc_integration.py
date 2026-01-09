@@ -334,7 +334,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
                 return
             except ClientError as e:
                 # We just need to assert that one file exists and has correct body
-                if e.response["Error"]["Code"] in ("404", "NoSuchKey"):
+                if e.response["Error"]["Code"] == "403":
                     continue
                 raise
 
