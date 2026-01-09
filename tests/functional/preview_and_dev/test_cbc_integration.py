@@ -315,11 +315,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
             provider_az = f"{provider_id}-{az}"
             try:
                 cap_xml_filename = f"{provider_az}/{request_id}.cap.xml"
-                # Checking first if file exists in bucket
-                s3.head_object(
-                    Bucket=cap_xml_bucket,
-                    Key=cap_xml_filename,
-                )
+
                 # Retrieving CAP XML file for request & provider
                 cap_xml_object = s3.get_object(
                     Bucket=cap_xml_bucket,
