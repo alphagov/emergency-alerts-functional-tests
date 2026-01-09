@@ -268,6 +268,7 @@ def create_ddb_client():
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-loopback-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
@@ -297,6 +298,7 @@ def create_cloudwatch_client():
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-cloudwatch-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
@@ -326,6 +328,7 @@ def create_s3_client():
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-s3-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
