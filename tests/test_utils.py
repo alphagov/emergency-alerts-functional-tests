@@ -282,6 +282,7 @@ def create_ddb_client():
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-loopback-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
@@ -311,6 +312,7 @@ def create_cloudwatch_client():
         sts_session = sts_client.assume_role(
             RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
             RoleSessionName="access-cloudwatch-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
         )
 
         KEY_ID = sts_session["Credentials"]["AccessKeyId"]
@@ -328,6 +330,36 @@ def create_cloudwatch_client():
 
         except Exception as e:
             raise Exception("Unable to create CloudWatch client") from e
+
+    except Exception as e:
+        raise Exception("Unable to assume role") from e
+
+
+def create_s3_client():
+    try:
+        sts_client = boto3.client("sts")
+
+        sts_session = sts_client.assume_role(
+            RoleArn=f"arn:aws:iam::{config['cbc_account_number']}:role/mno-loopback-access-role",
+            RoleSessionName="access-s3-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
+        )
+
+        KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+        ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+        TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        try:
+            return boto3.client(
+                "s3",
+                region_name="eu-west-2",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            raise Exception("Unable to create S3 client") from e
 
     except Exception as e:
         raise Exception("Unable to assume role") from e

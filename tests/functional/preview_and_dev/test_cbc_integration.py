@@ -4,12 +4,20 @@ import uuid
 from random import choice
 
 import pytest
+from botocore.exceptions import ClientError
+from lxml import etree
 from retry import retry
+from shapely import Polygon
 
 from config import config
 from tests.pages import RetryException
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import PROVIDERS, create_ddb_client, set_response_codes
+from tests.test_utils import (
+    PROVIDERS,
+    create_ddb_client,
+    create_s3_client,
+    set_response_codes,
+)
 
 test_group_name = "cbc-integration"
 
@@ -287,6 +295,50 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     cancel_alert(driver, broadcast_id)
 
 
+@pytest.mark.xdist_group(name=test_group_name)
+def test_assert_cap_xml_generated_is_correct(driver, api_client):
+    cap_xml_bucket = config["cap_xml_bucket_name"]
+    s3 = create_s3_client()
+
+    broadcast_id = str(uuid.uuid4())
+    broadcast_alert(driver, broadcast_id)
+
+    provider_messages = fetch_provider_messages(driver, api_client)
+
+    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+
+        # Retrieving requestID from provider_messages table
+        request_id = dict_item_for_key_value(
+            provider_messages, "provider", provider_id, "id"
+        )
+        for az in ["az1", "az2"]:
+            provider_az = f"{provider_id}-{az}"
+            try:
+                cap_xml_filename = f"{provider_az}/{request_id}.cap.xml"
+
+                # Retrieving CAP XML file for request & provider
+                cap_xml_object = s3.get_object(
+                    Bucket=cap_xml_bucket,
+                    Key=cap_xml_filename,
+                )
+
+                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
+                cap_xml = etree.fromstring(cap_xml_body.encode())
+
+                assert_cap_xml_valid(cap_xml)
+                assert_cap_xml_polygons_valid(cap_xml)
+                return
+            except ClientError as e:
+                # We just need to assert that one file exists and has correct body
+                if e.response["Error"]["Code"] == "NoSuchKey":
+                    continue
+                raise
+
+    pytest.fail(
+        "No CAP XML files generated that could be checked and validated against schema"
+    )
+
+
 @retry(
     RetryException,
     tries=config["dynamo_query_retry_times"],
@@ -355,3 +407,20 @@ def fetch_provider_messages(driver, api_client):
         time.sleep(10)
 
     return response["messages"]
+
+
+def assert_cap_xml_valid(cap_xml):
+    schema_doc = etree.parse("docs/CAP-v1.2.xsd")
+    schema = etree.XMLSchema(schema_doc)
+    schema.assertValid(cap_xml)
+
+
+def assert_cap_xml_polygons_valid(cap_xml):
+    ns = {"cap": "urn:oasis:names:tc:emergency:cap:1.2"}
+
+    # Asserting polygons in CAP XML are valid, using shapely is_valid method
+    for polygon_element in cap_xml.findall("cap:info/cap:area/cap:polygon", ns):
+        coords_list = polygon_element.text.split()
+        coords = [[float(coord) for coord in coord.split(",")] for coord in coords_list]
+        polygon = Polygon(coords)
+        assert polygon.is_valid
