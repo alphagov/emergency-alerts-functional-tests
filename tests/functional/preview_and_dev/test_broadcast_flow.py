@@ -122,6 +122,69 @@ def test_prepare_broadcast_with_new_content(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+def test_create_drafts_and_delete_all_drafts(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert 1
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+    current_alerts_page.click_element_by_link_text("Create new alert")
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # go back to create new alert page
+    broadcast_freeform_page.click_element_by_link_text("Current alerts")
+
+    # prepare alert 2
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+    current_alerts_page.click_element_by_link_text("Create new alert")
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # go back to create new alert page
+    broadcast_freeform_page.click_element_by_link_text("Current alerts")
+
+    # prepare alert 3
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+    current_alerts_page.click_element_by_link_text("Create new alert")
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # go back to create new alert page
+    broadcast_freeform_page.click_element_by_link_text("Current alerts")
+
+    # select drafts
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_link_text("Select draft alerts")
+    current_alerts_page.click_element_by_link_text("Select all")
+    current_alerts_page.click_element_by_link_text("Discard alerts")
+
+    assert current_alerts_page.text_is_on_page("You do not have any current alerts")
+
+    current_alerts_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
