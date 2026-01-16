@@ -178,6 +178,7 @@ def test_create_drafts_and_delete_all_drafts(driver):
     current_alerts_page.click_element_by_link_text("Select draft alerts")
     current_alerts_page.click_element_by_link_text("Select all")
     current_alerts_page.click_element_by_link_text("Discard alerts")
+    time.sleep(5)
 
     assert current_alerts_page.text_is_on_page("You do not have any current alerts")
 
