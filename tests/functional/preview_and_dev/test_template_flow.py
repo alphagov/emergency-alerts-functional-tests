@@ -75,13 +75,17 @@ def test_create_and_delete_template_with_area_only(driver):
     choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007564")
     choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007565")
     choose_template_area_page.click_continue()
-    choose_template_area_page.click_element_by_link_text("Save template")
+    choose_template_area_page.click_element_by_link_text("Save and continue")
 
     edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.text_is_on_page("Cokeham")
     assert edit_template.text_is_on_page("Eastbrook")
+    assert edit_template.text_is_on_page("Finish editing template")
+
+    edit_template.click_finish_edit()
     assert edit_template.text_is_on_page("Use template to send alert")
     assert edit_template.text_is_on_page("Edit this template")
+
     edit_template.click_delete()
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page("Cokeham and Eastbrook")
@@ -115,19 +119,19 @@ def test_create_and_delete_template_with_content_and_area(driver):
     choose_template_area_page.click_element_by_link_text("Countries")
     choose_template_area_page.select_checkbox_or_radio(value="ctry19-E92000001")
     choose_template_area_page.click_continue()
-    choose_template_area_page.click_element_by_link_text("Save template")
+    choose_template_area_page.click_element_by_link_text("Save and continue")
 
     edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.text_is_on_page("England")
+    assert edit_template.text_is_on_page("Finish editing template")
+
+    edit_template.click_finish_edit()
     assert edit_template.text_is_on_page("Use template to send alert")
     assert edit_template.text_is_on_page("Edit this template")
-
-    edit_template = EditBroadcastTemplatePage(driver)
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
 
     edit_template.click_delete()
-
     assert page.is_page_title("Templates")
     assert page.text_is_not_on_page(alert_name)
 
@@ -180,12 +184,10 @@ def test_create_edit_and_delete_template(driver):
     assert edit_template.text_is_on_page("less than a minute ago")
 
     # Area added to template
-    edit_template.click_edit_template()
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
-    assert not edit_template.text_is_on_page("Use template to send alert")
-    assert not edit_template.text_is_on_page("Edit this template")
+    assert edit_template.text_is_on_page("Finish editing template")
 
     edit_template.click_element_by_link_text("Add area")
     choose_template_area_page = BasePage(driver)
@@ -194,7 +196,7 @@ def test_create_edit_and_delete_template(driver):
     choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007564")
     choose_template_area_page.select_checkbox_or_radio(value="wd23-E05007565")
     choose_template_area_page.click_continue()
-    choose_template_area_page.click_element_by_link_text("Save template")
+    choose_template_area_page.click_element_by_link_text("Save and continue")
 
     edit_template.click_element_by_link_text("See previous versions")
     assert edit_template.text_is_on_page(alert_content)

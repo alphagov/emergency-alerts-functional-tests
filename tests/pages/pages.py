@@ -648,6 +648,7 @@ class EditBroadcastTemplatePage(BasePage):
     edit_button = EditTemplatePageLocators.EDIT_BUTTON
     prep_to_send_button = EditTemplatePageLocators.PREP_TO_SEND_BUTTON
     edit_template_button = EditTemplatePageLocators.EDIT_TEMPLATE_BUTTON
+    finish_edit_button = EditTemplatePageLocators.FINISH_EDIT_BUTTON
     delete_button = EditTemplatePageLocators.DELETE_BUTTON
     confirm_delete_button = EditTemplatePageLocators.CONFIRM_DELETE_BUTTON
 
@@ -682,6 +683,10 @@ class EditBroadcastTemplatePage(BasePage):
 
     def click_edit_template(self):
         element = self.wait_for_element(EditBroadcastTemplatePage.edit_template_button)
+        element.click()
+
+    def click_finish_edit(self):
+        element = self.wait_for_element(EditBroadcastTemplatePage.finish_edit_button)
         element.click()
 
     def click_delete(self):
