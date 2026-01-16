@@ -169,8 +169,7 @@ def test_create_edit_and_delete_template(driver):
     assert edit_template.is_page_title("Template")
     assert edit_template.text_is_on_page(alert_name)
     assert edit_template.text_is_on_page(alert_content)
-    assert not edit_template.text_is_on_page("Use template to send alert")
-    assert not edit_template.text_is_on_page("Edit this template")
+    assert edit_template.text_is_on_page("Finish editing template")
 
     extra_text = " with some extra text"
     edit_template.click_edit()
