@@ -80,7 +80,6 @@ def test_prepare_broadcast_with_new_content(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -129,14 +128,16 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # prepare alert 1
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title = "test broadcast " + test_uuid
+    broadcast_title1 = "test broadcast " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
     new_alert_page.click_continue()
     broadcast_freeform_page = BroadcastFreeformPage(driver)
     broadcast_content = "This is a test broadcast " + test_uuid
-    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.create_broadcast_content(
+        broadcast_title1, broadcast_content
+    )
     broadcast_freeform_page.click_continue()
 
     # go back to create new alert page
@@ -145,14 +146,16 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # prepare alert 2
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title = "test broadcast " + test_uuid
+    broadcast_title2 = "test broadcast " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
     new_alert_page.click_continue()
     broadcast_freeform_page = BroadcastFreeformPage(driver)
     broadcast_content = "This is a test broadcast " + test_uuid
-    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.create_broadcast_content(
+        broadcast_title2, broadcast_content
+    )
     broadcast_freeform_page.click_continue()
 
     # go back to create new alert page
@@ -161,14 +164,16 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # prepare alert 3
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title = "test broadcast " + test_uuid
+    broadcast_title3 = "test broadcast " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
     new_alert_page.click_continue()
     broadcast_freeform_page = BroadcastFreeformPage(driver)
     broadcast_content = "This is a test broadcast " + test_uuid
-    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.create_broadcast_content(
+        broadcast_title3, broadcast_content
+    )
     broadcast_freeform_page.click_continue()
 
     # go back to create new alert page
@@ -181,7 +186,9 @@ def test_create_drafts_and_delete_all_drafts(driver):
     current_alerts_page.click_element_by_link_text("Discard alerts")
     time.sleep(5)
 
-    assert current_alerts_page.text_is_on_page("You do not have any current alerts")
+    assert current_alerts_page.text_is_not_on_page(broadcast_title1)
+    assert current_alerts_page.text_is_not_on_page(broadcast_title2)
+    assert current_alerts_page.text_is_not_on_page(broadcast_title3)
 
     current_alerts_page.sign_out()
 
@@ -234,7 +241,6 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # prepare_alert_pages.click_submit_for_approval()  # click "Submit for approval"
     prepare_alert_pages.click_element_by_link_text("Submit for approval")
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
@@ -401,7 +407,6 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -514,7 +519,6 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert preview_alert_page.text_is_on_page(expected_area_description)
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -598,7 +602,6 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
     assert preview_alert_page.text_is_on_page("AWE Aldermaston")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -694,7 +697,6 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     assert preview_alert_page.text_is_on_page("Hull city centre")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -779,7 +781,6 @@ def test_reject_alert_with_reason(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -863,7 +864,6 @@ def test_return_alert_for_edit(driver):
     assert preview_alert_page.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
@@ -963,7 +963,6 @@ def test_prepare_broadcast_with_extra_content(driver):
     assert preview_alert_page.text_is_on_page("Wales")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    # preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
