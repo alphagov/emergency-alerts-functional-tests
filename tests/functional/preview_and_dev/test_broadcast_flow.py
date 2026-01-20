@@ -234,7 +234,8 @@ def test_prepare_broadcast_with_template(driver):
     assert prepare_alert_pages.text_is_on_page("Eastbrook")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    prepare_alert_pages.click_submit_for_approval()  # click "Submit for approval"
+    # prepare_alert_pages.click_submit_for_approval()  # click "Submit for approval"
+    prepare_alert_pages.click_element_by_link_text("Submit for approval")
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
