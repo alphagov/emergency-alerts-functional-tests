@@ -216,7 +216,7 @@ def test_prepare_broadcast_with_template(driver):
     templates_page = ShowTemplatesPage(driver)
     templates_page.click_template_by_link_text(template_name)
 
-    templates_page.click_element_by_link_text("Save and get ready to send")
+    templates_page.click_element_by_link_text("Use template to send alert")
 
     # Choosing not to add extra_content
     choose_extra_content_page = BasePage(driver)

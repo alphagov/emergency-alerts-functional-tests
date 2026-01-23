@@ -83,7 +83,15 @@ class EditTemplatePageLocators(object):
     )
     PREP_TO_SEND_BUTTON = (
         By.XPATH,
-        "//a[contains(@class, 'govuk-link') and contains(text(),'Save and get ready to send')]",
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Use template to send alert')]",
+    )
+    EDIT_TEMPLATE_BUTTON = (
+        By.XPATH,
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Edit this template')]",
+    )
+    FINISH_EDIT_BUTTON = (
+        By.XPATH,
+        "//a[contains(@class, 'govuk-link') and contains(text(),'Finish editing template')]",
     )
     DELETE_BUTTON = (By.LINK_TEXT, "Delete this template")
     CONFIRM_DELETE_BUTTON = (By.NAME, "delete")
