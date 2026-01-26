@@ -8,6 +8,7 @@ from retry import retry
 
 from config import config
 from tests.pages.element import (
+    AddAreasAsListInputElement,
     BasePageElement,
     ClearableInputElement,
     CoordinatePreviewButton,
@@ -49,6 +50,7 @@ from tests.pages.element import (
     TemplateContentElement,
 )
 from tests.pages.locators import (
+    AddAreasAsListPageLocators,
     AddServicePageLocators,
     AdminApprovalPageLocators,
     ApiIntegrationPageLocators,
@@ -1335,6 +1337,17 @@ class SearchFloodWarningAreaPage(BasePage):
         element = self.wait_for_element(
             SearchFloodWarningAreaPageLocators.ADD_AREA_BUTTON
         )
+        element.click()
+
+
+class AddAreasAsListPage(BasePage):
+    areas_list_input = AddAreasAsListInputElement()
+
+    def create_area_list_input(self, areas_list):
+        self.areas_list_input = areas_list
+
+    def click_add_areas(self):
+        element = self.wait_for_element(AddAreasAsListPageLocators.ADD_AREA_LIST_BUTTON)
         element.click()
 
 
