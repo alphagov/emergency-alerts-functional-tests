@@ -1,4 +1,5 @@
 from tests.pages.locators import (
+    AddAreasAsListPageLocators,
     AddServicePageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
@@ -210,3 +211,11 @@ class FloodWarningAreaCodeInputElement(BasePageElement):
 
 class AddAreaButton(BasePageElement):
     name = SearchFloodWarningAreaPageLocators.ADD_AREA_BUTTON[1]
+
+
+class AddAreasAsListInputElement(BasePageElement):
+    name = AddAreasAsListPageLocators.AREA_LIST_INPUT[1]
+
+
+class AddAreasAsListButton(BasePageElement):
+    name = AddAreasAsListPageLocators.ADD_AREA_LIST_BUTTON[1]

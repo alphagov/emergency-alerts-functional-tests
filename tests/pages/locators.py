@@ -200,6 +200,11 @@ class SearchFloodWarningAreaPageLocators(object):
     ADD_AREA_BUTTON = (By.NAME, "add_area_button")
 
 
+class AddAreasAsListPageLocators(object):
+    AREA_LIST_INPUT = (By.NAME, "areas")
+    ADD_AREA_LIST_BUTTON = (By.NAME, "add_area_button")
+
+
 class PlatformAdminPageLocators(object):
     SEARCH_INPUT = (By.NAME, "search")
 
