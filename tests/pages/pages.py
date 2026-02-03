@@ -201,10 +201,6 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
-    def click_submit_for_approval(self):
-        element = self.wait_for_element(CommonPageLocators.SUBMIT_FOOTER_BUTTON)
-        element.click()
-
     def click_continue_to_submit(self):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
