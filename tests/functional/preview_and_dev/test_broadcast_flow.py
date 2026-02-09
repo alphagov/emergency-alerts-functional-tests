@@ -807,7 +807,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     assert preview_alert_page.text_is_on_page("River Teme at Toronto Close Lower Wick")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
-    preview_alert_page.click_submit_for_approval()  # click "Submit for approval"
+    preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
