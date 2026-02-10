@@ -393,9 +393,7 @@ def set_loopback_response_codes(ddbc, response_code=200, cbc_list=None):
 
 
 def fetch_provider_messages(driver, api_client):
-    (service_id, broadcast_message_id) = get_service_and_broadcast_id(
-        driver.current_url
-    )
+    service_id, broadcast_message_id = get_service_and_broadcast_id(driver.current_url)
 
     attempts = 0
     while attempts < 10:
