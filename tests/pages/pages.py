@@ -287,6 +287,10 @@ class BasePage(object):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
+    def click_dropdown_option(self, value):
+        element = self.wait_for_element((By.XPATH, f".//option[@value='{value}']"))
+        element.click()
+
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
         errors = self.wait_for_element(error_message)
