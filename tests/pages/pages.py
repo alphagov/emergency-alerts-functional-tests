@@ -205,6 +205,11 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
+    def get_elements_by_class(self, class_identifier):
+        class_selector = (By.CSS_SELECTOR, class_identifier)
+        elements = self.wait_for_elements(class_selector)
+        return elements
+
     def is_page_title(self, expected_page_title):
         # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
         tries = config["ui_element_retry_times"]

@@ -123,13 +123,13 @@ def test_prepare_broadcast_with_new_content(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
-def test_create_drafts_and_delete_all_drafts(driver):
+def test_filter_sort_and_delete_all_drafts(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
-    # prepare alert 1
+    # prepare draft alert 1
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title1 = "test broadcast " + test_uuid
+    broadcast_title1 = "test a " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -144,10 +144,10 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # go back to create new alert page
     broadcast_freeform_page.click_element_by_link_text("Current alerts")
 
-    # prepare alert 2
+    # prepare draft alert 2
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title2 = "test broadcast " + test_uuid
+    broadcast_title2 = "test b " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -162,10 +162,10 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # go back to create new alert page
     broadcast_freeform_page.click_element_by_link_text("Current alerts")
 
-    # prepare alert 3
+    # prepare draft alert 3
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title3 = "test broadcast " + test_uuid
+    broadcast_title3 = "test d " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -180,6 +180,80 @@ def test_create_drafts_and_delete_all_drafts(driver):
     # go back to create new alert page
     broadcast_freeform_page.click_element_by_link_text("Current alerts")
 
+    # prepare alert and submit for approval
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title4 = "test c " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(
+        broadcast_title4, broadcast_content
+    )
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title4} is waiting for approval"
+    )
+    preview_alert_page.click_element_by_link_text("Current alerts")
+
+    ###################################################################################
+
+    # test filtering and sorting
+    current_alerts_page = BasePage(driver)
+    current_alerts_page.click_element_by_id("current-alerts-filter")
+    current_alerts_page.click_element_by_link_text("Alerts Pending Approval")
+
+    assert current_alerts_page.text_is_not_on_page(broadcast_title1)
+    assert current_alerts_page.text_is_not_on_page(broadcast_title2)
+    assert current_alerts_page.text_is_not_on_page(broadcast_title3)
+    assert current_alerts_page.text_is_on_page(broadcast_title4)
+
+    current_alerts_page.click_element_by_link_text("Alerts Pending Approval")
+    current_alerts_page.click_element_by_link_text("All Alerts")
+
+    current_alerts_page.click_element_by_id("current-alerts-sort")
+    current_alerts_page.click_element_by_link_text("Title (Z-A)")
+
+    alert_title_class = ".file-list-filename-large"
+    alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
+    assert alert_refs[0].text == broadcast_title3
+
+    current_alerts_page.click_element_by_id("current-alerts-sort")
+    current_alerts_page.click_element_by_link_text("Date (oldest first)")
+
+    alert_title_class = ".file-list-filename-large"
+    alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
+    assert alert_refs[0].text == broadcast_title1
+
     # select drafts
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_link_text("Manage draft alerts")
@@ -190,6 +264,9 @@ def test_create_drafts_and_delete_all_drafts(driver):
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)
     assert current_alerts_page.text_is_not_on_page(broadcast_title3)
+
+    current_alerts_page.click_element_by_link_text(broadcast_title4)
+    current_alerts_page.click_element_by_link_text("Discard alert")
 
     current_alerts_page.sign_out()
 
