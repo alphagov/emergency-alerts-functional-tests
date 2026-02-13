@@ -288,7 +288,9 @@ class BasePage(object):
         element.click()
 
     def click_dropdown_option(self, value):
-        element = self.wait_for_element((By.XPATH, f".//option[@value='{value}']"))
+        element = self.wait_for_invisible_element(
+            (By.XPATH, f".//option[@value='{value}']")
+        )
         element.click()
 
     def get_errors(self):
