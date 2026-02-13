@@ -228,7 +228,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # test filtering and sorting
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_id("current-alerts-filter")
-    current_alerts_page.click_element_by_link_text("Alerts Pending Approval")
+    current_alerts_page.click_element_by_id("option-pending-approval")
 
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)
@@ -236,17 +236,17 @@ def test_filter_sort_and_delete_all_drafts(driver):
     assert current_alerts_page.text_is_on_page(broadcast_title4)
 
     current_alerts_page.click_element_by_id("current-alerts-filter")
-    current_alerts_page.click_element_by_link_text("All Alerts")
+    current_alerts_page.click_element_by_id("none")
 
     current_alerts_page.click_element_by_id("current-alerts-sort")
-    current_alerts_page.click_element_by_link_text("Title (Z-A)")
+    current_alerts_page.click_element_by_link_text("title-desc")
 
     alert_title_class = ".file-list-filename-large"
     alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
     assert alert_refs[0].text == broadcast_title3
 
     current_alerts_page.click_element_by_id("current-alerts-sort")
-    current_alerts_page.click_element_by_link_text("Date (oldest first)")
+    current_alerts_page.click_element_by_id("date-asc")
 
     alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
     assert alert_refs[0].text == broadcast_title1
