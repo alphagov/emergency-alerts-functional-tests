@@ -232,7 +232,10 @@ def test_filter_sort_and_delete_all_drafts(driver):
 
     # test filtering and sorting
     current_alerts_page = BasePage(driver)
-    current_alerts_page.click_dropdown_option("pending-approval")
+
+    current_alerts_page.click_dropdown_option(
+        "current-alerts-filter", "pending-approval"
+    )
 
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)

@@ -287,11 +287,16 @@ class BasePage(object):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
-    def click_dropdown_option(self, value):
-        element = self.wait_for_invisible_element(
-            (By.XPATH, f".//option[@value='{value}']")
+    def click_dropdown_option(self, select_id, option_value):
+        select_element = self.wait_for_element(By.ID, select_id)
+        # Set the value directly
+        self.driver.execute_script(
+            f"arguments[0].value = '{option_value}'", select_element
         )
-        element.click()
+        # Trigger change event (see data-auto-submit attribute)
+        self.driver.execute_script(
+            "arguments[0].dispatchEvent(new Event('change'))", select_element
+        )
 
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
