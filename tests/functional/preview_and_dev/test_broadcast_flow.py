@@ -225,8 +225,6 @@ def test_filter_sort_and_delete_all_drafts(driver):
     )
     preview_alert_page.click_element_by_link_text("Current alerts")
 
-    ###################################################################################
-
     # test filtering and sorting
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_id("current-alerts-filter")
