@@ -239,7 +239,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     current_alerts_page.click_element_by_id("none")
 
     current_alerts_page.click_element_by_id("current-alerts-sort")
-    current_alerts_page.click_element_by_link_text("title-desc")
+    current_alerts_page.click_element_by_id("option-title-desc")
 
     alert_title_class = ".file-list-filename-large"
     alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
