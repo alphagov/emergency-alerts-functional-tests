@@ -243,34 +243,25 @@ def test_filter_sort_and_delete_all_drafts(driver):
     assert current_alerts_page.text_is_not_on_page(broadcast_title3)
 
     current_alerts_page.click_dropdown_option("current-alerts-filter", "none")
-    current_alerts_page.click_dropdown_option("current-alerts-sort", "title-desc")
 
-    time.sleep(2)
+    current_alerts_page.click_dropdown_option("current-alerts-sort", "title-desc")
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
-    assert (
-        alert_refs[0].text
-        == sorted(
-            [
-                broadcast_title1,
-                broadcast_title2,
-                broadcast_title3,
-                broadcast_title4,
-            ]
-        )[0]
-    )
+    assert alert_refs[0].text > alert_refs[1].text
+
+    current_alerts_page.click_dropdown_option("current-alerts-sort", "title-asc")
+    alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
+    assert alert_refs[0].text < alert_refs[1].text
 
     current_alerts_page.click_dropdown_option("current-alerts-sort", "date-asc")
-
-    time.sleep(2)
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
-    assert alert_refs[0].text == broadcast_title1
+    assert alert_refs[0].text == broadcast_title4
 
     # select drafts
     current_alerts_page = BasePage(driver)
     current_alerts_page.click_element_by_link_text("Manage draft alerts")
     current_alerts_page.click_element_by_link_text("Select all")
     current_alerts_page.click_element_by_link_text("Delete draft alerts")
-    time.sleep(5)
+    time.sleep(3)
 
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)

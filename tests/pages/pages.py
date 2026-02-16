@@ -299,6 +299,7 @@ class BasePage(object):
         self.driver.execute_script(
             "arguments[0].dispatchEvent(new Event('change'))", select_element
         )
+        sleep(1)
 
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
