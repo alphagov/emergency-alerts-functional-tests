@@ -206,7 +206,7 @@ class BasePage(object):
         element.click()
 
     def get_elements_by_class(self, class_identifier):
-        class_selector = (By.CSS_SELECTOR, class_identifier)
+        class_selector = (By.CLASS_NAME, class_identifier)
         elements = self.wait_for_elements(class_selector)
         return elements
 
