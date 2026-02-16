@@ -246,9 +246,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     current_alerts_page.click_dropdown_option("current-alerts-sort", "title-desc")
 
     time.sleep(2)
-    alert_refs = current_alerts_page.get_elements_by_css(
-        "[main a.file-list-filename-large]"
-    )
+    alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert (
         alert_refs[0].text
         == [
@@ -262,9 +260,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     current_alerts_page.click_dropdown_option("current-alerts-sort", "date-asc")
 
     time.sleep(2)
-    alert_refs = current_alerts_page.get_elements_by_css(
-        "[main a.file-list-filename-large]"
-    )
+    alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert alert_refs[0].text == broadcast_title1
 
     # select drafts
