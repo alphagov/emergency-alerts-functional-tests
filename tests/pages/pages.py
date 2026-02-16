@@ -288,7 +288,8 @@ class BasePage(object):
         element.click()
 
     def click_dropdown_option(self, select_id, option_value):
-        select_element = self.wait_for_element(By.ID, select_id)
+        select_dropdown = (By.ID, select_id)
+        select_element = self.wait_for_element(select_dropdown)
         # Set the value directly
         self.driver.execute_script(
             f"arguments[0].value = '{option_value}'", select_element
