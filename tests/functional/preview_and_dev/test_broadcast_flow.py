@@ -134,7 +134,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # prepare draft alert 1
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title1 = "test a " + test_uuid
+    broadcast_title1 = "test " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -152,7 +152,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # prepare draft alert 2
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title2 = "test b " + test_uuid
+    broadcast_title2 = "test " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -170,7 +170,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # prepare draft alert 3
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title3 = "test d " + test_uuid
+    broadcast_title3 = "test " + test_uuid
     current_alerts_page.click_element_by_link_text("Create new alert")
     new_alert_page = BasePage(driver)
     new_alert_page.select_checkbox_or_radio(value="freeform")
@@ -188,7 +188,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # prepare alert and submit for approval
     current_alerts_page = BasePage(driver)
     test_uuid = str(uuid.uuid4())
-    broadcast_title4 = "test c " + test_uuid
+    broadcast_title4 = "test " + test_uuid
 
     current_alerts_page.click_element_by_link_text("Create new alert")
 
@@ -237,18 +237,25 @@ def test_filter_sort_and_delete_all_drafts(driver):
         "current-alerts-filter", "pending-approval"
     )
 
+    assert current_alerts_page.text_is_on_page(broadcast_title4)
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)
     assert current_alerts_page.text_is_not_on_page(broadcast_title3)
-    assert current_alerts_page.text_is_on_page(broadcast_title4)
 
     current_alerts_page.click_dropdown_option("current-alerts-filter", "none")
-
     current_alerts_page.click_dropdown_option("current-alerts-sort", "title-desc")
 
     alert_title_class = ".file-list-filename-large"
     alert_refs = current_alerts_page.get_elements_by_class(alert_title_class)
-    assert alert_refs[0].text == broadcast_title3
+    assert (
+        alert_refs[0].text
+        == [
+            broadcast_title1,
+            broadcast_title2,
+            broadcast_title3,
+            broadcast_title4,
+        ].sort()[0]
+    )
 
     current_alerts_page.click_dropdown_option("current-alerts-sort", "date-asc")
 
