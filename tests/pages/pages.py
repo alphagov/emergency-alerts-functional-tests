@@ -205,8 +205,8 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
-    def get_elements_by_class(self, class_str):
-        locator = (By.CLASS_NAME, class_str)
+    def get_elements_by_css(self, css_selector):
+        locator = (By.CSS_SELECTOR, css_selector)
         elements = self.wait_for_elements(locator)
         return elements
 
