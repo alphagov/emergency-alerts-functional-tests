@@ -247,7 +247,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
 
     time.sleep(2)
     alert_refs = current_alerts_page.get_elements_by_css(
-        "main a.file-list-filename-large"
+        "[main a.file-list-filename-large]"
     )
     assert (
         alert_refs[0].text
@@ -263,7 +263,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
 
     time.sleep(2)
     alert_refs = current_alerts_page.get_elements_by_css(
-        "main a.file-list-filename-large"
+        "[main a.file-list-filename-large]"
     )
     assert alert_refs[0].text == broadcast_title1
 
