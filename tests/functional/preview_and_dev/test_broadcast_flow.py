@@ -249,12 +249,14 @@ def test_filter_sort_and_delete_all_drafts(driver):
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert (
         alert_refs[0].text
-        == [
-            broadcast_title1,
-            broadcast_title2,
-            broadcast_title3,
-            broadcast_title4,
-        ].sort()[0]
+        == sorted(
+            [
+                broadcast_title1,
+                broadcast_title2,
+                broadcast_title3,
+                broadcast_title4,
+            ]
+        )[0]
     )
 
     current_alerts_page.click_dropdown_option("current-alerts-sort", "date-asc")
