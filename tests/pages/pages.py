@@ -206,9 +206,7 @@ class BasePage(object):
         element.click()
 
     def get_elements_by_class(self, class_name):
-        # locator = (By.CSS_SELECTOR, css_selector)
         elements = self.driver.find_elements(By.CLASS_NAME, class_name)
-        # elements = self.wait_for_elements(locator)
         return elements
 
     def is_page_title(self, expected_page_title):
