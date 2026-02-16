@@ -268,7 +268,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     assert current_alerts_page.text_is_not_on_page(broadcast_title3)
 
     current_alerts_page.click_element_by_link_text(broadcast_title4)
-    current_alerts_page.click_element_by_link_text("Discard alert")
+    current_alerts_page.click_element_by_link_text("Discard this alert")
 
     current_alerts_page.sign_out()
 
