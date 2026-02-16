@@ -205,9 +205,9 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
-    def get_elements_by_class(self, class_identifier):
-        class_selector = (By.CLASS_NAME, class_identifier)
-        elements = self.wait_for_elements(class_selector)
+    def get_elements_by_class(self, class_str):
+        locator = (By.CLASS_NAME, class_str)
+        elements = self.wait_for_elements(locator)
         return elements
 
     def is_page_title(self, expected_page_title):
