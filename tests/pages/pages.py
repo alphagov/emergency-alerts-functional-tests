@@ -205,6 +205,10 @@ class BasePage(object):
         element = self.wait_for_element(CommonPageLocators.CONTINUE_FOOTER_BUTTON)
         element.click()
 
+    def get_elements_by_class(self, class_name):
+        elements = self.driver.find_elements(By.CLASS_NAME, class_name)
+        return elements
+
     def is_page_title(self, expected_page_title):
         # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
         tries = config["ui_element_retry_times"]
@@ -281,6 +285,19 @@ class BasePage(object):
     def click_element_by_id(self, id):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
+
+    def click_dropdown_option(self, select_id, option_value):
+        select_dropdown = (By.ID, select_id)
+        select_element = self.wait_for_element(select_dropdown)
+        # Set the value directly
+        self.driver.execute_script(
+            f"arguments[0].value = '{option_value}'", select_element
+        )
+        # Trigger change event (see data-auto-submit attribute)
+        self.driver.execute_script(
+            "arguments[0].dispatchEvent(new Event('change'))", select_element
+        )
+        sleep(1)
 
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
