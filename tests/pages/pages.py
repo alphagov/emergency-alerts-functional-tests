@@ -513,10 +513,70 @@ class CurrentAlertsPage(BasePage):
         self.driver.get(url)
 
 
+class MoveTemplatesPage(PageWithStickyNavMixin, BasePage):
+    cancel_link = (By.CSS_SELECTOR, ".js-cancel")
+    move_to_existing_folder_link = (
+        By.CSS_SELECTOR,
+        "button[value='move-to-existing-folder']",
+    )
+    root_template_folder_radio = (
+        By.CSS_SELECTOR,
+        "input[type='radio'][value='__NONE__']",
+    )
+
+    @staticmethod
+    def input_element_by_label_text(text, input_type="checkbox"):
+        return (
+            By.XPATH,
+            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
+        )
+
+    @staticmethod
+    def template_link_text(link_text):
+        return (
+            By.XPATH,
+            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{link_text}')]",
+        )
+
+    def click_cancel_link(self):
+        cancel_link = self.wait_for_element(self.cancel_link)
+        cancel_link.click()
+
+    def move_to_root_template_folder(self):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        # wait for continue button to be displayed - sticky nav has rendered properly
+        # we've seen issues
+        radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
+        self.select_checkbox_or_radio(radio_element)
+        self.click_submit()
+
+    def move_template_to_folder(self, folder_name):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        radio_element = self.wait_for_invisible_element(
+            self.input_element_by_label_text(text=folder_name, input_type="radio")
+        )
+        self.select_checkbox_or_radio(element=radio_element)
+        self.click_submit()
+
+    def move_template_to_nowhere(self):
+        move_button = self.wait_for_element(self.move_to_existing_folder_link)
+        move_button.click()
+        self.click_submit()
+
+    def get_errors(self):
+        error_message = (By.CSS_SELECTOR, ".error-message")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()
+
+
 class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     add_new_template_link = (By.CSS_SELECTOR, "button[value='add-new-template']")
     add_new_folder_link = (By.CSS_SELECTOR, "button[value='add-new-folder']")
     add_to_new_folder_link = (By.CSS_SELECTOR, "button[value='move-to-new-folder']")
+    manage_folder_link = (By.CSS_SELECTOR, ".js-manage")
+    cancel_manage_folder_link = (By.CSS_SELECTOR, ".js-cancel")
     move_to_existing_folder_link = (
         By.CSS_SELECTOR,
         "button[value='move-to-existing-folder']",
@@ -569,6 +629,10 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element = self.wait_for_element(self.add_new_folder_link)
         element.click()
 
+    def click_move_to_existing_folder(self):
+        element = self.wait_for_element(self.move_to_existing_folder_link)
+        element.click()
+
     def click_template_by_link_text(self, link_text):
         element = self.wait_for_element(self.template_link_text(link_text))
         self.scrollToRevealElement(xpath=self.template_link_text(link_text)[1])
@@ -601,29 +665,19 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
         element = self.wait_for_element(self.add_to_new_folder_link)
         element.click()
 
-    def move_to_root_template_folder(self):
-        move_button = self.wait_for_element(self.move_to_existing_folder_link)
-        move_button.click()
-        # wait for continue button to be displayed - sticky nav has rendered properly
-        # we've seen issues
-        radio_element = self.wait_for_invisible_element(self.root_template_folder_radio)
-        self.select_checkbox_or_radio(radio_element)
-        self.click_submit()
-
-    def move_template_to_folder(self, folder_name):
-        move_button = self.wait_for_element(self.move_to_existing_folder_link)
-        move_button.click()
-        radio_element = self.wait_for_invisible_element(
-            self.input_element_by_label_text(text=folder_name, input_type="radio")
-        )
-        self.select_checkbox_or_radio(element=radio_element)
-        self.click_submit()
-
     def get_folder_by_name(self, folder_name):
         try:
             return self.wait_for_invisible_element(self.template_link_text(folder_name))
         except TimeoutError:
             return None
+
+    def enter_manage_mode(self):
+        manage_link = self.wait_for_element(self.manage_folder_link)
+        manage_link.click()
+
+    def exit_manage_mode(self):
+        cancel_link = self.wait_for_element(self.cancel_manage_folder_link)
+        cancel_link.click()
 
 
 class ChooseTemplateFieldsPage(BasePage):
@@ -657,6 +711,13 @@ class EditBroadcastTemplatePage(BasePage):
             "//a[contains(@class,'folder-heading-folder')]/text()[contains(.,'{}')]/..".format(
                 folder_name
             ),
+        )
+
+    @staticmethod
+    def template_link_text(link_text):
+        return (
+            By.XPATH,
+            f"//div[contains(@id,'template-list')]//a/span[contains(normalize-space(.), '{link_text}')]",
         )
 
     def create_template(self, reference="Template Name", content=None):
@@ -695,6 +756,10 @@ class EditBroadcastTemplatePage(BasePage):
 
     def click_folder_path(self, folder_name):
         element = self.wait_for_element(self.folder_path_item(folder_name))
+        element.click()
+
+    def click_template_by_link_text(self, link_text):
+        element = self.wait_for_element(self.template_link_text(link_text))
         element.click()
 
 

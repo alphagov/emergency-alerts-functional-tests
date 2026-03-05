@@ -9,6 +9,7 @@ from tests.pages import (
     EditBroadcastTemplatePage,
     InviteUserPage,
     ManageFolderPage,
+    MoveTemplatesPage,
     ShowTemplatesPage,
     TeamMembersPage,
     ViewFolderPage,
@@ -250,7 +251,7 @@ def test_create_prep_to_send_and_delete_template(driver):
     assert edit_template.is_page_title("Choose where to send this alert")
     edit_template.click_templates()
 
-    edit_template.click_element_by_link_text(alert_name)
+    edit_template.click_template_by_link_text(alert_name)
     edit_template.click_delete()
 
     assert page.is_page_title("Templates")
@@ -280,11 +281,17 @@ def test_creating_moving_and_deleting_template_folders(driver):
     edit_template_page.create_template(reference=template_name)
     edit_template_page.click_templates()
 
+    # switch to manage folder mode
+    show_templates_page.enter_manage_mode()
+
     # create folder using add to new folder
     show_templates_page.check_input_with_label_text(
         text=template_name, input_type="checkbox"
     )
     show_templates_page.add_to_new_folder(folder_name)
+
+    # exit manage folder mode
+    show_templates_page.exit_manage_mode()
 
     # navigate into folder
     go_to_templates_page(driver, "broadcast_service")
@@ -309,11 +316,31 @@ def test_creating_moving_and_deleting_template_folders(driver):
         == "You must empty this folder before you can delete it"
     )
 
+    # switch to manage folder mode
+    view_folder_page.enter_manage_mode()
+
+    # attempt move folder to nowhere
+    view_folder_page.check_input_with_label_text(
+        text=template_name, input_type="checkbox"
+    )
+    view_folder_page.click_move_to_existing_folder()
+    move_folder_page = MoveTemplatesPage(driver)
+    move_folder_page.move_template_to_nowhere()
+
+    # check error message visible
+    assert move_folder_page.get_errors() == "Select an option"
+    move_folder_page.click_cancel_link()
+
     # move template out of folder
     view_folder_page.check_input_with_label_text(
         text=template_name, input_type="checkbox"
     )
-    view_folder_page.move_to_root_template_folder()
+    view_folder_page.click_move_to_existing_folder()
+    move_folder_page = MoveTemplatesPage(driver)
+    move_folder_page.move_to_root_template_folder()
+
+    # exit manage folder mode
+    view_folder_page.exit_manage_mode()
 
     # delete folder
     go_to_templates_page(driver, "broadcast_service")
@@ -367,7 +394,7 @@ def test_template_folder_permissions(driver):
     # create one template for each folder
     for i, folder_name in enumerate(folder_names):
         template_name = folder_name + "-template"
-        show_templates_page.click_element_by_link_text(folder_name)
+        show_templates_page.click_template_by_link_text(folder_name)
         show_templates_page.click_add_new_template()
         choose_template_fields_page = ChooseTemplateFieldsPage(driver)
         choose_template_fields_page.select_checkbox_or_radio(value="content_only")
