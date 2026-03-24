@@ -106,7 +106,8 @@ def purge_password_history(test_api_client, user_id):
 
 
 def purge_govuk_s3_bucket(test_api_client):
-    url = "/service/purge-govuk-s3-bucket"
+    older_than = config["broadcast_service"]["purge_older_than"]
+    url = f"/service/purge-govuk-s3-bucket/{older_than}"
     test_api_client.delete(url)
 
 
