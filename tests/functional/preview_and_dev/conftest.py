@@ -46,7 +46,6 @@ def preview_dev_config():
         purge_admin_actions_created_by_functional_tests(test_api_client, user_id)
         reset_platform_admin_redemption(test_api_client, user_id)
     purge_failed_logins_created_by_functional_tests(test_api_client)
-    purge_govuk_s3_bucket(test_api_client)
     yield
     logging.info(str(time.time()) + " Tearing down preview_dev_config")
 
