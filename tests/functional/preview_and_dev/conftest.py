@@ -46,6 +46,7 @@ def preview_dev_config():
         purge_admin_actions_created_by_functional_tests(test_api_client, user_id)
         reset_platform_admin_redemption(test_api_client, user_id)
     purge_failed_logins_created_by_functional_tests(test_api_client)
+    purge_govuk_s3_bucket(test_api_client)
     yield
     logging.info(str(time.time()) + " Tearing down preview_dev_config")
 
@@ -101,6 +102,12 @@ def purge_failed_logins_created_by_functional_tests(test_api_client):
 
 def purge_password_history(test_api_client, user_id):
     url = f"/user/{user_id}/purge-password-history"
+    test_api_client.delete(url)
+
+
+def purge_govuk_s3_bucket(test_api_client):
+    older_than = config["broadcast_service"]["purge_older_than"]
+    url = f"/service/purge-govuk-s3-bucket/{older_than}"
     test_api_client.delete(url)
 
 
