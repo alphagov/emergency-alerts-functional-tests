@@ -1036,7 +1036,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     assert prepare_alert_pages.text_is_on_page("Adur")
     assert prepare_alert_pages.text_is_on_page("Kingston upon Hull, City of")
 
-    prepare_alert_pages.click_element_by_link_text("Save and continue to preview")
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -1141,7 +1141,7 @@ def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
 
     bulk_add_areas_page = AddAreasAsListPage(driver)
 
-    bulk_add_areas_page.create_area_list_input(",".join(post_data))
+    bulk_add_areas_page.create_area_list_input("\n".join(post_data))
     bulk_add_areas_page.click_add_areas()
 
     # Assert errors appear
