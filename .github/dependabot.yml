@@ -10,6 +10,8 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
+    update-types:
+      - "security"
     groups:
       pip-security:
         applies-to: security-updates
