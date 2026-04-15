@@ -10,8 +10,12 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
-    update-types:
-      - "security"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+          - version-update:semver-patch
     groups:
       pip-security:
         applies-to: security-updates
