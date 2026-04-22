@@ -104,12 +104,6 @@ def purge_password_history(test_api_client, user_id):
     test_api_client.delete(url)
 
 
-def purge_govuk_s3_bucket(test_api_client):
-    older_than = config["broadcast_service"]["purge_older_than"]
-    url = f"/service/purge-govuk-s3-bucket/{older_than}"
-    test_api_client.delete(url)
-
-
 def reset_platform_admin_redemption(test_api_client, user_id):
     url = f"/user/{user_id}/redeem-elevation"
     try:
