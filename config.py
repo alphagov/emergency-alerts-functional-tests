@@ -3,6 +3,10 @@ import uuid
 
 import pytest
 
+# Electoral Ward IDs used throughout the tests
+COKEHAM_WARD_ID = "wd25-E05007564"
+EASTBROOK_WARD_ID = "wd25-E05007565"
+
 
 def generate_unique_email(email, uuid):
     parts = email.split("@")
