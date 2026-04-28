@@ -66,8 +66,8 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -206,7 +206,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007564")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -301,8 +301,8 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1182,8 +1182,8 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1265,8 +1265,8 @@ def test_return_alert_for_edit(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007564")
-    prepare_alert_pages.select_checkbox_or_radio(value="wd23-E05007565")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007564")
+    prepare_alert_pages.select_checkbox_or_radio(value="wd25-E05007565")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
