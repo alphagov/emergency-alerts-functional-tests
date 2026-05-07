@@ -277,6 +277,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         request_id=request_id,
         retry_if=lambda resp: len(resp["Items"]) < 1,
     )
+    set_loopback_response_codes(
+        ddbc=dynamo_db_client, response_code=200, cbc_list=[primary_cbc, secondary_cbc]
+    )
     assert len(responses) >= 1
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
@@ -288,9 +291,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     assert len(response_codes) == 1  # we should one or more 500s here
     assert str(failure_code) in response_codes
 
-    set_loopback_response_codes(ddbc=dynamo_db_client, response_code=200)
     time.sleep(180)
-
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
