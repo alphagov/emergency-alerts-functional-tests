@@ -291,7 +291,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     assert len(response_codes) == 1  # we should one or more 500s here
     assert str(failure_code) in response_codes
 
-    time.sleep(180)
+    time.sleep(240)
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
@@ -404,7 +404,6 @@ def dynamo_items_for_key_value(data, key, value, item):
 
 def set_loopback_response_codes(ddbc, response_code=200, cbc_list=None):
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
-    time.sleep(10)
 
 
 def fetch_provider_messages(driver, api_client):
