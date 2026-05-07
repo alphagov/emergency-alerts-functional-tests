@@ -272,28 +272,35 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
     # wait for at least one response (which should be a '500' at this stage)
-    _ = get_loopback_request_items(
+    responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
         retry_if=lambda resp: len(resp["Items"]) < 1,
     )
+    assert len(responses) >= 1
+    az1_response_codes = dynamo_items_for_key_value(
+        responses, "MnoName", primary_cbc, "ResponseCode"
+    )
+    az2_response_codes = dynamo_items_for_key_value(
+        responses, "MnoName", secondary_cbc, "ResponseCode"
+    )
+    response_codes = set(az1_response_codes + az2_response_codes)
+    assert len(response_codes) == 1  # we should one or more 500s here
+    assert str(failure_code) in response_codes
 
     set_loopback_response_codes(ddbc=dynamo_db_client, response_code=200)
-    time.sleep(120)
+    time.sleep(180)
 
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
     )
-
     az1_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", primary_cbc, "ResponseCode"
     )
-
     az2_response_codes = dynamo_items_for_key_value(
         responses, "MnoName", secondary_cbc, "ResponseCode"
     )
-
     response_codes = set(az1_response_codes + az2_response_codes)
     assert len(response_codes) == 2  # we should have a 200 along with the 500s
     assert str(failure_code) in response_codes
