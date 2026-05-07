@@ -8,6 +8,7 @@ from clients.test_api_client import TestApiClient
 from config import config, setup_preview_dev_config
 from tests.test_utils import (
     clear_proxy_error_alarm,
+    create_ddb_client,
     put_functional_test_blackout_metric,
     set_response_codes,
 )
@@ -60,6 +61,12 @@ def cbc_blackout():
     clear_proxy_error_alarm()
     time.sleep(90)
     put_functional_test_blackout_metric(200)
+
+
+@pytest.fixture(scope="module")
+def dynamo_db_client():
+    ddbc = create_ddb_client()
+    yield ddbc
 
 
 def purge_functional_test_alerts(test_api_client):
