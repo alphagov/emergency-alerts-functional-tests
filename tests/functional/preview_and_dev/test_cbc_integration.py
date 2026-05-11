@@ -243,7 +243,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
-    # wait for at least one response (which should be a '500' at this stage)
+    # wait for at least one response (which should be a '500' here)
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
@@ -256,7 +256,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     response_codes = set(
         get_cbc_response_codes(responses, az1) + get_cbc_response_codes(responses, az2)
     )
-    assert len(response_codes) == 1  # we should one or more 500s here
+    assert len(response_codes) == 1  # 500 - only failures at this point
     assert str(failure_code) in response_codes
 
     time.sleep(120)
@@ -267,7 +267,9 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     response_codes = set(
         get_cbc_response_codes(responses, az1) + get_cbc_response_codes(responses, az2)
     )
-    assert len(response_codes) == 2  # we should have a 200 along with the 500s
+    assert (
+        len(response_codes) == 2
+    )  # 500 from at least one failed request, 200 from the successful broadcast
     assert str(failure_code) in response_codes
     assert "200" in response_codes
 
