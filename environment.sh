@@ -22,7 +22,7 @@ export FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER=07700900000
 
 export BROADCAST_SERVICE_NAME='Functional Tests Broadcast Service'
 export BROADCAST_SERVICE_ID='8e1d56fa-12a8-4d00-bed2-db47180bed0a'
-export FUNCTIONAL_TEST_PURGE_OLDER_THAN=3
+export FUNCTIONAL_TEST_PURGE_OLDER_THAN=2
 
 export BROADCAST_USER_1_ID='0d2e9b87-9c54-448c-b549-f764231ee599'
 export BROADCAST_USER_1_EMAIL='emergency-alerts-tests+user1@digital.cabinet-office.gov.uk'
