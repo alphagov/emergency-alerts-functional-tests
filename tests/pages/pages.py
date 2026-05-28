@@ -320,7 +320,7 @@ class PageWithStickyNavMixin:
             namespace = "window.GOVUK.stickAtTopWhenScrolling"
 
         # We need to wait for the JS to initialise and set the relevant global before using it
-        driver.page.wait_for_function(f"() => {namespace}")
+        driver.page.wait_for_function(f"() => Boolean(window.GOVUK && {namespace})")
 
         if selector is not None:
             js_str = (
