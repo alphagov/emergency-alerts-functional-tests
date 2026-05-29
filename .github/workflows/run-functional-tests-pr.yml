@@ -1,8 +1,12 @@
 name: Functional Tests Localenv
 
 on:
-  workflow_dispatch:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      pr-description:
+        required: false
+        type: string
 
   workflow_call:
     inputs:
@@ -22,6 +26,19 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
+
+      - name: Extract branch overrides
+        env:
+          PR_DESCRIPTION: ${{ inputs.pr-description }}
+        # Match `api:blah` and capture the blah, for each repo
+        run: |
+          echo "REPO_BRANCH_API=$(echo "$PR_DESCRIPTION" | grep -oP '`api:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          cat "$GITHUB_ENV"
 
       - name: Clone and start localenv
         env:
