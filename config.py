@@ -34,12 +34,15 @@ config = {
 }
 
 tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "").removeprefix("https://")
+govuk_alerts_url = os.environ.get(
+    "GOVUK_ALERTS_URL", "http://localhost:6017/alerts"
+).removeprefix("https://")
+
 urls = {
     "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
-        "govuk_alerts": "http://localhost:6017/alerts",
+        "govuk_alerts": f"http://{govuk_alerts_url}",
     },
     "development": {
         "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
