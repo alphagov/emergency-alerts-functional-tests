@@ -1,0 +1,68 @@
+name: Functional Tests Localenv
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+  workflow_call:
+    inputs:
+      pr-description:
+        required: false
+        type: string
+
+jobs:
+  functional-tests:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Set up Docker CE
+        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Clone and start localenv
+        env:
+          TEST_SECRET: test-env123
+        run: |
+          git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-main} https://github.com/alphagov/emergency-alerts-localenv.git
+          cd emergency-alerts-localenv/
+          ./run-for-functional-tests.sh
+
+      - name: Invoke functional tests
+        env:
+          CI: "true" # Invoke headless mode
+          GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
+          BROADCAST_SERVICE_API_KEY: "local_functional_tests-8e1d56fa-12a8-4d00-bed2-db47180bed0a-cae1020b-226a-47d1-81a2-3b781a2d4b75"
+          ENVIRONMENT: "local"
+
+          ADMIN_CLIENT_SECRET: test-env123
+          SECRET_KEY: test-env123
+          DANGEROUS_SALT: test-env123
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          make bootstrap
+
+          # make test-broadcast-flow; exit 0
+          make test-platform-admin-flow; exit 0
+          # make test-authentication-flow; exit 0
+          # make test-links-and-cookies; exit 0
+          # make test-template-flow; exit 0
+          # make test-user-operations; exit 0
+          # make test-throttling; exit 0
+          # make test-session-timeout; exit 0
+
+          # TODO: CBC tests
+
+          python3.12 ./scripts/report-test-results.py platform-admin-flow
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: functional-test-output
+          path: |
+            functional-test-reports/
+            functional-test-traces/
