@@ -71,6 +71,8 @@ jobs:
           source venv/bin/activate
           make bootstrap
 
+          source environment.sh
+
           # make test-broadcast-flow; exit 0
           make test-platform-admin-flow; exit 0
           # make test-authentication-flow; exit 0
