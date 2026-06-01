@@ -47,7 +47,7 @@ jobs:
         run: |
           git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-spike/eas-3066-localenv-functional-tests} https://github.com/alphagov/emergency-alerts-localenv.git
           cd emergency-alerts-localenv/
-          ./run-for-functional-tests.sh
+          # ./run-for-functional-tests.sh
 
       - name: Invoke functional tests
         env:
@@ -60,6 +60,10 @@ jobs:
           SECRET_KEY: test-env123
           DANGEROUS_SALT: test-env123
         run: |
+          pwd
+          ls
+          cat Makefile
+
           python -m venv venv
           source venv/bin/activate
           make bootstrap
