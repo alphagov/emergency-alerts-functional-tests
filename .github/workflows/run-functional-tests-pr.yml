@@ -13,6 +13,9 @@ on:
       pr-description:
         required: false
         type: string
+    secrets:
+      EAS_GITHUB_RUNNER_RO_TOKEN:
+        required: true
 
 jobs:
   functional-tests:
@@ -69,14 +72,14 @@ jobs:
 
           source environment.sh
 
-          # make test-broadcast-flow; exit 0
+          make test-broadcast-flow; exit 0
           make test-platform-admin-flow; exit 0
-          # make test-authentication-flow; exit 0
-          # make test-links-and-cookies; exit 0
-          # make test-template-flow; exit 0
-          # make test-user-operations; exit 0
-          # make test-throttling; exit 0
-          # make test-session-timeout; exit 0
+          make test-authentication-flow; exit 0
+          make test-links-and-cookies; exit 0
+          make test-template-flow; exit 0
+          make test-user-operations; exit 0
+          make test-throttling; exit 0
+          make test-session-timeout; exit 0
 
           # TODO: CBC tests
 
