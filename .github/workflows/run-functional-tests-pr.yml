@@ -42,7 +42,8 @@ jobs:
           echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_TOOLING=spike/eas-3066-tooling-localenv-functional-tests" >> "$GITHUB_ENV"
+          # echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
           cat "$GITHUB_ENV"
 
