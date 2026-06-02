@@ -73,18 +73,19 @@ jobs:
 
           source environment.sh
 
-          make test-broadcast-flow; exit 0
-          make test-platform-admin-flow; exit 0
-          make test-authentication-flow; exit 0
-          make test-links-and-cookies; exit 0
-          make test-template-flow; exit 0
-          make test-user-operations; exit 0
-          make test-throttling; exit 0
-          make test-session-timeout; exit 0
+          make test-broadcast-flow; true
+          make test-platform-admin-flow; true
+          make test-authentication-flow; true
+          make test-links-and-cookies; true
+          make test-template-flow; true
+          make test-user-operations; true
+          make test-throttling; true
+          make test-session-timeout; true
 
           # TODO: CBC tests
 
-          python3.12 ./scripts/report-test-results.py platform-admin-flow
+      - name: Report test results
+        run: python3.12 ./scripts/report-test-results.py platform-admin-flow
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
