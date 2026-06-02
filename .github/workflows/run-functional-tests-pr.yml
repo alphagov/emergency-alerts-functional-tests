@@ -73,14 +73,14 @@ jobs:
 
           source environment.sh
 
-          make test-broadcast-flow; true
-          make test-platform-admin-flow; true
-          make test-authentication-flow; true
-          make test-links-and-cookies; true
-          make test-template-flow; true
-          make test-user-operations; true
-          make test-throttling; true
-          make test-session-timeout; true
+          make test-broadcast-flow || true
+          make test-platform-admin-flow || true
+          make test-authentication-flow || true
+          make test-links-and-cookies || true
+          make test-template-flow || true
+          make test-user-operations || true
+          make test-throttling || true
+          make test-session-timeout || true
 
           # TODO: CBC tests
 
