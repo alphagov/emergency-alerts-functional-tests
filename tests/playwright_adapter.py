@@ -106,8 +106,8 @@ class WebDriverWait:
                 last_exc = e
             if time.time() > end_time:
                 raise TimeoutError(
-                    message or "Timed out waiting for condition", last_exc
-                )
+                    message or "Timed out waiting for condition"
+                ) from last_exc
             time.sleep(0.1)
 
 
