@@ -89,7 +89,7 @@ jobs:
           ENVIRONMENT: "local"
         run: python3.12 ./scripts/report-test-results.py platform-admin-flow
 
-      - name: Report test results
+      - name: Extract container logs
         run: |
           mkdir -p container-logs/
           CONTAINER_NAMES=$(docker ps --format "{{.Names}}")
