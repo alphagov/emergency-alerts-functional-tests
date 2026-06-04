@@ -89,6 +89,8 @@ jobs:
         with:
           name: Pytest
           path: functional-test-reports/*.xml
+          reporter: java-junit
+          fail-on-error: false
 
       - name: Extract container logs
         if: always()
