@@ -23,7 +23,7 @@ uninstall-packages:
 
 .PHONY: test
 test:
-	pytest -v --junitxml=functional-test-reports/report.xml
+	pytest -v --junitxml=functional-test-reports/report.xml tests/
 
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
