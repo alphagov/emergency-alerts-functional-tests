@@ -52,12 +52,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Clone and start localenv
+      - name: Clone localenv
         env:
           EAS_GITHUB_RUNNER_RO_TOKEN: ${{ secrets.EAS_GITHUB_RUNNER_RO_TOKEN }}
-          TEST_SECRET: test-env123
         run: |
           git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-main} https://github.com/alphagov/emergency-alerts-localenv.git
+
+      - name: Start localenv
+        env:
+          TEST_SECRET: test-env123
+        run: |
           cd emergency-alerts-localenv/
           ./run-for-functional-tests.sh
 
