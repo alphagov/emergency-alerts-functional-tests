@@ -22,13 +22,13 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout The Repository
+      - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Docker CE
         uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
@@ -44,7 +44,8 @@ jobs:
           echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_TOOLING=spike/eas-3066-tooling-localenv-functional-tests" >> "$GITHUB_ENV"
           # echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          echo "REPO_BRANCH_LOCALENV=spike/eas-3066-localenv-functional-tests" >> "$GITHUB_ENV"
+          # echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
           cat "$GITHUB_ENV"
 
       - name: Clone and start localenv
@@ -52,13 +53,20 @@ jobs:
           EAS_GITHUB_RUNNER_RO_TOKEN: ${{ secrets.EAS_GITHUB_RUNNER_RO_TOKEN }}
           TEST_SECRET: test-env123
         run: |
-          git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-spike/eas-3066-localenv-functional-tests} https://github.com/alphagov/emergency-alerts-localenv.git
+          git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-main} https://github.com/alphagov/emergency-alerts-localenv.git
           cd emergency-alerts-localenv/
           ./run-for-functional-tests.sh
 
-      - name: Invoke functional tests
+      - name: Prep functional tests
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          make bootstrap
+
+      - name: Run functional tests
         env:
-          CI: "true" # Invoke headless mode
+          CI: "true"
+
           GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
           BROADCAST_SERVICE_API_KEY: "functional_tests_localenv_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-86aa0bd2-f343-480f-85cd-d3010866cdee"
           ENVIRONMENT: "local"
@@ -67,10 +75,7 @@ jobs:
           SECRET_KEY: test-env123
           DANGEROUS_SALT: test-env123
         run: |
-          python -m venv venv
           source venv/bin/activate
-          make bootstrap
-
           source environment.sh
 
           make test-broadcast-flow || true
