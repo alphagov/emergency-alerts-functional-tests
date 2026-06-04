@@ -21,6 +21,10 @@ lint:
 uninstall-packages:
 	python -m pip freeze | xargs python -m pip uninstall -y
 
+.PHONY: test
+test:
+	pytest -v --junitxml=functional-test-reports/report.xml
+
 .PHONY: test-broadcast-flow
 test-broadcast-flow:
 	pytest -v \

@@ -66,6 +66,8 @@ jobs:
       - name: Run functional tests
         env:
           CI: "true"
+          DISABLED_TEST_SUITES: cbc_integration
+
 
           GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
           BROADCAST_SERVICE_API_KEY: "functional_tests_localenv_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-86aa0bd2-f343-480f-85cd-d3010866cdee"

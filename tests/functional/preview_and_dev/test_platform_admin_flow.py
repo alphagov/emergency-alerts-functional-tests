@@ -16,12 +16,18 @@ from tests.pages.pages import (
     wait_for_page_load_completion,
 )
 from tests.pages.rollups import sign_in, sign_in_elevated_platform_admin
-from tests.test_utils import create_invitation_url, get_verification_code_by_id
+from tests.test_utils import (
+    SuiteNames,
+    create_invitation_url,
+    get_verification_code_by_id,
+    skip_test_suite_if_disabled,
+)
 
 test_group_name = "platform-admin"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
 def test_add_rename_and_delete_training_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
@@ -58,6 +64,7 @@ def test_add_rename_and_delete_training_service(driver, purge_failed_logins):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
 def test_add_modify_and_delete_live_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
@@ -117,6 +124,7 @@ def test_add_modify_and_delete_live_service(driver, purge_failed_logins):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
 @pytest.mark.parametrize(
     "user_requires_admin_approval",
     ((True), (False)),
@@ -232,6 +240,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
 def test_service_admin_search_for_user_by_name_and_email(driver, purge_failed_logins):
     sign_in_elevated_platform_admin(driver, purge_failed_logins)
 
@@ -255,6 +264,7 @@ def test_service_admin_search_for_user_by_name_and_email(driver, purge_failed_lo
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
 def test_service_can_create_and_approve_and_revoke_api_keys(
     driver, purge_failed_logins
 ):

@@ -4,11 +4,13 @@ import pytest
 
 from tests.pages import CurrentAlertsPage, ProfileSettingsPage
 from tests.pages.rollups import get_verify_code, sign_in
+from tests.test_utils import SuiteNames, skip_test_suite_if_disabled
 
 test_group_name = "user-operations"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.USER_OPERATIONS)
 def test_user_can_change_profile_fields(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -74,6 +76,7 @@ def test_user_can_change_profile_fields(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.USER_OPERATIONS)
 def test_user_can_view_team_members_but_not_invite_a_new_member(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

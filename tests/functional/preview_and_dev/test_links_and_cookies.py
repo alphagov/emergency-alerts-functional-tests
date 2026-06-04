@@ -3,11 +3,13 @@ import pytest
 from tests.pages import BasePage
 from tests.pages.rollups import sign_in
 from tests.playwright_adapter import By
+from tests.test_utils import SuiteNames, skip_test_suite_if_disabled
 
 test_group_name = "links-cookies"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.LINKS_AND_COOKIES)
 def test_user_left_rail_nav(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -33,6 +35,7 @@ def test_user_left_rail_nav(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.LINKS_AND_COOKIES)
 def test_footer_links(driver):
     sign_in(driver, account_type="broadcast_create_user")
     back_link = "accounts-or-dashboard"
@@ -64,6 +67,7 @@ def test_footer_links(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.LINKS_AND_COOKIES)
 def test_reject_analytics_cookies(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

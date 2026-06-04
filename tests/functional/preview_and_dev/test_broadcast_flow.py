@@ -28,17 +28,20 @@ from tests.pages.pages import (
 )
 from tests.pages.rollups import sign_in
 from tests.test_utils import (
+    SuiteNames,
     check_alert_is_published_on_govuk_alerts,
     convert_naive_utc_datetime_to_cap_standard_string,
     create_broadcast_template,
     delete_template,
     go_to_templates_page,
+    skip_test_suite_if_disabled,
 )
 
 test_group_name = "broadcast-flow"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_new_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -123,6 +126,7 @@ def test_prepare_broadcast_with_new_content(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_filter_sort_and_delete_all_drafts(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -269,6 +273,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_template(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -333,6 +338,7 @@ def test_prepare_broadcast_with_template(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.now(timezone.utc) - timedelta(hours=1)
@@ -375,6 +381,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     sent_time = convert_naive_utc_datetime_to_cap_standard_string(
         datetime.now(timezone.utc) - timedelta(hours=1)
@@ -435,6 +442,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -543,6 +551,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
         ),
     ),
 )
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_new_content_for_coordinate_area(
     driver, coordinate_type, post_data, expected_area_description
 ):
@@ -636,6 +645,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_REPPIR_site(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -719,6 +729,7 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_flood_warning_target_area(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -814,6 +825,7 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -940,6 +952,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
         ),
     ),
 )
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_invalid_bulk_flood_warning_areas(
     driver, post_data, expected_error
 ):
@@ -994,6 +1007,7 @@ def test_prepare_broadcast_with_invalid_bulk_flood_warning_areas(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_multiple_local_authorities(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -1107,6 +1121,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
         ),
     ),
 )
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
     driver, post_data, expected_error
 ):
@@ -1155,6 +1170,7 @@ def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_reject_alert_with_reason(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -1238,6 +1254,7 @@ def test_reject_alert_with_reason(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_return_alert_for_edit(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -1334,6 +1351,7 @@ def test_return_alert_for_edit(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_prepare_broadcast_with_extra_content(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
