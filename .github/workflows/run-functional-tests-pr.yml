@@ -22,22 +22,12 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Set up Docker CE
-        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: "3.12"
-
       - name: Extract branch overrides
         env:
           PR_DESCRIPTION: ${{ inputs.pr-description }}
         # Match `api:blah` and capture the blah, for each repo
         run: |
+          echo "REPO_BRANCH_FUNCTIONAL_TESTS=$(echo "$PR_DESCRIPTION" | grep -oP '`functional-tests:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_API=$(echo "$PR_DESCRIPTION" | grep -oP '`api:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
           echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
@@ -47,6 +37,20 @@ jobs:
           echo "REPO_BRANCH_LOCALENV=spike/eas-3066-localenv-functional-tests" >> "$GITHUB_ENV"
           # echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
           cat "$GITHUB_ENV"
+
+      - name: Checkout functional tests
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.action_repository }}
+          ref: ${{ env.REPO_BRANCH_FUNCTIONAL_TESTS }}
+
+      - name: Set up Docker CE
+        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
 
       - name: Clone and start localenv
         env:
@@ -67,8 +71,6 @@ jobs:
         env:
           CI: "true"
           DISABLED_TEST_SUITES: cbc_integration # TODO: CBC approximation
-
-          # disabled_test_suites = "auth_flow broadcast_flow cbc_integration links_and_cookies platform_admin_flow session_timeout template_flow throttling top_rail user_operations"
 
           GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
           BROADCAST_SERVICE_API_KEY: "functional_tests_localenv_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-86aa0bd2-f343-480f-85cd-d3010866cdee"
