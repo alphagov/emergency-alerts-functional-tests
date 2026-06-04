@@ -83,7 +83,15 @@ jobs:
 
           make test
 
+      - name: Submit test report
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # 3.0.0
+        if: always()
+        with:
+          name: Pytest
+          path: functional-test-reports/*.xml
+
       - name: Extract container logs
+        if: always()
         run: |
           mkdir -p container-logs/
           CONTAINER_NAMES=$(docker ps --format "{{.Names}}")
