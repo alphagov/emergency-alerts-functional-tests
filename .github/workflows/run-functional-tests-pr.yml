@@ -96,6 +96,7 @@ jobs:
           name: Pytest
           path: functional-test-reports/*.xml
           reporter: java-junit
+          report-title: Functional Tests Localenv
           fail-on-error: false
 
       - name: Extract container logs
