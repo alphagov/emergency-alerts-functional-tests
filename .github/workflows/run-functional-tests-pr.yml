@@ -37,15 +37,31 @@ jobs:
       - name: Extract branch overrides from PR description
         env:
           PR_DESCRIPTION: ${{ inputs.pr-description }}
-        # Match `api:blah` and capture the blah, for each repo
+        # Match `api:blah` and capture the blah into an env, for each repo
+        # We have to use an if as if called from a PR, the PR itself should set one of these envs
+        # and we shouldn't override it with an empty string.
         run: |
-          echo "REPO_BRANCH_FUNCTIONAL_TESTS=$(echo "$PR_DESCRIPTION" | grep -oP '`functional-tests:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_API=$(echo "$PR_DESCRIPTION" | grep -oP '`api:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
-          echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          if [ -z "$REPO_BRANCH_FUNCTIONAL_TESTS" ]; then
+            echo "REPO_BRANCH_FUNCTIONAL_TESTS=$(echo "$PR_DESCRIPTION" | grep -oP '`functional-tests:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_API" ]; then
+            echo "REPO_BRANCH_API=$(echo "$PR_DESCRIPTION" | grep -oP '`api:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_GOVUK" ]; then
+            echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_ADMIN" ]; then
+            echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_UTILS" ]; then
+            echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_TOOLING" ]; then
+            echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_LOCALENV" ]; then
+            echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
 
           echo "Branch overrides (uses main otherwise):"
           cat "$GITHUB_ENV"
