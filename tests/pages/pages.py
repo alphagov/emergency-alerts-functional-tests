@@ -9,6 +9,7 @@ from retry import retry
 from config import config
 from tests.pages.element import (
     AddAreasAsListInputElement,
+    AlertSummaryInputElement,
     BasePageElement,
     ClearableInputElement,
     CoordinatePreviewButton,
@@ -1595,3 +1596,18 @@ def save_screenshot(driver, name):
     )
     print(f"URL for screenshot ({filename}):", driver.current_url)
     driver.save_screenshot(str(filename))
+
+
+class AlertSummaryPage(BasePage):
+    alert_summary = AlertSummaryInputElement()
+
+    def set_alert_summary(self, alert_summary):
+        self.alert_summary = alert_summary
+
+    def get_alert_summary(self):
+        return self.alert_summary
+
+    def get_alert_summary_errors(self):
+        error_message = (By.CSS_SELECTOR, ".govuk-error-message")
+        errors = self.wait_for_element(error_message)
+        return errors.text.strip()

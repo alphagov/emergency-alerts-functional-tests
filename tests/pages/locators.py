@@ -248,3 +248,7 @@ class ReturnForEditFormLocators(object):
 class AdminApprovalPageLocators(object):
     APPROVE_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='approve']")
     REJECT_BUTTON = (By.CSS_SELECTOR, "button[data-button-type='reject']")
+
+
+class AlertSummaryPageLocators(object):
+    ALERT_SUMMARY_TEXTAREA = (By.ID, "alert_summary")

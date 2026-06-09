@@ -18,6 +18,7 @@ from tests.pages import (
 )
 from tests.pages.pages import (
     AddAreasAsListPage,
+    AlertSummaryPage,
     ChooseCoordinateArea,
     ChooseCoordinatesType,
     ExtraContentPage,
@@ -1420,3 +1421,75 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+def test_send_summary_email_for_draft_alert(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
+    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check send email section is present
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Send summary email")
+    assert preview_alert_page.text_is_on_page("success@://amazonses.com")
+    # click send
+    preview_alert_page.click_element_by_link_text("Send")
+
+    # check content
+    alert_summary_page = AlertSummaryPage(driver)
+    assert alert_summary_page.text_is_on_page(broadcast_content)
+    assert alert_summary_page.text_is_on_page("8 hours, 30 minutes")
+    assert alert_summary_page.text_is_on_page("Less than 1 million phones estimated")
+    assert alert_summary_page.text_is_on_page(
+        "An alert is going to be sent from the 'Functional Tests Broadcast Service"
+    )
+    assert alert_summary_page.text_is_on_page("The broadcast channel will be 'severe'.")
+
+    # attempt submit with empty summary
+    alert_summary_page.set_alert_summary("")
+    alert_summary_page.click_element_by_link_text("Send Email")
+
+    # Assert errors
+    expected_error = "Enter alert summary"
+    assert (
+        alert_summary_page.get_errors_from_error_summary()
+        == f"There is a problem\n{expected_error}"
+    )
+
+    # submit with summary populated and check we go back to preview page
+    alert_summary_page.set_alert_summary("Alert summary")
+    alert_summary_page.click_element_by_link_text("Send Email")
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Send summary email")
