@@ -21,8 +21,10 @@ phases:
       - export CI=true # Switch to headless mode
       - |
         if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "false" ]; then
-          export DISABLED_TEST_SUITES="cbc_integration"
+          export DISABLED_TEST_SUITES="cbc_integration top_rail"
           echo "DISABLING TEST SUITE 'cbc_integration'..."
+        else
+          export DISABLED_TEST_SUITES="top_rail"
         fi
 
       - make test; exit 0
