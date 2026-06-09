@@ -2,6 +2,7 @@ name: Functional Tests Localenv
 
 on:
   pull_request:
+
   workflow_dispatch:
     inputs:
       pr-description:
@@ -36,7 +37,7 @@ jobs:
 
       - name: Extract branch overrides from PR description
         env:
-          PR_DESCRIPTION: ${{ inputs.pr-description }}
+          PR_DESCRIPTION: ${{ inputs.pr-description || github.event.pull_request.body }}
         # Match `api:blah` and capture the blah into an env, for each repo
         # We have to use an if as if called from a PR, the PR itself should set one of these envs
         # and we shouldn't override it with an empty string.
