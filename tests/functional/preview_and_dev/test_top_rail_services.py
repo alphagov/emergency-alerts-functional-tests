@@ -2,11 +2,13 @@ import pytest
 
 from tests.pages import BasePage, SupportFeedbackPage
 from tests.pages.rollups import get_email_and_password, sign_in
+from tests.test_utils import SuiteNames, skip_test_suite_if_disabled
 
 test_group_name = "top-rail"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.TOP_RAIL)
 def test_report_a_problem(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -35,6 +37,7 @@ def test_report_a_problem(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.TOP_RAIL)
 def test_question_or_feedback(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

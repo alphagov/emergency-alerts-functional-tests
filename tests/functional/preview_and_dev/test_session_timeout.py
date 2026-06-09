@@ -10,11 +10,16 @@ from tests.pages.pages import (
     wait_for_page_load_completion,
 )
 from tests.pages.rollups import clean_session
-from tests.test_utils import get_verification_code_by_id
+from tests.test_utils import (
+    SuiteNames,
+    get_verification_code_by_id,
+    skip_test_suite_if_disabled,
+)
 
 test_group_name = "session-timeout"
 
 
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def sign_in_as_session_timeout_user(driver):
     login_email = config["broadcast_service"]["session_timeout"]["email"]
     login_pw = config["broadcast_service"]["session_timeout"]["password"]
@@ -33,6 +38,7 @@ def sign_in_as_session_timeout_user(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(driver):
     clean_session(driver)
 
@@ -57,6 +63,7 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
     clean_session(driver)
 
@@ -74,6 +81,7 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     clean_session(driver)
 
@@ -112,6 +120,7 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     clean_session(driver)
 

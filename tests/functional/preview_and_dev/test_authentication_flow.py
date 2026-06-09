@@ -14,15 +14,18 @@ from tests.pages import (
 )
 from tests.pages.rollups import clean_session
 from tests.test_utils import (
+    SuiteNames,
     create_email_mfa_sign_in_url,
     create_sign_in_url,
     get_verification_code_by_id,
+    skip_test_suite_if_disabled,
 )
 
 test_group_name = "auth-flow"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.AUTH_FLOW)
 def test_reset_forgotten_password(driver, purge_failed_logins):
     clean_session(driver)
 
@@ -73,6 +76,7 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.AUTH_FLOW)
 def test_sign_in_with_email_mfa(driver, purge_failed_logins):
     clean_session(driver)
 

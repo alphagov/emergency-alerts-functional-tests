@@ -12,12 +12,19 @@ from shapely import Polygon
 from config import config
 from tests.pages import RetryException
 from tests.pages.rollups import broadcast_alert, cancel_alert
-from tests.test_utils import PROVIDERS, create_s3_client, set_response_codes
+from tests.test_utils import (
+    PROVIDERS,
+    SuiteNames,
+    create_s3_client,
+    set_response_codes,
+    skip_test_suite_if_disabled,
+)
 
 test_group_name = "cbc-integration"
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_cbc_config():
     assert "ee-az1" in config["cbcs"]
     assert "ee-az2" in config["cbcs"]
@@ -30,12 +37,14 @@ def test_cbc_config():
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_get_loopback_request_with_bad_id_returns_no_items(dynamo_db_client):
     responses = get_loopback_request_items(ddbc=dynamo_db_client, request_id="1234")
     assert len(responses) == 0
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_broadcast_generates_four_provider_messages(
     driver, api_client, dynamo_db_client
 ):
@@ -69,6 +78,7 @@ def test_broadcast_generates_four_provider_messages(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_get_loopback_responses_returns_codes_for_eight_endpoints(dynamo_db_client):
     db_response = dynamo_db_client.scan(
         TableName="LoopbackResponses",
@@ -98,6 +108,7 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints(dynamo_db_clie
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_set_loopback_response_codes(cbc_blackout, dynamo_db_client):
     test_code = 403
     set_loopback_response_codes(dynamo_db_client, response_code=test_code)
@@ -134,6 +145,7 @@ def test_set_loopback_response_codes(cbc_blackout, dynamo_db_client):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_broadcast_with_az1_failure_tries_az2(
     driver, api_client, cbc_blackout, dynamo_db_client
 ):
@@ -154,6 +166,7 @@ def test_broadcast_with_az1_failure_tries_az2(
 
     request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
 
+    @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
     def _check_for_responses_from_secondary_az(resp):
         return get_cbc_response_code(resp["Items"], az2) is None
 
@@ -174,6 +187,7 @@ def test_broadcast_with_az1_failure_tries_az2(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_broadcast_with_both_azs_failing_retries_requests(
     driver, api_client, cbc_blackout, dynamo_db_client
 ):
@@ -221,6 +235,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored(
     driver, api_client, cbc_blackout, dynamo_db_client
 ):
@@ -277,6 +292,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_assert_cap_xml_generated_is_correct(driver, api_client):
     cap_xml_bucket = config["cap_xml_bucket_name"]
     s3 = create_s3_client()

@@ -1,0 +1,159 @@
+name: Functional Tests Localenv
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      pr-description:
+        required: false
+        type: string
+
+  workflow_call:
+    inputs:
+      pr-description:
+        required: false
+        type: string
+      env-default:
+        required: false
+        type: string
+    secrets:
+      EAS_GITHUB_RUNNER_RO_TOKEN:
+        required: true
+
+jobs:
+  functional-tests:
+    name: Functional Tests Localenv
+    runs-on: ubuntu-24.04
+    steps:
+      # Assuming this is invoked from an open PR, we should allow the calling PR to default the
+      # the branch for its relevant repo. Plus anything else it'd like to override in future.
+      - name: Inherit env from parent
+        env:
+          ENV_DEFAULT: ${{ inputs.env-default }}
+        run: |
+          echo "$ENV_DEFAULT" >> "$GITHUB_ENV"
+          cat $GITHUB_ENV
+
+      - name: Extract branch overrides from PR description
+        env:
+          PR_DESCRIPTION: ${{ inputs.pr-description || github.event.pull_request.body }}
+        # Match `api:blah` and capture the blah into an env, for each repo
+        # We have to use an if as if called from a PR, the PR itself should set one of these envs
+        # and we shouldn't override it with an empty string.
+        run: |
+          if [ -z "$REPO_BRANCH_FUNCTIONAL_TESTS" ]; then
+            echo "REPO_BRANCH_FUNCTIONAL_TESTS=$(echo "$PR_DESCRIPTION" | grep -oP '`functional-tests:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_API" ]; then
+            echo "REPO_BRANCH_API=$(echo "$PR_DESCRIPTION" | grep -oP '`api:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_GOVUK" ]; then
+            echo "REPO_BRANCH_GOVUK=$(echo "$PR_DESCRIPTION" | grep -oP '`govuk:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_ADMIN" ]; then
+            echo "REPO_BRANCH_ADMIN=$(echo "$PR_DESCRIPTION" | grep -oP '`admin:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_UTILS" ]; then
+            echo "REPO_BRANCH_UTILS=$(echo "$PR_DESCRIPTION" | grep -oP '`utils:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_TOOLING" ]; then
+            echo "REPO_BRANCH_TOOLING=$(echo "$PR_DESCRIPTION" | grep -oP '`tooling:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+          if [ -z "$REPO_BRANCH_LOCALENV" ]; then
+            echo "REPO_BRANCH_LOCALENV=$(echo "$PR_DESCRIPTION" | grep -oP '`localenv:\K[^`]+' || true)" >> "$GITHUB_ENV"
+          fi
+
+          echo "Branch overrides (uses main otherwise):"
+          cat "$GITHUB_ENV"
+
+      - name: Checkout functional tests
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ env.REPO_BRANCH_FUNCTIONAL_TESTS }}
+
+      - name: Set up Docker CE
+        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Clone localenv
+        run: |
+          git clone --filter=tree:0 -b ${REPO_BRANCH_LOCALENV:-main} https://github.com/alphagov/emergency-alerts-localenv.git
+
+      - name: Start localenv
+        env:
+          EAS_GITHUB_RUNNER_RO_TOKEN: ${{ secrets.EAS_GITHUB_RUNNER_RO_TOKEN }}
+          TEST_SECRET: test-env123
+        run: |
+          cd emergency-alerts-localenv/
+          ./run-for-functional-tests.sh
+
+      - name: Prep functional tests
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          make bootstrap
+
+      - name: Run functional tests
+        env:
+          CI: "true"
+          DISABLED_TEST_SUITES: cbc_integration # TODO: CBC approximation
+
+          GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
+          BROADCAST_SERVICE_API_KEY: "functional_tests_localenv_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-86aa0bd2-f343-480f-85cd-d3010866cdee"
+          ENVIRONMENT: "local"
+
+          ADMIN_CLIENT_SECRET: test-env123
+          SECRET_KEY: test-env123
+          DANGEROUS_SALT: test-env123
+        run: |
+          source venv/bin/activate
+          source environment.sh
+
+          make test
+
+      - name: Submit test report
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # 3.0.0
+        if: always()
+        with:
+          name: Pytest
+          path: functional-test-reports/*.xml
+          reporter: java-junit
+          report-title: Functional Tests Localenv
+          fail-on-error: false
+
+      - name: Extract container logs
+        if: always()
+        run: |
+          mkdir -p container-logs/
+          CONTAINER_NAMES=$(docker ps --format "{{.Names}}")
+
+          for CONTAINER_NAME in $CONTAINER_NAMES
+          do
+            docker logs $CONTAINER_NAME >& container-logs/$CONTAINER_NAME.log
+          done
+
+      - name: Upload failed test artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: functional-test-output-failures
+          path: |
+            functional-test-reports/
+            functional-test-traces/failed
+            container-logs/
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: functional-test-output
+          path: |
+            functional-test-reports/
+            functional-test-traces/
+            container-logs/

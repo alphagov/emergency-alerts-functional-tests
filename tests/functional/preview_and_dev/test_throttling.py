@@ -6,13 +6,19 @@ from config import config
 from tests.pages import BasePage, HomePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
 from tests.pages.rollups import clean_session
-from tests.test_utils import get_verification_code_by_id, recordtime
+from tests.test_utils import (
+    SuiteNames,
+    get_verification_code_by_id,
+    recordtime,
+    skip_test_suite_if_disabled,
+)
 
 test_group_name = "throttling"
 
 
 @recordtime
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins):
     clean_session(driver)
     purge_failed_logins()

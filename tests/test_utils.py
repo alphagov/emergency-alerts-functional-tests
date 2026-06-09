@@ -1,11 +1,14 @@
 import functools
 import json
 import logging
+import os
 import re
 from datetime import datetime, timezone
+from enum import StrEnum, auto
 from urllib.parse import urlencode
 
 import boto3
+import pytest
 import requests
 from itsdangerous import URLSafeTimedSerializer
 from notifications_python_client.notifications import NotificationsAPIClient
@@ -25,11 +28,6 @@ from tests.pages import (
 from tests.pages.pages import ChooseTemplateFieldsPage
 from tests.playwright_adapter import By, PlaywrightDriver
 
-logging.basicConfig(
-    filename="./logs/test_run_{}.log".format(datetime.now(timezone.utc)),
-    level=logging.INFO,
-)
-
 ACCOUNTS_REQUIRING_SMS_2FA = [
     "broadcast_create_user",
     "broadcast_approve_user",
@@ -39,6 +37,45 @@ ACCOUNTS_REQUIRING_SMS_2FA = [
 ]
 
 PROVIDERS = ["ee", "o2", "three", "vodafone"]
+
+logger = logging.getLogger(__name__)
+
+
+class SuiteNames(StrEnum):
+    AUTH_FLOW = auto()
+    BROADCAST_FLOW = auto()
+    CBC_INTEGRATION = auto()
+    LINKS_AND_COOKIES = auto()
+    PLATFORM_ADMIN_FLOW = auto()
+    SESSION_TIMEOUT = auto()
+    TEMPLATE_FLOW = auto()
+    THROTTLING = auto()
+    TOP_RAIL = auto()
+    USER_OPERATIONS = auto()
+
+
+def skip_test_suite_if_disabled(test_suite_name: str):
+    disabled_test_suites_str = os.getenv("DISABLED_TEST_SUITES", "")
+    disabled_test_suites = disabled_test_suites_str.split(" ")
+
+    def wrapper(function):
+        message = f"{test_suite_name} is in DISABLED_TEST_SUITES"
+        logger.info(message)
+
+        if test_suite_name in disabled_test_suites:
+            return pytest.mark.skip(reason=message)(function)
+
+            @functools.wraps(
+                function
+            )  # Preserve the function signature for paramterize and co
+            def skip_function(*args, **kwargs):
+                pytest.skip(message)
+
+            return skip_function
+        else:
+            return function
+
+    return wrapper
 
 
 def convert_naive_utc_datetime_to_cap_standard_string(dt):
