@@ -7,6 +7,8 @@ phases:
 
   pre_build:
     commands:
+      - export REPORT_GROUP_NAME="functional-test-report-$ENVIRONMENT-$TENANT"
+
       - cd $CODEBUILD_SRC_DIR
       - VENV_TESTS='/venv/eas-tests'
       - python3.12 -m venv $VENV_TESTS
@@ -39,7 +41,7 @@ artifacts:
     - functional-test-traces/**/*
 
 reports:
-  functional-test-reports:
+  $REPORT_GROUP_NAME:
     files:
       - "*.xml"
     base-directory: functional-test-reports
