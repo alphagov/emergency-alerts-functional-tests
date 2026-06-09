@@ -4,7 +4,7 @@ import sys
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python signal-build-pass-or-fail.py working-dir testsuite-list")
+        print("Usage: python signal-build-pass-or-fail.py working-dir report-filenames")
         sys.exit(0)
 
     working_dir = sys.argv[1]
