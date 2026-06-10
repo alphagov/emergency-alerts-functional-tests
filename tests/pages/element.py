@@ -1,6 +1,7 @@
 from tests.pages.locators import (
     AddAreasAsListPageLocators,
     AddServicePageLocators,
+    AlertSummaryPageLocators,
     ApiKeysPageLocators,
     CommonPageLocators,
     DashboardWithDialogPageLocators,
@@ -219,3 +220,7 @@ class AddAreasAsListInputElement(BasePageElement):
 
 class AddAreasAsListButton(BasePageElement):
     name = AddAreasAsListPageLocators.ADD_AREA_LIST_BUTTON[1]
+
+
+class AlertSummaryInputElement(BasePageElement):
+    name = AlertSummaryPageLocators.ALERT_SUMMARY_TEXTAREA[1]
