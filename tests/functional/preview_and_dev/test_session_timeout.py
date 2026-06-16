@@ -32,6 +32,7 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     time.sleep(6)
     dashboard_with_dialogs_page.assert_inactivity_dialog_visible()
     time.sleep(8)
+    sign_in_page.page.wait_for_url("**/sign-in?*")
     assert sign_in_page.text_is_on_page("You’ve been signed out due to inactivity")
     assert sign_in_page.text_is_on_page(
         "We do this to keep your information secure. Sign back in to continue where you left off."
@@ -85,6 +86,7 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
     dashboard_with_dialogs_page.assert_expiry_dialog_hidden()
     time.sleep(6)
     sign_in_page = SignInPage(driver)
+    sign_in_page.page.wait_for_url("**/sign-in?*")
     if sign_in_page.h1_is_youve_been_signed_out():
         assert sign_in_page.text_is_on_page(
             "We do this every 6 hours to keep your information secure. Sign back in to start a new session"
