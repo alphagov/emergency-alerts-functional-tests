@@ -15,6 +15,12 @@ from tests.test_utils import (
 test_group_name = "session-timeout"
 
 
+def wait_for_js_executed(driver):
+    driver.page.wait_for_function(
+        "() => Boolean(window.GOVUK && window.GOVUK.startInactivityTimeout)"
+    )
+
+
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(driver):
@@ -27,6 +33,7 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
     assert dashboard_with_dialogs_page.is_page_title("Current alerts")
     dashboard_with_dialogs_page.click_element_by_link_text("Templates")
     assert dashboard_with_dialogs_page.is_page_title("Templates")
+    wait_for_js_executed(driver)
     time.sleep(6)
     dashboard_with_dialogs_page.assert_inactivity_warning_dialog_visible()
     time.sleep(6)
@@ -50,6 +57,7 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.is_page_title("Current alerts")
+    wait_for_js_executed(driver)
     time.sleep(6)
     dashboard_with_dialogs_page.assert_inactivity_warning_dialog_visible()
     time.sleep(6)
@@ -68,6 +76,7 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.is_page_title("Current alerts")
+    wait_for_js_executed(driver)
     time.sleep(5)
     dashboard_with_dialogs_page.assert_inactivity_warning_dialog_visible()
     time.sleep(5)
@@ -108,6 +117,7 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
     assert dashboard_with_dialogs_page.is_page_title("Current alerts")
+    wait_for_js_executed(driver)
     time.sleep(5)
     dashboard_with_dialogs_page.assert_inactivity_dialog_visible()
     dashboard_with_dialogs_page.click_stay_signed_in()
