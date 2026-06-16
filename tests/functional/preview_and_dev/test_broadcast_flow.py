@@ -1442,6 +1442,7 @@ def test_prepare_broadcast_with_extra_content(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_send_summary_email_for_draft_alert(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
