@@ -287,18 +287,18 @@ class BasePage(object):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
-    def click_dropdown_option(self, select_id, option_value):
-        select_dropdown = (By.ID, select_id)
-        select_element = self.wait_for_element(select_dropdown)
-        # Set the value directly
-        self.driver.execute_script(
-            f"arguments[0].value = '{option_value}'", select_element
-        )
-        # Trigger change event (see data-auto-submit attribute)
-        self.driver.execute_script(
-            "arguments[0].dispatchEvent(new Event('change'))", select_element
-        )
-        sleep(1)
+    def click_dropdown_option_and_wait(self, select_id, option_value):
+        with wait_for_page_load_completion(self.driver):
+            select_dropdown = (By.ID, select_id)
+            select_element = self.wait_for_element(select_dropdown)
+            # Set the value directly
+            self.driver.execute_script(
+                f"arguments[0].value = '{option_value}'", select_element
+            )
+            # Trigger change event (see data-auto-submit attribute)
+            self.driver.execute_script(
+                "arguments[0].dispatchEvent(new Event('change'))", select_element
+            )
 
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
