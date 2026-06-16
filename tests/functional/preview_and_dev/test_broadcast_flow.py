@@ -1043,7 +1043,10 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     prepare_alert_pages.click_element_by_link_text("Local authorities")
 
     # Click link to page to bulk add
-    prepare_alert_pages.click_element_by_link_text("enter a list into one text box")
+    # FIXME: Long timeout because this page can take a while to load for admin's cache to populate
+    prepare_alert_pages.click_element_by_link_text(
+        "enter a list into one text box", timeout=10_000
+    )
 
     bulk_add_areas_page = AddAreasAsListPage(driver)
 
@@ -1159,7 +1162,10 @@ def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
     prepare_alert_pages.click_element_by_link_text("Local authorities")
 
     # Click link to page to bulk add
-    prepare_alert_pages.click_element_by_link_text("enter a list into one text box")
+    # FIXME: Long timeout because this page can take a while to load for admin's cache to populate
+    prepare_alert_pages.click_element_by_link_text(
+        "enter a list into one text box", timeout=10_000
+    )
 
     bulk_add_areas_page = AddAreasAsListPage(driver)
 
