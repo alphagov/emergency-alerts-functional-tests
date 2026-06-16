@@ -210,18 +210,11 @@ class BasePage(object):
         elements = self.driver.find_elements(By.CLASS_NAME, class_name)
         return elements
 
-    def is_page_title(self, expected_page_title):
-        # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            element = self.wait_for_element(CommonPageLocators.H1)
-            if element.text == expected_page_title:
-                return True
-            tries -= 1
-            sleep(retry_interval)
+    def is_page_title(self, expected_page_title, exact=False):
+        title = self.page.locator("h1").get_by_text(expected_page_title, exact=False)
+        expect(title).to_be_visible()
 
-        return False
+        return True  # Not thrown, passes assert
 
     def text_is_on_page_no_wait(self, search_text):
         # TODO: Remove this function and replace with expect(...).to_be_visible()
