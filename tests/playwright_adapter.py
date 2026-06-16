@@ -111,49 +111,6 @@ class WebDriverWait:
             time.sleep(0.1)
 
 
-class EC:
-    @staticmethod
-    def presence_of_element_located(locator):
-        def _predicate(driver):
-            el = driver.find_element(locator[0], locator[1])
-            if el:
-                return el
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def visibility_of_element_located(locator):
-        def _predicate(driver):
-            el = driver.find_element(locator[0], locator[1])
-            if el and el._locator.is_visible():
-                return el
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def visibility_of_all_elements_located(locator):
-        def _predicate(driver):
-            els = driver.find_elements(locator[0], locator[1])
-            if els:
-                # ensure at least one visible
-                return els
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def presence_of_all_elements_located(locator):
-        def _predicate(driver):
-            els = driver.find_elements(locator[0], locator[1])
-            if els:
-                return els
-            return False
-
-        return _predicate
-
-
 class PlaywrightDriver:
     def __init__(self, headless=True, proxy=None, download_dir=None):
         self._pw = sync_playwright().start()
