@@ -22,11 +22,11 @@ phases:
       - |
         if [ "$ENABLE_CBC_INTEGRATION_TESTS" = "false" ]; then
           export DISABLED_TEST_SUITES="cbc_integration top_rail"
-          echo "DISABLING TEST SUITE 'cbc_integration'..."
         else
           export DISABLED_TEST_SUITES="top_rail"
         fi
 
+        echo "Disabled test suites: $DISABLED_TEST_SUITES"
       - make test; exit 0
       - echo "Test run finished."
       - python3.12 ./scripts/report-test-results.py functional-test-reports
@@ -37,8 +37,20 @@ phases:
 
 artifacts:
   files:
-    - functional-test-reports/*
-    - functional-test-traces/**/*
+    - "**/*"
+
+  secondary-artifacts:
+    TestOutput:
+      files:
+        - functional-test-reports/*
+        - functional-test-traces/**/*
+      name: All Test Output
+
+    FailedTestOutput:
+      files:
+        - functional-test-reports/*
+        - functional-test-traces/failed/*
+      name: Failed Test Output
 
 reports:
   functional-test-reports:
