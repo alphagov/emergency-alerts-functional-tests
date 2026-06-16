@@ -52,7 +52,7 @@ def _driver(request, download_directory):
 def driver(_driver, request):
     prev_failed_tests = request.session.testsfailed
 
-    _driver.start_tracing()
+    _driver.start_tracing(test_name=request.node.name)
 
     yield _driver
 

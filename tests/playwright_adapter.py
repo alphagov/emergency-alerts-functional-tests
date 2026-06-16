@@ -207,10 +207,15 @@ class PlaywrightDriver:
         except Exception:
             pass
 
-    def start_tracing(self, screenshots=True, snapshots=True, sources=True):
+    def start_tracing(
+        self, screenshots=True, snapshots=True, sources=True, test_name=None
+    ):
         try:
             self.context.tracing.start(
-                screenshots=screenshots, snapshots=snapshots, sources=sources
+                screenshots=screenshots,
+                snapshots=snapshots,
+                sources=sources,
+                title=test_name,
             )
         except Exception:
             pass
