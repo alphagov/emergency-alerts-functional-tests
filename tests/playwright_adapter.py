@@ -138,15 +138,21 @@ class PlaywrightDriver:
         return self.page.content()
 
     def find_element(
-        self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT, must_be_visible=True
+        self,
+        locator: tuple[By, str],
+        timeout=DEFAULT_TIMEOUT,
+        must_be_visible=True,
+        locator_description=None,
     ):
         locator_obj = None
         if locator[0] == By.LINK_TEXT:
             locator_obj = self.page.get_by_role("link", name=locator[1])
-        # Vibecoded
         else:
             selector = _locator_to_selector(locator[0], locator[1])
             locator_obj = self.page.locator(selector).first
+
+        if locator_description is not None:
+            locator_obj = locator_obj.describe(locator_description)
 
         locator_obj.wait_for(
             state="visible" if must_be_visible else "attached", timeout=timeout

@@ -121,8 +121,10 @@ class BasePage(object):
     def current_url(self):
         return self.driver.current_url
 
-    def wait_for_invisible_element(self, locator):
-        return self.driver.find_element(locator, must_be_visible=False)
+    def wait_for_invisible_element(self, locator, locator_description=None):
+        return self.driver.find_element(
+            locator, must_be_visible=False, locator_description=locator_description
+        )
 
     def wait_for_element(self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT):
         # TODO: Refactor/remove
@@ -1456,31 +1458,36 @@ class DashboardWithDialogs(BasePage):
 
     def assert_inactivity_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG,
+            locator_description="Inactivity dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_inactivity_warning_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG,
+            locator_description="Inactivity warning dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_expiry_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG,
+            locator_description="Expiry dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_inactivity_dialog_hidden(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG,
+            locator_description="Inactivity dialog",
         )
         expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 
     def assert_expiry_dialog_hidden(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG,
+            locator_description="Expiry dialog",
         )
         expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 
