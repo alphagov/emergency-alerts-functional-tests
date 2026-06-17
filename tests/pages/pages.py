@@ -97,6 +97,16 @@ def wait_for_page_load_completion(driver: PlaywrightDriver):
         return
 
 
+@contextmanager
+def action_group(driver: PlaywrightDriver, group_name: str):
+    """
+    A helper (to be used in a with statement) that groups a set of steps for the Playwright trace viewer
+    """
+    driver.context.tracing.group(group_name)
+    yield
+    driver.context.tracing.group_end()
+
+
 class RetryException(Exception):
     pass
 
@@ -221,8 +231,9 @@ class BasePage(object):
     def text_is_on_page_no_wait(self, search_text):
         # TODO: Remove this function and replace with expect(...).to_be_visible()
         #   expect(self.driver.page.get_by_text(search_text).first).to_be_visible()
-        locator = self.driver.page.get_by_text(search_text).first
-        return locator.is_visible()
+        with action_group(self.driver, "Text on page (no wait): " + search_text):
+            locator = self.driver.page.get_by_text(search_text).first
+            return locator.is_visible()
 
     def assert_text_is_on_page(self, search_text):
         expect(self.page.get_by_text(search_text).first).to_be_visible()
@@ -235,18 +246,20 @@ class BasePage(object):
         # will eventually find it after wasting a bit of time.
         # Tests should try to ensure the page load has completed or use expect(...).to_be_visible()
 
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            if self.text_is_on_page_no_wait(search_text):
-                return True
-            tries -= 1
-            sleep(retry_interval)
-            self.driver.refresh()
-        return False
+        with action_group(self.driver, "Text on page: " + search_text):
+            tries = config["ui_element_retry_times"]
+            retry_interval = config["ui_element_retry_interval"]
+            while tries > 0:
+                if self.text_is_on_page_no_wait(search_text):
+                    return True
+                tries -= 1
+                sleep(retry_interval)
+                self.driver.refresh()
+            return False
 
     def text_is_not_on_page_no_wait(self, search_text):
-        return not self.text_is_on_page_no_wait(search_text)
+        with action_group(self.driver, "Text not on page (no wait): " + search_text):
+            return not self.text_is_on_page_no_wait(search_text)
 
     def text_is_not_on_page(self, search_text):
         # TODO: Replace this function (see text_is_on_page TODO)
