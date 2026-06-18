@@ -118,7 +118,6 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     dashboard_with_dialogs_page.assert_inactivity_dialog_hidden()
     driver.page.wait_for_timeout(5 * 1000)
     dashboard_with_dialogs_page.assert_expiry_dialog_visible()
-    dashboard_with_dialogs_page.assert_text_is_on_page("Sign out now")
     dashboard_with_dialogs_page.click_element_by_link_text("Sign out now")
     sign_in_page = SignInPage(driver)
     assert sign_in_page.text_is_on_page("Sign in")
