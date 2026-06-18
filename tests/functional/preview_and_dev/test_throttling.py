@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from config import config
@@ -46,7 +44,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     )
 
     # Wait out the throttle period
-    time.sleep(5)
+    driver.page.wait_for_timeout(5 * 1000)
 
     sign_in_page.get()
     assert sign_in_page.is_current()
@@ -74,7 +72,7 @@ def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins)
     )
 
     # Waits some time to avoid throttle
-    time.sleep(5)
+    driver.page.wait_for_timeout(5 * 1000)
 
     # Attempts again
     throttled_page.click_element_by_link_text("Sign in")
