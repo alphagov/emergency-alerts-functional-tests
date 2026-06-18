@@ -1,4 +1,3 @@
-import time
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -101,7 +100,7 @@ def test_prepare_broadcast_with_new_content(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -119,7 +118,7 @@ def test_prepare_broadcast_with_new_content(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -233,7 +232,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     # test filtering and sorting
     current_alerts_page = BasePage(driver)
 
-    current_alerts_page.click_dropdown_option(
+    current_alerts_page.click_dropdown_option_and_wait(
         "current-alerts-filter", "pending-approval"
     )
 
@@ -242,17 +241,23 @@ def test_filter_sort_and_delete_all_drafts(driver):
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)
     assert current_alerts_page.text_is_not_on_page(broadcast_title3)
 
-    current_alerts_page.click_dropdown_option("current-alerts-filter", "none")
+    current_alerts_page.click_dropdown_option_and_wait("current-alerts-filter", "none")
 
-    current_alerts_page.click_dropdown_option("current-alerts-sort", "title-desc")
+    current_alerts_page.click_dropdown_option_and_wait(
+        "current-alerts-sort", "title-desc"
+    )
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert alert_refs[0].text > alert_refs[1].text
 
-    current_alerts_page.click_dropdown_option("current-alerts-sort", "title-asc")
+    current_alerts_page.click_dropdown_option_and_wait(
+        "current-alerts-sort", "title-asc"
+    )
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert alert_refs[0].text < alert_refs[1].text
 
-    current_alerts_page.click_dropdown_option("current-alerts-sort", "date-desc")
+    current_alerts_page.click_dropdown_option_and_wait(
+        "current-alerts-sort", "date-desc"
+    )
     alert_refs = current_alerts_page.get_elements_by_class("file-list-filename-large")
     assert alert_refs[0].text == broadcast_title4
 
@@ -261,7 +266,7 @@ def test_filter_sort_and_delete_all_drafts(driver):
     current_alerts_page.click_element_by_link_text("Manage draft alerts")
     current_alerts_page.click_element_by_link_text("Select all")
     current_alerts_page.click_element_by_link_text("Delete draft alerts")
-    time.sleep(3)
+    driver.page.wait_for_timeout(3 * 1000)
 
     assert current_alerts_page.text_is_not_on_page(broadcast_title1)
     assert current_alerts_page.text_is_not_on_page(broadcast_title2)
@@ -373,7 +378,7 @@ def test_create_and_then_reject_broadcast_using_the_api(driver, broadcast_client
     )
     broadcast_client.post_broadcast_data(reject_broadcast_xml)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     page.click_element_by_link_text("Rejected alerts")
     assert page.text_is_on_page(event)
 
@@ -413,7 +418,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     alert_page_url = page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -427,7 +432,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     broadcast_client.post_broadcast_data(cancel_broadcast_xml)
 
     # go back to the page for the current alert
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     page.get(alert_page_url)
 
     # assert that it's now cancelled
@@ -435,7 +440,7 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     page.click_element_by_link_text("Past alerts")
     assert page.text_is_on_page(event)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     page.get()
@@ -507,7 +512,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -525,7 +530,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -620,7 +625,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -638,7 +643,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -704,7 +709,7 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -722,7 +727,7 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -800,7 +805,7 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -818,7 +823,7 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -910,7 +915,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -928,7 +933,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -1037,7 +1042,10 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     prepare_alert_pages.click_element_by_link_text("Local authorities")
 
     # Click link to page to bulk add
-    prepare_alert_pages.click_element_by_link_text("enter a list into one text box")
+    # FIXME: Long timeout because this page can take a while to load for admin's cache to populate
+    prepare_alert_pages.click_element_by_link_text(
+        "enter a list into one text box", timeout=10_000
+    )
 
     bulk_add_areas_page = AddAreasAsListPage(driver)
 
@@ -1079,7 +1087,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -1097,7 +1105,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
 
     current_alerts_page.get()
@@ -1153,7 +1161,10 @@ def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
     prepare_alert_pages.click_element_by_link_text("Local authorities")
 
     # Click link to page to bulk add
-    prepare_alert_pages.click_element_by_link_text("enter a list into one text box")
+    # FIXME: Long timeout because this page can take a while to load for admin's cache to populate
+    prepare_alert_pages.click_element_by_link_text(
+        "enter a list into one text box", timeout=10_000
+    )
 
     bulk_add_areas_page = AddAreasAsListPage(driver)
 
@@ -1414,7 +1425,7 @@ def test_prepare_broadcast_with_extra_content(driver):
     assert current_alerts_page.text_is_on_page("since today at")
     alert_page_url = current_alerts_page.current_url
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Current alerts", broadcast_content
     )
@@ -1432,7 +1443,7 @@ def test_prepare_broadcast_with_extra_content(driver):
     past_alerts_page = BasePage(driver)
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
-    time.sleep(10)
+    driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
         driver, "Past alerts", broadcast_content, extra_content
     )
@@ -1442,6 +1453,7 @@ def test_prepare_broadcast_with_extra_content(driver):
 
 
 @pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_send_summary_email_for_draft_alert(driver):
     sign_in(driver, account_type="broadcast_create_user")
 

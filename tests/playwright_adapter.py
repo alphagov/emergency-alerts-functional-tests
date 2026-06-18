@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 
 from playwright.sync_api import Locator, TimeoutError, sync_playwright
@@ -89,71 +88,6 @@ class ElementWrapper:
         return getattr(self.locator, item)
 
 
-class WebDriverWait:
-    def __init__(self, driver, timeout):
-        self.driver = driver
-        self.timeout = timeout
-
-    def until(self, method, message=None):
-        end_time = time.time() + self.timeout
-        last_exc = None
-        while True:
-            try:
-                value = method(self.driver)
-                if value:
-                    return value
-            except Exception as e:
-                last_exc = e
-            if time.time() > end_time:
-                raise TimeoutError(
-                    message or "Timed out waiting for condition"
-                ) from last_exc
-            time.sleep(0.1)
-
-
-class EC:
-    @staticmethod
-    def presence_of_element_located(locator):
-        def _predicate(driver):
-            el = driver.find_element(locator[0], locator[1])
-            if el:
-                return el
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def visibility_of_element_located(locator):
-        def _predicate(driver):
-            el = driver.find_element(locator[0], locator[1])
-            if el and el._locator.is_visible():
-                return el
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def visibility_of_all_elements_located(locator):
-        def _predicate(driver):
-            els = driver.find_elements(locator[0], locator[1])
-            if els:
-                # ensure at least one visible
-                return els
-            return False
-
-        return _predicate
-
-    @staticmethod
-    def presence_of_all_elements_located(locator):
-        def _predicate(driver):
-            els = driver.find_elements(locator[0], locator[1])
-            if els:
-                return els
-            return False
-
-        return _predicate
-
-
 class PlaywrightDriver:
     def __init__(self, headless=True, proxy=None, download_dir=None):
         self._pw = sync_playwright().start()
@@ -181,15 +115,21 @@ class PlaywrightDriver:
         return self.page.content()
 
     def find_element(
-        self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT, must_be_visible=True
+        self,
+        locator: tuple[By, str],
+        timeout=DEFAULT_TIMEOUT,
+        must_be_visible=True,
+        locator_description=None,
     ):
         locator_obj = None
         if locator[0] == By.LINK_TEXT:
             locator_obj = self.page.get_by_role("link", name=locator[1])
-        # Vibecoded
         else:
             selector = _locator_to_selector(locator[0], locator[1])
             locator_obj = self.page.locator(selector).first
+
+        if locator_description is not None:
+            locator_obj = locator_obj.describe(locator_description)
 
         locator_obj.wait_for(
             state="visible" if must_be_visible else "attached", timeout=timeout
@@ -250,10 +190,15 @@ class PlaywrightDriver:
         except Exception:
             pass
 
-    def start_tracing(self, screenshots=True, snapshots=True, sources=True):
+    def start_tracing(
+        self, screenshots=True, snapshots=True, sources=True, test_name=None
+    ):
         try:
             self.context.tracing.start(
-                screenshots=screenshots, snapshots=snapshots, sources=sources
+                screenshots=screenshots,
+                snapshots=snapshots,
+                sources=sources,
+                title=test_name,
             )
         except Exception:
             pass

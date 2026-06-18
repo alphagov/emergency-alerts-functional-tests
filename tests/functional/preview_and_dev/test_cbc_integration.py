@@ -1,5 +1,4 @@
 import logging
-import time
 import uuid
 from random import choice
 
@@ -274,7 +273,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     assert len(response_codes) == 1  # 500 - only failures at this point
     assert str(failure_code) in response_codes
 
-    time.sleep(120)
+    driver.page.wait_for_timeout(120 * 1000)
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         request_id=request_id,
@@ -406,7 +405,7 @@ def fetch_provider_messages(driver, api_client):
         if len(response["messages"]) == 4:
             break
         attempts += 1
-        time.sleep(10)
+        driver.page.wait_for_timeout(10 * 1000)
 
     return response["messages"]
 

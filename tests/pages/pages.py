@@ -80,7 +80,6 @@ from tests.playwright_adapter import (
     DEFAULT_TIMEOUT,
     By,
     PlaywrightDriver,
-    WebDriverWait,
 )
 
 
@@ -95,6 +94,16 @@ def wait_for_page_load_completion(driver: PlaywrightDriver):
 
     with driver.page.expect_event("load"):
         return
+
+
+@contextmanager
+def action_group(driver: PlaywrightDriver, group_name: str):
+    """
+    A helper (to be used in a with statement) that groups a set of steps for the Playwright trace viewer
+    """
+    driver.context.tracing.group(group_name)
+    yield
+    driver.context.tracing.group_end()
 
 
 class RetryException(Exception):
@@ -121,8 +130,10 @@ class BasePage(object):
     def current_url(self):
         return self.driver.current_url
 
-    def wait_for_invisible_element(self, locator):
-        return self.driver.find_element(locator, must_be_visible=False)
+    def wait_for_invisible_element(self, locator, locator_description=None):
+        return self.driver.find_element(
+            locator, must_be_visible=False, locator_description=locator_description
+        )
 
     def wait_for_element(self, locator: tuple[By, str], timeout=DEFAULT_TIMEOUT):
         # TODO: Refactor/remove
@@ -138,10 +149,12 @@ class BasePage(object):
         self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_contains(url))
+        self.page.wait_for_url(url)
+        return True  # Didn't throw
 
     def wait_until_url_ends_with(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_ends_with(url))
+        self.page.wait_for_url(f"**{url}")
+        return True  # Didn't throw
 
     def url_contains(self, url):
         def check_contains_url(driver):
@@ -210,24 +223,23 @@ class BasePage(object):
         elements = self.driver.find_elements(By.CLASS_NAME, class_name)
         return elements
 
-    def is_page_title(self, expected_page_title):
-        # The H1 is on all pages but sometimes returns the last page's value so it's just retried here
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            element = self.wait_for_element(CommonPageLocators.H1)
-            if element.text == expected_page_title:
-                return True
-            tries -= 1
-            sleep(retry_interval)
+    def is_page_title(self, expected_page_title, exact=False):
+        title = self.page.locator("h1").get_by_text(expected_page_title, exact=False)
+        expect(title).to_be_visible()
 
-        return False
+        return True  # Expect didn't throw
 
     def text_is_on_page_no_wait(self, search_text):
         # TODO: Remove this function and replace with expect(...).to_be_visible()
         #   expect(self.driver.page.get_by_text(search_text).first).to_be_visible()
         locator = self.driver.page.get_by_text(search_text).first
-        return locator.is_visible()
+        result = locator.is_visible()
+
+        with action_group(
+            self.driver,
+            f"Text on page ({"success" if result else "failed"}): " + search_text,
+        ):
+            return result
 
     def assert_text_is_on_page(self, search_text):
         expect(self.page.get_by_text(search_text).first).to_be_visible()
@@ -240,31 +252,35 @@ class BasePage(object):
         # will eventually find it after wasting a bit of time.
         # Tests should try to ensure the page load has completed or use expect(...).to_be_visible()
 
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            if self.text_is_on_page_no_wait(search_text):
-                return True
-            tries -= 1
-            sleep(retry_interval)
-            self.driver.refresh()
-        return False
+        with action_group(self.driver, "Text on page: " + search_text):
+            tries = config["ui_element_retry_times"]
+            retry_interval = config["ui_element_retry_interval"]
+            while tries > 0:
+                if self.text_is_on_page_no_wait(search_text):
+                    return True
+                tries -= 1
+                sleep(retry_interval)
+                self.driver.refresh()
+            return False
 
     def text_is_not_on_page_no_wait(self, search_text):
-        return not self.text_is_on_page_no_wait(search_text)
+        with action_group(self.driver, "Text not on page (no wait): " + search_text):
+            return not self.text_is_on_page_no_wait(search_text)
 
     def text_is_not_on_page(self, search_text):
         # TODO: Replace this function (see text_is_on_page TODO)
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            normalized_page_source = " ".join(self.driver.page_source.split())
-            if search_text in normalized_page_source:
-                return False
-            tries -= 1
-            sleep(retry_interval)
-            self.driver.refresh()
-        return True
+
+        with action_group(self.driver, "Text not on page: " + search_text):
+            tries = config["ui_element_retry_times"]
+            retry_interval = config["ui_element_retry_interval"]
+            while tries > 0:
+                normalized_page_source = " ".join(self.driver.page_source.split())
+                if search_text in normalized_page_source:
+                    return False
+                tries -= 1
+                sleep(retry_interval)
+                self.driver.refresh()
+            return True
 
     def get_template_id(self):
         # e.g.
@@ -287,18 +303,18 @@ class BasePage(object):
         element = self.wait_for_element((By.CSS_SELECTOR, f"#{id}"))
         element.click()
 
-    def click_dropdown_option(self, select_id, option_value):
-        select_dropdown = (By.ID, select_id)
-        select_element = self.wait_for_element(select_dropdown)
-        # Set the value directly
-        self.driver.execute_script(
-            f"arguments[0].value = '{option_value}'", select_element
-        )
-        # Trigger change event (see data-auto-submit attribute)
-        self.driver.execute_script(
-            "arguments[0].dispatchEvent(new Event('change'))", select_element
-        )
-        sleep(1)
+    def click_dropdown_option_and_wait(self, select_id, option_value):
+        with wait_for_page_load_completion(self.driver):
+            select_dropdown = (By.ID, select_id)
+            select_element = self.wait_for_element(select_dropdown)
+            # Set the value directly
+            self.driver.execute_script(
+                f"arguments[0].value = '{option_value}'", select_element
+            )
+            # Trigger change event (see data-auto-submit attribute)
+            self.driver.execute_script(
+                "arguments[0].dispatchEvent(new Event('change'))", select_element
+            )
 
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
@@ -1463,31 +1479,36 @@ class DashboardWithDialogs(BasePage):
 
     def assert_inactivity_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG,
+            locator_description="Inactivity dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_inactivity_warning_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_WARNING_DIALOG,
+            locator_description="Inactivity warning dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_expiry_dialog_visible(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG,
+            locator_description="Expiry dialog",
         )
         expect(element.locator).to_have_attribute("open", "", timeout=10000)
 
     def assert_inactivity_dialog_hidden(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.INACTIVITY_DIALOG
+            DashboardWithDialogPageLocators.INACTIVITY_DIALOG,
+            locator_description="Inactivity dialog",
         )
         expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 
     def assert_expiry_dialog_hidden(self):
         element = self.wait_for_invisible_element(
-            DashboardWithDialogPageLocators.EXPIRY_DIALOG
+            DashboardWithDialogPageLocators.EXPIRY_DIALOG,
+            locator_description="Expiry dialog",
         )
         expect(element.locator).not_to_have_attribute("open", "", timeout=10000)
 

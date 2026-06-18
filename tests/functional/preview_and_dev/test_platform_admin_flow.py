@@ -198,7 +198,7 @@ def test_platform_admin_can_invite_new_user_and_delete_user(
     assert registration_page.is_page_title("Create an account")
     registration_page.fill_registration_form(name="User " + timestamp)
     registration_page.click_continue_to_signin()
-    time.sleep(1)
+    driver.page.wait_for_timeout(1 * 1000)
     # get user_id of invited user by their email
     response = api_client.post(url="/user/email", data={"email": invited_user_email})
     user_id = response["data"]["id"]

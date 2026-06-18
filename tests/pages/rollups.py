@@ -173,15 +173,15 @@ def get_identifier(account_type):  # noqa: C901
     elif account_type == "broadcast_create_user":
         return config["broadcast_service"]["broadcast_user_1"]["id"]
     elif account_type in ["normal", "email_auth"]:
-        return config["user"]["mobile"]
+        return config["user"]["id"]
     elif account_type == "platform_admin":
         return config["broadcast_service"]["platform_admin"]["id"]
     elif account_type == "platform_admin_2":
         return config["broadcast_service"]["platform_admin_2"]["id"]
     elif account_type == "seeded":
-        return config["service"]["seeded_user"]["mobile"]
+        return config["service"]["seeded_user"]["id"]
     elif account_type == "session_timeout":
-        return config["broadcast_service"]["session_timeout"]["mobile"]
+        return config["broadcast_service"]["session_timeout"]["id"]
     raise Exception("unknown account_type {}".format(account_type))
 
 

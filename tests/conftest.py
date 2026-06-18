@@ -1,4 +1,5 @@
 import os
+from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
 
@@ -7,7 +8,7 @@ import pytest
 from clients.broadcast_client import BroadcastClient
 from clients.test_api_client import TestApiClient
 from config import config, setup_shared_config
-from tests.pages.pages import HomePage
+from tests.pages.pages import HomePage, action_group
 from tests.playwright_adapter import PlaywrightDriver
 
 
@@ -25,7 +26,7 @@ def download_directory(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def _driver(request, download_directory):
+def _driver(request, download_directory) -> Generator[PlaywrightDriver]:
     http_proxy = os.getenv("HTTP_PROXY")
     # option added by pytest Playwright plugin, autoset by pytest.ini
     headless = not request.config.getoption("--headed")
@@ -38,21 +39,21 @@ def _driver(request, download_directory):
     )
     driver.set_window_size(1280, 720)
 
-    driver.delete_all_cookies()
-
-    # go to root page and accept analytics cookies to hide banner in all pages
-    driver.get(config["eas_admin_url"])
-    HomePage(driver).accept_cookie_warning()
-
     yield driver
     driver.close()
 
 
 @pytest.fixture(scope="function")
-def driver(_driver, request):
+def driver(_driver, request) -> Generator[PlaywrightDriver]:
     prev_failed_tests = request.session.testsfailed
 
-    _driver.start_tracing()
+    _driver.delete_all_cookies()
+    _driver.start_tracing(test_name=request.node.name)
+
+    with action_group(_driver, "Test setup - accept cookies"):
+        # go to root page and accept analytics cookies to hide banner in all pages
+        _driver.get(config["eas_admin_url"])
+        HomePage(_driver).accept_cookie_warning()
 
     yield _driver
 
