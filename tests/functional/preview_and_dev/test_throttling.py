@@ -3,9 +3,8 @@ import time
 import pytest
 
 from config import config
-from tests.pages import BasePage, HomePage, SignInPage, ThrottledPage
+from tests.pages import BasePage, SignInPage, ThrottledPage
 from tests.pages.pages import VerifyPage
-from tests.pages.rollups import clean_session
 from tests.test_utils import (
     SuiteNames,
     get_verification_code_by_id,
@@ -20,12 +19,7 @@ test_group_name = "throttling"
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_login_attempt_throttled_after_failed_login(driver, purge_failed_logins):
-    clean_session(driver)
     purge_failed_logins()
-
-    home_page = HomePage(driver)
-    home_page.get()
-    home_page.accept_cookie_warning()
 
     login_email = config["broadcast_service"]["throttled_user"]["email"]
     login_pw = "incorrect password"

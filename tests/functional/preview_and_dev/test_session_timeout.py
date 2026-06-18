@@ -6,7 +6,7 @@ from tests.pages.pages import (
     DashboardWithDialogs,
     SignInPage,
 )
-from tests.pages.rollups import clean_session, sign_in
+from tests.pages.rollups import sign_in
 from tests.test_utils import (
     SuiteNames,
     skip_test_suite_if_disabled,
@@ -24,8 +24,6 @@ def wait_for_js_executed(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(driver):
-    clean_session(driver)
-
     sign_in(driver, account_type="session_timeout")
     sign_in_page = SignInPage(driver)
 
@@ -51,8 +49,6 @@ def test_inactivity_dialog_appears_and_if_no_action_taken_user_is_signed_out(dri
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
-    clean_session(driver)
-
     sign_in(driver, account_type="session_timeout")
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
@@ -70,8 +66,6 @@ def test_inactivity_dialog_appears_and_sign_out_button_signs_user_out(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
-    clean_session(driver)
-
     sign_in(driver, account_type="session_timeout")
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
@@ -111,8 +105,6 @@ def test_dialogs_appears_and_signs_user_out_at_max_session_lifetime(driver):
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.SESSION_TIMEOUT)
 def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
-    clean_session(driver)
-
     sign_in(driver, account_type="session_timeout")
 
     dashboard_with_dialogs_page = DashboardWithDialogs(driver)
@@ -128,6 +120,7 @@ def test_expiry_dialog_appears_and_click_sign_out_signs_user_out(driver):
     dashboard_with_dialogs_page.assert_inactivity_dialog_hidden()
     time.sleep(5)
     dashboard_with_dialogs_page.assert_expiry_dialog_visible()
+    dashboard_with_dialogs_page.text_is_on_page("Sign out now")
     dashboard_with_dialogs_page.click_element_by_link_text("Sign out now")
     sign_in_page = SignInPage(driver)
     assert sign_in_page.text_is_on_page("Sign in")

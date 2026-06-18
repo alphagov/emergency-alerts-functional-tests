@@ -7,12 +7,10 @@ from config import config
 from tests.pages import (
     BasePage,
     ForgotPasswordPage,
-    HomePage,
     NewPasswordPage,
     SignInPage,
     VerifyPage,
 )
-from tests.pages.rollups import clean_session
 from tests.test_utils import (
     SuiteNames,
     create_email_mfa_sign_in_url,
@@ -27,12 +25,6 @@ test_group_name = "auth-flow"
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.AUTH_FLOW)
 def test_reset_forgotten_password(driver, purge_failed_logins):
-    clean_session(driver)
-
-    home_page = HomePage(driver)
-    home_page.get()
-    home_page.accept_cookie_warning()
-
     user3 = config["broadcast_service"]["broadcast_user_3"]["id"]
     login_email = config["broadcast_service"]["broadcast_user_3"]["email"]
 
@@ -78,12 +70,6 @@ def test_reset_forgotten_password(driver, purge_failed_logins):
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.AUTH_FLOW)
 def test_sign_in_with_email_mfa(driver, purge_failed_logins):
-    clean_session(driver)
-
-    home_page = HomePage(driver)
-    home_page.get()
-    home_page.accept_cookie_warning()
-
     login_id = config["broadcast_service"]["broadcast_user_4"]["id"]
     login_email = config["broadcast_service"]["broadcast_user_4"]["email"]
     login_pw = config["broadcast_service"]["broadcast_user_4"]["password"]
