@@ -26,8 +26,6 @@ phases:
           export DISABLED_TEST_SUITES="top_rail"
         fi
 
-        # export DISABLED_TEST_SUITES="auth_flow broadcast_flow cbc_integration links_and_cookies platform_admin_flow template_flow throttling top_rail user_operations"
-
         echo "Disabled test suites: $DISABLED_TEST_SUITES"
       - make test; exit 0
       - echo "Test run finished."
