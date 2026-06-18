@@ -80,7 +80,6 @@ from tests.playwright_adapter import (
     DEFAULT_TIMEOUT,
     By,
     PlaywrightDriver,
-    WebDriverWait,
 )
 
 
@@ -150,10 +149,12 @@ class BasePage(object):
         self.driver.delete_all_cookies()
 
     def wait_until_url_is(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_contains(url))
+        self.page.wait_for_url(url)
+        return True  # Didn't throw
 
     def wait_until_url_ends_with(self, url):
-        return WebDriverWait(self.driver, 10).until(self.url_ends_with(url))
+        self.page.wait_for_url(f"**{url}")
+        return True  # Didn't throw
 
     def url_contains(self, url):
         def check_contains_url(driver):
