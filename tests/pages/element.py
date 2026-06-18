@@ -19,7 +19,7 @@ from tests.pages.locators import (
     SupportPageLocators,
     VerifyPageLocators,
 )
-from tests.playwright_adapter import By, WebDriverWait
+from tests.playwright_adapter import By, PlaywrightDriver
 
 
 class BasePageElement(object):
@@ -28,17 +28,12 @@ class BasePageElement(object):
             self.name = name
 
     def __set__(self, obj, value):
-        driver = obj.driver
-        WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element((By.NAME, self.name))
-        )
-        driver.find_element((By.NAME, self.name)).send_keys(value)
+        driver: PlaywrightDriver = obj.driver
+        element = driver.find_element((By.NAME, self.name))
+        element.send_keys(value)
 
     def __get__(self, obj, owner):
-        driver = obj.driver
-        WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element((By.NAME, self.name))
-        )
+        driver: PlaywrightDriver = obj.driver
         element = driver.find_element((By.NAME, self.name))
         return element.get_attribute("value")
 
@@ -49,10 +44,7 @@ class ClearableInputElement(BasePageElement):
             self.name = name
 
     def __set__(self, obj, value, clear=True):
-        driver = obj.driver
-        WebDriverWait(driver, 100).until(
-            lambda driver: driver.find_element((By.NAME, self.name))
-        )
+        driver: PlaywrightDriver = obj.driver
         input = driver.find_element((By.NAME, self.name))
         input.clear()
         input.send_keys(value)

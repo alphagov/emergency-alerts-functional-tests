@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 
 from playwright.sync_api import Locator, TimeoutError, sync_playwright
@@ -87,28 +86,6 @@ class ElementWrapper:
     def __getattr__(self, item):
         # delegate to locator where possible
         return getattr(self.locator, item)
-
-
-class WebDriverWait:
-    def __init__(self, driver, timeout):
-        self.driver = driver
-        self.timeout = timeout
-
-    def until(self, method, message=None):
-        end_time = time.time() + self.timeout
-        last_exc = None
-        while True:
-            try:
-                value = method(self.driver)
-                if value:
-                    return value
-            except Exception as e:
-                last_exc = e
-            if time.time() > end_time:
-                raise TimeoutError(
-                    message or "Timed out waiting for condition"
-                ) from last_exc
-            time.sleep(0.1)
 
 
 class PlaywrightDriver:
