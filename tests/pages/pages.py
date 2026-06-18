@@ -226,14 +226,19 @@ class BasePage(object):
         title = self.page.locator("h1").get_by_text(expected_page_title, exact=False)
         expect(title).to_be_visible()
 
-        return True  # Not thrown, passes assert
+        return True  # Expect didn't throw
 
     def text_is_on_page_no_wait(self, search_text):
         # TODO: Remove this function and replace with expect(...).to_be_visible()
         #   expect(self.driver.page.get_by_text(search_text).first).to_be_visible()
-        with action_group(self.driver, "Text on page (no wait): " + search_text):
-            locator = self.driver.page.get_by_text(search_text).first
-            return locator.is_visible()
+        locator = self.driver.page.get_by_text(search_text).first
+        result = locator.is_visible()
+
+        with action_group(
+            self.driver,
+            f"Text on page ({"success" if result else "failed"}): " + search_text,
+        ):
+            return result
 
     def assert_text_is_on_page(self, search_text):
         expect(self.page.get_by_text(search_text).first).to_be_visible()
@@ -263,16 +268,18 @@ class BasePage(object):
 
     def text_is_not_on_page(self, search_text):
         # TODO: Replace this function (see text_is_on_page TODO)
-        tries = config["ui_element_retry_times"]
-        retry_interval = config["ui_element_retry_interval"]
-        while tries > 0:
-            normalized_page_source = " ".join(self.driver.page_source.split())
-            if search_text in normalized_page_source:
-                return False
-            tries -= 1
-            sleep(retry_interval)
-            self.driver.refresh()
-        return True
+
+        with action_group(self.driver, "Text not on page: " + search_text):
+            tries = config["ui_element_retry_times"]
+            retry_interval = config["ui_element_retry_interval"]
+            while tries > 0:
+                normalized_page_source = " ".join(self.driver.page_source.split())
+                if search_text in normalized_page_source:
+                    return False
+                tries -= 1
+                sleep(retry_interval)
+                self.driver.refresh()
+            return True
 
     def get_template_id(self):
         # e.g.
