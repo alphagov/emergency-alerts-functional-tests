@@ -1,4 +1,5 @@
 import os
+from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
 
@@ -25,7 +26,7 @@ def download_directory(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def _driver(request, download_directory):
+def _driver(request, download_directory) -> Generator[PlaywrightDriver]:
     http_proxy = os.getenv("HTTP_PROXY")
     # option added by pytest Playwright plugin, autoset by pytest.ini
     headless = not request.config.getoption("--headed")
@@ -49,7 +50,7 @@ def _driver(request, download_directory):
 
 
 @pytest.fixture(scope="function")
-def driver(_driver, request):
+def driver(_driver, request) -> Generator[PlaywrightDriver]:
     prev_failed_tests = request.session.testsfailed
 
     _driver.start_tracing(test_name=request.node.name)
