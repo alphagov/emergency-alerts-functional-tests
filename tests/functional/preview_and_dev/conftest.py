@@ -36,6 +36,7 @@ def preview_dev_config():
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
+    purge_api_keys_created_by_functional_tests(test_api_client)
     purge_password_history(
         test_api_client, config["broadcast_service"]["broadcast_user_3"]["id"]
     )
@@ -93,6 +94,13 @@ def purge_user_created_services(test_api_client):
 
 def purge_users_created_by_functional_tests(test_api_client):
     url = "/service/purge-users-created-by-tests"
+    test_api_client.delete(url)
+
+
+def purge_api_keys_created_by_functional_tests(test_api_client):
+    service = config["broadcast_service"]["service_id"]
+
+    url = f"/service/{service}/api-key/purge"
     test_api_client.delete(url)
 
 

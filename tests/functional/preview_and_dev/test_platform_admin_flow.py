@@ -281,6 +281,7 @@ def test_service_can_create_and_approve_and_revoke_api_keys(
     assert api_keys_page.is_page_title("Create an API key")
 
     timestamp = str(int(time.time()))
+    # Only Key-* are purged
     key_name = "Key-" + timestamp
     api_keys_page.create_key(key_name=key_name)
     api_keys_page.wait_until_url_ends_with("/keys")
