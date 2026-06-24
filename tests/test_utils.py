@@ -20,6 +20,8 @@ from tests.pages import (
     CurrentAlertsPage,
     EditBroadcastTemplatePage,
     GovUkAlertsPage,
+    GovUkAlertsPageBlue,
+    GovUkAlertsPageGreen,
     RetryException,
     ShowTemplatesPage,
     VerifyPage,
@@ -266,13 +268,63 @@ def recordtime(func):
 def check_alert_is_published_on_govuk_alerts(
     driver: PlaywrightDriver, page_title, broadcast_content, extra_content=None
 ):
-    gov_uk_alerts_page = GovUkAlertsPage(driver)
-    gov_uk_alerts_page.get()
-    gov_uk_alerts_page.click_element_by_link_text(page_title, exact=True)
-    gov_uk_alerts_page.check_alert_is_published(broadcast_content)
-    if extra_content:
-        gov_uk_alerts_page.get_alert_url(driver, broadcast_content)
-        gov_uk_alerts_page.check_extra_content_appears(extra_content)
+    # Non-local environments - URL will point to currently active blue/green location
+    if config["env"] != "local":
+        gov_uk_alerts_page = GovUkAlertsPage(driver)
+        gov_uk_alerts_page.get()
+        gov_uk_alerts_page.click_element_by_link_text(page_title, exact=True)
+        gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+        if extra_content:
+            gov_uk_alerts_page.get_alert_url(driver, broadcast_content)
+            gov_uk_alerts_page.check_extra_content_appears(extra_content)
+        return
+
+    # Local environments - content could be in either the blue/green location, so check both
+    return _check_local_buckets(
+        driver,
+        page_title,
+        broadcast_content,
+        extra_content,
+    )
+
+
+def _check_local_buckets(
+    driver,
+    page_title,
+    broadcast_content,
+    extra_content=None,
+):
+    pages = [
+        GovUkAlertsPageBlue(driver),
+        GovUkAlertsPageGreen(driver),
+    ]
+
+    for page in pages:
+        page.get()
+        page.click_element_by_link_text(page_title, exact=True)
+
+        try:
+            page.check_alert_is_published(broadcast_content)
+
+            if extra_content:
+                page.get_alert_url(driver, broadcast_content)
+                page.check_extra_content_appears(extra_content)
+
+            return  # success
+
+        except RetryException:
+            continue
+
+    raise RetryException(
+        f'Alert "{broadcast_content}" not found on either Blue or Green GOV.UK Alerts'
+    )
+
+
+_check_local_buckets = retry(
+    RetryException,
+    tries=config["govuk_alerts_wait_retry_times"],
+    delay=config["govuk_alerts_wait_retry_interval"],
+)(_check_local_buckets)
 
 
 def create_sign_in_url(email, url, next_redirect=None):
