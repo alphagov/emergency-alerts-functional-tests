@@ -1,5 +1,6 @@
 import random
 import string
+from urllib.parse import urlparse
 
 import pytest
 
@@ -10,6 +11,7 @@ from tests.pages import (
     NewPasswordPage,
     SignInPage,
     VerifyPage,
+    action_group,
 )
 from tests.test_utils import (
     SuiteNames,
@@ -90,4 +92,59 @@ def test_sign_in_with_email_mfa(driver, purge_failed_logins):
 
     landing_page = BasePage(driver)
     landing_page.get(sign_in_url)
+    assert landing_page.text_is_on_page("Switch service")
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.AUTH_FLOW)
+def test_sign_in_with_webauthn_mfa(driver, purge_failed_logins):
+    login_email = config["broadcast_service"]["webauthn"]["email"]
+    login_pw = config["broadcast_service"]["webauthn"]["password"]
+
+    with action_group(driver, "Setup virtual WebAuthn"):
+        # Install the fake hardware MFA via Chrome devtools protocol
+        client = driver.page.context.new_cdp_session(driver.page)
+        client.send("WebAuthn.enable")
+        result = client.send(
+            "WebAuthn.addVirtualAuthenticator",
+            {
+                "options": {
+                    # U2F-style security key - not a Passkey (no residency)
+                    "protocol": "u2f",
+                    "transport": "usb",
+                    "hasResidentKey": False,
+                }
+            },
+        )
+
+        authenticator_id = result["authenticatorId"]
+        relying_party_id = urlparse(config["eas_admin_url"]).hostname
+        client.send(
+            "WebAuthn.addCredential",
+            {
+                "authenticatorId": authenticator_id,
+                "credential": {
+                    # These values must *exactly* correlate with credential_data encoded as CBOR in
+                    # the webauthn_credential table ...or put simply, there's no point paramterising
+                    # it as they're long and complicated.
+                    "credentialId": "9s2l4k0SR/U/jR48as69U/aOZXI9OHg1MG1r2lQ5qJg=",
+                    "isResidentCredential": False,
+                    "rpId": relying_party_id,
+                    "privateKey": "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg/"
+                    + "tRNVidBeIGCML1qlhQXEsaRy98uNW1N5OchhpXfCq6hRANCAATDZPqXSkAfNhqXOXwk9KqFphlYXVu"
+                    + "VU5FzF2IJX8HqQih9rcQlYLeTFxfuU+X44rBFQJ+Vdj2zoflLAdf5+AAt",
+                    "signCount": 1,
+                },
+            },
+        )
+
+    purge_failed_logins()
+    sign_in_page = SignInPage(driver)
+    assert sign_in_page.is_current()
+    sign_in_page.login(login_email, login_pw)
+
+    sign_in_page.wait_until_url_ends_with("/two-factor-webauthn")
+    sign_in_page.click_element_by_link_text("Check security key")
+
+    landing_page = BasePage(driver)
     assert landing_page.text_is_on_page("Switch service")
