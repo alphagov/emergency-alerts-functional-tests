@@ -63,3 +63,8 @@ export SESSION_TIMEOUT_USER_ID='44153bb8-db31-4cb0-8cee-b909a5482d1a'
 export SESSION_TIMEOUT_USER_EMAIL='emergency-alerts-tests+user6@digital.cabinet-office.gov.uk'
 export SESSION_TIMEOUT_USER_PASSWORD=Password1234
 export SESSION_TIMEOUT_USER_NUMBER=07700900222
+
+export WEBAUTHN_USER_ID='d15a173c-5187-4ca3-8eba-2a0a820df771'
+export WEBAUTHN_USER_EMAIL='emergency-alerts-tests+webauthn@digital.cabinet-office.gov.uk'
+export WEBAUTHN_USER_PASSWORD=Password1234
+export WEBAUTHN_USER_NUMBER=07700900222
