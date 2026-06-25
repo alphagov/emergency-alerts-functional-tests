@@ -131,7 +131,7 @@ jobs:
         if: always()
         run: |
           mkdir -p container-logs/
-          CONTAINER_NAMES=$(docker ps --format "{{.Names}}")
+          CONTAINER_NAMES=$(docker ps -a --format "{{.Names}}")
 
           for CONTAINER_NAME in $CONTAINER_NAMES
           do
