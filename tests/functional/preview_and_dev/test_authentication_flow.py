@@ -146,5 +146,4 @@ def test_sign_in_with_webauthn_mfa(driver, purge_failed_logins):
     sign_in_page.wait_until_url_ends_with("/two-factor-webauthn")
     sign_in_page.click_element_by_link_text("Check security key")
 
-    landing_page = BasePage(driver)
-    assert landing_page.text_is_on_page("Switch service")
+    sign_in_page.wait_until_url_ends_with("current-alerts")
