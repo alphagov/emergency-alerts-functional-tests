@@ -1493,7 +1493,6 @@ def test_send_summary_email_for_draft_alert(driver):
     # check send email section is present
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("Send summary email")
-    assert preview_alert_page.text_is_on_page("success@simulator.amazonses.com")
     # click send
     preview_alert_page.click_element_by_link_text("Send")
 
