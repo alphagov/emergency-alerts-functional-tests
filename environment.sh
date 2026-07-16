@@ -1,4 +1,6 @@
 #!/bin/bash
+# Note: Adding something? Try to replicate it in environment-localenv.env
+
 
 export FUNCTIONAL_TEST_EMAIL=notify-tests-preview+local@digital.cabinet-office.gov.uk
 export FUNCTIONAL_TEST_PASSWORD=Password1234
