@@ -1,3 +1,5 @@
 {
+  // The parent (localenv) workspace already defines this, but functional tests
+  // need a much different environment so we have our own here.
   "python.envFile": "${workspaceFolder}/environment-localenv.env"
 }
