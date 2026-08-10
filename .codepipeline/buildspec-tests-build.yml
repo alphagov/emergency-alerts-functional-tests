@@ -10,6 +10,8 @@ phases:
   pre_build:
     commands:
       - python --version
+      - curl --verbose -O https://cdn.playwright.dev/builds/cft/148.0.7778.96/linux64/chrome-linux64.zip
+
       - cd $CODEBUILD_SRC_DIR
       - VENV_TESTS='/venv/eas-tests'
       - python3.12 -m venv $VENV_TESTS
