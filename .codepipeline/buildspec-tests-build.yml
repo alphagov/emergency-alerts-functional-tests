@@ -1,19 +1,14 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      python: 3.12
+  # install:
+  #   runtime-versions:
+  #     python: 3.12
 
   pre_build:
     commands:
-      - cd $CODEBUILD_SRC_DIR
-      - VENV_TESTS='/venv/eas-tests'
-      - python3.12 -m venv $VENV_TESTS
-      - . $VENV_TESTS/bin/activate
-      - chmod +x environment.sh
-      - . ./environment.sh
-      - make bootstrap
+      - env
+      - curl --verbose https://example.com
 
   build:
     on-failure: CONTINUE
