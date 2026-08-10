@@ -1,15 +1,21 @@
 version: 0.2
 
 phases:
-  # install:
-  #   runtime-versions:
-  #     python: 3.12
+  install:
+    commands:
+      # We can't use runtime-versions to install Python here, as this ignores the HTTP proxy config
+      - env
+      - pyenv install 3.12
 
   pre_build:
     commands:
-      - env
-      - curl --verbose -O https://www.python.org/ftp/python/3.12.13/Python-3.12.13.tar.xz
-      - pyenv install 3.12
+      - cd $CODEBUILD_SRC_DIR
+      - VENV_TESTS='/venv/eas-tests'
+      - python3.12 -m venv $VENV_TESTS
+      - . $VENV_TESTS/bin/activate
+      - chmod +x environment.sh
+      - . ./environment.sh
+      - make bootstrap
 
   build:
     on-failure: CONTINUE
