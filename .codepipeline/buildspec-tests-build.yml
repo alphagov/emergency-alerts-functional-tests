@@ -4,11 +4,12 @@ phases:
   install:
     commands:
       # We can't use runtime-versions to install Python here, as this ignores the HTTP proxy config
-      - env
       - pyenv install 3.12
+      - pyenv global 3.12
 
   pre_build:
     commands:
+      - python --version
       - cd $CODEBUILD_SRC_DIR
       - VENV_TESTS='/venv/eas-tests'
       - python3.12 -m venv $VENV_TESTS
