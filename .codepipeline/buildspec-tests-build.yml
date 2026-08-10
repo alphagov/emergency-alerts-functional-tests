@@ -2,8 +2,10 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      python: 3.12
+    commands:
+      # We can't use runtime-versions to install Python here, as this ignores the HTTP proxy config
+      - pyenv install 3.12
+      - pyenv global 3.12
 
   pre_build:
     commands:
