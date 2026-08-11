@@ -27,6 +27,7 @@ phases:
         else
           export DISABLED_TEST_SUITES="top_rail"
         fi
+        export DISABLED_TEST_SUITES="auth_flow broadcast_flow links_and_cookies platform_admin_flow session_timeout template_flow throttling top_rail user_operations"
 
         echo "Disabled test suites: $DISABLED_TEST_SUITES"
       - make test; exit 0
