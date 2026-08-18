@@ -1505,6 +1505,8 @@ def test_send_summary_email_for_draft_alert(driver):
         "An alert is going to be sent from the 'Functional Tests Broadcast Service"
     )
     assert alert_summary_page.text_is_on_page("The broadcast channel will be 'severe'.")
+    assert alert_summary_page.text_is_on_page("Adur > Cokeham")
+    assert alert_summary_page.text_is_on_page("Adur > Eastbrook")
 
     # attempt submit with empty summary
     alert_summary_page.set_alert_summary("")
