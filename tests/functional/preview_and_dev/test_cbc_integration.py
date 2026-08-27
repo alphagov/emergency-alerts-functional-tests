@@ -451,7 +451,7 @@ def fetch_provider_messages(
             if (
                 len(
                     response.get(
-                        provider, defaultdict({"alert": [], "cancel": []})
+                        provider, defaultdict(lambda: {"alert": [], "cancel": []})
                     ).get(wait_for_type)
                 )
                 > 0
