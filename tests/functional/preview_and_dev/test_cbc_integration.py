@@ -298,7 +298,10 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         ddbc=dynamo_db_client,
         mno_request_id=mno_request_id,
         retry_if=lambda resp: "200"
-        not in (get_cbc_response_codes(resp, az1) + get_cbc_response_codes(resp, az2)),
+        not in (
+            get_cbc_response_codes(resp["Items"], az1)
+            + get_cbc_response_codes(resp["Items"], az2)
+        ),
     )
 
     response_codes = set(
