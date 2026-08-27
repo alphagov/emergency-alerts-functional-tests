@@ -1,6 +1,5 @@
 import logging
 import uuid
-from collections import defaultdict
 from random import choice
 from typing import Literal
 
@@ -441,6 +440,8 @@ def fetch_provider_messages(
         url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-statuses"
         response = api_client.get(url=url)
 
+        logger.debug("Got statuses response: %s", response)
+
         if not wait_for_all_mnos:
             return response
 
@@ -448,14 +449,8 @@ def fetch_provider_messages(
         # Loop through each provider and assert there's a status for the alert type
         # { "<mno>": { "alert": [{}], "cancel": [{}] } }
         for provider in PROVIDERS:
-            if (
-                len(
-                    response.get(
-                        provider, defaultdict(lambda: {"alert": [], "cancel": []})
-                    ).get(wait_for_type)
-                )
-                > 0
-            ):
+            mno_statuses = response.get(provider, {})
+            if len(mno_statuses.get(wait_for_type, [])) > 0:
                 count += 1
 
         if count == len(PROVIDERS):
