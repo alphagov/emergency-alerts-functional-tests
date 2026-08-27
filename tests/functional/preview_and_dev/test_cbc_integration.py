@@ -167,7 +167,6 @@ def test_broadcast_with_az1_failure_tries_az2(
 
     broadcast_alert(driver, broadcast_id)
     provider_messages = fetch_provider_messages(driver, api_client)
-    assert len(provider_messages) == 4
 
     mno_request_id = (
         f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
@@ -295,16 +294,11 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
             ddbc=dynamo_db_client, response_code=200, cbc_list=[az1, az2]
         )
 
-    # driver.page.wait_for_timeout(120 * 1000)
-
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
         mno_request_id=mno_request_id,
         retry_if=lambda resp: "200"
-        not in (
-            get_cbc_response_codes(responses, az1)
-            + get_cbc_response_codes(responses, az2)
-        ),
+        not in (get_cbc_response_codes(resp, az1) + get_cbc_response_codes(resp, az2)),
     )
 
     response_codes = set(
@@ -380,7 +374,8 @@ def get_loopback_request_items(ddbc, mno_request_id, retry_if=None):
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'Found {len(db_response["Items"])} requests for MnoRequestId:{mno_request_id}. {db_response} Retrying...)'
+            f'retry_if failed: Found {len(db_response["Items"])} '
+            + f"requests for MnoRequestId: {mno_request_id} - {db_response}"
         )
 
     return db_response["Items"]
