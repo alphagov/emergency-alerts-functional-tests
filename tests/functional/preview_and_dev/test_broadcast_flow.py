@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from config import COKEHAM_WARD_ID, EASTBROOK_WARD_ID, config
+from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
@@ -69,8 +69,12 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -210,7 +214,9 @@ def test_filter_sort_and_delete_all_drafts(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -312,8 +318,12 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1210,8 +1220,12 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1294,8 +1308,12 @@ def test_return_alert_for_edit(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1481,8 +1499,12 @@ def test_send_summary_email_for_draft_alert(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
