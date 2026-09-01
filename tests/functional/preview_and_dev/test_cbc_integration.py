@@ -1,6 +1,7 @@
 import logging
 import uuid
 from random import choice
+from typing import Literal
 
 import pytest
 from botocore.exceptions import ClientError
@@ -21,6 +22,8 @@ from tests.test_utils import (
 
 test_group_name = "cbc-integration"
 
+logger = logging.getLogger(__name__)
+
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
@@ -38,7 +41,7 @@ def test_cbc_config():
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_get_loopback_request_with_bad_id_returns_no_items(dynamo_db_client):
-    responses = get_loopback_request_items(ddbc=dynamo_db_client, request_id="1234")
+    responses = get_loopback_request_items(ddbc=dynamo_db_client, mno_request_id="1234")
     assert len(responses) == 0
 
 
@@ -50,48 +53,49 @@ def test_broadcast_generates_four_provider_messages(
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
-    provider_messages = fetch_provider_messages(driver, api_client)
-    logging.info(f"Provider messages: {provider_messages}")
+    provider_messages = fetch_provider_messages(
+        driver, api_client, wait_for_all_mnos=True
+    )
+    logger.info("Provider messages: %s", provider_messages)
 
-    assert len(provider_messages) == 4
-
-    distinct_request_ids = 0
+    collected_requests = 0
 
     for provider_id in PROVIDERS:
-        request_id = dict_item_for_key_value(
-            provider_messages, "provider", provider_id, "id"
-        )
+        mno_request_id = f"{provider_id}_{provider_messages[provider_id]["alertBroadcastProviderMessageId"]}"
+
         responses = get_loopback_request_items(
             ddbc=dynamo_db_client,
-            request_id=request_id,
+            mno_request_id=mno_request_id,
             retry_if=lambda resp: len(resp["Items"]) < 1,
         )
         if len(responses):
-            distinct_request_ids += 1
+            collected_requests += 1
 
-    logging.info(f"Distinct request ids: {distinct_request_ids}")
+    logger.info(f"Distinct request ids: {collected_requests}")
 
-    assert distinct_request_ids == 4
+    assert collected_requests == 4
 
     cancel_alert(driver, broadcast_id)
 
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
-def test_get_loopback_responses_returns_codes_for_eight_endpoints(dynamo_db_client):
+def test_get_loopback_responses_is_configured_for_eight_endpoints(dynamo_db_client):
     db_response = dynamo_db_client.scan(
         TableName="LoopbackResponses",
     )
 
     assert db_response["Count"] == 8
 
+    response_cbcs = set()
     response_mnos = set()
     response_codes = set()
     for item in db_response["Items"]:
-        response_mnos.add(item["Name"]["S"])
+        response_cbcs.add(item["Name"]["S"])
+        response_mnos.add(item["Mno"]["S"])
         response_codes.add(item["ResponseCode"]["N"])
 
-    expected_mnos = {
+    expected_cbc_names = {
         "ee-az1",
         "ee-az2",
         "o2-az1",
@@ -101,7 +105,8 @@ def test_get_loopback_responses_returns_codes_for_eight_endpoints(dynamo_db_clie
         "three-az1",
         "three-az2",
     }
-    assert response_mnos == expected_mnos
+    assert response_cbcs == expected_cbc_names
+    assert response_mnos == set(PROVIDERS)
     assert len(response_codes) == 1
     assert response_codes.pop() == "200"
 
@@ -155,30 +160,32 @@ def test_broadcast_with_az1_failure_tries_az2(
     az2 = f"{mno}-az2"
     failure_code = 500
 
+    logger.info("Disabling AZ1 of %s", mno)
     set_loopback_response_codes(
         dynamo_db_client, response_code=failure_code, cbc_list=[az1]
     )
 
     broadcast_alert(driver, broadcast_id)
     provider_messages = fetch_provider_messages(driver, api_client)
-    assert len(provider_messages) == 4
 
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+    mno_request_id = (
+        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
+    )
 
-    @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
     def _check_for_responses_from_secondary_az(resp):
         return get_cbc_response_code(resp["Items"], az2) is None
 
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
-        request_id=request_id,
+        mno_request_id=mno_request_id,
         retry_if=_check_for_responses_from_secondary_az,
     )
 
+    logger.info("Re-enabled AZ1 of %s", mno)
     set_loopback_response_codes(ddbc=dynamo_db_client, response_code=200)
 
     az2_response_code = dynamo_item_for_key_value(
-        responses, "MnoName", az2, "ResponseCode"
+        responses, "CbcName", az2, "ResponseCode"
     )
     assert az2_response_code == "200"
 
@@ -196,6 +203,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     az1 = f"{mno}-az1"
     az2 = f"{mno}-az2"
     failure_code = 500
+    logger.info("Disabling both AZs of %s", mno)
     set_loopback_response_codes(
         dynamo_db_client,
         response_code=failure_code,
@@ -203,10 +211,13 @@ def test_broadcast_with_both_azs_failing_retries_requests(
     )
 
     broadcast_alert(driver, broadcast_id)
-    provider_messages = fetch_provider_messages(driver, api_client)
-    assert len(provider_messages) == 4
+    provider_messages = fetch_provider_messages(
+        driver, api_client, wait_for_all_mnos=True
+    )
 
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+    mno_request_id = (
+        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
+    )
 
     def _check_for_responses_from_both_azs(resp):
         return (
@@ -214,13 +225,15 @@ def test_broadcast_with_both_azs_failing_retries_requests(
             or get_cbc_response_code(resp["Items"], az2) is None
         )
 
-    responses = get_loopback_request_items(
-        ddbc=dynamo_db_client,
-        request_id=request_id,
-        retry_if=_check_for_responses_from_both_azs,
-    )
-
-    set_loopback_response_codes(ddbc=dynamo_db_client, response_code=200)
+    try:
+        responses = get_loopback_request_items(
+            ddbc=dynamo_db_client,
+            mno_request_id=mno_request_id,
+            retry_if=_check_for_responses_from_both_azs,
+        )
+    finally:
+        logger.info("Re-enabled AZs of %s", mno)
+        set_loopback_response_codes(ddbc=dynamo_db_client, response_code=200)
 
     az1_codes_set = set(get_cbc_response_codes(responses, az1))
     assert len(az1_codes_set) == 1  # assert that all codes are the same
@@ -245,6 +258,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     az2 = f"{mno}-az2"
     failure_code = 500
 
+    logger.info("Disabling both AZs of %s", mno)
     set_loopback_response_codes(
         dynamo_db_client,
         response_code=failure_code,
@@ -252,32 +266,44 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
     )
 
     broadcast_alert(driver, broadcast_id)
-    provider_messages = fetch_provider_messages(driver, api_client)
-    assert len(provider_messages) == 4
+    provider_messages = fetch_provider_messages(
+        driver, api_client, wait_for_all_mnos=True
+    )
 
-    request_id = dict_item_for_key_value(provider_messages, "provider", mno, "id")
+    mno_request_id = (
+        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
+    )
 
     # wait for at least one response (which should be a '500' here)
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
-        request_id=request_id,
+        mno_request_id=mno_request_id,
         retry_if=lambda resp: len(resp["Items"]) < 1,
     )
-    set_loopback_response_codes(
-        ddbc=dynamo_db_client, response_code=200, cbc_list=[az1, az2]
-    )
-    assert len(responses) >= 1
-    response_codes = set(
-        get_cbc_response_codes(responses, az1) + get_cbc_response_codes(responses, az2)
-    )
-    assert len(response_codes) == 1  # 500 - only failures at this point
-    assert str(failure_code) in response_codes
+    try:
+        assert len(responses) >= 1
+        response_codes = set(
+            get_cbc_response_codes(responses, az1)
+            + get_cbc_response_codes(responses, az2)
+        )
+        assert len(response_codes) == 1  # 500 - only failures at this point
+        assert str(failure_code) in response_codes
+    finally:
+        logger.info("Re-enabled AZs of %s", mno)
+        set_loopback_response_codes(
+            ddbc=dynamo_db_client, response_code=200, cbc_list=[az1, az2]
+        )
 
-    driver.page.wait_for_timeout(120 * 1000)
     responses = get_loopback_request_items(
         ddbc=dynamo_db_client,
-        request_id=request_id,
+        mno_request_id=mno_request_id,
+        retry_if=lambda resp: "200"
+        not in (
+            get_cbc_response_codes(resp["Items"], az1)
+            + get_cbc_response_codes(resp["Items"], az2)
+        ),
     )
+
     response_codes = set(
         get_cbc_response_codes(responses, az1) + get_cbc_response_codes(responses, az2)
     )
@@ -303,14 +329,15 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
 
-        # Retrieving requestID from provider_messages table
-        request_id = dict_item_for_key_value(
-            provider_messages, "provider", provider_id, "id"
-        )
+        broadcast_provider_message_id = provider_messages[provider_id][
+            "alertBroadcastProviderMessageId"
+        ]
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
-                cap_xml_filename = f"{provider_az}/{request_id}.cap.xml"
+                cap_xml_filename = (
+                    f"{provider_az}/{broadcast_provider_message_id}.cap.xml"
+                )
 
                 # Retrieving CAP XML file for request & provider
                 cap_xml_object = s3.get_object(
@@ -339,16 +366,19 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
     RetryException,
     tries=config["dynamo_query_retry_times"],
     delay=config["dynamo_query_retry_interval"],
+    logger=logger,
 )
-def get_loopback_request_items(ddbc, request_id, retry_if=None):
+def get_loopback_request_items(ddbc, mno_request_id, retry_if=None):
+    logger.info("Looking for loopback request %s", mno_request_id)
     db_response = ddbc.query(
         TableName="LoopbackRequests",
-        KeyConditionExpression="RequestId = :RequestId",
-        ExpressionAttributeValues={":RequestId": {"S": request_id}},
+        KeyConditionExpression="MnoRequestId = :MnoRequestId",
+        ExpressionAttributeValues={":MnoRequestId": {"S": mno_request_id}},
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'Found {len(db_response["Items"])} requests for RequestId:{request_id}. {db_response} Retrying...)'
+            f'retry_if failed: Found {len(db_response["Items"])} '
+            + f"requests for MnoRequestId: {mno_request_id} - {db_response}"
         )
 
     return db_response["Items"]
@@ -376,7 +406,7 @@ def dynamo_item_for_key_value(data, key, value, item):
 
 
 def get_cbc_response_code(respones, cbc):
-    return dynamo_item_for_key_value(respones, "MnoName", cbc, "ResponseCode")
+    return dynamo_item_for_key_value(respones, "CbcName", cbc, "ResponseCode")
 
 
 def dynamo_items_for_key_value(data, key, value, item):
@@ -388,26 +418,53 @@ def dynamo_items_for_key_value(data, key, value, item):
 
 
 def get_cbc_response_codes(responses, cbc):
-    return dynamo_items_for_key_value(responses, "MnoName", cbc, "ResponseCode")
+    return dynamo_items_for_key_value(responses, "CbcName", cbc, "ResponseCode")
 
 
 def set_loopback_response_codes(ddbc, response_code=200, cbc_list=None):
     set_response_codes(ddbc=ddbc, response_code=response_code, cbc_list=cbc_list)
 
 
-def fetch_provider_messages(driver, api_client):
+def fetch_provider_messages(
+    driver,
+    api_client,
+    wait_for_all_mnos=True,
+    wait_for_type: Literal["alert", "cancel"] = "alert",
+):
     service_id, broadcast_message_id = get_service_and_broadcast_id(driver.current_url)
 
     attempts = 0
-    while attempts < 10:
-        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-messages"
+    while attempts < 20:
+        url = f"/service/{service_id}/broadcast-message/{broadcast_message_id}/provider-statuses"
         response = api_client.get(url=url)
-        if len(response["messages"]) == 4:
-            break
-        attempts += 1
-        driver.page.wait_for_timeout(10 * 1000)
 
-    return response["messages"]
+        logger.debug("Got statuses response: %s", response)
+
+        if not wait_for_all_mnos:
+            return response
+
+        count = 0
+        # Loop through each provider and assert there's a status for the alert type
+        # { "<mno>": { "alert": [{}], "cancel": [{}] } }
+        for provider in PROVIDERS:
+            mno_statuses = response.get(provider, {})
+            if len(mno_statuses.get(wait_for_type, [])) > 0:
+                count += 1
+
+        if count == len(PROVIDERS):
+            return response
+
+        attempts += 1
+        logger.info(
+            f"Waiting 5s for all 4 MNOs for {wait_for_type} for alert {broadcast_message_id}. Attempt {attempts}."
+        )
+        logger.info("Current result: %s", response)
+        driver.page.wait_for_timeout(5 * 1000)
+
+    # If we've got here, we've exhausted all attempts
+    raise Exception(
+        "Waited for all MNOs but eventually only got this result: " + str(response)
+    )
 
 
 def assert_cap_xml_valid(cap_xml):

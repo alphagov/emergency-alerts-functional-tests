@@ -67,14 +67,6 @@ def skip_test_suite_if_disabled(test_suite_name: str):
 
         if test_suite_name in disabled_test_suites:
             return pytest.mark.skip(reason=message)(function)
-
-            @functools.wraps(
-                function
-            )  # Preserve the function signature for paramterize and co
-            def skip_function(*args, **kwargs):
-                pytest.skip(message)
-
-            return skip_function
         else:
             return function
 
