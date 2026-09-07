@@ -790,6 +790,8 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     search_flood_warning_area_page.click_element_by_link_text(
         "Save and continue to preview"
     )
+    # Inline whitespace added by the summary list component to separate visible and invisible text
+    prepare_alert_pages.click_element_by_link_text("Change   duration")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -898,6 +900,8 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     search_flood_warning_area_page.click_element_by_link_text(
         "Save and continue to preview"
     )
+    # Inline whitespace added by the summary list component to separate visible and invisible text
+    prepare_alert_pages.click_element_by_link_text("Change   duration")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
