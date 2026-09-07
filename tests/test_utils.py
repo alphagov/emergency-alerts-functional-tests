@@ -438,7 +438,10 @@ def create_eas_ssm_client():
 
         logging.info(f"Creating SSM client for account {config['eas_account_number']}")
 
-        role_arn = f"arn:aws:iam::{config['eas_account_number']}:role/functional-tests-access-role"
+        role_arn = (
+            f"arn:aws:iam::{config["eas_account_number"]}:"
+            f"role/{config["resource_prefix"]}-functional-tests-access-role"
+        )
         logging.info("Assuming role %s", role_arn)
 
         sts_session = sts_client.assume_role(
