@@ -33,6 +33,7 @@ from tests.test_utils import (
     convert_naive_utc_datetime_to_cap_standard_string,
     create_broadcast_template,
     delete_template,
+    get_govuk_alerts_bucket_status,
     go_to_templates_page,
     skip_test_suite_if_disabled,
 )
@@ -91,6 +92,9 @@ def test_prepare_broadcast_with_new_content(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -102,8 +106,14 @@ def test_prepare_broadcast_with_new_content(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -119,7 +129,15 @@ def test_prepare_broadcast_with_new_content(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -1427,7 +1445,7 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver, "Current alerts", broadcast_content, extra_content
     )
 
     # get back to the alert page
