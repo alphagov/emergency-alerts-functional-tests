@@ -34,25 +34,23 @@ config = {
 }
 
 tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get(
-    "GOVUK_ALERTS_URL", "http://localhost:6017/alerts"
-).removeprefix("https://")
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "http://localhost:6017/alerts")
 
 urls = {
     "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
-        "govuk_alerts": f"http://{govuk_alerts_url}",
+        "govuk_alerts": govuk_alerts_url,
     },
     "development": {
         "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
         "admin": f"https://{tenant}admin.dev.emergency-alerts.service.gov.uk",
-        "govuk_alerts": f"https://{govuk_alerts_url}",
+        "govuk_alerts": govuk_alerts_url,
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk",
         "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
-        "govuk_alerts": f"https://{govuk_alerts_url}",
+        "govuk_alerts": govuk_alerts_url,
     },
 }
 account_numbers = {
