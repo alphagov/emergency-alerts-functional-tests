@@ -129,7 +129,9 @@ def test_create_and_delete_template_with_content_and_area(driver):
 
     choose_template_area_page = BasePage(driver)
     choose_template_area_page.click_element_by_link_text("Countries")
-    choose_template_area_page.select_checkbox_or_radio(value="ctry19-E92000001")
+    choose_template_area_page.check_input_with_label_text(
+        "England", input_type="checkbox"
+    )
     choose_template_area_page.click_continue()
     choose_template_area_page.click_element_by_link_text("Save and continue")
 
