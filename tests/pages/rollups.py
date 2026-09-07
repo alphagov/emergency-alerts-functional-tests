@@ -210,7 +210,7 @@ def create_alert(driver, id):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Countries")
-    prepare_alert_pages.select_checkbox_or_radio(value="E92000001")  # England
+    prepare_alert_pages.check_input_with_label_text("England", input_type="checkbox")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
