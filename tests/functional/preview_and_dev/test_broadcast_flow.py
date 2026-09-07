@@ -689,8 +689,8 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("REPPIR DEPZ sites")
-    prepare_alert_pages.select_checkbox_or_radio(
-        value="REPPIR_DEPZ_sites-awe_aldermaston"
+    prepare_alert_pages.check_input_with_label_text(
+        "AWE Aldermaston", input_type="checkbox"
     )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
