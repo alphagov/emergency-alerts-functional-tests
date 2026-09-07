@@ -1129,7 +1129,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     (
         (
             [],
-            "Enter at least 1 local authority",
+            "Enter at least 1 Local authority",
         ),
         (
             ["Adu"],
