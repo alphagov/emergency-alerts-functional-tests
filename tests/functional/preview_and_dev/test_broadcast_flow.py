@@ -1568,7 +1568,6 @@ def test_prepare_broadcast_with_extra_content(driver):
         "Current alerts",
         broadcast_content,
         extra_content,
-        broadcast_content,
         local_bucket_name=after_send_bucket_name,
     )
 
