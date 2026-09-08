@@ -426,6 +426,9 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     sign_in(driver, account_type="broadcast_approve_user")
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     page = BasePage(driver)
     page.click_element_by_link_text(event)
     page.select_checkbox_or_radio(value="y")  # confirm approve alert
@@ -437,8 +440,14 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     cancel_broadcast_xml = CANCEL_XML.format(
         identifier=identifier,
@@ -458,7 +467,15 @@ def test_cancel_live_broadcast_using_the_api(driver, broadcast_client):
     assert page.text_is_on_page(event)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     page.get()
     page.sign_out()
@@ -520,6 +537,9 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -531,8 +551,14 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -548,7 +574,15 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -633,6 +667,9 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -644,8 +681,14 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -661,7 +704,15 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -717,6 +768,9 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -728,8 +782,14 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -745,7 +805,15 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -813,6 +881,9 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -824,8 +895,14 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -841,7 +918,12 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -923,6 +1005,9 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -934,8 +1019,14 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -951,7 +1042,15 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -1095,6 +1194,9 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -1106,8 +1208,14 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -1123,7 +1231,15 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     assert past_alerts_page.text_is_on_page(broadcast_title)
 
     driver.page.wait_for_timeout(10 * 1000)
-    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
@@ -1433,6 +1549,9 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     preview_alert_page.sign_out()
 
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
     # approve the alert
     sign_in(driver, account_type="broadcast_approve_user")
 
@@ -1444,8 +1563,16 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Current alerts", broadcast_content, extra_content
+        driver,
+        "Current alerts",
+        broadcast_content,
+        extra_content,
+        broadcast_content,
+        local_bucket_name=after_send_bucket_name,
     )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
 
     # get back to the alert page
     current_alerts_page.get(alert_page_url)
@@ -1462,8 +1589,15 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     driver.page.wait_for_timeout(10 * 1000)
     check_alert_is_published_on_govuk_alerts(
-        driver, "Past alerts", broadcast_content, extra_content
+        driver,
+        "Past alerts",
+        broadcast_content,
+        extra_content,
+        local_bucket_name=after_cancel_bucket_name,
     )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
 
     current_alerts_page.get()
     current_alerts_page.sign_out()
