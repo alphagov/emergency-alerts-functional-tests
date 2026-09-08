@@ -1567,7 +1567,10 @@ def test_prepare_broadcast_with_extra_content(driver):
         driver,
         "Current alerts",
         broadcast_content,
-        extra_content,
+        # TODO: This does *not* check extra_content.
+        # The issue is, if there's only one alert, /current-alerts shows the full alert
+        # content. If there's more than one you get a "More information about this alert"
+        # link which the test util here relies upon.
         local_bucket_name=after_send_bucket_name,
     )
 
