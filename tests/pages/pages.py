@@ -323,6 +323,11 @@ class BasePage(object):
                 "arguments[0].dispatchEvent(new Event('change'))", select_element
             )
 
+    def click_button_by_role_name(self, name):
+        # Finds element with ARIA role of button and the name that we specify
+        locator = self.page.get_by_role("button", name=name)
+        locator.click()
+
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
         errors = self.wait_for_element(error_message)
