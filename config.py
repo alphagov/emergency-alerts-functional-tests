@@ -29,29 +29,32 @@ config = {
     },
 }
 
-tenant = f"{os.environ.get('TENANT')}."
-govuk_alerts_url = os.environ.get(
-    "GOVUK_ALERTS_URL", "http://localhost:6017/alerts"
-).removeprefix("https://")
+tenant = f"{os.environ.get('TENANT')}"
+govuk_alerts_url = os.environ.get("GOVUK_ALERTS_URL", "http://localhost:6017/alerts")
 
 urls = {
     "local": {
         "api": "http://localhost:6011",
         "admin": "http://localhost:6012",
-        "govuk_alerts": f"http://{govuk_alerts_url}",
+        "govuk_alerts": govuk_alerts_url,
     },
     "development": {
-        "api": f"https://{tenant}api.dev.emergency-alerts.service.gov.uk",
-        "admin": f"https://{tenant}admin.dev.emergency-alerts.service.gov.uk",
-        "govuk_alerts": f"https://{govuk_alerts_url}",
+        "api": f"https://{tenant}.api.dev.emergency-alerts.service.gov.uk",
+        "admin": f"https://{tenant}.admin.dev.emergency-alerts.service.gov.uk",
+        "govuk_alerts": govuk_alerts_url,
     },
     "preview": {
         "api": "https://api.preview.emergency-alerts.service.gov.uk",
         "admin": "https://admin.preview.emergency-alerts.service.gov.uk",
-        "govuk_alerts": f"https://{govuk_alerts_url}",
+        "govuk_alerts": govuk_alerts_url,
     },
 }
-account_numbers = {
+eas_account_numbers = {
+    "local": "000000000000",
+    "development": "071839617283",
+    "preview": "644514520413",
+}
+cbc_account_numbers = {
     "local": "000000000000",
     "development": "388086622185",
     "preview": "519419547532",
@@ -73,7 +76,9 @@ def setup_shared_config():
             "eas_api_url": urls[env]["api"],
             "eas_admin_url": urls[env]["admin"],
             "govuk_alerts_url": urls[env]["govuk_alerts"],
-            "cbc_account_number": account_numbers[env],
+            "eas_account_number": eas_account_numbers[env],
+            "cbc_account_number": cbc_account_numbers[env],
+            "resource_prefix": tenant if env == "development" else "eas-app",
         }
     )
 
@@ -183,6 +188,13 @@ def setup_preview_dev_config():
                 ),
                 "sms_sender_text": "func tests",
                 "inbound_number": os.environ["FUNCTIONAL_TESTS_SERVICE_INBOUND_NUMBER"],
+            },
+            "govuk_current_bucket_parameter": os.environ[
+                "GOVUK_ALERTS_CURRENT_BUCKET_PARAM"
+            ],
+            "govuk_buckets": {
+                "blue": os.environ["GOVUK_BUCKET_BLUE"],
+                "green": os.environ["GOVUK_BUCKET_GREEN"],
             },
             "cbcs": {
                 "ee-az1": "192.168.1.7",

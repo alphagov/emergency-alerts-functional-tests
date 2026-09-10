@@ -20,8 +20,6 @@ from tests.pages import (
     CurrentAlertsPage,
     EditBroadcastTemplatePage,
     GovUkAlertsPage,
-    GovUkAlertsPageBlue,
-    GovUkAlertsPageGreen,
     RetryException,
     ShowTemplatesPage,
     VerifyPage,
@@ -257,66 +255,47 @@ def recordtime(func):
     return wrapper
 
 
-def check_alert_is_published_on_govuk_alerts(
-    driver: PlaywrightDriver, page_title, broadcast_content, extra_content=None
-):
-    # Non-local environments - URL will point to currently active blue/green location
-    if config["env"] != "local":
-        gov_uk_alerts_page = GovUkAlertsPage(driver)
-        gov_uk_alerts_page.get()
-        gov_uk_alerts_page.click_element_by_link_text(page_title, exact=True)
-        gov_uk_alerts_page.check_alert_is_published(broadcast_content)
-        if extra_content:
-            gov_uk_alerts_page.get_alert_url(driver, broadcast_content)
-            gov_uk_alerts_page.check_extra_content_appears(extra_content)
-        return
+def get_govuk_alerts_bucket_status():
+    ssm_client = create_eas_ssm_client()
 
-    # Local environments - content could be in either the blue/green location, so check both
-    return _check_local_buckets(
-        driver,
-        page_title,
-        broadcast_content,
-        extra_content,
+    current_bucket_param = ssm_client.get_parameter(
+        Name=config["govuk_current_bucket_parameter"]
     )
+    current_bucket_name: str = current_bucket_param["Parameter"]["Value"]
+
+    next_bucket_name = "(unknown)"
+    if current_bucket_name == config["govuk_buckets"]["blue"]:
+        next_bucket_name = config["govuk_buckets"]["green"]
+    elif current_bucket_name == config["govuk_buckets"]["green"]:
+        next_bucket_name = config["govuk_buckets"]["blue"]
+
+    return current_bucket_name, next_bucket_name
 
 
-def _check_local_buckets(
-    driver,
+def check_alert_is_published_on_govuk_alerts(
+    driver: PlaywrightDriver,
     page_title,
     broadcast_content,
     extra_content=None,
+    local_bucket_name=None,
 ):
-    pages = [
-        GovUkAlertsPageBlue(driver),
-        GovUkAlertsPageGreen(driver),
-    ]
+    gov_uk_alerts_page = GovUkAlertsPage(driver)
 
-    for page in pages:
-        page.get()
-        page.click_element_by_link_text(page_title, exact=True)
+    if config["env"] == "local":
+        # Localstack doesn't support CloudFront in community, so we just rely upon S3 hosting
+        # In that case we visit the expected bucket directly since there's no origin
+        # switch logic. (We assert the SSM param to trigger the origin switch separately)
+        driver.get(
+            f"http://{local_bucket_name}.s3-website.localhost.localstack.cloud:4566/alerts"
+        )
+    else:
+        gov_uk_alerts_page.get()
 
-        try:
-            page.check_alert_is_published(broadcast_content)
-
-            if extra_content:
-                page.get_alert_url(driver, broadcast_content)
-                page.check_extra_content_appears(extra_content)
-
-            return  # success
-
-        except RetryException:
-            continue
-
-    raise RetryException(
-        f'Alert "{broadcast_content}" not found on either Blue or Green GOV.UK Alerts'
-    )
-
-
-_check_local_buckets = retry(
-    RetryException,
-    tries=config["govuk_alerts_wait_retry_times"],
-    delay=config["govuk_alerts_wait_retry_interval"],
-)(_check_local_buckets)
+    gov_uk_alerts_page.click_element_by_link_text(page_title, exact=True)
+    gov_uk_alerts_page.check_alert_is_published(broadcast_content)
+    if extra_content:
+        gov_uk_alerts_page.get_alert_url(driver, broadcast_content)
+        gov_uk_alerts_page.check_extra_content_appears(extra_content)
 
 
 def create_sign_in_url(email, url, next_redirect=None):
@@ -442,6 +421,49 @@ def create_s3_client():
 
         except Exception as e:
             raise Exception("Unable to create S3 client") from e
+
+    except Exception as e:
+        raise Exception("Unable to assume role") from e
+
+
+def create_eas_ssm_client():
+    try:
+        if config["env"] == "local":
+            # Local(stack) doesn't have IAM so we can't assume roles
+            return boto3.client(
+                "ssm",
+            )
+
+        sts_client = boto3.client("sts")
+
+        logging.info(f"Creating SSM client for account {config['eas_account_number']}")
+
+        role_arn = (
+            f"arn:aws:iam::{config["eas_account_number"]}:"
+            f"role/{config["resource_prefix"]}-functional-tests-access-role"
+        )
+        logging.info("Assuming role %s", role_arn)
+
+        sts_session = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName="access-ssm-for-functional-test",
+            ExternalId="infra-mgt-functional-tests",
+        )
+
+        KEY_ID = sts_session["Credentials"]["AccessKeyId"]
+        ACCESS_KEY = sts_session["Credentials"]["SecretAccessKey"]
+        TOKEN = sts_session["Credentials"]["SessionToken"]
+
+        try:
+            return boto3.client(
+                "ssm",
+                aws_access_key_id=KEY_ID,
+                aws_secret_access_key=ACCESS_KEY,
+                aws_session_token=TOKEN,
+            )
+
+        except Exception as e:
+            raise Exception("Unable to create SSM client") from e
 
     except Exception as e:
         raise Exception("Unable to assume role") from e
