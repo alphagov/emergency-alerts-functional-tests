@@ -1424,8 +1424,16 @@ def test_prepare_broadcast_with_multiple_area_types_combined(driver):
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(broadcast_title)
+    assert preview_alert_page.text_is_on_page(broadcast_content)
+    assert preview_alert_page.text_is_on_page("Adur")
     assert preview_alert_page.text_is_on_page("Cokeham")
     assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("51.5074")
+    assert preview_alert_page.text_is_on_page("-0.1278")
+    assert preview_alert_page.text_is_on_page("Hull city centre")
+    assert preview_alert_page.text_is_on_page("Wales")
+    assert preview_alert_page.text_is_on_page("BD1 1EE")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
