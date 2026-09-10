@@ -1479,6 +1479,102 @@ def test_prepare_broadcast_with_multiple_area_types_combined(driver):
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
+def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
+    driver,
+):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    # Add a local authority area
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.click_continue()
+
+    # Add a coordinate area
+    prepare_alert_pages.click_element_by_link_text("Add another area")
+    prepare_alert_pages.click_element_by_link_text("Coordinates")
+
+    choose_type_page = ChooseCoordinatesType(driver)
+    choose_type_page.check_input_with_label_text(
+        text="Latitude and longitude",
+        input_type="radio",
+    )
+    choose_type_page.click_continue()
+
+    latitude = "51.5074"
+    longitude = "-0.1278"
+
+    choose_coordinate_area_page = ChooseCoordinateArea(driver)
+    choose_coordinate_area_page.create_coordinate_area(
+        first_coordinate=latitude,
+        second_coordinate=longitude,
+        radius="5",
+    )
+    choose_coordinate_area_page.click_search()
+    choose_coordinate_area_page.click_continue()
+
+    # Assert both areas present on page
+    assert prepare_alert_pages.text_is_on_page("Adur")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+
+    # Remove the coordinate area, leaving only the local authority area
+    prepare_alert_pages.click_button_by_role_name(
+        name="Remove 5km around 51.5074 latitude, -0.1278 longitude"
+    )
+    assert prepare_alert_pages.text_is_on_page("Adur")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert not prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()
+
+    # Asserts that areas and duration are expected
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(broadcast_title)
+    assert preview_alert_page.text_is_on_page(broadcast_content)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert not preview_alert_page.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+    prepare_alert_pages.click_element_by_link_text("Discard this alert")
+
+    preview_alert_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_reject_alert_with_reason(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
