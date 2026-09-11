@@ -104,17 +104,9 @@ jobs:
           CI: "true"
           DISABLED_TEST_SUITES: top_rail cbc_integration # TODO: CBC approximation
 
+          GOVUK_ALERTS_URL: "local-govuk-alerts.s3-website.localhost.localstack.cloud:4566/alerts"
           BROADCAST_SERVICE_API_KEY: "functional_tests_localenv_key-8e1d56fa-12a8-4d00-bed2-db47180bed0a-86aa0bd2-f343-480f-85cd-d3010866cdee"
           ENVIRONMENT: "local"
-
-          GOVUK_BUCKET_BLUE: "local-govuk-alerts-blue"
-          GOVUK_BUCKET_GREEN: "local-govuk-alerts-green"
-          GOVUK_ALERTS_CURRENT_BUCKET_PARAM: "govuk-website-current"
-
-          AWS_ACCESS_KEY_ID: aws_key
-          AWS_SECRET_ACCESS_KEY: aws_secret
-          AWS_DEFAULT_REGION: us-east-1
-          AWS_ENDPOINT_URL_SSM: http://localhost:4566
 
           ADMIN_CLIENT_SECRET: test-env123
           SECRET_KEY: test-env123

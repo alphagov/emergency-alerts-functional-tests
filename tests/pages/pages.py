@@ -1345,6 +1345,44 @@ class GovUkAlertsPage(BasePage):
         link2.click()
 
 
+class GovUkAlertsPageBlue(GovUkAlertsPage):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.gov_uk_alerts_url = config["govuk_alerts_url"].replace(
+            "local-govuk-alerts", "local-govuk-alerts-blue"
+        )
+
+    def check_alert_is_published(self, broadcast_content):
+        # identical logic, but WITHOUT @retry
+        self.driver.context.tracing.group("Broadcast - " + broadcast_content)
+        try:
+            if not self.text_is_on_page(broadcast_content):
+                raise RetryException(
+                    f'Could not find alert with content "{broadcast_content}"'
+                )
+        finally:
+            self.driver.context.tracing.group_end()
+
+
+class GovUkAlertsPageGreen(GovUkAlertsPage):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.gov_uk_alerts_url = config["govuk_alerts_url"].replace(
+            "local-govuk-alerts", "local-govuk-alerts-green"
+        )
+
+    def check_alert_is_published(self, broadcast_content):
+        # identical logic, but WITHOUT @retry
+        self.driver.context.tracing.group("Broadcast - " + broadcast_content)
+        try:
+            if not self.text_is_on_page(broadcast_content):
+                raise RetryException(
+                    f'Could not find alert with content "{broadcast_content}"'
+                )
+        finally:
+            self.driver.context.tracing.group_end()
+
+
 class BroadcastDurationPage(BasePage):
     hours_input = HoursInputElement(name="hours")
     minutes_input = MinutesInputElement(name="minutes")
