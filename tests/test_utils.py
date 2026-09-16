@@ -51,7 +51,6 @@ class SuiteNames(StrEnum):
     SESSION_TIMEOUT = auto()
     TEMPLATE_FLOW = auto()
     THROTTLING = auto()
-    TOP_RAIL = auto()
     USER_OPERATIONS = auto()
 
 
