@@ -61,7 +61,9 @@ def test_broadcast_generates_four_provider_messages(
     collected_requests = 0
 
     for provider_id in PROVIDERS:
-        mno_request_id = f"{provider_id}_{provider_messages[provider_id]["alertBroadcastProviderMessageId"]}"
+        mno_request_id = (
+            f"{provider_id}_{provider_messages[provider_id]["alertBroadcastEventId"]}"
+        )
 
         responses = get_loopback_request_items(
             ddbc=dynamo_db_client,
@@ -168,9 +170,7 @@ def test_broadcast_with_az1_failure_tries_az2(
     broadcast_alert(driver, broadcast_id)
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     def _check_for_responses_from_secondary_az(resp):
         return get_cbc_response_code(resp["Items"], az2) is None
@@ -215,9 +215,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
         driver, api_client, wait_for_all_mnos=True
     )
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     def _check_for_responses_from_both_azs(resp):
         return (
@@ -270,9 +268,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         driver, api_client, wait_for_all_mnos=True
     )
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     # wait for at least one response (which should be a '500' here)
     responses = get_loopback_request_items(
@@ -330,7 +326,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
     for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
 
         broadcast_provider_message_id = provider_messages[provider_id][
-            "alertBroadcastProviderMessageId"
+            "alertBroadcastEventId"
         ]
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
