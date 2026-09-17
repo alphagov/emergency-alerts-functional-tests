@@ -87,6 +87,11 @@ def test_prepare_broadcast_with_new_content(driver):
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -243,6 +248,11 @@ def test_filter_sort_and_delete_all_drafts(driver):
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title4} is waiting for approval"
     )
     preview_alert_page.click_element_by_link_text("Current alerts")
@@ -346,6 +356,11 @@ def test_prepare_broadcast_with_template(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     prepare_alert_pages.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert prepare_alert_pages.text_is_on_page(
         f"{template_name} is waiting for approval"
     )
@@ -533,6 +548,11 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -663,6 +683,11 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -763,6 +788,11 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -876,6 +906,11 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -1000,6 +1035,11 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -1190,6 +1230,11 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -1361,6 +1406,11 @@ def test_reject_alert_with_reason(driver):
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
     assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
 
@@ -1444,6 +1494,11 @@ def test_return_alert_for_edit(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
@@ -1544,6 +1599,11 @@ def test_prepare_broadcast_with_extra_content(driver):
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
     assert preview_alert_page.text_is_on_page(
         f"{broadcast_title} is waiting for approval"
     )
