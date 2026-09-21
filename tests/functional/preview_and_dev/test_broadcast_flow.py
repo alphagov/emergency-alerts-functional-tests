@@ -1678,3 +1678,124 @@ def test_send_summary_email_for_draft_alert(driver):
     alert_summary_page.click_element_by_link_text("Send Email")
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("Send summary email")
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
+def test_prepare_broadcast_prod_mode_extra_confirmation(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+
+    # Set the following header to hide the service status banner.
+    # The admin app assumes it is in 'prod' mode when there is no status banner set,
+    # and an additional submit for approval confirmation banner will be displayed.
+    current_alerts_page.page.set_extra_http_headers({"X-EAS-HideStatus": "true"})
+
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing to add exra_content to alert
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="yes")
+    choose_extra_content_page.click_continue()
+
+    # Adding extra_content to textarea and submitting
+    add_extra_content_page = ExtraContentPage(driver)
+    extra_content = "This is extra content " + test_uuid
+    add_extra_content_page.create_extra_content(extra_content)
+    add_extra_content_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Countries")
+    prepare_alert_pages.select_checkbox_or_radio(value="ctry19-W92000004")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page("Wales")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        "This is a live service where alerts can be sent to the public. "
+        "Are you sure you want to submit this alert for approval?"
+    )
+    preview_alert_page.click_element_by_link_text("Yes, submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    preview_alert_page.sign_out()
+
+    # Get the bucket that we expect after publishing
+    _, after_send_bucket_name = get_govuk_alerts_bucket_status()
+
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_submit()
+    assert current_alerts_page.text_is_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
+
+    driver.page.wait_for_timeout(10 * 1000)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Current alerts",
+        broadcast_content,
+        # TODO: This does *not* check extra_content.
+        # The issue is, if there's only one alert, /current-alerts shows the full alert
+        # content. If there's more than one you get a "More information about this alert"
+        # link which the test util here relies upon.
+        local_bucket_name=after_send_bucket_name,
+    )
+
+    new_live_bucket_name, after_cancel_bucket_name = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_send_bucket_name
+
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
+
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_submit()  # stop broadcasting
+    assert current_alerts_page.text_is_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
+
+    driver.page.wait_for_timeout(10 * 1000)
+    check_alert_is_published_on_govuk_alerts(
+        driver,
+        "Past alerts",
+        broadcast_content,
+        extra_content,
+        local_bucket_name=after_cancel_bucket_name,
+    )
+
+    new_live_bucket_name, _ = get_govuk_alerts_bucket_status()
+    assert new_live_bucket_name == after_cancel_bucket_name
+
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
