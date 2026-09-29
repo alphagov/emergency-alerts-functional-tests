@@ -320,10 +320,11 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
 def test_assert_cap_xml_generated_is_correct(driver, api_client):
     cap_xml_bucket = config["cap_xml_bucket_name"]
-    s3 = create_s3_client()
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
+
+    s3 = create_s3_client()
 
     provider_messages = fetch_provider_messages(driver, api_client)
 
@@ -348,8 +349,16 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
                 cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
                 cap_xml = etree.fromstring(cap_xml_body.encode())
 
-                assert_cap_xml_valid(cap_xml)
+                assert_cap_xml_schema_valid(cap_xml)
                 assert_cap_xml_polygons_valid(cap_xml)
+
+                assert (
+                    broadcast_id
+                    in cap_xml.xpath(
+                        "/cap:alert/cap:info/cap:description//text()",
+                    )[0]
+                )
+
                 return
             except ClientError as e:
                 # We just need to assert that one file exists and has correct body
@@ -359,6 +368,75 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     pytest.fail(
         "No CAP XML files generated that could be checked and validated against schema"
+    )
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
+def test_cancel_cap_xml_content_is_valid(driver, api_client):
+    """Test that CAP XML content generated for cancel alerts is valid."""
+    cap_xml_bucket = config["cap_xml_bucket_name"]
+
+    broadcast_id = str(uuid.uuid4())
+    broadcast_alert(driver, broadcast_id)
+    cancel_alert(driver, broadcast_id)
+
+    s3 = create_s3_client()
+
+    # Will implicitly include sending statuses too
+    provider_messages = fetch_provider_messages(
+        driver, api_client, wait_for_type="cancel"
+    )
+
+    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+
+        alert_broadcast_provider_message_id = provider_messages[provider_id][
+            "alertBroadcastProviderMessageId"
+        ]
+        cancel_broadcast_provider_message_id = provider_messages[provider_id][
+            "cancelBroadcastProviderMessageId"
+        ]
+        for az in ["az1", "az2"]:
+            provider_az = f"{provider_id}-{az}"
+            try:
+                cap_xml_filename = (
+                    f"{provider_az}/{cancel_broadcast_provider_message_id}.cap.xml"
+                )
+
+                # Retrieving CAP XML file for cancel request & provider
+                cap_xml_object = s3.get_object(
+                    Bucket=cap_xml_bucket,
+                    Key=cap_xml_filename,
+                )
+
+                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
+                cap_xml = etree.fromstring(cap_xml_body.encode())
+
+                assert_cap_xml_schema_valid(cap_xml)
+
+                assert (
+                    broadcast_id
+                    in cap_xml.xpath(
+                        "/cap:alert/cap:msgType///text()",
+                    )
+                    == ["Cancel"]
+                )
+                assert (
+                    alert_broadcast_provider_message_id
+                    in cap_xml.xpath(
+                        "/cap:alert/cap:references//text()",
+                    )[0]
+                )
+
+                return
+            except ClientError as e:
+                # We just need to assert that one file exists and has correct body
+                if e.response["Error"]["Code"] == "NoSuchKey":
+                    continue
+                raise
+
+    pytest.fail(
+        "No CAP XML files generated for cancel alerts that could be checked and validated against schema"
     )
 
 
@@ -377,7 +455,7 @@ def get_loopback_request_items(ddbc, mno_request_id, retry_if=None):
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'retry_if failed: Found {len(db_response["Items"])} '
+            f"retry_if failed: Found {len(db_response['Items'])} "
             + f"requests for MnoRequestId: {mno_request_id} - {db_response}"
         )
 
@@ -467,7 +545,7 @@ def fetch_provider_messages(
     )
 
 
-def assert_cap_xml_valid(cap_xml):
+def assert_cap_xml_schema_valid(cap_xml):
     schema_doc = etree.parse("docs/CAP-v1.2.xsd")
     schema = etree.XMLSchema(schema_doc)
     schema.assertValid(cap_xml)
