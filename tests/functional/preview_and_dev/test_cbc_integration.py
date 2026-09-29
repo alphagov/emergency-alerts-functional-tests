@@ -319,8 +319,8 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
-def test_assert_cap_xml_generated_is_correct(driver, api_client):
-    cap_xml_bucket = config["cap_xml_bucket_name"]
+def test_assert_cbc_xml_generated_is_correct(driver, api_client):
+    xml_bucket = config["cap_xml_bucket_name"]
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
@@ -329,7 +329,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+    for provider_id in ["o2", "three", "ee", "vodafone"]:
 
         broadcast_provider_message_id = provider_messages[provider_id][
             "alertBroadcastProviderMessageId"
@@ -337,33 +337,48 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
-                cap_xml_filename = (
-                    f"{provider_az}/{broadcast_provider_message_id}.cap.xml"
-                )
+                xml_filename = f"{provider_az}/{broadcast_provider_message_id}.cap.xml"
 
                 # Retrieving CAP XML file for request & provider
-                cap_xml_object = s3.get_object(
-                    Bucket=cap_xml_bucket,
-                    Key=cap_xml_filename,
+                xml_object = s3.get_object(
+                    Bucket=xml_bucket,
+                    Key=xml_filename,
                 )
 
-                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
-                cap_xml = etree.fromstring(cap_xml_body.encode())
+                xml_body = xml_object["Body"].read().decode("utf-8")
+                xml = etree.fromstring(xml_body.encode())
 
-                assert_cap_xml_schema_valid(cap_xml)
-                assert_cap_xml_polygons_valid(cap_xml)
+                if provider_id == "vodafone":  # Vodafone uses IBAG, not CAP
+                    assert_xml_schema_valid(xml, schema_location="docs/ibag10.xsd")
 
-                assert xml_path(
-                    cap_xml,
-                    "/cap:alert/cap:identifier//text()",
-                ) == [broadcast_provider_message_id]
-                assert (
-                    broadcast_id
-                    in xml_path(
-                        cap_xml,
-                        "/cap:alert/cap:info/cap:description//text()",
-                    )[0]
-                )
+                    assert xml_path(
+                        xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
+                        "ibag",
+                    ) == [broadcast_provider_message_id]
+                    assert (
+                        broadcast_id
+                        in xml_path(
+                            xml,
+                            "/ibag:IBAG_Alert_Attributes/ibag:IBAG_alert_info/ibag:IBAG_text_alert_message//text()",
+                            "ibag",
+                        )[0]
+                    )
+                else:
+                    assert_xml_schema_valid(xml)
+                    assert_cap_xml_polygons_valid(xml)
+
+                    assert xml_path(
+                        xml,
+                        "/cap:alert/cap:identifier//text()",
+                    ) == [broadcast_provider_message_id]
+                    assert (
+                        broadcast_id
+                        in xml_path(
+                            xml,
+                            "/cap:alert/cap:info/cap:description//text()",
+                        )[0]
+                    )
 
                 return
             except ClientError as e:
@@ -379,7 +394,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
-def test_cancel_cap_xml_content_is_correct(driver, api_client):
+def test_cancel_cbc_xml_content_is_correct(driver, api_client):
     cap_xml_bucket = config["cap_xml_bucket_name"]
 
     broadcast_id = str(uuid.uuid4())
@@ -393,7 +408,7 @@ def test_cancel_cap_xml_content_is_correct(driver, api_client):
         driver, api_client, wait_for_type="cancel"
     )
 
-    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+    for provider_id in ["o2", "three", "ee", "vodafone"]:
 
         alert_broadcast_provider_message_id = provider_messages[provider_id][
             "alertBroadcastProviderMessageId"
@@ -417,24 +432,44 @@ def test_cancel_cap_xml_content_is_correct(driver, api_client):
                 cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
                 cap_xml = etree.fromstring(cap_xml_body.encode())
 
-                assert_cap_xml_schema_valid(cap_xml)
+                if provider_id == "vodafone":  # Vodafone uses IBAG, not CAP
+                    assert_xml_schema_valid(cap_xml, schema_location="docs/ibag10.xsd")
 
-                assert xml_path(
-                    cap_xml,
-                    "/cap:alert/cap:identifier//text()",
-                ) == [cancel_broadcast_provider_message_id]
-                assert xml_path(
-                    cap_xml,
-                    "/cap:alert/cap:msgType//text()",
-                ) == ["Cancel"]
-                # Make sure references the prior alert ID
-                assert (
-                    alert_broadcast_provider_message_id
-                    in xml_path(
+                    assert xml_path(
                         cap_xml,
-                        "/cap:alert/cap:references//text()",
-                    )[0]
-                )
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
+                        "ibag",
+                    ) == [cancel_broadcast_provider_message_id]
+                    assert xml_path(
+                        cap_xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_message_type//text()",
+                        "ibag",
+                    ) == ["Cancel"]
+                    # Make sure references the prior alert ID:
+                    assert xml_path(
+                        cap_xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_referenced_message_cap_identifier//text()",
+                        "ibag",
+                    ) == [alert_broadcast_provider_message_id]
+                else:
+                    assert_xml_schema_valid(cap_xml)
+
+                    assert xml_path(
+                        cap_xml,
+                        "/cap:alert/cap:identifier//text()",
+                    ) == [cancel_broadcast_provider_message_id]
+                    assert xml_path(
+                        cap_xml,
+                        "/cap:alert/cap:msgType//text()",
+                    ) == ["Cancel"]
+                    # Make sure references the prior alert ID:
+                    assert (
+                        alert_broadcast_provider_message_id
+                        in xml_path(
+                            cap_xml,
+                            "/cap:alert/cap:references//text()",
+                        )[0]
+                    )
 
                 return
             except ClientError as e:
@@ -555,8 +590,8 @@ def fetch_provider_messages(
     )
 
 
-def assert_cap_xml_schema_valid(cap_xml):
-    schema_doc = etree.parse("docs/CAP-v1.2.xsd")
+def assert_xml_schema_valid(cap_xml, schema_location="docs/CAP-v1.2.xsd"):
+    schema_doc = etree.parse(schema_location)
     schema = etree.XMLSchema(schema_doc)
     schema.assertValid(cap_xml)
 

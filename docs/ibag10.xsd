@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ibag="ibag:1.0"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="ibag:1.0"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jaxb:extensionBindingPrefixes="xjc" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	jaxb:version="2.0">
+
+	<element name="IBAG_Alert_Attributes">
+		<annotation>
+			<documentation>IBAG Alert Message (version 1.3)</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="IBAG_protocol_version" type="string" />
+				<element name="IBAG_sending_gateway_id" type="anyURI" />
+				<element name="IBAG_message_number">
+					<simpleType>
+						<restriction base="hexBinary">
+							<length value="4" fixed="true" />
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="IBAG_referenced_message_number" minOccurs="0">
+					<simpleType>
+						<restriction base="hexBinary">
+							<length value="4" fixed="true" />
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="IBAG_referenced_message_cap_identifier" type="string"
+					minOccurs="0" />
+				<element name="IBAG_sender" type="string" minOccurs="0" />
+				<element name="IBAG_sent_date_time" type="dateTime" />
+				<element name="IBAG_status">
+					<simpleType>
+						<annotation>
+							<appinfo>
+								<jaxb:typesafeEnumClass name="Status" />
+							</appinfo>
+						</annotation>
+						<restriction base="string">
+							<enumeration value="Actual" />
+							<enumeration value="System" />
+							<enumeration value="Network Test" />
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="IBAG_message_type">
+					<simpleType>
+						<annotation>
+							<appinfo>
+								<jaxb:typesafeEnumClass name="MessageType" />
+							</appinfo>
+						</annotation>
+						<restriction base="string">
+							<enumeration value="Alert" />
+							<enumeration value="Update" />
+							<enumeration value="Cancel" />
+							<enumeration value="Ack" />
+							<enumeration value="Error" />
+							<enumeration value="RMT" />
+							<enumeration value="Link Test" />
+							<enumeration value="Transmission Control - Cease" />
+							<enumeration value="Transmission Control - Resume" />
+							<enumeration value="Report" />
+							<enumeration value="EMS" />
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="IBAG_status_report" minOccurs="0" maxOccurs="2">
+					<complexType>
+						<sequence>
+							<element name="IBAG_network_type">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="NetworkType" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="GSM" />
+										<enumeration value="UMTS" />
+										<enumeration value="LTE" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_cell_count" type="int" />
+							<element name="IBAG_cell_broadcast_info_count" type="int" />
+							<element name="IBAG_cell_broadcast_percentage" type="int" />
+							<element name="IBAG_cell_nobroadcast_percentage" type="int" />
+							<element name="IBAG_cell_broadcast_info_unknown_percentage"
+								type="int" />
+							<element name="IBAG_cell_broadcast_info_unavailable_percentage"
+								type="int" />
+							<element name="IBAG_broadcast_count" type="int" />
+						</sequence>
+					</complexType>
+				</element>
+				<element name="IBAG_response_code" type="string" minOccurs="0"
+					maxOccurs="unbounded" />
+				<element name="IBAG_note" type="string" minOccurs="0"
+					maxOccurs="unbounded" />
+				<element name="IBAG_cap_alert_uri" type="anyURI" minOccurs="0" />
+				<element name="IBAG_cap_identifier" type="string" minOccurs="0" />
+				<element name="IBAG_cap_sent_date_time" type="dateTime"
+					minOccurs="0" />
+				<element name="IBAG_alert_info" minOccurs="0">
+					<complexType>
+						<sequence>
+							<element name="IBAG_priority" minOccurs="0">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="IBAGPriority" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="High Priority" />
+										<enumeration value="Normal" />
+										<enumeration value="Background" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_category">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="Category" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="Geo" />
+										<enumeration value="Met" />
+										<enumeration value="Safety" />
+										<enumeration value="Security" />
+										<enumeration value="Rescue" />
+										<enumeration value="Fire" />
+										<enumeration value="Health" />
+										<enumeration value="Env" />
+										<enumeration value="Transport" />
+										<enumeration value="Infra" />
+										<enumeration value="CBRNE" />
+										<enumeration value="Other" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_event_code">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="EventCode" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="CDW" />
+										<enumeration value="CEM" />
+										<enumeration value="EVI" />
+										<enumeration value="HMW" />
+										<enumeration value="LEW" />
+										<enumeration value="LAE" />
+										<enumeration value="NUW" />
+										<enumeration value="RHW" />
+										<enumeration value="SPW" />
+										<enumeration value="AVW" />
+										<enumeration value="BZW" />
+										<enumeration value="CAE" />
+										<enumeration value="CFW" />
+										<enumeration value="DSW" />
+										<enumeration value="EQW" />
+										<enumeration value="FRW" />
+										<enumeration value="FFW" />
+										<enumeration value="FLW" />
+										<enumeration value="HWW" />
+										<enumeration value="HUW" />
+										<enumeration value="SVR" />
+										<enumeration value="SMW" />
+										<enumeration value="TOR" />
+										<enumeration value="TRW" />
+										<enumeration value="TSW" />
+										<enumeration value="VOW" />
+										<enumeration value="WSW" />
+										<enumeration value="RMT" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_response_type" minOccurs="0">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="ResponseType" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="Shelter" />
+										<enumeration value="Evacuate" />
+										<enumeration value="Prepare" />
+										<enumeration value="Execute" />
+										<enumeration value="Monitor" />
+										<enumeration value="Avoid" />
+										<enumeration value="Assess" />
+										<enumeration value="None" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_severity">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="Severity" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="Extreme" />
+										<enumeration value="Severe" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_urgency">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="Urgency" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="Immediate" />
+										<enumeration value="Expected" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_certainty">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="Certainty" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="Observed" />
+										<enumeration value="Likely" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_expires_date_time" type="dateTime" minOccurs="0" />
+							<element name="IBAG_sender_name" type="string" minOccurs="0" />
+							<element name="IBAG_text_language" minOccurs="0" >
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="TextLanguage" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="English" />
+										<enumeration value="Spanish" />
+										<enumeration value="French" />
+										<enumeration value="Dutch" />
+										<enumeration value="Chinese" />
+										<enumeration value="Korean" />
+										<enumeration value="Thai" />
+										<enumeration value="Mongolian" />
+										<enumeration value="Khmer" />
+										<enumeration value="Welsh" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_text_alert_message_length" type="integer" minOccurs="0" />
+							<element name="IBAG_text_alert_message" type="string" minOccurs="0" />
+							<element name="IBAG_channel_category" type="string" />
+							<element name="IBAG_gsm_repetition_period" type="int"
+								minOccurs="0" />
+							<element name="IBAG_umts_repetition_period" type="int"
+								minOccurs="0" />
+                            <element name="IBAG_lte_repetition_period" type="int"
+                              minOccurs="0" />
+							<element name="IBAG_broadcast_count" type="int"
+								minOccurs="0" />
+							<element name="IBAG_coordinate_system" minOccurs="0">
+								<simpleType>
+									<annotation>
+										<appinfo>
+											<jaxb:typesafeEnumClass name="CoordinateSystem" />
+										</appinfo>
+									</annotation>
+									<restriction base="string">
+										<enumeration value="WGS-84" />
+										<enumeration value="UTM" />
+										<enumeration value="NAD-27" />
+										<enumeration value="NAD-83" />
+									</restriction>
+								</simpleType>
+							</element>
+							<element name="IBAG_etwsExtension" type="int" minOccurs="0" />
+							<element name="IBAG_Alert_Area" minOccurs="0" maxOccurs="unbounded">
+								<complexType>
+									<sequence>
+										<element name="IBAG_area_description" type="string" />
+										<element name="IBAG_utm_zone" type="string" minOccurs="0" />
+										<element name="IBAG_polygon" type="string" minOccurs="0"
+											maxOccurs="unbounded" />
+										<element name="IBAG_circle" type="string" minOccurs="0"
+											maxOccurs="unbounded" />
+										<element name="IBAG_geocode" type="string" minOccurs="0"
+											maxOccurs="unbounded" />
+										<element name="IBAG_cell_list" minOccurs="0" maxOccurs="unbounded">
+											<complexType>
+												<sequence>
+													<element name="IBAG_network_type">
+														<simpleType>
+															<annotation>
+																<appinfo>
+																	<jaxb:typesafeEnumClass name="NetworkType" />
+																</appinfo>
+															</annotation>
+															<restriction base="string">
+																<enumeration value="GSM" />
+																<enumeration value="UMTS" />
+															</restriction>
+														</simpleType>
+													</element>
+													<element name="IBAG_network_element_identifier" type="string" />
+													<element name="IBAG_region_identifier" type="string" />
+													<element name="IBAG_mobile_country_code" type="string" />
+													<element name="IBAG_mobile_network_code" type="string" />
+													<element name="IBAG_cell_identifier" type="string"
+														maxOccurs="unbounded" />
+												</sequence>
+											</complexType>
+										</element>
+										<element name="IBAG_lte_cell_list" minOccurs="0" maxOccurs="unbounded">
+											<complexType>
+												<sequence>
+													<element name="IBAG_enb_identifier" type="string" />
+													<element name="IBAG_mobile_country_code" type="string" />
+													<element name="IBAG_mobile_network_code" type="string" />
+													<element name="IBAG_cell_identifier" type="string"
+														maxOccurs="unbounded" />
+												</sequence>
+											</complexType>
+										</element>
+									</sequence>
+								</complexType>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+				<element name="IBAG_Digital_Signature" minOccurs="0">
+					<complexType>
+						<sequence>
+							<any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="ibagValueName" type="string" />
+	<element name="ibagValue" type="string" />
+</schema>
