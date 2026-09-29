@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from config import COKEHAM_WARD_ID, EASTBROOK_WARD_ID, config
+from config import config
 from tests.functional.preview_and_dev.sample_cap_xml import (
     ALERT_XML,
     CANCEL_XML,
@@ -70,8 +70,12 @@ def test_prepare_broadcast_with_new_content(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -228,7 +232,9 @@ def test_filter_sort_and_delete_all_drafts(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -330,8 +336,12 @@ def test_prepare_broadcast_with_template(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -516,10 +526,10 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     radius_to_add = "5"
     search_postcode_page.create_custom_area(postcode_to_search, radius_to_add)
     search_postcode_page.click_search()
-    # assert areas appear here
-
     search_postcode_page.click_continue()
 
+    # Finish selecting areas before setting the broadcast duration.
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_preview()  # Preview alert
@@ -652,6 +662,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
     choose_coordinate_area_page.click_search()
     choose_coordinate_area_page.click_continue()
 
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
     broadcast_duration_page.click_preview()  # Preview alert
@@ -747,8 +758,8 @@ def test_prepare_broadcast_with_REPPIR_site(driver):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("REPPIR DEPZ sites")
-    prepare_alert_pages.select_checkbox_or_radio(
-        value="REPPIR_DEPZ_sites-awe_aldermaston"
+    prepare_alert_pages.check_input_with_label_text(
+        "AWE Aldermaston", input_type="checkbox"
     )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
@@ -865,6 +876,8 @@ def test_prepare_broadcast_with_flood_warning_target_area(driver):
     search_flood_warning_area_page.click_element_by_link_text(
         "Save and continue to preview"
     )
+    # Inline whitespace added by the summary list component to separate visible and invisible text
+    prepare_alert_pages.click_element_by_link_text("Change   duration")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -987,6 +1000,8 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     search_flood_warning_area_page.click_element_by_link_text(
         "Save and continue to preview"
     )
+    # Inline whitespace added by the summary list component to separate visible and invisible text
+    prepare_alert_pages.click_element_by_link_text("Change   duration")
 
     broadcast_duration_page = BroadcastDurationPage(driver)
     broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
@@ -1252,7 +1267,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
     (
         (
             [],
-            "Enter at least 1 local authority",
+            "Enter at least 1 Local authority",
         ),
         (
             ["Adu"],
@@ -1317,6 +1332,249 @@ def test_prepare_broadcast_with_invalid_bulk_local_authority_input(
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
+def test_prepare_broadcast_with_multiple_area_types_combined(driver):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Add another area")
+
+    # Add coordinate area
+    prepare_alert_pages.click_element_by_link_text("Coordinates")
+
+    choose_type_page = ChooseCoordinatesType(driver)
+    choose_type_page.check_input_with_label_text(
+        text="Latitude and longitude", input_type="radio"
+    )
+    choose_type_page.click_continue()
+
+    choose_coordinate_area_page = ChooseCoordinateArea(driver)
+    choose_coordinate_area_page.create_coordinate_area(
+        first_coordinate="51.5074",
+        second_coordinate="-0.1278",
+        radius="5",
+    )
+    choose_coordinate_area_page.click_search()
+    choose_coordinate_area_page.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Add another area")
+
+    # Add Flood Warning Target Areas (TA code)
+    prepare_alert_pages.click_element_by_link_text(
+        "Flood Warning Target Areas (TA code)"
+    )
+    # Enter TA code and click 'Add area' button to add area to alert
+    search_flood_warning_area_page = SearchFloodWarningAreaPage(driver)
+    TA_code = "122FWB112"
+
+    search_flood_warning_area_page.create_ta_code_input(TA_code)
+    search_flood_warning_area_page.click_add_area()
+
+    assert search_flood_warning_area_page.text_is_on_page(
+        "122FWB112: Hull city centre"
+    )  # Area has been returned and displayed correctly
+    search_flood_warning_area_page.click_element_by_link_text("Add another area")
+
+    # Add country area
+    prepare_alert_pages.click_element_by_link_text("Countries")
+    prepare_alert_pages.check_input_with_label_text("Wales", input_type="checkbox")
+    prepare_alert_pages.click_continue()
+    prepare_alert_pages.click_element_by_link_text("Add another area")
+
+    # Add postcode area
+    prepare_alert_pages.click_element_by_link_text("Postcode areas")
+    search_postcode_page = SearchPostcodePage(driver)
+    search_postcode_page.create_custom_area("BD1 1EE", "5")
+    search_postcode_page.click_search()
+    search_postcode_page.click_continue()
+
+    # Finish selecting areas before setting the broadcast duration.
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()  # Preview alert
+
+    # check for selected areas and duration
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(broadcast_title)
+    assert preview_alert_page.text_is_on_page(broadcast_content)
+    assert preview_alert_page.text_is_on_page("Adur")
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert preview_alert_page.text_is_on_page("Eastbrook")
+    assert preview_alert_page.text_is_on_page("51.5074")
+    assert preview_alert_page.text_is_on_page("-0.1278")
+    assert preview_alert_page.text_is_on_page("Hull city centre")
+    assert preview_alert_page.text_is_on_page("Wales")
+    assert preview_alert_page.text_is_on_page("BD1 1EE")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+
+    preview_alert_page.sign_out()
+
+    # approve the alert
+    sign_in(driver, account_type="broadcast_approve_user")
+
+    current_alerts_page.click_element_by_link_text(broadcast_title)
+    current_alerts_page.select_checkbox_or_radio(value="y")  # confirm approve alert
+    current_alerts_page.click_submit()
+    assert current_alerts_page.text_is_on_page("since today at")
+    alert_page_url = current_alerts_page.current_url
+
+    driver.page.wait_for_timeout(10 * 1000)
+    check_alert_is_published_on_govuk_alerts(
+        driver, "Current alerts", broadcast_content
+    )
+
+    # get back to the alert page
+    current_alerts_page.get(alert_page_url)
+
+    # stop sending the alert
+    current_alerts_page.click_element_by_link_text("Stop sending")
+    current_alerts_page.click_submit()  # stop broadcasting
+    assert current_alerts_page.text_is_on_page(
+        "Stopped by Functional Tests - Broadcast User Approve"
+    )
+    current_alerts_page.click_element_by_link_text("Past alerts")
+    past_alerts_page = BasePage(driver)
+    assert past_alerts_page.text_is_on_page(broadcast_title)
+
+    driver.page.wait_for_timeout(10 * 1000)
+    check_alert_is_published_on_govuk_alerts(driver, "Past alerts", broadcast_content)
+
+    current_alerts_page.get()
+    current_alerts_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
+def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
+    driver,
+):
+    sign_in(driver, account_type="broadcast_create_user")
+
+    # prepare alert
+    current_alerts_page = BasePage(driver)
+    test_uuid = str(uuid.uuid4())
+    broadcast_title = "test broadcast " + test_uuid
+
+    current_alerts_page.click_element_by_link_text("Create new alert")
+
+    new_alert_page = BasePage(driver)
+    new_alert_page.select_checkbox_or_radio(value="freeform")
+    new_alert_page.click_continue()
+
+    broadcast_freeform_page = BroadcastFreeformPage(driver)
+    broadcast_content = "This is a test broadcast " + test_uuid
+    broadcast_freeform_page.create_broadcast_content(broadcast_title, broadcast_content)
+    broadcast_freeform_page.click_continue()
+
+    # Choosing not to add extra_content
+    choose_extra_content_page = BasePage(driver)
+    choose_extra_content_page.select_checkbox_or_radio(value="no")
+    choose_extra_content_page.click_continue()
+
+    # Add a local authority area
+    prepare_alert_pages = BasePage(driver)
+    prepare_alert_pages.click_element_by_link_text("Local authorities")
+    prepare_alert_pages.click_element_by_link_text("Adur")
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.click_continue()
+
+    # Add a coordinate area
+    prepare_alert_pages.click_element_by_link_text("Add another area")
+    prepare_alert_pages.click_element_by_link_text("Coordinates")
+
+    choose_type_page = ChooseCoordinatesType(driver)
+    choose_type_page.check_input_with_label_text(
+        text="Latitude and longitude",
+        input_type="radio",
+    )
+    choose_type_page.click_continue()
+
+    latitude = "51.5074"
+    longitude = "-0.1278"
+
+    choose_coordinate_area_page = ChooseCoordinateArea(driver)
+    choose_coordinate_area_page.create_coordinate_area(
+        first_coordinate=latitude,
+        second_coordinate=longitude,
+        radius="5",
+    )
+    choose_coordinate_area_page.click_search()
+    choose_coordinate_area_page.click_continue()
+
+    # Assert both areas present on page
+    assert prepare_alert_pages.text_is_on_page("Adur")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+
+    # Remove the coordinate area, leaving only the local authority area
+    prepare_alert_pages.click_button_by_role_name(
+        name="Remove 5km around 51.5074 latitude, -0.1278 longitude"
+    )
+    assert prepare_alert_pages.text_is_on_page("Adur")
+    assert prepare_alert_pages.text_is_on_page("Cokeham")
+    assert not prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+
+    prepare_alert_pages.click_element_by_link_text("Save and continue")
+
+    broadcast_duration_page = BroadcastDurationPage(driver)
+    broadcast_duration_page.set_alert_duration(hours="8", minutes="30")
+    broadcast_duration_page.click_preview()
+
+    # Asserts that areas and duration are expected
+    preview_alert_page = BasePage(driver)
+    assert preview_alert_page.text_is_on_page(broadcast_title)
+    assert preview_alert_page.text_is_on_page(broadcast_content)
+    assert preview_alert_page.text_is_on_page("Cokeham")
+    assert not preview_alert_page.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+    assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
+
+    preview_alert_page.click_element_by_link_text("Submit for approval")
+    assert preview_alert_page.text_is_on_page(
+        f"{broadcast_title} is waiting for approval"
+    )
+    prepare_alert_pages.click_element_by_link_text("Discard this alert")
+
+    preview_alert_page.sign_out()
+
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.BROADCAST_FLOW)
 def test_reject_alert_with_reason(driver):
     sign_in(driver, account_type="broadcast_create_user")
 
@@ -1344,8 +1602,12 @@ def test_reject_alert_with_reason(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1428,8 +1690,12 @@ def test_return_alert_for_edit(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1530,7 +1796,7 @@ def test_prepare_broadcast_with_extra_content(driver):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Countries")
-    prepare_alert_pages.select_checkbox_or_radio(value="ctry19-W92000004")
+    prepare_alert_pages.check_input_with_label_text("Wales", input_type="checkbox")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1635,8 +1901,12 @@ def test_send_summary_email_for_draft_alert(driver):
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Local authorities")
     prepare_alert_pages.click_element_by_link_text("Adur")
-    prepare_alert_pages.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    prepare_alert_pages.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    prepare_alert_pages.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    prepare_alert_pages.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 

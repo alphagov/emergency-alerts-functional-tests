@@ -130,6 +130,13 @@ class BasePage(object):
     def current_url(self):
         return self.driver.current_url
 
+    @staticmethod
+    def input_element_by_label_text(text, input_type="checkbox"):
+        return (
+            By.XPATH,
+            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
+        )
+
     def wait_for_invisible_element(self, locator, locator_description=None):
         return self.driver.find_element(
             locator, must_be_visible=False, locator_description=locator_description
@@ -316,6 +323,11 @@ class BasePage(object):
                 "arguments[0].dispatchEvent(new Event('change'))", select_element
             )
 
+    def click_button_by_role_name(self, name):
+        # Finds element with ARIA role of button and the name that we specify
+        locator = self.page.get_by_role("button", name=name)
+        locator.click()
+
     def get_errors(self):
         error_message = (By.CSS_SELECTOR, ".banner-dangerous")
         errors = self.wait_for_element(error_message)
@@ -325,6 +337,12 @@ class BasePage(object):
         error_message = (By.CSS_SELECTOR, ".govuk-error-summary")
         errors = self.wait_for_element(error_message)
         return errors.text.strip()
+
+    def check_input_with_label_text(self, text, input_type):
+        element = self.wait_for_invisible_element(
+            self.input_element_by_label_text(text, input_type=input_type)
+        )
+        self.select_checkbox_or_radio(element)
 
 
 class PageWithStickyNavMixin:
@@ -565,13 +583,6 @@ class MoveTemplatesPage(PageWithStickyNavMixin, BasePage):
     )
 
     @staticmethod
-    def input_element_by_label_text(text, input_type="checkbox"):
-        return (
-            By.XPATH,
-            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
-        )
-
-    @staticmethod
     def template_link_text(link_text):
         return (
             By.XPATH,
@@ -636,13 +647,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
     )
 
     @staticmethod
-    def input_element_by_label_text(text, input_type="checkbox"):
-        return (
-            By.XPATH,
-            f"//label[normalize-space(.)='{text}']/preceding-sibling::input[@type='{input_type}']",
-        )
-
-    @staticmethod
     def template_link_text(link_text):
         return (
             By.XPATH,
@@ -687,12 +691,6 @@ class ShowTemplatesPage(PageWithStickyNavMixin, BasePage):
 
     def select_template_checkbox(self, template_id):
         element = self.wait_for_invisible_element(self.template_checkbox(template_id))
-        self.select_checkbox_or_radio(element)
-
-    def check_input_with_label_text(self, text, input_type):
-        element = self.wait_for_invisible_element(
-            self.input_element_by_label_text(text, input_type=input_type)
-        )
         self.select_checkbox_or_radio(element)
 
     def add_to_new_folder(self, folder_name):
