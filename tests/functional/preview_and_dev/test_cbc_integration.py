@@ -354,7 +354,8 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
                 assert (
                     broadcast_id
-                    in cap_xml.xpath(
+                    in xml_path(
+                        cap_xml,
                         "/cap:alert/cap:info/cap:description//text()",
                     )[0]
                 )
@@ -373,8 +374,7 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
-def test_cancel_cap_xml_content_is_valid(driver, api_client):
-    """Test that CAP XML content generated for cancel alerts is valid."""
+def test_cancel_cap_xml_content_is_correct(driver, api_client):
     cap_xml_bucket = config["cap_xml_bucket_name"]
 
     broadcast_id = str(uuid.uuid4())
@@ -416,14 +416,16 @@ def test_cancel_cap_xml_content_is_valid(driver, api_client):
 
                 assert (
                     broadcast_id
-                    in cap_xml.xpath(
+                    in xml_path(
+                        cap_xml,
                         "/cap:alert/cap:msgType///text()",
                     )
                     == ["Cancel"]
                 )
                 assert (
                     alert_broadcast_provider_message_id
-                    in cap_xml.xpath(
+                    in xml_path(
+                        cap_xml,
                         "/cap:alert/cap:references//text()",
                     )[0]
                 )
@@ -560,3 +562,19 @@ def assert_cap_xml_polygons_valid(cap_xml):
         coords = [[float(coord) for coord in coord.split(",")] for coord in coords_list]
         polygon = Polygon(coords)
         assert polygon.is_valid
+
+
+def xml_path(etree, path, format="cap"):
+
+    if format == "cap":
+        ns = {
+            "cap": "urn:oasis:names:tc:emergency:cap:1.2",
+            "ds": "http://www.w3.org/2000/09/xmldsig#",
+        }
+    else:
+        ns = {
+            "ibag": "ibag:1.0",
+            "ds": "http://www.w3.org/2000/09/xmldsig#",
+        }
+
+    return etree.xpath(path, namespaces=ns)
