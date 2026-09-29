@@ -419,7 +419,7 @@ def test_cancel_cap_xml_content_is_correct(driver, api_client):
                     broadcast_id
                     in xml_path(
                         cap_xml,
-                        "/cap:alert/cap:msgType///text()",
+                        "/cap:alert/cap:msgType//text()",
                     )
                     == ["Cancel"]
                 )
