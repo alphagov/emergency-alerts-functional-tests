@@ -353,6 +353,10 @@ def test_assert_cap_xml_generated_is_correct(driver, api_client):
                 assert_cap_xml_schema_valid(cap_xml)
                 assert_cap_xml_polygons_valid(cap_xml)
 
+                assert xml_path(
+                    cap_xml,
+                    "/cap:alert/cap:identifier//text()",
+                ) == [broadcast_provider_message_id]
                 assert (
                     broadcast_id
                     in xml_path(
@@ -415,14 +419,15 @@ def test_cancel_cap_xml_content_is_correct(driver, api_client):
 
                 assert_cap_xml_schema_valid(cap_xml)
 
-                assert (
-                    broadcast_id
-                    in xml_path(
-                        cap_xml,
-                        "/cap:alert/cap:msgType//text()",
-                    )
-                    == ["Cancel"]
-                )
+                assert xml_path(
+                    cap_xml,
+                    "/cap:alert/cap:identifier//text()",
+                ) == [cancel_broadcast_provider_message_id]
+                assert xml_path(
+                    cap_xml,
+                    "/cap:alert/cap:msgType//text()",
+                ) == ["Cancel"]
+                # Make sure references the prior alert ID
                 assert (
                     alert_broadcast_provider_message_id
                     in xml_path(
