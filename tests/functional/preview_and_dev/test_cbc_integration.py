@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from random import choice
 from typing import Literal
@@ -464,10 +465,12 @@ def get_loopback_request_items(ddbc, mno_request_id, retry_if=None):
     return db_response["Items"]
 
 
-def get_service_and_broadcast_id(url):
+def get_service_and_broadcast_id(url: str):
     alerturl = url.split("services/")[1]
-    service_id = alerturl.split("/current-alerts/")[0]
-    broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    # [before | current/past | after]
+    split = re.split(r"/(current|previous)-alerts/", alerturl)
+    service_id = split[0]
+    broadcast_message_id = split[2]
     return (service_id, broadcast_message_id)
 
 
