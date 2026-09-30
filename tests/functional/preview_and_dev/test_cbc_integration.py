@@ -391,7 +391,7 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
                     tried_az1 = True
                     continue
                 raise AssertionError(
-                    f"Provider {provider_id} had no request {xml_filename} in either AZs"
+                    f"Provider {provider_id} had no request {broadcast_provider_message_id} in either AZs"
                 ) from e
 
 
@@ -402,6 +402,9 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
+
+    # Wait for all MNOs to have processed the alert
+    fetch_provider_messages(driver, api_client, wait_for_type="alert")
     cancel_alert(driver, broadcast_id)
 
     s3 = create_s3_client()
@@ -481,7 +484,7 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
                     tried_az1 = True
                     continue
                 raise AssertionError(
-                    f"Provider {provider_id} had no request {xml_filename} in either AZs"
+                    f"Provider {provider_id} had no request {cancel_broadcast_provider_message_id} in either AZs"
                 ) from e
 
 
