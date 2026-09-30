@@ -330,14 +330,19 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
     provider_messages = fetch_provider_messages(driver, api_client)
 
     for provider_id in ["o2", "three", "ee", "vodafone"]:
+        tried_az1 = False
 
         broadcast_provider_message_id = provider_messages[provider_id][
             "alertBroadcastProviderMessageId"
         ]
+
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
-                xml_filename = f"{provider_az}/{broadcast_provider_message_id}.cap.xml"
+                xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
+                xml_filename = (
+                    f"{provider_az}/{broadcast_provider_message_id}.{xml_suffix}.xml"
+                )
 
                 # Retrieving CAP XML file for request & provider
                 xml_object = s3.get_object(
@@ -379,17 +384,15 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
                             "/cap:alert/cap:info/cap:description//text()",
                         )[0]
                     )
-
-                return
             except ClientError as e:
-                # We just need to assert that one file exists and has correct body
-                if e.response["Error"]["Code"] == "NoSuchKey":
+                # Only one AZ will have a request. For the first, skip and let it try the second.
+                # But if we've already tried AZ1 and AZ2 doesn't have a request... then error.
+                if e.response["Error"]["Code"] == "NoSuchKey" and not tried_az1:
+                    tried_az1 = True
                     continue
-                raise
-
-    pytest.fail(
-        "No CAP XML files generated that could be checked and validated against schema"
-    )
+                raise AssertionError(
+                    f"Provider {provider_id} had no request {xml_filename} in either AZs"
+                ) from e
 
 
 @pytest.mark.xdist_group(name=test_group_name)
@@ -409,6 +412,7 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
     )
 
     for provider_id in ["o2", "three", "ee", "vodafone"]:
+        tried_az1 = False
 
         alert_broadcast_provider_message_id = provider_messages[provider_id][
             "alertBroadcastProviderMessageId"
@@ -416,71 +420,69 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
         cancel_broadcast_provider_message_id = provider_messages[provider_id][
             "cancelBroadcastProviderMessageId"
         ]
+
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
-                cap_xml_filename = (
-                    f"{provider_az}/{cancel_broadcast_provider_message_id}.cap.xml"
-                )
+                xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
+                xml_filename = f"{provider_az}/{cancel_broadcast_provider_message_id}.{xml_suffix}.xml"
 
                 # Retrieving CAP XML file for cancel request & provider
-                cap_xml_object = s3.get_object(
+                xml_object = s3.get_object(
                     Bucket=cap_xml_bucket,
-                    Key=cap_xml_filename,
+                    Key=xml_filename,
                 )
 
-                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
-                cap_xml = etree.fromstring(cap_xml_body.encode())
+                xml_body = xml_object["Body"].read().decode("utf-8")
+                xml = etree.fromstring(xml_body.encode())
 
                 if provider_id == "vodafone":  # Vodafone uses IBAG, not CAP
-                    assert_xml_schema_valid(cap_xml, schema_location="docs/ibag10.xsd")
+                    assert_xml_schema_valid(xml, schema_location="docs/ibag10.xsd")
 
                     assert xml_path(
-                        cap_xml,
+                        xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
                         "ibag",
                     ) == [cancel_broadcast_provider_message_id]
                     assert xml_path(
-                        cap_xml,
+                        xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_message_type//text()",
                         "ibag",
                     ) == ["Cancel"]
                     # Make sure references the prior alert ID:
                     assert xml_path(
-                        cap_xml,
+                        xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_referenced_message_cap_identifier//text()",
                         "ibag",
                     ) == [alert_broadcast_provider_message_id]
                 else:
-                    assert_xml_schema_valid(cap_xml)
+                    assert_xml_schema_valid(xml)
 
                     assert xml_path(
-                        cap_xml,
+                        xml,
                         "/cap:alert/cap:identifier//text()",
                     ) == [cancel_broadcast_provider_message_id]
                     assert xml_path(
-                        cap_xml,
+                        xml,
                         "/cap:alert/cap:msgType//text()",
                     ) == ["Cancel"]
                     # Make sure references the prior alert ID:
                     assert (
                         alert_broadcast_provider_message_id
                         in xml_path(
-                            cap_xml,
+                            xml,
                             "/cap:alert/cap:references//text()",
                         )[0]
                     )
-
-                return
             except ClientError as e:
-                # We just need to assert that one file exists and has correct body
-                if e.response["Error"]["Code"] == "NoSuchKey":
+                # Only one AZ will have a request. For the first, skip and let it try the second.
+                # But if we've already tried AZ1 and AZ2 doesn't have a request... then error.
+                if e.response["Error"]["Code"] == "NoSuchKey" and not tried_az1:
+                    tried_az1 = True
                     continue
-                raise
-
-    pytest.fail(
-        "No CAP XML files generated for cancel alerts that could be checked and validated against schema"
-    )
+                raise AssertionError(
+                    f"Provider {provider_id} had no request {xml_filename} in either AZs"
+                ) from e
 
 
 @retry(
