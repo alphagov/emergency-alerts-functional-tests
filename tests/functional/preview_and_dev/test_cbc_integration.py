@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from random import choice
 from typing import Literal
@@ -318,48 +319,173 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
-def test_assert_cap_xml_generated_is_correct(driver, api_client):
-    cap_xml_bucket = config["cap_xml_bucket_name"]
-    s3 = create_s3_client()
+def test_assert_cbc_xml_generated_is_correct(driver, api_client):
+    xml_bucket = config["cap_xml_bucket_name"]
 
     broadcast_id = str(uuid.uuid4())
     broadcast_alert(driver, broadcast_id)
 
+    s3 = create_s3_client()
+
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    for provider_id in ["o2", "three", "ee"]:  # Only providers that use CAP XML
+    for provider_id in ["o2", "three", "ee", "vodafone"]:
+        tried_az1 = False
 
         broadcast_provider_message_id = provider_messages[provider_id][
             "alertBroadcastProviderMessageId"
         ]
+
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
-                cap_xml_filename = (
-                    f"{provider_az}/{broadcast_provider_message_id}.cap.xml"
+                xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
+                xml_filename = (
+                    f"{provider_az}/{broadcast_provider_message_id}.{xml_suffix}.xml"
                 )
 
                 # Retrieving CAP XML file for request & provider
-                cap_xml_object = s3.get_object(
-                    Bucket=cap_xml_bucket,
-                    Key=cap_xml_filename,
+                xml_object = s3.get_object(
+                    Bucket=xml_bucket,
+                    Key=xml_filename,
                 )
 
-                cap_xml_body = cap_xml_object["Body"].read().decode("utf-8")
-                cap_xml = etree.fromstring(cap_xml_body.encode())
+                xml_body = xml_object["Body"].read().decode("utf-8")
+                xml = etree.fromstring(xml_body.encode())
 
-                assert_cap_xml_valid(cap_xml)
-                assert_cap_xml_polygons_valid(cap_xml)
-                return
+                if provider_id == "vodafone":  # Vodafone uses IBAG, not CAP
+                    assert_xml_schema_valid(xml, schema_location="docs/ibag10.xsd")
+
+                    assert xml_path(
+                        xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
+                        "ibag",
+                    ) == [broadcast_provider_message_id]
+                    assert (
+                        broadcast_id
+                        in xml_path(
+                            xml,
+                            "/ibag:IBAG_Alert_Attributes/ibag:IBAG_alert_info/ibag:IBAG_text_alert_message//text()",
+                            "ibag",
+                        )[0]
+                    )
+                else:
+                    assert_xml_schema_valid(xml)
+                    assert_cap_xml_polygons_valid(xml)
+
+                    assert xml_path(
+                        xml,
+                        "/cap:alert/cap:identifier//text()",
+                    ) == [broadcast_provider_message_id]
+                    assert (
+                        broadcast_id
+                        in xml_path(
+                            xml,
+                            "/cap:alert/cap:info/cap:description//text()",
+                        )[0]
+                    )
             except ClientError as e:
-                # We just need to assert that one file exists and has correct body
-                if e.response["Error"]["Code"] == "NoSuchKey":
+                # Only one AZ will have a request. For the first, skip and let it try the second.
+                # But if we've already tried AZ1 and AZ2 doesn't have a request... then error.
+                if e.response["Error"]["Code"] == "NoSuchKey" and not tried_az1:
+                    tried_az1 = True
                     continue
-                raise
+                raise AssertionError(
+                    f"Provider {provider_id} had no request {broadcast_provider_message_id} in either AZs"
+                ) from e
 
-    pytest.fail(
-        "No CAP XML files generated that could be checked and validated against schema"
+
+@pytest.mark.xdist_group(name=test_group_name)
+@skip_test_suite_if_disabled(test_suite_name=SuiteNames.CBC_INTEGRATION)
+def test_cancel_cbc_xml_content_is_correct(driver, api_client):
+    cap_xml_bucket = config["cap_xml_bucket_name"]
+
+    broadcast_id = str(uuid.uuid4())
+    broadcast_alert(driver, broadcast_id)
+
+    # Wait for all MNOs to have processed the alert
+    fetch_provider_messages(driver, api_client, wait_for_type="alert")
+    cancel_alert(driver, broadcast_id)
+
+    s3 = create_s3_client()
+
+    # Will implicitly include sending statuses too
+    provider_messages = fetch_provider_messages(
+        driver, api_client, wait_for_type="cancel"
     )
+
+    for provider_id in ["o2", "three", "ee", "vodafone"]:
+        tried_az1 = False
+
+        alert_broadcast_provider_message_id = provider_messages[provider_id][
+            "alertBroadcastProviderMessageId"
+        ]
+        cancel_broadcast_provider_message_id = provider_messages[provider_id][
+            "cancelBroadcastProviderMessageId"
+        ]
+
+        for az in ["az1", "az2"]:
+            provider_az = f"{provider_id}-{az}"
+            try:
+                xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
+                xml_filename = f"{provider_az}/{cancel_broadcast_provider_message_id}.{xml_suffix}.xml"
+
+                # Retrieving CAP XML file for cancel request & provider
+                xml_object = s3.get_object(
+                    Bucket=cap_xml_bucket,
+                    Key=xml_filename,
+                )
+
+                xml_body = xml_object["Body"].read().decode("utf-8")
+                xml = etree.fromstring(xml_body.encode())
+
+                if provider_id == "vodafone":  # Vodafone uses IBAG, not CAP
+                    assert_xml_schema_valid(xml, schema_location="docs/ibag10.xsd")
+
+                    assert xml_path(
+                        xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
+                        "ibag",
+                    ) == [cancel_broadcast_provider_message_id]
+                    assert xml_path(
+                        xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_message_type//text()",
+                        "ibag",
+                    ) == ["Cancel"]
+                    # Make sure references the prior alert ID:
+                    assert xml_path(
+                        xml,
+                        "/ibag:IBAG_Alert_Attributes/ibag:IBAG_referenced_message_cap_identifier//text()",
+                        "ibag",
+                    ) == [alert_broadcast_provider_message_id]
+                else:
+                    assert_xml_schema_valid(xml)
+
+                    assert xml_path(
+                        xml,
+                        "/cap:alert/cap:identifier//text()",
+                    ) == [cancel_broadcast_provider_message_id]
+                    assert xml_path(
+                        xml,
+                        "/cap:alert/cap:msgType//text()",
+                    ) == ["Cancel"]
+                    # Make sure references the prior alert ID:
+                    assert (
+                        alert_broadcast_provider_message_id
+                        in xml_path(
+                            xml,
+                            "/cap:alert/cap:references//text()",
+                        )[0]
+                    )
+            except ClientError as e:
+                # Only one AZ will have a request. For the first, skip and let it try the second.
+                # But if we've already tried AZ1 and AZ2 doesn't have a request... then error.
+                if e.response["Error"]["Code"] == "NoSuchKey" and not tried_az1:
+                    tried_az1 = True
+                    continue
+                raise AssertionError(
+                    f"Provider {provider_id} had no request {cancel_broadcast_provider_message_id} in either AZs"
+                ) from e
 
 
 @retry(
@@ -377,17 +503,19 @@ def get_loopback_request_items(ddbc, mno_request_id, retry_if=None):
     )
     if retry_if is not None and retry_if(db_response):
         raise RetryException(
-            f'retry_if failed: Found {len(db_response["Items"])} '
+            f"retry_if failed: Found {len(db_response['Items'])} "
             + f"requests for MnoRequestId: {mno_request_id} - {db_response}"
         )
 
     return db_response["Items"]
 
 
-def get_service_and_broadcast_id(url):
+def get_service_and_broadcast_id(url: str):
     alerturl = url.split("services/")[1]
-    service_id = alerturl.split("/current-alerts/")[0]
-    broadcast_message_id = alerturl.split("/current-alerts/")[1]
+    # [before | current/past | after]
+    split = re.split(r"/(current|previous)-alerts/", alerturl)
+    service_id = split[0]
+    broadcast_message_id = split[2]
     return (service_id, broadcast_message_id)
 
 
@@ -467,8 +595,8 @@ def fetch_provider_messages(
     )
 
 
-def assert_cap_xml_valid(cap_xml):
-    schema_doc = etree.parse("docs/CAP-v1.2.xsd")
+def assert_xml_schema_valid(cap_xml, schema_location="docs/CAP-v1.2.xsd"):
+    schema_doc = etree.parse(schema_location)
     schema = etree.XMLSchema(schema_doc)
     schema.assertValid(cap_xml)
 
@@ -482,3 +610,19 @@ def assert_cap_xml_polygons_valid(cap_xml):
         coords = [[float(coord) for coord in coord.split(",")] for coord in coords_list]
         polygon = Polygon(coords)
         assert polygon.is_valid
+
+
+def xml_path(etree, path, format="cap"):
+
+    if format == "cap":
+        ns = {
+            "cap": "urn:oasis:names:tc:emergency:cap:1.2",
+            "ds": "http://www.w3.org/2000/09/xmldsig#",
+        }
+    else:
+        ns = {
+            "ibag": "ibag:1.0",
+            "ds": "http://www.w3.org/2000/09/xmldsig#",
+        }
+
+    return etree.xpath(path, namespaces=ns)
