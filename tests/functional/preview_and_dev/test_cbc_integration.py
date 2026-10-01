@@ -62,7 +62,9 @@ def test_broadcast_generates_four_provider_messages(
     collected_requests = 0
 
     for provider_id in PROVIDERS:
-        mno_request_id = f"{provider_id}_{provider_messages[provider_id]["alertBroadcastProviderMessageId"]}"
+        mno_request_id = (
+            f"{provider_id}_{provider_messages[provider_id]["alertBroadcastEventId"]}"
+        )
 
         responses = get_loopback_request_items(
             ddbc=dynamo_db_client,
@@ -169,9 +171,7 @@ def test_broadcast_with_az1_failure_tries_az2(
     broadcast_alert(driver, broadcast_id)
     provider_messages = fetch_provider_messages(driver, api_client)
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     def _check_for_responses_from_secondary_az(resp):
         return get_cbc_response_code(resp["Items"], az2) is None
@@ -216,9 +216,7 @@ def test_broadcast_with_both_azs_failing_retries_requests(
         driver, api_client, wait_for_all_mnos=True
     )
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     def _check_for_responses_from_both_azs(resp):
         return (
@@ -271,9 +269,7 @@ def test_broadcast_with_both_azs_failing_eventually_succeeds_if_azs_are_restored
         driver, api_client, wait_for_all_mnos=True
     )
 
-    mno_request_id = (
-        f"{mno}_{provider_messages[mno]["alertBroadcastProviderMessageId"]}"
-    )
+    mno_request_id = f"{mno}_{provider_messages[mno]["alertBroadcastEventId"]}"
 
     # wait for at least one response (which should be a '500' here)
     responses = get_loopback_request_items(
@@ -332,17 +328,13 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
     for provider_id in ["o2", "three", "ee", "vodafone"]:
         tried_az1 = False
 
-        broadcast_provider_message_id = provider_messages[provider_id][
-            "alertBroadcastProviderMessageId"
-        ]
+        broadcast_event_id = provider_messages[provider_id]["alertBroadcastEventId"]
 
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
                 xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
-                xml_filename = (
-                    f"{provider_az}/{broadcast_provider_message_id}.{xml_suffix}.xml"
-                )
+                xml_filename = f"{provider_az}/{broadcast_event_id}.{xml_suffix}.xml"
 
                 # Retrieving CAP XML file for request & provider
                 xml_object = s3.get_object(
@@ -360,7 +352,7 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
                         xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
                         "ibag",
-                    ) == [broadcast_provider_message_id]
+                    ) == [broadcast_event_id]
                     assert (
                         broadcast_id
                         in xml_path(
@@ -376,7 +368,7 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
                     assert xml_path(
                         xml,
                         "/cap:alert/cap:identifier//text()",
-                    ) == [broadcast_provider_message_id]
+                    ) == [broadcast_event_id]
                     assert (
                         broadcast_id
                         in xml_path(
@@ -391,7 +383,7 @@ def test_assert_cbc_xml_generated_is_correct(driver, api_client):
                     tried_az1 = True
                     continue
                 raise AssertionError(
-                    f"Provider {provider_id} had no request {broadcast_provider_message_id} in either AZs"
+                    f"Provider {provider_id} had no request {broadcast_event_id} in either AZs"
                 ) from e
 
 
@@ -417,18 +409,20 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
     for provider_id in ["o2", "three", "ee", "vodafone"]:
         tried_az1 = False
 
-        alert_broadcast_provider_message_id = provider_messages[provider_id][
-            "alertBroadcastProviderMessageId"
+        alert_broadcast_event_id = provider_messages[provider_id][
+            "alertBroadcastEventId"
         ]
-        cancel_broadcast_provider_message_id = provider_messages[provider_id][
-            "cancelBroadcastProviderMessageId"
+        cancel_broadcast_event_id = provider_messages[provider_id][
+            "cancelBroadcastEventId"
         ]
 
         for az in ["az1", "az2"]:
             provider_az = f"{provider_id}-{az}"
             try:
                 xml_suffix = "cap" if provider_id != "vodafone" else "ibag"
-                xml_filename = f"{provider_az}/{cancel_broadcast_provider_message_id}.{xml_suffix}.xml"
+                xml_filename = (
+                    f"{provider_az}/{cancel_broadcast_event_id}.{xml_suffix}.xml"
+                )
 
                 # Retrieving CAP XML file for cancel request & provider
                 xml_object = s3.get_object(
@@ -446,7 +440,7 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
                         xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_cap_identifier//text()",
                         "ibag",
-                    ) == [cancel_broadcast_provider_message_id]
+                    ) == [cancel_broadcast_event_id]
                     assert xml_path(
                         xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_message_type//text()",
@@ -457,21 +451,21 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
                         xml,
                         "/ibag:IBAG_Alert_Attributes/ibag:IBAG_referenced_message_cap_identifier//text()",
                         "ibag",
-                    ) == [alert_broadcast_provider_message_id]
+                    ) == [alert_broadcast_event_id]
                 else:
                     assert_xml_schema_valid(xml)
 
                     assert xml_path(
                         xml,
                         "/cap:alert/cap:identifier//text()",
-                    ) == [cancel_broadcast_provider_message_id]
+                    ) == [cancel_broadcast_event_id]
                     assert xml_path(
                         xml,
                         "/cap:alert/cap:msgType//text()",
                     ) == ["Cancel"]
                     # Make sure references the prior alert ID:
                     assert (
-                        alert_broadcast_provider_message_id
+                        alert_broadcast_event_id
                         in xml_path(
                             xml,
                             "/cap:alert/cap:references//text()",
@@ -484,7 +478,7 @@ def test_cancel_cbc_xml_content_is_correct(driver, api_client):
                     tried_az1 = True
                     continue
                 raise AssertionError(
-                    f"Provider {provider_id} had no request {cancel_broadcast_provider_message_id} in either AZs"
+                    f"Provider {provider_id} had no request {cancel_broadcast_event_id} in either AZs"
                 ) from e
 
 
@@ -571,22 +565,23 @@ def fetch_provider_messages(
         if not wait_for_all_mnos:
             return response
 
-        count = 0
         # Loop through each provider and assert there's a status for the alert type
         # { "<mno>": { "alert": [{}], "cancel": [{}] } }
+
+        found_providers = set()
         for provider in PROVIDERS:
             mno_statuses = response.get(provider, {})
             if len(mno_statuses.get(wait_for_type, [])) > 0:
-                count += 1
+                found_providers.add(provider)
 
-        if count == len(PROVIDERS):
+        if len(found_providers) == len(PROVIDERS):
             return response
 
         attempts += 1
         logger.info(
             f"Waiting 5s for all 4 MNOs for {wait_for_type} for alert {broadcast_message_id}. Attempt {attempts}."
         )
-        logger.info("Current result: %s", response)
+        logger.info("Current result: %s - %s", found_providers, response)
         driver.page.wait_for_timeout(5 * 1000)
 
     # If we've got here, we've exhausted all attempts
