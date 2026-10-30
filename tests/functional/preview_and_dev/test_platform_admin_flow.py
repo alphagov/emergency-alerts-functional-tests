@@ -65,7 +65,7 @@ def test_add_rename_and_delete_training_service(driver, purge_failed_logins):
 
 @pytest.mark.xdist_group(name=test_group_name)
 @skip_test_suite_if_disabled(test_suite_name=SuiteNames.PLATFORM_ADMIN_FLOW)
-def test_add_modify_and_delete_live_service(driver, purge_failed_logins):
+def test_add_and_delete_live_service(driver, purge_failed_logins):
     timestamp = str(int(time.time()))
     service_name = f"Functional Test {timestamp}"
 
