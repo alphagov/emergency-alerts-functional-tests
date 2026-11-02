@@ -253,5 +253,3 @@ def cancel_alert(driver, id):
     current_alerts_page.click_element_by_link_text("test broadcast " + id)
     current_alerts_page.click_element_by_link_text("Stop sending")
     current_alerts_page.click_submit()  # stop broadcasting
-
-    current_alerts_page.sign_out()
