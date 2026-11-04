@@ -1639,7 +1639,9 @@ def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
     # Assert both areas present on page
     assert prepare_alert_pages.text_is_on_page("Adur")
     assert prepare_alert_pages.text_is_on_page("Cokeham")
-    assert prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+    assert prepare_alert_pages.text_is_on_page(
+        "5km around 51.5074 latitude, -0.1278 longitude in Westminster"
+    )
 
     # Remove the coordinate area, leaving only the local authority area
     prepare_alert_pages.click_button_by_role_name(
@@ -1647,7 +1649,9 @@ def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
     )
     assert prepare_alert_pages.text_is_on_page("Adur")
     assert prepare_alert_pages.text_is_on_page("Cokeham")
-    assert not prepare_alert_pages.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+    assert not prepare_alert_pages.text_is_on_page(
+        "5km around 51.5074 latitude, -0.1278 longitude in Westminster"
+    )
 
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -1660,7 +1664,9 @@ def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
     assert preview_alert_page.text_is_on_page(broadcast_title)
     assert preview_alert_page.text_is_on_page(broadcast_content)
     assert preview_alert_page.text_is_on_page("Cokeham")
-    assert not preview_alert_page.text_is_on_page("5km around 51.5074 latitude, -0.1278 longitude in Westminster")
+    assert not preview_alert_page.text_is_on_page(
+        "5km around 51.5074 latitude, -0.1278 longitude in Westminster"
+    )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
