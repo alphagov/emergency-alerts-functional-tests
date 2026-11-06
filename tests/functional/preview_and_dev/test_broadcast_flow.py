@@ -1301,7 +1301,7 @@ def test_prepare_broadcast_with_multiple_local_authorities(driver):
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
-    assert preview_alert_page.text_is_on_page("Kingston upon Hull, City of")
+    assert preview_alert_page.text_is_on_page("City of Kingston upon Hull")
     assert preview_alert_page.text_is_on_page("Adur")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
@@ -1514,7 +1514,7 @@ def test_prepare_broadcast_with_multiple_area_types_combined(driver):
     # Add postcode area
     prepare_alert_pages.click_element_by_link_text("Postcode areas")
     search_postcode_page = SearchPostcodePage(driver)
-    search_postcode_page.create_custom_area("BD1 1EE", "5")
+    search_postcode_page.create_custom_area("AB10 1AW", "5")
     search_postcode_page.click_search()
     search_postcode_page.click_continue()
 
@@ -1535,7 +1535,7 @@ def test_prepare_broadcast_with_multiple_area_types_combined(driver):
     assert preview_alert_page.text_is_on_page("-0.1278")
     assert preview_alert_page.text_is_on_page("Hull city centre")
     assert preview_alert_page.text_is_on_page("Wales")
-    assert preview_alert_page.text_is_on_page("BD1 1EE")
+    assert preview_alert_page.text_is_on_page("AB10 1AW")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
