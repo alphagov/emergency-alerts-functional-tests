@@ -1643,7 +1643,7 @@ def test_prepare_broadcast_with_multiple_area_types_combined_and_remove(
     assert prepare_alert_pages.text_is_on_page("Adur")
     assert prepare_alert_pages.text_is_on_page("Cokeham")
     assert prepare_alert_pages.text_is_on_page(
-        "5km around 51.5074 latitude, -0.1278 longitude in Westminster"
+        "5km around 51.5074 latitude, -0.1278 longitude, in Westminster"
     )
 
     # Remove the coordinate area, leaving only the local authority area
