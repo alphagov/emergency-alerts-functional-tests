@@ -2095,7 +2095,7 @@ def test_prepare_broadcast_prod_mode_extra_confirmation(driver):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Countries")
-    prepare_alert_pages.select_checkbox_or_radio(value="ctry19-W92000004")
+    prepare_alert_pages.check_input_with_label_text(text="Wales", input_type="checkbox")
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
