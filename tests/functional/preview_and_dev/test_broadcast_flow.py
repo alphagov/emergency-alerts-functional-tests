@@ -522,7 +522,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     prepare_alert_pages.click_element_by_link_text("Postcode areas")
     # This is where it varies
     search_postcode_page = SearchPostcodePage(driver)
-    postcode_to_search = "BD1 1EE"
+    postcode_to_search = "AB10 1AW"
     radius_to_add = "5"
     search_postcode_page.create_custom_area(postcode_to_search, radius_to_add)
     search_postcode_page.click_search()
@@ -537,7 +537,7 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
     # here check if selected areas displayed
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page(
-        "5km around the postcode BD1 1EE in Bradford"
+        "5km around the postcode AB10 1AW, in Aberdeen City"
     )
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
