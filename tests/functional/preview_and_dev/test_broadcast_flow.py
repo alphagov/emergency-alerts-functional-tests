@@ -610,12 +610,12 @@ def test_prepare_broadcast_with_new_content_for_postcode_area(driver):
                 "second_coordinate": "432994",
                 "radius": "3",
             },
-            "3km around the easting of 416567 and the northing of 432994 in Bradford",
+            "3km around the easting of 416567 and the northing of 432994, in Bradford",
         ),
         (
             "latitude_longitude",
             {"first_coordinate": "53.793", "second_coordinate": "-1.75", "radius": "3"},
-            "3km around 53.793 latitude, -1.75 longitude in Bradford",
+            "3km around 53.793 latitude, -1.75 longitude, in Bradford",
         ),
     ),
 )
@@ -669,6 +669,7 @@ def test_prepare_broadcast_with_new_content_for_coordinate_area(
 
     # here check if selected areas displayed
     preview_alert_page = BasePage(driver)
+
     assert preview_alert_page.text_is_on_page(expected_area_description)
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
