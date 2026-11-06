@@ -859,7 +859,9 @@ def test_prepare_broadcast_with_police_force_area(driver):
 
     prepare_alert_pages = BasePage(driver)
     prepare_alert_pages.click_element_by_link_text("Police forces in England and Wales")
-    prepare_alert_pages.select_checkbox_or_radio(value="pfa24-LONDON")
+    prepare_alert_pages.check_input_with_label_text(
+        text="Metropolitan Police", input_type="checkbox"
+    )
     prepare_alert_pages.click_continue()
     prepare_alert_pages.click_element_by_link_text("Save and continue")
 
@@ -869,7 +871,7 @@ def test_prepare_broadcast_with_police_force_area(driver):
 
     # check for selected areas and duration
     preview_alert_page = BasePage(driver)
-    assert preview_alert_page.text_is_on_page("London (Metropolitan & City of London)")
+    assert preview_alert_page.text_is_on_page("Metropolitan Police")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
