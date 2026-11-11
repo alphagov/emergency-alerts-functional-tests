@@ -1080,7 +1080,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
         "031FWFSE440: River Severn at Hylton Road, Worcester"
     )
     assert search_flood_warning_area_page.text_is_on_page(
-        " 031FWFTE125: River Teme at Toronto Close Lower Wick"
+        " 031FWFTE125: River Teme at Toronto Close"
     )
 
     search_flood_warning_area_page.click_element_by_link_text(
@@ -1095,7 +1095,7 @@ def test_prepare_broadcast_with_multiple_flood_warning_target_areas(driver):
     preview_alert_page = BasePage(driver)
     assert preview_alert_page.text_is_on_page("Hull city centre")
     assert preview_alert_page.text_is_on_page("River Severn at Hylton Road, Worcester")
-    assert preview_alert_page.text_is_on_page("River Teme at Toronto Close Lower Wick")
+    assert preview_alert_page.text_is_on_page("River Teme at Toronto Close")
     assert preview_alert_page.text_is_on_page("8 hours, 30 minutes")
 
     preview_alert_page.click_element_by_link_text("Submit for approval")
