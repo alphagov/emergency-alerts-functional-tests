@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from config import COKEHAM_WARD_ID, EASTBROOK_WARD_ID, config
+from config import config
 from tests.pages import (
     CurrentAlertsPage,
     EditBroadcastTemplatePage,
@@ -79,8 +79,12 @@ def test_create_and_delete_template_with_area_only(driver):
     choose_template_area_page = BasePage(driver)
     choose_template_area_page.click_element_by_link_text("Local authorities")
     choose_template_area_page.click_element_by_link_text("Adur")
-    choose_template_area_page.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    choose_template_area_page.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    choose_template_area_page.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    choose_template_area_page.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     choose_template_area_page.click_continue()
     choose_template_area_page.click_element_by_link_text("Save and continue")
 
@@ -125,7 +129,9 @@ def test_create_and_delete_template_with_content_and_area(driver):
 
     choose_template_area_page = BasePage(driver)
     choose_template_area_page.click_element_by_link_text("Countries")
-    choose_template_area_page.select_checkbox_or_radio(value="ctry19-E92000001")
+    choose_template_area_page.check_input_with_label_text(
+        "England", input_type="checkbox"
+    )
     choose_template_area_page.click_continue()
     choose_template_area_page.click_element_by_link_text("Save and continue")
 
@@ -201,8 +207,12 @@ def test_create_edit_and_delete_template(driver):
     choose_template_area_page = BasePage(driver)
     choose_template_area_page.click_element_by_link_text("Local authorities")
     choose_template_area_page.click_element_by_link_text("Adur")
-    choose_template_area_page.select_checkbox_or_radio(value=COKEHAM_WARD_ID)
-    choose_template_area_page.select_checkbox_or_radio(value=EASTBROOK_WARD_ID)
+    choose_template_area_page.check_input_with_label_text(
+        text="Cokeham", input_type="checkbox"
+    )
+    choose_template_area_page.check_input_with_label_text(
+        text="Eastbrook", input_type="checkbox"
+    )
     choose_template_area_page.click_continue()
     choose_template_area_page.click_element_by_link_text("Save and continue")
 
