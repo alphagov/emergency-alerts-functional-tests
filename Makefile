@@ -23,4 +23,4 @@ uninstall-packages:
 
 .PHONY: test
 test:
-	pytest -v --junitxml=functional-test-reports/report.xml tests/
+	pytest --pytest-durations=30 -v --junitxml=functional-test-reports/report.xml tests/
