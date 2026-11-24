@@ -4,7 +4,7 @@ phases:
   install:
     commands:
       # We can't use runtime-versions to install Python here, as this ignores the HTTP proxy config
-      - pyenv install 3.12
+      - pyenv install -s 3.12
       - pyenv global 3.12
 
   pre_build:

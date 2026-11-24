@@ -32,7 +32,6 @@ def preview_dev_config():
     logging.info(str(time.time()) + " Setting up preview_dev_config")
     setup_preview_dev_config()
     test_api_client = create_test_client()
-    purge_functional_test_alerts(test_api_client)
     purge_folders_and_templates(test_api_client)
     purge_user_created_services(test_api_client)
     purge_users_created_by_functional_tests(test_api_client)
@@ -68,14 +67,6 @@ def cbc_blackout():
 def dynamo_db_client():
     ddbc = create_ddb_client()
     yield ddbc
-
-
-def purge_functional_test_alerts(test_api_client):
-    service = config["broadcast_service"]["service_id"]
-    older_than = config["broadcast_service"]["purge_older_than"]
-
-    url = f"/service/{service}/broadcast-message/purge/{older_than}"
-    test_api_client.delete(url)
 
 
 def purge_folders_and_templates(test_api_client):
